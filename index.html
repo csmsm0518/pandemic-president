@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101418">
+<title>팬데믹 대통령</title>
+<style>
+:root{
+  --bg:#101418;--surface-0:#171c22;--surface-1:#1d232b;--surface-2:#1a2027;
+  --border:rgba(255,255,255,.09);--border-strong:rgba(255,255,255,.22);
+  --text-primary:#e9ecef;--text-secondary:#a7afb8;--text-muted:#6b737d;
+  --text-danger:#f0605f;--text-success:#3fc38f;--text-warning:#eda100;
+  --radius:8px;
+  --font-ui:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic","Segoe UI",sans-serif;
+  --font-voice:"Noto Serif KR","Apple Myungjo",Georgia,serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text-primary);font-family:var(--font-ui);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+#app{max-width:440px;margin:0 auto;padding:22px 16px 48px;min-height:100vh}
+button{font:inherit;color:var(--text-primary);background:var(--surface-0);border:1px solid var(--border-strong);border-radius:10px;padding:10px 14px;cursor:pointer;line-height:1.4;transition:background .15s,transform .08s}
+button:hover{background:var(--surface-1)}
+button:active{transform:scale(.985)}
+button:disabled{opacity:.45;cursor:default;transform:none}
+button:focus-visible{outline:2px solid #6250d6;outline-offset:2px}
+em{font-style:normal;font-weight:600;color:var(--text-danger)}
+canvas{display:block}
+@keyframes fxL{0%{opacity:0;transform:scale(.6)}22%{opacity:1;transform:scale(1.08)}70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.02)}}
+@keyframes fxT{0%{opacity:0}28%{opacity:1}100%{opacity:0}}
+@keyframes shk{0%,100%{transform:translateX(0)}12%{transform:translateX(-8px)}28%{transform:translateX(7px)}44%{transform:translateX(-5px)}62%{transform:translateX(4px)}82%{transform:translateX(-2px)}}
+@keyframes fdIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pls{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes wIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+@keyframes tk{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+@keyframes optIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+@keyframes stamp{0%{opacity:0;transform:scale(2) rotate(-12deg)}55%{opacity:1;transform:scale(.92) rotate(-5deg)}100%{transform:scale(1) rotate(-5deg)}}
+@keyframes reelIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="root">
+    <div style="font-size:11px;color:var(--text-muted);letter-spacing:3px;margin-bottom:10px">현대 민주주의 · 4년 임기</div>
+    <div style="font-size:34px;font-weight:600;line-height:1.12;margin-bottom:16px">팬데믹<br>대통령</div>
+    <div style="font-size:14px;color:var(--text-secondary);line-height:1.8;margin-bottom:10px">취임 3주 만에 <em>첫 확진자</em>가 나왔다. 임기 4년이 그대로 팬데믹 4년이 된다.</div>
+    <div style="font-size:13px;color:var(--text-muted);line-height:1.8;margin-bottom:24px">감염은 지수적으로 번지고 사라지지 않는다. 권한을 쥐면 유착이 자라고, 지지율은 가만히 두면 떨어진다. 볼 수 있는 것은 <em>인구 지도와 참모의 귓속말</em>뿐이다.</div>
+    <label for="nick" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px">닉네임 (최대 20자, 비우면 익명)</label>
+    <input id="nick" maxlength="20" placeholder="익명" autocomplete="off" style="width:100%;box-sizing:border-box;padding:12px;font-size:15px;margin-bottom:10px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface-1);color:var(--text-primary)">
+    <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px">※ 플레이 결과가 기록됩니다 (닉네임·선택·엔딩·점수·플레이 시간)</div>
+    <button id="go" style="width:100%;padding:15px;font-size:15px">▶&nbsp; 시작 (소리 켜짐)</button>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:12px;text-align:center">기록은 이 브라우저에 저장된다</div>
+  </div>
+</div>
+<script>
+(function(){
+const R=document.getElementById('root'),cl=v=>Math.max(0,Math.min(100,v)),DPR=window.devicePixelRatio||1;
+const BAD={i:1,c:1,u:1},EVS=.55,YRS=4,PY=12;
+const INIT={i:12,m:62,a:58,e:64,p:32,c:10,u:22,chk:76,trn:68,saf:52};
+const DIFF=[{n:'보통',r:0,dd:1,ad:0,fl:3},{n:'어려움',r:.028,dd:1.25,ad:.12,fl:4},{n:'지옥',r:.058,dd:1.6,ad:.26,fl:6}];
+const ICO={vol:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>',
+ mute:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 5 6M21 9l-5 6"/></svg>'};
+
+const TIER=[
+{p:.10,n:'대성공',g:2.0,b:.2,ms:950,fs:34,fg:'var(--text-success)',tint:'rgba(27,175,122,.22)',bd:'#1baf7a',l:[
+'모든 것이 맞아떨어졌다. 이 대응은 이후 다른 나라 브리핑에서 <em>모범 사례</em>로 여러 번 인용됐다.',
+'운이 편에 섰다. 같은 결정을 내린 다른 정부들은 대개 이런 결과를 얻지 못했다.',
+'현장이 기대 이상이었다. 지침의 문장을 넘어, 대통령이 진짜 원하던 것까지 해냈다.',
+'예상보다 훨씬 크게 풀렸다. 반대하던 언론까지 이번만은 <em>사설로 인정</em>했다.',
+'작은 결정 하나가 예기치 못한 곳까지 닿았다. 몇 년 뒤 교과서에 실릴 문단이 이날 만들어졌다.',
+'타이밍이 완벽했다. 하루만 늦었어도 전혀 다른 이야기가 됐을 것이다.',
+'야당까지 결과 앞에서는 말을 아꼈다. 이런 침묵은 이 정부에 흔치 않은 사치다.',
+'위험을 감수한 대가를 온전히 받았고, 치러야 할 값은 거의 청구되지 않았다.']},
+{p:.55,n:'성공',g:1.0,b:1.0,ms:480,fs:22,fg:'var(--text-secondary)',tint:'rgba(136,135,128,.12)',bd:'rgba(255,255,255,.35)',l:[
+'계획한 대로 되었다. 놀랄 일도, 후회할 일도 없었다.',
+'큰 잡음 없이 마무리됐다. 브리핑은 곧 다음 안건으로 넘어갔다.',
+'예상한 만큼의 성과와 예상한 만큼의 대가가 함께 왔다.',
+'무난했다. 저녁 뉴스 세 번째 꼭지로 짧게 다뤄졌다.',
+'뜻대로 굴러갔다. 다만 아무도 특별히 감탄하지는 않았다.',
+'해야 할 일을 했고, 딱 그만큼의 결과를 얻었다.']},
+{p:.25,n:'실패',g:.4,b:1.3,ms:780,fs:30,fg:'var(--text-warning)',tint:'rgba(237,161,0,.22)',bd:'#c98500',l:[
+'뜻대로 되지 않았다. 지침은 분명했는데 <em>현장에서 다르게 굴러갔다</em>.',
+'발표 전에 내용이 새어 나갔다. 사람들은 정부의 의도보다 유출된 문서를 먼저 읽었다.',
+'의도는 좋았으나, 그것이 어떻게 받아들여질지는 정부가 정할 수 있는 것이 아니었다.',
+'얻은 것은 기대의 절반도 되지 않았고, 치러야 할 값은 고스란히 청구됐다.',
+'시기가 나빴다. 같은 결정을 <em>2주만 일찍</em> 했더라면 이야기가 달랐을 것이다.',
+'집행하는 부처들이 각자의 책임 회피에 몰두하는 사이 본래 목적이 흐려졌다.',
+'결과가 나오기도 전에 반대 진영이 이 일을 자기들 프레임으로 먼저 설명해버렸다.',
+'되기는 됐다. 다만 그 과정에서 잃은 <em>신뢰</em>가 얻은 것보다 컸다.']},
+{p:.10,n:'대실패',g:0,b:1.8,ms:1000,fs:36,fg:'var(--text-danger)',tint:'rgba(227,73,72,.28)',bd:'#e34948',l:[
+'최악의 방식으로 어긋났다. 나중에 돌아봐도 어디서부터 잘못됐는지가 분명하지 않다.',
+'실무를 맡은 인사가 등을 돌렸다. 그는 대통령의 이름으로 자기 일을 했고, <em>책임만 대통령에게</em> 남았다.',
+'보도가 사실보다 먼저 도착했다. 해명할 기회조차 주어지지 않았다.',
+'손을 대자마자 무너졌다. 그것도 <em>생중계되는 앞에서</em>.',
+'얻은 것은 없고 치른 값은 두 배였다. 여론이 정부를 다시 보기 시작했다.',
+'작은 실수 하나가 눈덩이처럼 굴렀다. 막을 수 있었던 사람은 아무도 나서지 않았다.',
+'그날의 결정은 이후 <em>임기 내내 발목을 잡는</em> 장면으로 남았다.',
+'하필 그 자리에 카메라가 있었다. 그 3초짜리 영상이 모든 설명을 대체했다.']}];
+
+const MODS=[
+{n:'고령화 사회',d:'인명 피해가 30% 크다',dd:1.3},
+{n:'언론 불신의 시대',d:'투명성 효과가 절반',te:.55},
+{n:'저금리 호황',d:'경제가 스스로 회복한다',ep:.3},
+{n:'온건한 야당',d:'사회 갈등이 천천히 식는다',up:-.2},
+{n:'콘크리트 지지층',d:'지지율이 덜 빠진다',ap:.18},
+{n:'교통 허브 국가',d:'확산 속도가 기본적으로 빠르다',ip:.035},
+{n:'정치 양극화',d:'사회 갈등이 저절로 자란다',up:.28},
+{n:'재정 취약국',d:'경제가 계속 새어나간다',ep:-.3}];
+const PERKS=[
+{n:'특전 없음',d:'맨몸으로 시작한다'},
+{n:'방역 전문가 내각',d:'의료 역량 +12로 시작',f:s=>s.m+=12},
+{n:'투명성 공약',d:'투명성 +12로 시작',f:s=>s.trn+=12},
+{n:'운명의 동전',d:'개입 토큰 +2 (총 4회)',t:2}];
+const ENDC=[['legend','역사에 남을 대응'],['reelect','재선에 성공한 대통령'],['modest','무난히 임기를 마친 대통령'],['judged','심판받은 대통령'],['failfp','실패한 방역'],['inst','제도를 남긴 대통령'],['auth','권위주의로 돌아선 대통령'],['ousted','거리로 쫓겨난 대통령'],['medfail','의료 붕괴'],['ecofail','무너진 경제'],['quit','임기를 채우지 못한 대통령'],['shadow','???'],['kmyth','???'],['science','???'],['balance','???']];
+const HNAME={shadow:'그림자 정부',kmyth:'기적의 방역',science:'과학이 이겼다',balance:'완벽한 균형'};
+
+const NEWS={
+ih:['속보: 신규 확진 역대 최다, 병상 가동률 비상','주요 도시 응급실 "수용 불가" 안내 잇따라','화장장 예약 3주 대기, 지자체 비상 대응'],
+il:['확진 감소세 지속, 방역 완화 논의 시작','전문가 "지금이 가장 위험한 안정기"'],
+el:['자영업 폐업 신고 사상 최대','청년 실업률 두 자릿수 진입','상가 공실률 역대 최고'],
+eh:['소비 회복 궤도, 주요 지표 팬데믹 이전 수준','수출 반등, 경기 회복 신호'],
+uh:['주말 도심 대규모 집회 예고, 경찰 비상','방역 반대 단체 전국 조직화 움직임','방역 지침 위반 신고 급증, 이웃 간 갈등'],
+ul:['시민 협조 이어져, 준수율 상승','여론조사 "정부 지침 신뢰" 과반'],
+ch:['[단독] 방역 물자 계약, 특정 업체 잇단 수주','조달 의혹 관련 압수수색 임박 관측','야권 "방역 예산 어디로 갔나" 공세'],
+cl:['감사원 "방역 예산 집행 적정"','조달 절차 투명성 평가 상위권'],
+al:['대통령 지지율 취임 후 최저치','여당 내부서도 "방역 실패" 목소리','대통령 지지율, 정권 교체 여론 앞질러'],
+ah:['국정 지지율 반등, "위기 대응 평가"','해외 언론, 정부 대응 호평 보도'],
+g:['오늘의 날씨: 전국 대체로 맑음','증시 소폭 등락, 관망세','대통령, 오후 국무회의 주재 예정','국제선 항공편 운항률 서서히 회복','올해 김장 배추값 안정세','프로야구 무관중 개막 여부 이번 주 결정']};
+
+const ADV=[
+{c:s=>s.i>55,who:'방역청장',l:['지금 잡지 않으면 2주 뒤엔 병상이 없습니다.','곡선이 꺾이지 않고 있습니다. 결정을 미룰 시간이 없습니다.']},
+{c:s=>s.m<35,who:'보건차관',l:['중환자실이 가득 찼습니다. 다음 환자는 복도에 눕습니다.','간호사들이 사흘째 퇴근을 못 하고 있습니다.']},
+{c:s=>s.u>55,who:'비서실장',l:['광장 분위기가 심상치 않습니다. 경호 인력을 늘리라는 요청이 왔습니다.','야당이 아니라 시민들이 모이고 있습니다. 그건 다릅니다.']},
+{c:s=>s.a<35,who:'정무수석',l:['지지율 이야기는… 이번 주엔 안 보시는 게 낫습니다.','여당 의원들이 대통령과 거리를 두기 시작했습니다.']},
+{c:s=>s.e<40,who:'경제수석',l:['자영업자들이 더는 못 버틴다고 합니다. 이건 통계가 아니라 현실입니다.','이번 분기 숫자는… 보고서를 두 번 확인했습니다.']},
+{c:s=>s.c>50,who:'감사관',l:['조달 건으로 기자들이 냄새를 맡았습니다. 곧 기사가 나옵니다.','장부의 숫자가 맞지 않습니다. 누군가 손을 댔습니다.']},
+{c:s=>s.p>60,who:'법무비서관',l:['긴급명령이 벌써 일상이 됐습니다. 법률가로서 불편합니다.','국회를 거치지 않은 결정이 이번 달에만 여섯 건입니다.']},
+{c:s=>s.i>32,who:'방역청장',l:['아직 관리 범위입니다. 다만 곡선의 기울기가 마음에 들지 않습니다.','다음 달이 고비입니다.']},
+{c:s=>true,who:'비서실장',l:['특별한 보고는 없습니다. 이럴 때가 제일 불안합니다.','오늘은 조용합니다. 참모들이 다 그 말을 합니다.','기자단이 조용합니다. 뭔가 준비 중이라는 뜻입니다.']}];
+
+const EV=[
+{y:1,t:'국경',d:'발생국 항공편을 어떻게 할 것인가. <em>과학적 근거는 아직 없고</em> 여론은 이미 뜨겁다.',o:[
+['전면 입국 금지',{i:-13,e:-9,p:7,u:5},'유입은 늦춰졌고 교역 상대국들이 항의 성명을 냈다.'],
+['검역 강화만 시행',{i:-5,e:-2,a:-4},'중간을 택했고 양쪽 모두에게 비판받았다.'],
+['WHO 권고를 그대로 따른다',{i:4,trn:7,a:-6},'국제 규범은 지켰고 국내 여론은 싸늘했다.']]},
+{y:1,t:'검사 역량',d:'하루 검사 가능 인원이 <em>턱없이 부족하다</em>.',o:[
+['예비비를 털어 검사소를 대량 설치한다',{i:-11,m:7,e:-7,trn:7},'확진자가 급증한 것처럼 보였고, 실제로는 처음으로 상황이 보이기 시작했다.'],
+['증상자 위주로 제한적 검사',{i:6,e:2,a:4},'숫자는 낮게 유지됐다. 낮은 것은 숫자뿐이었다.'],
+['민간 검사기관에 개방한다',{i:-8,m:5,c:6,e:-3},'속도는 빨라졌고 단가 협상은 아무도 들여다보지 않았다.']]},
+{y:1,t:'마스크 대란',d:'약국 앞에 새벽부터 줄이 선다. <em>사재기와 폭리</em>가 시작됐다.',o:[
+['긴급 조달로 물량을 급히 확보한다',{i:-9,a:7,e:-5,p:6},'물량은 들어왔다. 계약서를 꼼꼼히 볼 시간은 없었다.',{bad:'mask'}],
+['공적 배분 제도를 설계한다',{i:-7,a:9,trn:9,e:-4},'줄은 여전했지만 순서가 생겼다.'],
+['시장에 맡긴다',{e:4,a:-13,u:9,i:5},'값은 다섯 배가 됐고 정부는 손을 놓았다는 말을 들었다.']]},
+{y:1,t:'확진자 동선',d:'감염자의 이동 경로를 어디까지 공개할 것인가.',o:[
+['카드·기지국 기록까지 상세 공개',{i:-11,p:9,a:5,chk:-9},'추적은 빨라졌고 <em>사생활은 사라졌다</em>.',{bad:'privacy'}],
+['지역과 시간대만 공개한다',{i:-5,trn:7,chk:5},'느렸지만 아무도 신상이 털리지 않았다.'],
+['비공개로 방역당국만 활용',{i:-7,a:-7,trn:-7,p:5},'효율은 지켰고 불신이 자랐다.']]},
+{y:1,t:'전국 봉쇄',d:'참모들이 <em>2주간 전면 봉쇄</em>를 건의한다. 경제 부처는 반대한다.',o:[
+['전면 봉쇄를 선포한다',{i:-19,e:-15,p:11,u:9},'확산은 꺾였고 자영업자들이 셔터를 내렸다.',{bad:'protest'}],
+['수도권만 부분 제한',{i:-9,e:-7,u:4},'절반의 효과와 절반의 원성을 얻었다.'],
+['권고만 하고 강제하지 않는다',{i:9,e:3,a:-5,chk:6},'자율에 맡겼고 자율은 고르지 않았다.']]},
+{y:1,t:'병상 확보',d:'중환자 병상이 <em>일주일 뒤면 포화</em>된다는 보고.',o:[
+['체육관에 임시 병상을 짓는다',{m:13,e:-9,a:7},'속도가 생명을 벌었다.'],
+['민간병원에 강제 동원령',{m:11,p:11,u:7,chk:-7},'병상은 확보했고 의료계가 등을 돌렸다.'],
+['중증도 분류 체계를 정비한다',{m:9,trn:7,i:-4,e:-2},'같은 병상으로 더 많은 사람을 살렸다.']]},
+{y:1,t:'재난지원금',d:'문 닫은 가게가 <em>매일 수백 곳</em>이다.',o:[
+['전 국민에게 일괄 지급',{e:11,a:13,u:-9,saf:7},'속도는 빨랐고 재정은 크게 흔들렸다.'],
+['피해 업종에 선별 지급',{e:9,saf:11,a:4,u:-5},'정확했지만 심사에 두 달이 걸렸다.'],
+['대출 확대로 대신한다',{e:5,a:-7,u:7},'빚으로 버티게 했고 그 빚은 남았다.']]},
+{y:1,t:'전문가 자문',d:'방역 정책의 결정 구조를 어떻게 짤 것인가.',o:[
+['독립 자문위를 만들고 권고를 공개한다',{trn:13,a:7,chk:9,i:-5},'정부가 반박당하는 장면이 생중계됐다. 신뢰는 오히려 올랐다.'],
+['자문위는 두되 비공개로 운영',{p:7,i:-4,trn:-5},'조율은 쉬워졌고 근거는 보이지 않게 됐다.'],
+['정무 판단으로 직접 결정',{p:11,i:-2,a:-7,chk:-9,c:5},'빨랐다. 틀렸을 때 돌아갈 곳이 없어졌다.']]},
+{y:1,t:'종교시설',d:'대규모 집회를 강행하겠다는 단체가 있다.',o:[
+['집합금지 명령과 고발',{i:-13,p:9,u:11,a:4},'확산은 막았고 <em>탄압 프레임</em>이 붙었다.'],
+['자율 협조를 요청한다',{i:9,u:-5,chk:5},'설득에 실패한 곳에서 집단감염이 났다.'],
+['인원 제한만 부과한다',{i:-5,u:3},'무난하게 넘어갔다.']]},
+{y:1,t:'학교',d:'개학을 미룰 것인가. <em>학부모와 교사가 정반대</em>를 요구한다.',o:[
+['원격수업으로 전환',{i:-11,e:-7,a:-4,u:5},'감염은 줄었고 학습 격차가 벌어졌다.'],
+['등교와 원격을 병행',{i:-5,e:-2,a:5},'복잡했지만 양쪽 다 최악은 피했다.'],
+['정상 등교를 강행한다',{i:11,e:5,a:-9,u:7},'일상은 지켰고 학교발 집단감염이 시작됐다.']]},
+{y:1,t:'브리핑',d:'매일 나가는 정례 브리핑을 누가 맡을 것인가.',o:[
+['질병관리 책임자가 매일 직접',{trn:13,a:9,i:-4},'전문가의 얼굴이 정부의 얼굴이 됐다.'],
+['대통령이 직접 나선다',{a:7,p:7,trn:-4},'주목도는 최고였고 실수도 대통령의 것이 됐다.'],
+['보도자료로 대체한다',{a:-9,trn:-9,u:5},'질문이 사라지자 소문이 그 자리를 채웠다.']]},
+{y:2,t:'자영업 붕괴',d:'집합 제한 <em>10개월째</em>다. 폐업 신고가 통계를 갈아치웠다.',o:[
+['손실보상을 법제화한다',{saf:15,e:9,a:11,u:-11},'재정은 무거워졌고 규칙이 생겼다.'],
+['영업시간 제한을 완화한다',{e:11,i:13,u:-9},'가게는 열렸고 지표도 함께 올랐다.'],
+['현행 유지, 버텨달라 호소한다',{i:-5,e:-11,a:-11,u:11},'호소는 진심이었고 통장은 비어 있었다.']]},
+{y:2,t:'백신 선구매',d:'개발도 끝나지 않은 백신을 <em>수조 원어치 선계약</em>하라는 건의.',o:[
+['여러 회사와 대량 선구매',{e:-11,m:11,a:7},'도박이었다. 결과는 아직 모른다.',{ok:'vacok',bad:'vacbad'}],
+['임상 결과를 보고 결정한다',{e:3,a:-7,i:5},'신중했고, 그사이 물량은 다른 나라로 갔다.'],
+['국산 개발에 집중 투자',{e:-9,p:5,a:5,m:4},'주권은 지켰고 시간은 잃었다.']]},
+{y:2,t:'방역 피로',d:'거리두기 <em>준수율이 눈에 띄게 떨어졌다</em>.',o:[
+['단속과 과태료를 강화한다',{i:-11,p:11,u:13,a:-7},'수치는 잡혔고 반감이 쌓였다.'],
+['보상과 인센티브로 유도한다',{i:-7,e:-7,a:9,saf:7,u:-7},'돈이 들었고 사람들이 따라왔다.'],
+['방역 수칙을 단순하게 다시 짠다',{i:-9,trn:9,a:7,u:-5},'이해할 수 있는 규칙이 지켜지는 규칙이었다.']]},
+{y:2,t:'국채 발행',d:'재정이 바닥이다. 국채를 얼마나 찍을 것인가.',o:[
+['대규모 발행으로 경기를 떠받친다',{e:13,a:7,u:-7},'지금은 버텼고 청구서는 다음 정부에 갔다.'],
+['증세를 병행한다',{e:5,a:-11,saf:9},'정직했고 인기는 없었다.'],
+['긴축을 택한다',{e:-9,u:11,a:-7},'건전성은 지켰고 사람들은 무너졌다.']]},
+{y:2,t:'감염자 낙인',d:'확진자 신상이 온라인에 돌고 <em>혐오 표현</em>이 번진다.',o:[
+['처벌 규정을 만들고 강력 단속',{u:-9,p:7,a:5,chk:-4},'표현은 줄었고 표현의 자유 논쟁이 붙었다.'],
+['대통령이 직접 메시지를 낸다',{u:-11,a:9,i:-4},'말 한마디가 분위기를 바꿨다.'],
+['방치한다',{u:13,a:-9,i:7},'숨는 사람이 늘었고 숨은 감염이 늘었다.']]},
+{y:2,t:'임시 의료시설',d:'수도권 병상 가동률이 <em>90%</em>를 넘었다.',o:[
+['생활치료센터를 대규모로 증설',{m:13,e:-9},'경증을 분리하자 중환자실이 숨을 쉬었다.',{bad:'hosp'}],
+['재택치료로 전환한다',{m:5,e:-2,i:7,a:-4},'비용은 줄었고 집에서 악화되는 사례가 나왔다.'],
+['외국에 의료 지원을 요청한다',{m:9,a:-7,e:-4},'도움은 받았고 자존심은 상했다.']]},
+{y:2,t:'국정조사 요구',d:'야당이 <em>방역 실패에 대한 국정조사</em>를 요구한다.',o:[
+['수용하고 자료를 전부 제출한다',{chk:13,trn:13,a:5,p:-9},'괴로운 몇 달이었고 신뢰가 남았다.'],
+['부분 수용으로 시간을 끈다',{a:-4,trn:-5,p:4},'넘어갔다. 의혹도 함께 남았다.'],
+['거부한다',{p:11,chk:-13,a:-11,u:11,c:7},'막았다. 막았다는 사실이 더 큰 뉴스가 됐다.']]},
+{y:2,t:'의료진 번아웃',d:'간호 인력이 <em>집단 사직</em>을 예고했다.',o:[
+['처우 개선 예산을 즉시 투입',{m:13,e:-9,a:9,saf:7},'현장이 버텼다.',{bad:'strike'}],
+['공중보건의를 긴급 투입',{m:7,p:5,u:4},'급한 불은 껐다.'],
+['호소문을 발표한다',{m:-9,a:-7,u:9},'박수는 밥이 되지 않았다.']]},
+{y:2,t:'국제 행사',d:'예정된 대규모 국제행사를 <em>강행할지</em> 결정해야 한다.',o:[
+['취소한다',{e:-11,i:-9,a:4},'손해는 컸고 아무도 죽지 않았다.'],
+['무관중으로 강행',{e:-4,i:4,a:4},'절충안이 통했다.'],
+['정상 개최한다',{e:11,i:15,a:-9,u:7},'경제는 돌았고 지표도 돌았다.']]},
+{y:2,t:'긴급명령 연장',d:'감염병 특별법의 <em>긴급 권한을 1년 더</em> 연장할 것인가.',o:[
+['국회 동의를 받아 연장한다',{p:9,chk:7,trn:5,i:-5},'절차를 밟느라 늦었고 정당성을 얻었다.'],
+['시행령으로 자동 연장한다',{p:15,chk:-15,c:7,u:9,i:-7},'빨랐다. 임시가 상태가 되기 시작했다.'],
+['연장하지 않는다',{p:-13,chk:11,i:11,a:5},'권한을 돌려줬고 방역은 헐거워졌다.']]},
+{y:2,t:'지자체 충돌',d:'한 광역단체장이 <em>중앙 지침을 공개 거부</em>했다.',o:[
+['법적 대응으로 제압한다',{p:11,u:11,a:-7,chk:-5},'중앙의 권위는 섰고 지역 감정이 남았다.'],
+['협의체를 만들어 조율한다',{chk:9,trn:7,a:7,i:-4},'느렸고 다음부터는 싸움이 줄었다.'],
+['재량권을 인정한다',{p:-9,i:7,a:4,chk:7},'현장은 유연해졌고 기준은 흐려졌다.']]},
+{y:3,t:'접종 우선순위',d:'첫 물량은 <em>전 국민의 5%</em>뿐이다. 누구부터 맞힐 것인가.',o:[
+['의료진과 고위험군 우선',{m:13,a:9,i:-9,trn:7},'윤리적으로도 통계적으로도 옳았다.'],
+['경제활동 인구 우선',{e:13,a:-9,i:5},'공장은 돌았고 요양병원에서 사람이 죽었다.'],
+['추첨으로 공정하게 배분',{a:5,trn:9,i:4,m:-4},'공평했고 효율적이지 않았다.']]},
+{y:3,t:'이상반응 논란',d:'접종 후 사망 사례가 보도됐다. <em>인과관계는 불명</em>이다.',o:[
+['모든 사례를 즉시 공개하고 조사한다',{trn:15,a:7,i:5,m:4},'접종률이 잠깐 떨어졌고 신뢰가 오래 남았다.'],
+['인과성 확인 전까지 발표를 보류',{a:-11,trn:-13,u:11},'유출됐다. 은폐라는 단어가 붙었다.'],
+['보상 제도를 먼저 발표한다',{a:11,saf:11,e:-5,trn:7},'책임지겠다는 신호가 접종률을 지켰다.']]},
+{y:3,t:'변이 출현',d:'해외에서 <em>전파력이 훨씬 강한 변이</em>가 확인됐다.',o:[
+['즉시 입국 제한과 유전체 감시 강화',{i:-13,e:-7,m:9,p:5},'선제 대응이 몇 주를 벌었다.',{bad:'variant'}],
+['상황을 지켜본다',{i:13,e:3,a:-7},'유입은 이미 끝난 뒤에 확인됐다.'],
+['부스터 접종을 서두른다',{i:-9,m:7,e:-7,a:4},'속도전에서 반 발 앞섰다.']]},
+{y:3,t:'백신 패스',d:'미접종자의 다중시설 이용을 <em>제한할 것인가</em>.',o:[
+['전면 도입한다',{i:-15,p:11,u:15,chk:-9,a:-5},'접종률은 올랐고 사회가 두 쪽이 났다.'],
+['고위험 시설만 제한적으로',{i:-9,u:5,chk:4},'선을 그었고 양쪽 다 참을 만했다.'],
+['도입하지 않는다',{i:11,u:-9,chk:9,a:4},'자유를 지켰고 병상이 다시 찼다.']]},
+{y:3,t:'허위정보',d:'백신에 대한 <em>조직적 허위정보</em>가 퍼진다.',o:[
+['플랫폼에 삭제를 명령한다',{i:-7,p:9,u:11,chk:-11},'퍼지는 속도는 줄었고 검열 논쟁이 붙었다.'],
+['공개 팩트체크와 반박 캠페인',{i:-5,trn:11,a:5,u:-4},'느렸고 근본적이었다.',{bad:'fake'}],
+['대응하지 않는다',{i:9,u:9,a:-7},'침묵은 동의로 읽혔다.']]},
+{y:3,t:'거리두기 완화',d:'경제계와 여론이 <em>전면 완화</em>를 요구한다. 지표는 아직 높다.',o:[
+['단계적 완화 로드맵을 공개한다',{trn:13,a:9,e:7,i:5},'예측 가능성이 사람들을 진정시켰다.'],
+['즉시 전면 완화',{e:15,a:11,i:19,u:-9},'거리가 살아났고 3주 뒤 지표가 폭발했다.'],
+['유지한다',{i:-7,e:-11,a:-11,u:13},'과학적이었고 정치적으로는 자살이었다.']]},
+{y:3,t:'방역 데이터',d:'정부가 쥔 원자료를 <em>연구자에게 개방할지</em> 논의 중이다.',o:[
+['익명화 후 전면 개방',{trn:15,m:9,a:5,i:-4},'정부보다 똑똑한 분석들이 쏟아졌다.'],
+['일부만 선별 제공',{trn:-4,p:4},'통제는 유지했고 발견도 그만큼 줄었다.'],
+['비공개 유지',{p:9,trn:-13,a:-7,c:5},'불리한 숫자는 나오지 않았다. 유리한 숫자도 나오지 않았다.']]},
+{y:3,t:'요양병원',d:'요양시설에서 <em>대규모 집단감염</em>이 반복된다.',o:[
+['시설 기준과 인력을 법으로 강화',{saf:13,m:11,e:-9,i:-7},'비용이 들었고 구조가 바뀌었다.'],
+['면회 전면 금지로 대응',{i:-9,u:9,a:-5},'감염은 막았고 사람들이 마지막을 못 봤다.'],
+['현장 자율에 맡긴다',{i:11,a:-9,u:7},'같은 일이 계절마다 반복됐다.']]},
+{y:3,t:'전문가와의 충돌',d:'방역 책임자가 <em>정치적 결정에 공개 반대</em>했다.',o:[
+['그의 판단을 수용한다',{trn:11,a:5,i:-9,p:-7},'대통령이 전문가에게 졌다는 기사가 났다. 신뢰는 올랐다.'],
+['경질한다',{p:11,trn:-15,a:-13,c:5},'조용해졌다.',{bad:'expert'}],
+['공개 토론으로 조율한다',{trn:9,chk:7,a:7},'과정이 공개되자 결론에 힘이 실렸다.']]},
+{y:3,t:'지방선거',d:'선거가 <em>방역 정책의 심판</em>이 되고 있다.',o:[
+['방역 기조를 유지한다',{i:-7,a:-9,trn:7,u:5},'표를 잃었고 원칙을 지켰다.'],
+['선거 직전 대규모 완화',{a:13,e:9,i:17,c:7,trn:-9},'표는 얻었고 그 대가는 여름에 청구됐다.'],
+['판단을 방역당국에 위임한다',{chk:11,trn:9,a:4},'책임을 나눴고 비난도 나뉘었다.']]},
+{y:3,t:'백신 외교',d:'여유 물량을 <em>개발도상국에 지원할지</em> 결정해야 한다.',o:[
+['상당량을 공여한다',{a:5,e:-5,i:-4,trn:7},'국제사회에서 이름값이 올랐다.'],
+['국내 비축을 우선한다',{a:5,i:-4,e:2},'안전했고 특별할 것도 없었다.'],
+['교역 조건과 연계해 협상한다',{e:11,c:9,a:-4},'실리를 챙겼고 뒷말이 남았다.']]},
+{y:4,t:'엔데믹 선언',d:'언제 <em>일상 회복을 선언할 것인가</em>. 너무 이르면 재유행, 너무 늦으면 심판이다.',o:[
+['지표 기준을 공개하고 그에 따른다',{trn:15,a:9,i:-4,chk:7},'기준이 있으니 논쟁이 짧아졌다.'],
+['임기 내 성과로 조기 선언',{a:13,e:11,i:17,trn:-11,c:5},'축포는 터졌고 지표는 두 달 뒤 답했다.'],
+['후임 정부에 판단을 넘긴다',{a:-9,chk:9,i:4},'책임을 피했다는 말과 신중했다는 말이 반반이었다.']]},
+{y:4,t:'손실보상 재원',d:'그동안 밀린 보상 청구가 <em>수십조 원</em>이다.',o:[
+['국채로 전액 보상한다',{a:13,e:-11,u:-13,saf:9},'약속은 지켰고 부채는 남았다.'],
+['한시 증세로 재원을 만든다',{e:5,a:-11,saf:13,u:5},'정직했고 지지율을 갈아넣었다.'],
+['보상 범위를 축소한다',{e:9,a:-15,u:15},'재정은 지켰고 약속은 지키지 못했다.']]},
+{y:4,t:'국정조사',d:'초기 대응과 <em>조달 계약 의혹</em>에 대한 조사가 시작된다.',o:[
+['모든 자료를 공개하고 협조한다',{trn:15,chk:13,c:-13,a:5,p:-7},'몇 명이 다쳤고 기록이 남았다.'],
+['핵심 자료를 비공개로 분류한다',{p:9,trn:-15,c:9,a:-11,u:9},'막았다. 막았다는 사실이 결론이 됐다.',{bad:'probe'}],
+['독립 조사위에 전권을 넘긴다',{chk:15,trn:11,a:7,p:-9,c:-9},'대통령이 통제할 수 없는 결론이 나올 것이다.']]},
+{y:4,t:'긴급 권한',d:'감염병 긴급 권한을 <em>어떻게 정리할 것인가</em>.',o:[
+['시한을 정해 국회에 반납한다',{p:-15,chk:17,trn:9,a:7},'임시로 얻은 것을 임시로 끝냈다.'],
+['평시 상설 권한으로 전환한다',{p:15,chk:-17,c:9,u:11},'다음 위기에 대비했다. 다음 대통령도 그 권한을 쓴다.'],
+['후임이 결정하게 남겨둔다',{a:-4,chk:4},'아무도 손대지 않은 채로 남았다.']]},
+{y:4,t:'질병관리 조직',d:'대응 조직을 <em>어떻게 남길 것인가</em>.',o:[
+['독립 청으로 승격하고 예산을 법정화',{chk:13,trn:13,m:15,p:-7,e:-5},'다음 팬데믹에 대비한 유일한 결정이었다.'],
+['현행 체계를 유지한다',{p:4},'바뀐 것이 없었다.'],
+['대통령 직속으로 흡수한다',{p:15,chk:-15,m:5,c:7},'지휘는 빨라졌고 견제는 사라졌다.']]},
+{y:4,t:'유가족',d:'유가족 단체가 <em>공식 사과와 진상규명</em>을 요구한다.',o:[
+['직접 만나 사과하고 조사를 약속한다',{a:11,trn:13,u:-13,chk:7},'눈물이 생중계됐고 그 장면이 오래 남았다.'],
+['서면 유감 표명으로 대신한다',{a:-7,u:9,trn:-5},'형식은 갖췼고 아무도 위로받지 못했다.'],
+['법적 책임 문제로 다루지 않는다',{a:-13,u:15,c:5},'소송이 시작됐다.']]},
+{y:4,t:'방역 백서',d:'4년의 기록을 <em>어떻게 정리할 것인가</em>.',o:[
+['실패 사례까지 전부 기록한다',{trn:17,chk:9,a:-4},'창피한 문단이 많았다. 그래서 쓸모가 있었다.'],
+['성과 중심으로 홍보물을 만든다',{a:9,trn:-13,c:5},'예쁜 책이 나왔고 아무도 읽지 않았다.'],
+['만들지 않는다',{trn:-9,a:-4},'다음 정부는 처음부터 다시 배우게 된다.']]},
+{y:4,t:'마지막 재유행',d:'임기 마지막 겨울, <em>지표가 다시 치솟는다</em>.',o:[
+['임기 말이지만 다시 조인다',{i:-17,e:-11,a:-9,u:9},'인기 없는 결정을 마지막까지 했다.'],
+['후임 인수인계로 넘긴다',{a:-5,i:11,chk:4},'책임을 넘겼고 시간도 함께 잃었다.'],
+['완화 기조를 유지한다',{i:15,e:7,a:5,u:-4},'조용히 넘어가길 바랐다.']]},
+{y:4,t:'성과 홍보',d:'대규모 <em>정부 홍보 예산</em> 집행 계획이 올라왔다.',o:[
+['집행한다',{a:11,e:-5,c:9,trn:-9},'수치는 좋아 보였다.'],
+['통계 원자료 공개로 대신한다',{trn:15,a:4,chk:5},'자화자찬 없이 숫자가 말하게 뒀다.'],
+['취소하고 방역 예산으로 돌린다',{m:9,a:5,e:2},'조용한 결정이었다.']]},
+{y:4,t:'책임자 처벌',d:'초기 <em>조달 비리에 연루된 인사</em>들의 처리를 결정해야 한다.',o:[
+['예외 없이 수사 의뢰한다',{c:-17,trn:13,a:9,p:-7},'측근 몇이 포함됐다. 그래서 신뢰가 생겼다.'],
+['조용히 사퇴시킨다',{c:5,a:-5,trn:-7},'조용했고 아무것도 끝나지 않았다.'],
+['임기 말 사면한다',{c:13,a:-15,u:13,trn:-13},'끝까지 지켰고 그것이 이 정부의 마지막 장면이 됐다.']]},
+{y:4,t:'인수인계',d:'후임에게 <em>무엇을 남길 것인가</em>.',o:[
+['매뉴얼과 실패 목록을 함께 넘긴다',{trn:15,chk:9,m:7},'다음 사람은 같은 실수를 반복하지 않아도 된다.'],
+['성과 자료만 넘긴다',{a:4,trn:-9},'좋은 것만 남겼다.'],
+['정치적 이유로 인수를 지연시킨다',{u:13,a:-11,trn:-13,chk:-9},'공백이 생겼고 그 공백에 대한 책임은 아무에게도 없었다.']]},
+{y:0,t:'측근 인사',d:'선거를 도왔던 인사를 <em>방역 관련 공기업</em>에 앉히라는 요청.',o:[
+['임명한다',{p:5,c:13,a:-9,trn:-5},'보은은 끝났고 자리는 사람보다 중요해졌다.'],
+['공모 절차를 거치게 한다',{trn:11,c:-7,a:5,p:-4},'캠프 사람들이 서운해했다.'],
+['거절한다',{a:7,c:-5,p:-7},'조용히 원한을 샀다.']]},
+{y:0,t:'통계 조정',d:'참모가 <em>집계 기준을 바꾸면 지표가 낮아 보인다</em>고 보고한다.',o:[
+['기준을 바꾼다',{a:9,trn:-17,c:11,i:5},'숫자는 예뻐졌고 대응은 늦어졌다.'],
+['기준 변경 사유를 함께 공개한다',{trn:13,a:-4,chk:5},'투명하게 바꾸는 것은 조작이 아니었다.'],
+['그대로 둔다',{trn:7,a:-5},'불편한 숫자를 불편한 채로 뒀다.']]},
+{y:0,t:'언론 갈등',d:'한 매체가 <em>정부 자료를 왜곡했다</em>고 판단된다.',o:[
+['법적 대응에 나선다',{p:7,u:11,a:-9,trn:-7},'싸움 자체가 뉴스가 됐다.'],
+['원자료를 통째로 공개해 반박한다',{trn:15,a:9,chk:4},'가장 조용하고 가장 확실한 반박이었다.'],
+['무시한다',{a:-4,u:4},'며칠 뒤 다른 이슈가 덮었다.']]},
+{y:0,t:'가짜 치료제',d:'검증되지 않은 치료제가 <em>정치권을 통해 밀려온다</em>.',o:[
+['식약처 절차를 그대로 지킨다',{trn:13,m:7,a:-5,p:-4},'압력을 견뎠고 사고를 막았다.'],
+['긴급사용을 승인한다',{a:9,m:-13,c:9,i:5},'기대는 컸고 근거는 없었다.'],
+['임상시험 지원으로 절충한다',{m:5,trn:7,e:-4},'시간은 걸렸고 답은 나왔다.']]},
+{y:0,t:'해외 교민',d:'봉쇄 지역의 <em>교민 수천 명 귀국</em> 문제.',o:[
+['전세기를 보내 데려온다',{a:13,e:-7,i:7},'국가가 국민을 데려온다는 사실이 증명됐다.'],
+['현지 지원으로 대신한다',{e:-2,a:-7,i:-4},'안전했고 서운함이 남았다.'],
+['자비 귀국 후 격리 의무화',{a:-4,i:-2,e:2},'원칙대로 처리했다.']]},
+{y:0,t:'예산 전용',d:'방역 예산 일부를 <em>다른 사업으로 돌리자</em>는 요구.',o:[
+['거절하고 전액 방역에 쓴다',{m:9,i:-5,a:4,p:-4},'부처들이 불만이었고 병상이 늘었다.'],
+['일부를 전용한다',{e:7,c:9,m:-7,trn:-5},'단기 지표는 좋아졌다.'],
+['국회 심의에 부친다',{chk:11,trn:9,a:4},'느렸고 나중에 문제가 되지 않았다.']]}];
+
+const CH={
+mask:{t:'조달 비리 의혹',d:'급하게 맺은 마스크 계약에서 <em>특정 업체 몰아주기</em> 정황이 보도됐다.',o:[
+['감사원 감사를 요청한다',{trn:13,c:-13,a:5,p:-5},'불편한 결과가 나왔고 공개했다.'],
+['실무자 선에서 정리한다',{c:9,a:-9,trn:-7},'꼬리를 잘랐고 몸통이라는 단어가 붙었다.']]},
+privacy:{t:'동선 정보 유출',d:'확진자 신상이 <em>커뮤니티에 통째로 유출</em>됐다. 한 명이 극단적 선택을 했다.',o:[
+['공개 범위를 즉시 축소하고 사과한다',{trn:11,a:5,chk:9,i:5},'늦었지만 멈췼다.'],
+['유출자만 처벌하고 제도는 유지',{p:7,u:11,a:-9,chk:-5},'제도는 남았고 같은 일이 또 일어났다.']]},
+protest:{t:'봉쇄 반대 시위',d:'도심에서 <em>대규모 집회</em>가 열렸다. 방역 수칙은 지켜지지 않는다.',o:[
+['해산시키고 주최자를 고발한다',{i:-9,p:11,u:15,a:-7},'해산됐고 다음 주에 두 배로 모였다.'],
+['협상해 제한된 형태로 허용한다',{u:-11,chk:9,i:7,a:4},'욕은 양쪽에서 먹었고 충돌은 없었다.']]},
+vacok:{t:'백신 조기 도착',d:'선구매한 물량이 <em>예정보다 두 달 빨리</em> 들어온다.',o:[
+['접종 인프라를 총동원해 속도전',{i:-17,m:11,a:15,e:-5},'세계에서 가장 빠른 접종 속도가 나왔다.'],
+['차분하게 계획대로 진행한다',{i:-9,m:7,a:7,trn:5},'안정적이었다.']]},
+vacbad:{t:'백신 확보 실패',d:'계약한 물량의 <em>공급이 무기한 연기</em>됐다. 다른 나라는 접종을 시작했다.',o:[
+['가용한 모든 외교 채널을 동원한다',{a:5,e:-9,i:-5,p:5},'몇 주를 앞당겼다.'],
+['국민에게 상황을 그대로 설명한다',{trn:15,a:-7,u:5},'솔직했고 아팠다.'],
+['다른 나라와 물량 교환을 협상한다',{i:-9,e:-5,c:5,a:4},'거래는 성사됐고 조건은 공개되지 않았다.']]},
+variant:{t:'변이 확산',d:'막았다고 생각한 변이가 <em>지역사회에서 발견</em>됐다.',o:[
+['해당 지역을 즉시 봉쇄한다',{i:-15,e:-11,p:9,u:9},'차단했고 그 지역은 낙인이 찍혔다.'],
+['전국 단위 감시 강화로 대응한다',{i:-9,m:9,e:-5,trn:7},'느렸지만 낙인은 없었다.']]},
+hosp:{t:'병상 대기 사망',d:'입원을 기다리다 <em>집에서 숨진 사례</em>가 연달아 보도됐다.',o:[
+['총력 대응을 선언하고 자원을 재배치한다',{m:13,e:-11,a:5,i:-5},'늦었지만 멈췼다.'],
+['통계상 예외 사례로 설명한다',{a:-15,u:13,trn:-13},'그 브리핑 영상이 임기 내내 따라다녔다.']]},
+strike:{t:'의료진 파업',d:'간호 인력이 <em>실제로 현장을 떠났다</em>.',o:[
+['업무개시명령을 발동한다',{m:5,p:11,u:13,a:-7},'돌아왔고 아무도 웃지 않았다.'],
+['협상 테이블을 만들고 요구를 수용한다',{m:11,e:-9,saf:9,a:5,u:-7},'비쌌고 현장이 남았다.']]},
+fake:{t:'허위정보 역풍',d:'팩트체크가 <em>정부의 검열이라는 프레임</em>에 걸렸다.',o:[
+['외부 독립 기구에 검증을 위탁한다',{trn:13,chk:9,a:5},'정부가 심판을 그만두자 설득력이 생겼다.'],
+['대응 수위를 높인다',{p:9,u:11,a:-7,chk:-7},'싸움이 커졌다.']]},
+expert:{t:'전문가 집단 사퇴',d:'경질에 항의해 <em>자문위원 전원이 사퇴</em>했다.',o:[
+['공개 사과하고 복귀를 요청한다',{trn:11,a:5,p:-7,i:-5},'돌아온 사람도 있고 아닌 사람도 있었다.'],
+['새 인선으로 대체한다',{p:9,trn:-13,a:-9,c:5},'말 잘 듣는 위원회가 생겼다.']]},
+probe:{t:'특검 요구',d:'자료 비공개가 <em>은폐 시도로 규정</em>되며 특검 요구가 커진다.',o:[
+['특검을 수용한다',{chk:15,trn:13,c:-11,a:4,p:-9},'통제를 포기했고 정당성을 얻었다.'],
+['거부하고 정면돌파한다',{p:11,chk:-17,u:15,a:-13,c:7},'임기 말이 정쟁으로 채워졌다.']]}};
+const UPR={t:'전국적 저항',d:'방역 피로와 불신이 겹쳐 <em>전국 동시 집회</em>가 벌어졌다.',o:[
+['공권력으로 강제 해산한다',{X:'crush'},''],
+['요구를 수용하고 규제를 대폭 완화한다',{p:-17,u:-30,a:9,i:15,chk:9},'거리는 비었고 지표는 올랐다.'],
+['하야를 선언한다',{X:'quit'},'']]};
+const IMP={t:'탄핵소추 발의',d:'국회가 <em>권한 남용을 이유로 탄핵소추</em>를 발의했다. 제도가 목덜미를 잡았다.',o:[
+['심판 절차에 성실히 응한다',{p:-13,a:13,c:-13,u:-24,trn:9},'괴로운 몇 달이었고 결국 그 절차가 정부를 살렸다.'],
+['여당을 동원해 표결을 막는다',{p:11,a:-19,chk:-21,u:13,c:9},'막았고 정부를 지키던 벽 하나가 무너졌다.']]};
+const RP={
+i:['확산은 사실상 통제 상태입니다.','산발적 집단감염은 있으나 관리 가능한 범위입니다.','확산세가 꺾이지 않고 있습니다. 매주 최고치를 경신 중입니다.','의료체계가 감당할 수 있는 선을 넘었습니다.','사실상 전 국민이 노출된 상태입니다. 집계 자체가 무의미해졌습니다.'],
+m:['의료 현장이 붕괴 직전입니다. 인력이 남아 있지 않습니다.','병상 가동률이 위험 수준이고 인력 이탈이 계속됩니다.','현장은 버티고 있습니다. 여유는 없습니다.','병상과 인력에 여유가 있습니다.','대응 역량이 팬데믹 이전보다 오히려 강해졌습니다.'],
+a:['거리에서 대통령 퇴진 구호가 나옵니다.','지지율이 취임 이래 최저입니다. 여당도 거리를 두기 시작했습니다.','여론은 반반입니다. 특별히 좋지도 나쁘지도 않습니다.','국민들 사이에서 대통령에 대한 좋은 평가가 들려옵니다.','위기 이후 지지율이 오른 몇 안 되는 정부로 언급됩니다.'],
+e:['자영업 폐업과 실업이 통제를 벗어났습니다.','성장률이 마이너스이고 회복 조짐이 보이지 않습니다.','경제는 겨우 버티는 수준입니다.','소비와 고용이 회복 궤도에 올랐습니다.','위기를 겪고도 경제가 이전보다 커졌습니다.'],
+u:['사회는 대체로 협조적입니다.','간헐적 불만이 있으나 조직화되지는 않았습니다.','방역 피로가 뚜렷합니다. 지침 준수율이 떨어집니다.','사회가 두 쪽으로 갈라졌습니다. 집회가 상시화됐습니다.','언제 터져도 이상하지 않습니다. 경호 인력을 늘리시길 권합니다.'],
+p:['대통령의 지시가 부처에서 겉돕니다.','행정 권한이 평시 수준입니다. 신속 대응은 어렵습니다.','긴급 권한이 적절히 작동하고 있습니다.','긴급명령이 일상이 되었습니다. 국회를 거치는 일이 드뭅니다.','사실상 대통령이 결정하면 그대로 시행됩니다. 누구도 되묻지 않습니다.'],
+c:['조달과 예산 집행에 흠잡을 곳이 없습니다.','일부 계약에 잡음이 있으나 확인된 바는 없습니다.','방역 예산을 둘러싼 유착 의혹이 공공연합니다.','주요 계약마다 특정 인맥이 등장한다는 보도가 이어집니다.','이 정부의 방역 사업은 이제 다른 목적으로 운영되고 있습니다.'],
+dth:['인명 피해는 다른 나라에 비해 현저히 적었습니다.','희생이 있었지만 통제된 수준이었습니다.','사망자가 누적되고 있습니다. 유가족 단체가 결성됐습니다.','장례식장이 감당하지 못한다는 보도가 반복됐습니다.','사망자 집계를 매일 발표하는 것 자체를 중단하자는 논의가 나옵니다.']};
+
+/* ---------- AUDIO ---------- */
+const AU={ac:null,m:null,on:true,filt:null,dg:null,hb:0};
+function aInit(){if(AU.ac){if(AU.ac.state==='suspended')AU.ac.resume();return;}
+  try{AU.ac=new (window.AudioContext||window.webkitAudioContext)();AU.m=AU.ac.createGain();AU.m.gain.value=AU.on?.7:0;AU.m.connect(AU.ac.destination);
+  const o1=AU.ac.createOscillator(),o2=AU.ac.createOscillator();o1.type='sine';o2.type='triangle';o1.frequency.value=55;o2.frequency.value=82.4;o2.detune.value=-7;
+  AU.filt=AU.ac.createBiquadFilter();AU.filt.type='lowpass';AU.filt.frequency.value=160;AU.dg=AU.ac.createGain();AU.dg.gain.value=0;
+  o1.connect(AU.filt);o2.connect(AU.filt);AU.filt.connect(AU.dg);AU.dg.connect(AU.m);o1.start();o2.start();
+  setInterval(hbTick,90);}catch(e){}}
+function tone(f,type,dur,vol,when,slide){if(!AU.ac)return;when=when||0;const t0=AU.ac.currentTime+when,o=AU.ac.createOscillator(),g=AU.ac.createGain();
+  o.type=type;o.frequency.setValueAtTime(f,t0);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t0+dur);
+  g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(vol,t0+.012);g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+  o.connect(g);g.connect(AU.m);o.start(t0);o.stop(t0+dur+.05);}
+function noise(dur,vol,when,cut){if(!AU.ac)return;when=when||0;const t0=AU.ac.currentTime+when,n=Math.floor(AU.ac.sampleRate*dur),b=AU.ac.createBuffer(1,n,AU.ac.sampleRate),d=b.getChannelData(0);
+  for(let k=0;k<n;k++)d[k]=Math.random()*2-1;const s=AU.ac.createBufferSource();s.buffer=b;const f=AU.ac.createBiquadFilter();f.type='lowpass';f.frequency.value=cut||800;
+  const g=AU.ac.createGain();g.gain.setValueAtTime(vol,t0);g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);s.connect(f);f.connect(g);g.connect(AU.m);s.start(t0);}
+const SFX={
+ click:()=>tone(880,'sine',.05,.12),
+ tick:(k)=>tone(1200+k*40,'square',.025,.05),
+ tier:t=>{if(t===0){[523,659,784,1047].forEach((f,k)=>tone(f,'triangle',.5,.22,k*.09));noise(.6,.06,.2,4000);}
+  else if(t===1){tone(587,'sine',.16,.14);tone(784,'sine',.28,.12,.11);}
+  else if(t===2){tone(330,'sawtooth',.28,.1);tone(233,'sawtooth',.42,.11,.16);}
+  else{noise(.7,.35,0,260);tone(98,'sawtooth',.95,.2);tone(104,'sawtooth',.95,.2);tone(880,'square',.1,.09,.08);tone(880,'square',.1,.09,.3);}},
+ report:()=>{noise(.5,.14,0,1400);tone(494,'sine',.35,.09,.18);tone(659,'sine',.4,.07,.32);},
+ gate:()=>{tone(220,'sine',.9,.2,0,90);noise(1.2,.2,0,200);tone(58,'sine',.14,.35,.5);tone(58,'sine',.14,.3,.72);},
+ grade:g=>{const m={S:[523,659,784,1047,1319],A:[523,659,784,1047],B:[523,659,784],C:[440,554],D:[392,330],F:[220,196]}[g];m.forEach((f,k)=>tone(f,'triangle',.55,.2,k*.11));},
+ coin:()=>{tone(1319,'square',.08,.1);tone(1760,'square',.16,.1,.07);}};
+function setAmb(i){if(!AU.ac)return;const now=AU.ac.currentTime;AU.dg.gain.cancelScheduledValues(now);AU.dg.gain.linearRampToValueAtTime(.012+i/100*.07,now+.6);AU.filt.frequency.linearRampToValueAtTime(110+i*7,now+.6);}
+function hbTick(){if(!S||!AU.ac||S.i<52||!AU.on)return;const per=1350-S.i*7,t=performance.now();if(t-AU.hb>per){AU.hb=t;tone(52,'sine',.13,.32);tone(50,'sine',.12,.26,.2);}}
+function toggleSound(){AU.on=!AU.on;if(AU.m)AU.m.gain.value=AU.on?.7:0;const b=document.getElementById('snd');if(b)b.innerHTML=AU.on?ICO.vol:ICO.mute;}
+function vib(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
+
+/* ---------- MAP ---------- */
+const MAP={d:[],nb:[],inf:new Set(),dead:new Set(),tgt:10,dtgt:0,last:0,run:false};
+(function(){const C=30,Rw=11;for(let r=0;r<Rw;r++)for(let c=0;c<C;c++){MAP.d.push({x:(c+.5)/C+(Math.random()-.5)*.02,y:(r+.5)/Rw+(Math.random()-.5)*.05,ph:Math.random()*6.28});}
+ for(let r=0;r<Rw;r++)for(let c=0;c<C;c++){const a=[];for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){if(!dr&&!dc)continue;const rr=r+dr,cc=c+dc;if(rr>=0&&rr<Rw&&cc>=0&&cc<C)a.push(rr*C+cc);}MAP.nb.push(a);}})();
+function mapReset(){MAP.inf.clear();MAP.dead.clear();MAP.tgt=INIT.i;MAP.dtgt=0;}
+function mapUpdate(){const N=MAP.d.length,want=Math.round(MAP.tgt/100*N);
+  for(let s=0;s<4;s++){if(MAP.inf.size<want){let done=false;if(MAP.inf.size){const arr=[...MAP.inf],src=arr[Math.floor(Math.random()*arr.length)];const nb=MAP.nb[src].filter(j=>!MAP.inf.has(j)&&!MAP.dead.has(j));if(nb.length){MAP.inf.add(nb[Math.floor(Math.random()*nb.length)]);done=true;}}
+    if(!done){const free=[];for(let k=0;k<N;k++)if(!MAP.inf.has(k)&&!MAP.dead.has(k))free.push(k);if(free.length)MAP.inf.add(free[Math.floor(Math.random()*free.length)]);}}
+   else if(MAP.inf.size>want){const arr=[...MAP.inf];MAP.inf.delete(arr[Math.floor(Math.random()*arr.length)]);}else break;}
+  const wd=Math.min(Math.round(N*.4),Math.round(MAP.dtgt/4));
+  if(MAP.dead.size<wd){let cand=[...MAP.inf];if(!cand.length){cand=[];for(let k=0;k<N;k++)if(!MAP.dead.has(k))cand.push(k);}if(cand.length){const k=cand[Math.floor(Math.random()*cand.length)];MAP.inf.delete(k);MAP.dead.add(k);}}}
+function mapDraw(){const c=document.getElementById('map');if(!c)return;const w=c.clientWidth||320,h=118;
+  if(c.width!==Math.round(w*DPR)){c.width=Math.round(w*DPR);c.height=Math.round(h*DPR);}
+  const x=c.getContext('2d');x.setTransform(DPR,0,0,DPR,0,0);x.clearRect(0,0,w,h);const t=performance.now()/1000;
+  for(let k=0;k<MAP.d.length;k++){const d=MAP.d[k],px=d.x*w,py=d.y*h;
+    if(MAP.dead.has(k)){x.fillStyle='rgba(70,52,56,.95)';x.beginPath();x.arc(px,py,1.5,0,6.283);x.fill();}
+    else if(MAP.inf.has(k)){const p=.7+.3*Math.sin(t*4.2+d.ph);x.shadowColor='#e34948';x.shadowBlur=8;x.fillStyle='rgba(227,73,72,'+p+')';x.beginPath();x.arc(px,py,2.5,0,6.283);x.fill();x.shadowBlur=0;}
+    else{x.fillStyle='rgba(160,168,178,.32)';x.beginPath();x.arc(px,py,1.7,0,6.283);x.fill();}}}
+function mapLoop(){if(!MAP.run)return;const t=performance.now();if(t-MAP.last>70){MAP.last=t;mapUpdate();}mapDraw();requestAnimationFrame(mapLoop);}
+function mapStart(){if(MAP.run)return;MAP.run=true;requestAnimationFrame(mapLoop);}
+
+/* ---------- STATE ---------- */
+const MEM={best:0,runs:0,ends:{}};
+function mload(){try{const r=localStorage.getItem('pandemic_pres_v1');if(r)Object.assign(MEM,JSON.parse(r));}catch(e){}}
+function msave(){try{localStorage.setItem('pandemic_pres_v1',JSON.stringify(MEM));}catch(e){}}
+let S,pool,cur,last,tally,chron,prev,queue,base,deaths,yd,MOD,tok,streak,perk=0,dif=1,snap,lastT,lastO,peakI,hist,adv;
+const roll=()=>{const x=Math.random();let a=0;for(let k=0;k<4;k++){a+=TIER[k].p;if(x<a)return k;}return 1;};
+const bd=v=>Math.min(4,Math.floor(v/20));
+const pk=a=>a[Math.floor(Math.random()*a.length)];
+const db=v=>v<7?0:v<18?1:v<38?2:v<70?3:4;
+const grade=s=>s>=82?'S':s>=70?'A':s>=58?'B':s>=46?'C':s>=33?'D':'F';
+const GCOL={S:'#3fc38f',A:'#3fc38f',B:'#4a8fe0',C:'#8a9099',D:'#eb6834',F:'#f0605f'};
+
+function words(txt,base){let inEm=false,out='',k=0;txt.split(' ').forEach(w=>{let s=w,oe=false,ce=false;if(s.indexOf('<em>')>=0){s=s.replace('<em>','');oe=true;}if(s.indexOf('</em>')>=0){s=s.replace('</em>','');ce=true;}if(oe)inEm=true;
+  out+='<span style="display:inline-block;opacity:0;animation:wIn .28s ease-out forwards;animation-delay:'+(base+k*42)+'ms;'+(inEm?'color:var(--text-danger);font-weight:600;':'')+'">'+s+'&nbsp;</span>';if(ce)inEm=false;k++;});return out;}
+
+function headlines(){const h=[];
+  if(S.i>=60)h.push(pk(NEWS.ih));else if(S.i<=12)h.push(pk(NEWS.il));
+  if(S.e<=38)h.push(pk(NEWS.el));else if(S.e>=72)h.push(pk(NEWS.eh));
+  if(S.u>=58)h.push(pk(NEWS.uh));else if(S.u<=18)h.push(pk(NEWS.ul));
+  if(S.c>=50)h.push(pk(NEWS.ch));else if(S.c<=8)h.push(pk(NEWS.cl));
+  if(S.a<=32)h.push(pk(NEWS.al));else if(S.a>=68)h.push(pk(NEWS.ah));
+  while(h.length<3)h.push(pk(NEWS.g));return h.slice(0,4).join('  ·  ');}
+
+function home(){
+  const got=Object.keys(MEM.ends).length;
+  const dex=ENDC.map(e=>{const on=MEM.ends[e[0]];
+    return '<span style="display:inline-block;font-size:11px;padding:3px 9px;border-radius:var(--radius);margin:0 5px 5px 0;background:var(--surface-1);color:'+(on?'var(--text-primary)':'var(--text-muted)')+';'+(on?'border-left:2px solid #6250d6':'')+'">'+(on?(HNAME[e[0]]||e[1]):(HNAME[e[0]]?'???':e[1]))+'</span>';}).join('');
+  const dfb=DIFF.map((q,k)=>'<button class="dfb" data-k="'+k+'" style="flex:1;font-size:13px;'+(dif===k?'border-color:#6250d6;background:var(--surface-1);':'')+'">'+q.n+'</button>').join('');
+  const pks=PERKS.map((q,k)=>'<button class="pkb" data-k="'+k+'" style="text-align:left;padding:10px 12px;display:block;font-size:13px;'+(perk===k?'border-color:#6250d6;background:var(--surface-1);':'')+'"><span style="font-weight:600">'+q.n+'</span><span style="display:block;font-size:11px;color:var(--text-muted);margin-top:2px">'+q.d+'</span></button>').join('');
+  R.innerHTML='<div>'+
+  '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-size:24px;font-weight:600">팬데믹 대통령</span><button id="snd" style="width:38px;height:34px;padding:0;display:flex;align-items:center;justify-content:center" aria-label="소리 켜기 끄기">'+(AU.on?ICO.vol:ICO.mute)+'</button></div>'+
+  '<div style="display:flex;gap:10px;margin-bottom:16px">'+
+  '<div style="flex:1;background:var(--surface-1);border-radius:var(--radius);padding:10px 12px"><div style="font-size:11px;color:var(--text-muted)">최고 기록</div><div style="font-size:20px;font-weight:600">'+(MEM.best?Math.round(MEM.best)+' <span style="color:'+GCOL[grade(MEM.best)]+'">'+grade(MEM.best)+'</span>':'—')+'</div></div>'+
+  '<div style="flex:1;background:var(--surface-1);border-radius:var(--radius);padding:10px 12px"><div style="font-size:11px;color:var(--text-muted)">임기 횟수</div><div style="font-size:20px;font-weight:600">'+MEM.runs+'</div></div></div>'+
+  '<div style="font-size:11px;color:var(--text-muted);margin-bottom:7px">난이도</div><div style="display:flex;gap:6px;margin-bottom:16px">'+dfb+'</div>'+
+  '<div style="font-size:11px;color:var(--text-muted);margin-bottom:7px">엔딩 도감 '+got+' / '+ENDC.length+'</div><div style="margin-bottom:16px">'+dex+'</div>'+
+  (MEM.runs>=1?'<div style="font-size:11px;color:var(--text-muted);margin-bottom:7px">특전 선택</div><div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px">'+pks+'</div>':'<div style="font-size:12px;color:var(--text-muted);margin-bottom:16px">한 번의 임기를 마치면 특전이 열린다.</div>')+
+  '<button id="st" style="width:100%;padding:15px;font-size:15px">취임한다</button>'+
+  (MEM.runs>=1?'<button id="wipe" style="width:100%;margin-top:10px;font-size:12px;color:var(--text-muted);background:transparent;border-color:var(--border)">기록 지우기</button>':'')+'</div>';
+  document.querySelectorAll('.pkb').forEach(b=>b.onclick=()=>{SFX.click();perk=+b.dataset.k;home();});
+  document.querySelectorAll('.dfb').forEach(b=>b.onclick=()=>{SFX.click();dif=+b.dataset.k;home();});
+  document.getElementById('snd').onclick=toggleSound;
+  document.getElementById('st').onclick=()=>{aInit();SFX.coin();start();};
+  const wp=document.getElementById('wipe');if(wp)wp.onclick=()=>{if(confirm('최고 기록과 엔딩 도감을 모두 지울까?')){MEM.best=0;MEM.runs=0;MEM.ends={};msave();home();}};
+}
+
+function start(){
+  LOG=[];T0=Date.now();
+  S=Object.assign({turn:0,quit:0},INIT);
+  MOD=pk(MODS);tok=2;streak=0;snap=null;peakI=S.i;hist=[];
+  const q=PERKS[perk];if(q.f)q.f(S);if(q.t)tok+=q.t;
+  base=S.chk+S.trn+S.saf;pool=EV.slice();last=null;tally=[0,0,0,0];chron=[];prev=null;queue=[];deaths=0;yd=0;
+  mapReset();mapStart();setAmb(S.i);
+  cur={t:'첫 확진자',d:'취임 3주째. 해외 유입 <em>첫 확진자</em>가 확인됐다. 상황실이 처음으로 소집됐고, 모두가 대통령의 입을 보고 있다.',o:[
+   ['위기경보를 최고 단계로 즉시 격상한다',{p:11,i:-11,e:-7,a:5},'과잉대응이라는 비판이 하루 만에 나왔다. 3주 뒤에는 아무도 그 말을 하지 않았다.'],
+   ['상황을 지켜보며 단계적으로 대응한다',{i:5,e:4,a:4,chk:5},'신중했다. 그사이 지역사회 전파가 시작됐다.'],
+   ['질병관리청에 전권을 위임한다',{trn:11,chk:9,p:-7,i:-5},'대통령이 한 발 물러섰고 전문가가 마이크를 잡았다.']]};
+  pickAdv();ev();
+}
+function pickAdv(){for(const a of ADV){if(a.c(S)){adv={who:a.who,l:pk(a.l)};return;}}}
+
+function hud(){const y=Math.floor(S.turn/PY)+1,v=Math.round(S.i);
+  const lb=v<20?'안정':v<40?'주의':v<60?'경계':v<80?'심각':'대유행';
+  const c=v<20?'#3fc38f':v<40?'#eda100':v<60?'#eb6834':'#f0605f';
+  let seg='';for(let k=0;k<YRS*PY;k++){const col=k<hist.length?TIER[hist[k]].bd:(k===S.turn?c:'var(--surface-1)');seg+='<span style="flex:1;height:4px;border-radius:2px;background:'+col+';'+(k===S.turn&&k>=hist.length?'animation:pls 1.2s infinite;':'')+(k%PY===PY-1&&k<YRS*PY-1?'margin-right:4px;':'')+'"></span>';}
+  const coins=Array.from({length:tok},()=>'<span style="color:#8b7cf6">●</span>').join(' ');
+  return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'+
+  '<span style="font-size:12px;color:var(--text-muted)">임기 '+y+'년차 '+(S.turn%PY+1)+'/'+PY+' <span style="margin-left:6px;opacity:.7">'+DIFF[dif].n+' · '+MOD.n+'</span></span>'+
+  '<button id="snd" style="width:32px;height:28px;padding:0;display:flex;align-items:center;justify-content:center" aria-label="소리 켜기 끄기">'+(AU.on?ICO.vol:ICO.mute)+'</button></div>'+
+  '<div style="display:flex;gap:2px;margin-bottom:10px">'+seg+'</div>'+
+  '<div style="position:relative;border-radius:10px;overflow:hidden;background:var(--surface-1);margin-bottom:10px"><canvas id="map" style="width:100%;height:118px"></canvas>'+
+  '<div style="position:absolute;left:10px;bottom:7px;font-size:11px;color:var(--text-secondary)">확산 지수 <span style="font-weight:600;color:'+c+'">'+v+'</span> <span style="color:'+c+'">'+lb+'</span></div>'+
+  '<div style="position:absolute;right:10px;top:7px;font-size:10px;color:var(--text-muted);letter-spacing:1px">인구 지도</div></div>'+
+  '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:11px;color:var(--text-muted)">'+
+  '<span>개입 '+(tok?coins:'<span style="opacity:.5">없음</span>')+'</span>'+
+  (streak>=2?'<span style="color:#3fc38f;font-weight:600;animation:pls 1.6s infinite">연속 '+streak+(streak>=4?' 모멘텀':'')+'</span>':'<span></span>')+'</div>'+
+  '<div style="overflow:hidden;white-space:nowrap;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:5px 0;margin-bottom:14px"><span style="display:inline-block;padding-left:100%;animation:tk 26s linear infinite;font-size:11px;color:var(--text-muted)"><span style="color:var(--text-danger);font-weight:600">속보</span>&nbsp; '+headlines()+'</span></div>';}
+function vign(){return '<div style="position:absolute;inset:-6px;pointer-events:none;border-radius:12px;background:radial-gradient(ellipse at center,transparent 55%,rgba(227,73,72,'+(S.i/100*.3).toFixed(3)+') 100%)"></div>';}
+function bindSnd(){const b=document.getElementById('snd');if(b)b.onclick=toggleSound;}
+
+function ev(){
+  R.innerHTML='<div id="wrap" style="position:relative">'+vign()+hud()+
+  '<div style="background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:15px 16px;margin-bottom:12px;animation:fdIn .35s ease-out">'+
+  '<div style="font-size:17px;font-weight:600;margin-bottom:8px">'+cur.t+'</div>'+
+  '<div style="font-size:14px;color:var(--text-secondary);line-height:1.75">'+cur.d+'</div></div>'+
+  '<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;padding:0 4px;animation:fdIn .5s ease-out">'+
+  '<span style="width:28px;height:28px;border-radius:50%;background:var(--surface-1);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:var(--text-muted)">참</span>'+
+  '<div style="font-size:13px;line-height:1.6"><span style="color:var(--text-muted)">'+adv.who+'</span> <span style="color:var(--text-secondary);font-family:var(--font-voice)">"'+adv.l+'"</span></div></div>'+
+  '<div id="gOpts" style="display:flex;flex-direction:column;gap:8px"></div>'+
+  '<div id="fx" style="position:absolute;inset:-6px;display:flex;align-items:center;justify-content:center;pointer-events:none"></div></div>';
+  const ob=document.getElementById('gOpts');
+  cur.o.forEach((o,k)=>{const b=document.createElement('button');
+    b.style.cssText='text-align:left;padding:12px 13px;display:block;font-size:14px;line-height:1.5;opacity:0;animation:optIn .35s ease-out forwards;animation-delay:'+(120+k*90)+'ms';
+    b.textContent=o[0];b.onclick=()=>choose(k);ob.appendChild(b);});
+  bindSnd();}
+
+function reel(t,cb){const f=document.getElementById('fx'),w=document.getElementById('wrap');
+  f.innerHTML='<div style="position:relative;background:var(--surface-2);border:1px solid var(--border-strong);border-radius:16px;padding:16px 34px;text-align:center;box-shadow:0 14px 40px rgba(0,0,0,.45);animation:reelIn .2s ease-out"><div style="font-size:10px;letter-spacing:3px;color:var(--text-muted);margin-bottom:6px">판정</div><div id="rl" style="font-size:26px;font-weight:600;letter-spacing:5px;min-width:130px"></div></div>';
+  const rl=document.getElementById('rl'),del=[50,50,55,60,70,80,95,115,140,175,220];let k=0;
+  (function step(){if(k<del.length){const rt=k===del.length-1?t:Math.floor(Math.random()*4);rl.textContent=TIER[rt].n;rl.style.color=TIER[rt].fg;SFX.tick(k);k++;setTimeout(step,del[k-1]);}
+   else{setTimeout(()=>{const T=TIER[t];SFX.tier(t);vib(t===3?[70,50,90]:t===2?45:t===0?[20,30,20]:0);
+     f.innerHTML='<div style="position:absolute;inset:0;background:'+T.tint+';border-radius:12px;animation:fxT '+T.ms+'ms ease-out forwards"></div>'+
+     '<div style="position:relative;font-size:'+T.fs+'px;font-weight:600;letter-spacing:5px;color:'+T.fg+';animation:fxL '+T.ms+'ms ease-out forwards;text-shadow:0 0 24px '+T.tint+'">'+T.n+'</div>';
+     if(t>=2)w.style.animation='shk '+(t===3?560:360)+'ms ease-out';
+     setTimeout(()=>{w.style.animation='';f.innerHTML='';cb();},T.ms);},120);}})();}
+
+function takeSnap(){snap={S:Object.assign({},S),deaths:deaths,yd:yd,q:queue.slice(),cl:chron.length,hl:hist.length,st:streak,pi:peakI};}
+function useSnap(){S=Object.assign({},snap.S);deaths=snap.deaths;yd=snap.yd;queue=snap.q.slice();chron.length=snap.cl;hist.length=snap.hl;streak=snap.st;peakI=snap.pi;}
+
+function choose(k){SFX.click();document.querySelectorAll('#gOpts button').forEach(b=>b.disabled=true);
+  takeSnap();lastO=cur.o[k];LOG.push(cur.o[k][0]);const t=roll();lastT=t;tally[t]++;reel(t,()=>resolve(lastO,t));}
+function reroll(){if(tok<=0)return;SFX.coin();tok--;useSnap();tally[lastT]--;const t2=roll();lastT=t2;tally[t2]++;
+  R.innerHTML='<div id="wrap" style="position:relative;min-height:260px">'+vign()+hud()+
+  '<div style="font-size:13px;color:var(--text-muted);text-align:center;margin-top:24px">운명의 주사위를 다시 굴린다</div>'+
+  '<div id="fx" style="position:absolute;inset:-6px;display:flex;align-items:center;justify-content:center;pointer-events:none"></div></div>';
+  bindSnd();reel(t2,()=>resolve(lastO,t2));}
+
+function resolve(o,t){const e=o[1],ch=o[3];
+  chron.push({t:t,n:cur.t});hist.push(t);streak=(t<=1)?streak+1:0;
+  if(e.X==='crush'){const able=(S.p>52&&S.a>32);
+    if(t===3||(!able&&t!==0))return gate('ousted');
+    apply({u:-30,a:-22,c:11,p:6},1);
+    last={t:t,x:'공권력이 광장을 비웠다. 질서는 돌아왔고 <em>그 장면이 정부의 얼굴</em>이 됐다. '+pk(TIER[t].l)};}
+  else if(e.X==='quit'){S.quit=1;return end('quit');}
+  else{apply(e,0,t);last={t:t,x:o[2]+' '+pk(TIER[t].l)};
+    if(t===3){S.a=cl(S.a-4);S.u=cl(S.u+4);}
+    if(ch){const id=t<=1?ch.ok:ch.bad;if(id&&CH[id])queue.push(CH[id]);}}
+  tick();MAP.tgt=S.i;MAP.dtgt=deaths;setAmb(S.i);
+  if(S.m<=3&&S.i>=75)return gate('medfail');
+  if(S.e<=4)return gate('ecofail');
+  if(S.a<=3&&S.u>=68)return gate('ousted');
+  res();}
+
+function gate(kind){if(tok<=0)return end(kind);SFX.gate();vib([120,80,160]);
+  R.innerHTML='<div style="animation:fdIn .5s ease-out;position:relative"><div style="position:absolute;inset:-6px;pointer-events:none;border-radius:12px;background:radial-gradient(ellipse at center,transparent 40%,rgba(227,73,72,.35) 100%)"></div>'+
+  '<div style="font-size:12px;color:var(--text-danger);letter-spacing:3px;margin-bottom:8px;animation:pls 1.4s infinite">정권의 마지막 순간</div>'+
+  '<div style="font-size:24px;font-weight:600;margin-bottom:12px">이대로 끝인가?</div>'+
+  '<div style="font-size:14px;color:var(--text-secondary);line-height:1.8;margin-bottom:22px">역사가 이 임기의 마지막 문장을 쓰기 직전이다. 아직 <em>운명에 개입할 기회</em>가 '+tok+'번 남아 있다. 다시 굴려도 같은 결과가 나올 수 있다.</div>'+
+  '<button id="rr" style="width:100%;margin-bottom:8px;padding:13px"><span style="color:#8b7cf6">●</span>&nbsp; 운명에 개입한다 (남은 '+tok+'회)</button>'+
+  '<button id="ac" style="width:100%;font-size:13px;color:var(--text-secondary)">운명을 받아들인다</button></div>';
+  document.getElementById('rr').onclick=reroll;document.getElementById('ac').onclick=()=>{SFX.click();end(kind);};}
+
+function apply(e,raw,t){const T=TIER[t===undefined?1:t],mom=streak>=4?1.1:1;
+  for(const k in e){if(k==='X')continue;const v=e[k],good=BAD[k]?v<0:v>0;S[k]=cl(S[k]+(raw?v:v*EVS*(good?T.g*mom:T.b)));}}
+
+function tick(){const te=MOD.te||1,D=DIFF[dif],yr=Math.floor(S.turn/PY);
+  let r=.17+S.u/500+(MOD.ip||0)+yr*.022+D.r-S.p/420-(S.trn*te)/900-S.m/1100;r=Math.max(-.11,Math.min(.34,r));
+  S.i=cl(Math.max(D.fl,S.i+S.i*r*(1-S.i/100)));if(S.i>peakI)peakI=S.i;
+  S.m=cl(S.m-Math.max(0,S.i-50)/13+S.e/150+.2);
+  const dd=(S.i/28)*(1+Math.max(0,50-S.m)/42)*(MOD.dd||1)*D.dd;deaths+=dd;yd+=dd;
+  S.e=cl(S.e-S.i/72-S.p/135+S.saf/210+.48+(MOD.ep||0)-S.c/62);
+  S.c=cl(S.c+.22+Math.max(0,S.p-34)/22*(1-(S.trn*te)/150)-(S.trn*te)/320);
+  S.u=cl(S.u+S.i/95+Math.max(0,S.p-45)/47+Math.max(0,45-S.e)/58-S.saf/230-.32+(MOD.up||0));
+  S.a=cl(S.a-.28-D.ad-S.i/85-Math.max(0,48-S.e)/62-S.u/130-S.c/160+Math.max(0,S.e-55)/95+(MOD.ap||0));
+  S.p=cl(S.p-S.chk/100*(S.p/115));
+  S.chk=cl(S.chk-.12-Math.max(0,S.p-45)/70);S.trn=cl(S.trn-.1-S.c/260);S.saf=cl(S.saf-.08);}
+
+function res(){const T=TIER[last.t],wc=last.x.split(' ').length;
+  R.innerHTML='<div id="wrap" style="position:relative">'+vign()+hud()+
+  '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:11px;padding:3px 10px;border-radius:var(--radius);background:'+T.tint+';color:'+T.fg+';font-weight:600;letter-spacing:2px">'+T.n+'</span><span style="font-size:11px;color:var(--text-muted)">'+cur.t+'</span></div>'+
+  '<div style="border-left:3px solid '+T.bd+';padding:4px 0 4px 14px;margin-bottom:20px"><div style="font-size:15px;line-height:1.95">'+words(last.x,80)+'</div></div>'+
+  '<button id="nx" style="width:100%;margin-bottom:8px;padding:13px;opacity:0;animation:fdIn .4s ease-out forwards;animation-delay:'+Math.min(1400,wc*42+200)+'ms">계속</button>'+
+  (tok>0&&last.t>=2?'<button id="rr" style="width:100%;font-size:13px;color:#8b7cf6;opacity:0;animation:fdIn .4s ease-out forwards;animation-delay:'+Math.min(1600,wc*42+400)+'ms">● 운명에 개입한다 (남은 '+tok+'회)</button>':'')+'</div>';
+  bindSnd();
+  document.getElementById('nx').onclick=()=>{SFX.click();S.turn++;if(S.turn>=YRS*PY)return end('done');if(S.turn%PY===0)return report();next();pickAdv();ev();};
+  const r=document.getElementById('rr');if(r)r.onclick=reroll;}
+
+function next(){if(queue.length){cur=queue.shift();return;}
+  if(S.u>44&&Math.random()<Math.pow(S.u/100,2)*(.35+S.c/110)*(1-S.chk/180)*.22){cur=(S.chk>=48)?IMP:UPR;return;}
+  const y=Math.floor(S.turn/PY)+1;let ok=pool.filter(e=>(e.y===0||e.y===y)&&(!e.w||e.w(S)));
+  if(!ok.length){pool=EV.slice();ok=pool.filter(e=>e.y===0||e.y===y);}
+  cur=pk(ok);pool.splice(pool.indexOf(cur),1);}
+
+function score(){const ins=Math.max(0,(S.chk+S.trn+S.saf)-base),ds=cl(100-deaths/2.2);
+  return S.a*.26+ds*.27+S.e*.19+(100-S.c)*.11+Math.min(100,ins*1.25)*.17;}
+function rline(a,b,k){return '<div style="padding:9px 0;border-bottom:1px solid var(--border);opacity:0;animation:fdIn .4s ease-out forwards;animation-delay:'+(k*110)+'ms"><div style="font-size:11px;color:var(--text-muted);margin-bottom:3px">'+a+'</div><div style="font-size:14px;line-height:1.7">'+b+'</div></div>';}
+function body(){const ins=(S.chk+S.trn+S.saf)-base;
+  const iv=ins>=24?'이 정부가 만든 <em>제도와 법이 자리를 잡았습니다</em>. 다음 정부도 이 틀 안에서 일하게 됩니다.':ins>=10?'몇 가지 새 제도가 생겼습니다. 아직 뿌리내리지는 않았습니다.':ins<=-10?'<em>기존의 견제 장치들이 하나둘 무력화</em>됐습니다.':'제도는 취임 때와 크게 다르지 않습니다.';
+  return rline('방역 상황',RP.i[bd(S.i)],0)+rline('인명 피해',RP.dth[db(yd)],1)+rline('의료 역량',RP.m[bd(S.m)],2)+rline('여론',RP.a[bd(S.a)],3)+rline('경제',RP.e[bd(S.e)],4)+rline('사회 갈등',RP.u[bd(S.u)],5)+rline('행정 권한',RP.p[bd(S.p)],6)+rline('조달과 유착',RP.c[bd(S.c)],7)+rline('제도',iv,8);}
+
+function report(){SFX.report();const y=S.turn/PY,sc=score();let tr='';
+  if(prev!==null){const d=sc-prev;tr=d>3?'전체적으로 작년보다 나아지고 있습니다.':d<-3?'솔직히 말씀드리면, <em>작년보다 나빠지고 있습니다</em>.':'작년과 크게 다르지 않습니다.';}
+  prev=sc;
+  const cr=chron.map(c=>'<span style="display:inline-block;font-size:11px;padding:3px 9px;border-radius:var(--radius);margin:0 5px 5px 0;background:var(--surface-1);border-left:2px solid '+TIER[c.t].bd+'">'+c.n+'</span>').join('');
+  R.innerHTML='<div style="position:relative">'+
+   '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"><span style="font-size:11px;color:var(--text-muted);letter-spacing:2px">임기 '+y+'년차 연말</span><span style="font-size:11px;color:var(--text-muted)">'+DIFF[dif].n+' · '+MOD.n+'</span></div>'+
+   '<div style="font-size:20px;font-weight:600;margin-bottom:10px">참모진 보고</div>'+
+   '<div style="position:relative;border-radius:10px;overflow:hidden;background:var(--surface-1);margin-bottom:12px"><canvas id="map" style="width:100%;height:118px"></canvas><div style="position:absolute;right:10px;top:7px;font-size:10px;color:var(--text-muted);letter-spacing:1px">연말 인구 지도</div></div>'+
+   '<div style="font-size:13px;color:var(--text-secondary);line-height:1.7;margin-bottom:12px;font-family:var(--font-voice)">대통령님, 올 한 해를 정리해 보고드립니다.</div>'+
+   '<div style="margin-bottom:16px">'+body()+'</div>'+
+   (tr?'<div style="background:var(--surface-1);border-radius:var(--radius);padding:11px 13px;font-size:13px;line-height:1.7;margin-bottom:16px;opacity:0;animation:fdIn .4s ease-out forwards;animation-delay:1000ms">'+tr+'</div>':'')+
+   '<div style="font-size:11px;color:var(--text-muted);margin-bottom:7px">그해의 결정들</div><div style="margin-bottom:18px">'+cr+'</div>'+
+   '<button id="nx" style="width:100%;padding:13px">'+(y+1)+'년차로</button></div>';
+  chron=[];yd=0;document.getElementById('nx').onclick=()=>{SFX.click();next();pickAdv();ev();};}
+
+const ENDS={ousted:['거리로 쫓겨난 대통령','여론과 광장이 임기를 먼저 끝냈다. 방역의 성패를 따지기도 전에 정부가 사라졌다.','#f0605f'],
+medfail:['의료 붕괴','병상도 인력도 남지 않았다. 이 시기의 사망자 수는 이후 어떤 통계에서도 정상으로 분류되지 않는다.','#f0605f'],
+ecofail:['무너진 경제','방역은 어떻게든 했다. 사람들이 돌아갈 일자리가 남지 않았을 뿐이다.','#eb6834']};
+
+function countUp(el,to,ms){const t0=performance.now();(function f(n){const k=Math.min(1,(n-t0)/ms);el.textContent=Math.round(to*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f);})(t0);}
+function copyText(t,btn){const orig=btn.textContent,done=()=>{btn.textContent='복사됨';setTimeout(()=>btn.textContent=orig,1600);};
+  function fb(){const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);done();}
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,fb);else fb();}
+
+function end(kind){
+  const ins=Math.max(0,(S.chk+S.trn+S.saf)-base),y=Math.max(1,Math.ceil(S.turn/PY));
+  let sc=score();if(S.quit)sc-=6;const auth=(S.p>=60&&S.chk<=44),g=grade(sc);
+  let eid,ti,ds,col;
+  if(ENDS[kind]){eid=kind;ti=ENDS[kind][0];ds=ENDS[kind][1];col=ENDS[kind][2];}
+  else if(S.quit){eid='quit';ti='임기를 채우지 못한 대통령';ds='스스로 내려왔다. 그 판단이 옳았는지는 오래 논쟁거리로 남는다.';col='#8a9099';}
+  else if(S.c>=60&&S.a>=48){eid='shadow';ti='그림자 정부';ds='유착은 극에 달했는데 지지율은 무너지지 않았다. <em>부패한 정부가 사랑받을 수 있다</em>는 가장 불편한 증명이 됐다.';col='#f0605f';}
+  else if(deaths<34&&S.e>=60&&peakI<=45){eid='kmyth';ti='기적의 방역';ds='사람도 지키고 경제도 지켰다. 다른 나라들은 <em>둘 중 하나는 포기해야 했다</em>.';col='#3fc38f';}
+  else if(S.trn>=86&&ins>=20){eid='science';ti='과학이 이겼다';ds='이 정부의 무기는 권한이 아니라 <em>공개된 데이터</em>였다. 사람들은 명령이 아니라 근거를 따라 움직였다.';col='#4a8fe0';}
+  else if(S.a>=58&&S.e>=58&&S.m>=58&&S.i<=25&&S.c<=28&&S.u<=35){eid='balance';ti='완벽한 균형';ds='방역, 경제, 의료, 여론, 청렴. <em>무엇 하나 버리지 않았다</em>. 교과서는 이런 사례를 오래 찾고 있었다.';col='#8b7cf6';}
+  else if(auth&&sc<70){eid='auth';ti='권위주의로 돌아선 대통령';ds='위기를 이유로 얻은 권한을 끝내 돌려주지 않았다. <em>다음 대통령도 그 권한을 쓴다.</em>';col='#f0605f';}
+  else if(ins>=28&&S.a>=45){eid='inst';ti='제도를 남긴 대통령';ds='개인의 판단이 아니라 <em>구조를 바꿨다</em>. 다음 팬데믹에 이 나라가 덜 죽는다면 그건 이 임기 덕분이다.';col='#8b7cf6';}
+  else if(sc>=80){eid='legend';ti='역사에 남을 대응';ds='세계가 이 나라의 사례를 인용했다. 그리고 실제로 사람이 덜 죽었다.';col='#3fc38f';}
+  else if(sc>=66){eid='reelect';ti='재선에 성공한 대통령';ds='완벽하지 않았지만 국민은 한 번 더 맡기기로 했다.';col='#3fc38f';}
+  else if(sc>=52){eid='modest';ti='무난히 임기를 마친 대통령';ds='큰 실패도 큰 성취도 없었다. 팬데믹 시기 대통령에게 이것이 나쁜 성적인지는 애매하다.';col='#4a8fe0';}
+  else if(sc>=36){eid='judged';ti='심판받은 대통령';ds='정권은 교체됐다. 사람들은 이 4년을 되도록 이야기하지 않으려 한다.';col='#8a9099';}
+  else{eid='failfp';ti='실패한 방역';ds='막을 수 있었던 죽음이 너무 많았다. 그것이 이 임기에 대한 유일한 요약이다.';col='#f0605f';}
+  sendLog(ti,sc);
+  const newEnd=!MEM.ends[eid],newBest=sc>MEM.best;MEM.ends[eid]=1;MEM.runs++;if(newBest)MEM.best=sc;msave();
+  const got=Object.keys(MEM.ends).length;setAmb(8);
+  const row=(a,b)=>'<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="color:var(--text-secondary)">'+a+'</span><span style="font-weight:600">'+b+'</span></div>';
+  const summary='팬데믹 대통령 결과\n난이도 '+DIFF[dif].n+' / 시대 조건 '+MOD.n+'\n엔딩: '+ti+' ('+g+'등급, '+Math.round(sc)+'점)\n지지율 '+Math.round(S.a)+', 최고 확산 지수 '+Math.round(peakI)+', 인명피해 지수 '+Math.round(deaths)+', 의료 '+Math.round(S.m)+', 경제 '+Math.round(S.e)+', 행정권한 '+Math.round(S.p)+', 유착 '+Math.round(S.c)+', 사회갈등 '+Math.round(S.u)+', 제도 변화 +'+Math.round(ins)+'\n주사위: 대성공 '+tally[0]+' 성공 '+tally[1]+' 실패 '+tally[2]+' 대실패 '+tally[3];
+  R.innerHTML='<div style="position:relative">'+
+   '<div style="font-size:11px;color:var(--text-muted);letter-spacing:2px;margin-bottom:8px">임기 '+y+'년 최종 보고 · '+DIFF[dif].n+' · '+MOD.n+'</div>'+
+   '<div style="position:relative;border-radius:10px;overflow:hidden;background:var(--surface-1);margin-bottom:14px"><canvas id="map" style="width:100%;height:118px"></canvas>'+
+   '<div style="position:absolute;right:12px;top:10px;font-size:46px;font-weight:700;color:'+GCOL[g]+';animation:stamp .7s cubic-bezier(.2,1.4,.4,1) forwards;animation-delay:.5s;opacity:0;text-shadow:0 2px 14px rgba(0,0,0,.5)">'+g+'</div>'+
+   '<div style="position:absolute;left:10px;bottom:7px;font-size:10px;color:var(--text-muted);letter-spacing:1px">임기 종료 시점의 나라</div></div>'+
+   '<div style="font-size:24px;font-weight:600;color:'+col+';line-height:1.3;margin-bottom:8px;animation:fdIn .5s ease-out">'+ti+'</div>'+
+   (newEnd?'<span style="display:inline-block;background:var(--surface-1);border-left:2px solid #6250d6;font-size:12px;padding:4px 10px;border-radius:var(--radius);margin:0 6px 8px 0">도감에 새 엔딩 등록 '+got+'/'+ENDC.length+'</span>':'')+
+   (newBest?'<span style="display:inline-block;background:var(--surface-1);border-left:2px solid #1baf7a;font-size:12px;padding:4px 10px;border-radius:var(--radius);margin-bottom:8px">최고 기록 갱신</span>':'')+
+   '<div style="font-size:14px;color:var(--text-secondary);line-height:1.8;margin:6px 0 18px">'+words(ds,600)+'</div>'+
+   '<div style="background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:13px;color:var(--text-secondary)">종합 점수</span><span><span id="scn" style="font-size:34px;font-weight:600">0</span><span style="font-size:13px;color:var(--text-muted)"> / 100</span></span></div>'+
+   '<div style="margin-bottom:18px">'+body()+'</div>'+
+   '<div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">이제야 숫자를 보여준다</div>'+
+   '<div style="background:var(--surface-1);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px">'+
+   row('지지율',Math.round(S.a))+row('확산 지수 (최고)',Math.round(S.i)+' ('+Math.round(peakI)+')')+row('누적 인명 피해 지수',Math.round(deaths))+row('의료 역량',Math.round(S.m))+row('경제',Math.round(S.e))+row('행정 권한',Math.round(S.p))+row('유착',Math.round(S.c))+row('사회 갈등',Math.round(S.u))+row('제도 변화','+'+Math.round(ins))+'</div>'+
+   '<div style="background:var(--surface-1);border-radius:var(--radius);padding:11px 13px;margin-bottom:14px;font-size:13px;color:var(--text-secondary)">주사위: 대성공 '+tally[0]+' / 성공 '+tally[1]+' / 실패 '+tally[2]+' / 대실패 '+tally[3]+' / 남은 개입 '+tok+'회</div>'+
+   '<button id="again" style="width:100%;margin-bottom:8px;padding:13px">한 번 더 취임한다</button>'+
+   '<button id="cp" style="width:100%;font-size:13px">결과 복사하기</button></div>';
+  setTimeout(()=>{SFX.grade(g);const el=document.getElementById('scn');if(el)countUp(el,Math.round(sc),1400);},500);
+  document.getElementById('again').onclick=()=>{SFX.click();home();};
+  document.getElementById('cp').onclick=function(){copyText(summary,this);};}
+
+const SHEET_URL='https://script.google.com/macros/s/AKfycbzblt6BlpnAcGBtw_gPDeZcH1lYhOXSlFi8gA4sV7ONn4g_ZSusCazAqAlhyRTIhYXL/exec';
+let NICK='익명',LOG=[],T0=0;
+function sendLog(ending,sc){if(!SHEET_URL)return;
+  try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify({nickname:NICK,choices:LOG.slice(),ending:ending,score:Math.round(sc),playSeconds:Math.round((Date.now()-T0)/1000)})}).catch(()=>{});}catch(e){}}
+mload();
+document.getElementById('go').onclick=()=>{NICK=(document.getElementById('nick').value||'').trim().slice(0,20)||'익명';aInit();SFX.coin();home();};
+})();
+</script>
+</body>
+</html>
