@@ -1133,7 +1133,7 @@ function lbStats(){const s=LB.data.stats||{},dt=(s.dirByTerm&&s.dirByTerm.length
     box('닮은 지도자 분포',lbBars(s.leaders,k=>LCOL[k]||'#8b7cf6'))+box('어떻게 물러났나',lbBars(s.exits,exitCol))+box('출신 배경',lbBars(s.backgrounds,()=>'#8b7cf6'));}
 
 /* ---------- 연구용 기록 ---------- */
-const SHEET_URL='https://script.google.com/macros/s/AKfycbzblt6BlpnAcGBtw_gPDeZcH1lYhOXSlFi8gA4sV7ONn4g_ZSusCazAqAlhyRTIhYXL/exec';
+const SHEET_URL='https://script.google.com/macros/s/AKfycbwP8hWvjZSWD6CuQ0UxRjKRiLGPzD95kFBFJUv8F-tWABQZ7ESlYu3KwpoY2kZ1OXzW/exec';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 const NM={i:'확산',m:'의료',a:'지지율',e:'경제',p:'행정권한',c:'유착',u:'갈등',chk:'견제',trn:'투명성',saf:'안전망'};
 const PRI={i:[-1,'방역'],e:[1,'경제'],a:[1,'여론'],m:[1,'의료'],saf:[1,'복지'],u:[-1,'사회 통합']};
