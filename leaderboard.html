@@ -127,7 +127,9 @@ const API='https://script.google.com/macros/s/AKfycbwP8hWvjZSWD6CuQ0UxRjKRiLGPzD
 const REFRESH=15000;
 const Q=new URLSearchParams(location.search),MY_ID=Q.get('id')||'',MY_NICK=Q.get('me')||'',DEMO=Q.get('demo')==='1';
 const LCOL={'킨키나투스':'#4a8fe0','조지 워싱턴':'#4a8fe0','루이 14세':'#f0605f','나폴레옹':'#f0605f','진시황':'#f0605f','루이 16세':'#8a9099',
-  '마르쿠스 아우렐리우스':'#8b7cf6','율리우스 카이사르':'#eb6834','에이브러햄 링컨':'#3fc38f','세종':'#3fc38f','페리클레스':'#8a9099'};
+  '마르쿠스 아우렐리우스':'#8b7cf6','율리우스 카이사르':'#eb6834','에이브러햄 링컨':'#3fc38f','세종':'#3fc38f','페리클레스':'#8a9099',
+  '술라':'#eb6834','솔론':'#4a8fe0','정조':'#3fc38f','프리드리히 2세':'#eb6834','표트르 대제':'#f0605f','오토 폰 비스마르크':'#eb6834','아우구스투스':'#f0605f',
+  '프랭클린 루스벨트':'#8b7cf6','광해군':'#8a9099','윈스턴 처칠':'#4a8fe0','아소카':'#3fc38f','시몬 볼리바르':'#eb6834','함무라비':'#8b7cf6'};
 const GC={S:'#3fc38f',A:'#3fc38f',B:'#4a8fe0',C:'#8a9099',D:'#eb6834',F:'#f0605f'};
 let data=null,tab='top',seen=null,fresh=new Set(),lastOk=0,t0=0,loading=false,lastSig='',settleT=0;
 // 처음 그릴 때와 탭을 바꿀 때만 등장 애니메이션을 보여주고, 자동 갱신 때는 새 기록만 반짝인다
@@ -176,7 +178,7 @@ function renderBanner(){const b=$('banner');
     (rk>30?'<div class="note" style="margin-top:4px">점수 순위표에는 상위 30명까지만 보여요.</div>':'')+'</div>';
   else b.innerHTML='<div class="banner me">방금 끝낸 커리어를 시트에 반영하는 중이에요. <span style="color:var(--text-secondary)">잠시 뒤 자동으로 순위가 나타나요.</span></div>';}
 function renderTiles(){const s=data.stats||{},t=(k,v)=>'<div class="tile"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>';
-  $('tiles').innerHTML=t('지나간 인생',data.careers||0)+t('참가자',data.players||0)+t('평균 임기',(s.avgTerms||0)+'선')+t('재선 성공률',(s.reelectRate||0)+'%')+t('개헌한 비율',(s.amendRate||0)+'%')+t('스스로 퇴임',(s.retireRate||0)+'%');}
+  $('tiles').innerHTML=t('지나간 인생',data.careers||0)+t('참가자',data.players||0)+t('평균 임기',(s.avgTerms||0)+'선')+t('연임 성공률',(s.reelectRate||0)+'%')+t('개헌한 비율',(s.amendRate||0)+'%')+t('스스로 퇴임',(s.retireRate||0)+'%');}
 function rowHtml(r,i,mode){const cls='row'+(r.id===MY_ID?' mine':'')+(fresh.has(r.id)?' fresh':'');
   const right=mode==='longest'?'<div class="b">'+r.years+'<span style="font-size:12px">년</span></div><div class="s">'+r.score+'점</div>':
     mode==='recent'?'<div class="b">'+r.score+'</div><div class="s">'+esc(ago(r.t))+'</div>':'<div class="b">'+r.score+'</div><div class="s">'+r.terms+'선</div>';
@@ -209,7 +211,7 @@ function dirChart(rows){const W=320,H=150,mid=75,bw=(W-20)/5,sc=v=>Math.max(-1,M
     s+='<text x="'+cx+'" y="'+(h>=0?mid+26:mid-18)+'" font-size="8" text-anchor="middle" fill="rgba(255,255,255,.35)">'+r.n+'명</text>';});
   return s+'</svg>';}
 function statsHtml(){if(!data)return '';const s=data.stats||{};const dt=s.dirByTerm||[];
-  const exitCol=k=>/퇴임/.test(k)?'#4a8fe0':/실패|출마/.test(k)?'#8a9099':/이탈/.test(k)?'#6b737d':'#f0605f';
+  const exitCol=k=>/퇴임/.test(k)?'#4a8fe0':/실패|출마|패배/.test(k)?'#8a9099':/이탈/.test(k)?'#6b737d':'#f0605f';
   return '<div class="card"><div class="lab">임기가 거듭될수록 선택은 어디로 향했나</div>'+dirChart(dt.length?dt:[1,2,3,4,5].map(t=>({term:t,n:0,avg:null})))+
     '<div class="note">각 임기에서 고른 선택들의 평균 권력 방향 점수예요. 위로 갈수록 권력 집중, 아래로 갈수록 견제·분산. 막대 아래 숫자는 그 임기까지 간 커리어 수예요.</div></div>'+
     '<div class="card"><div class="lab">닮은 지도자 분포</div>'+hbars(s.leaders,k=>LCOL[k]||'#8b7cf6')+'</div>'+
@@ -223,7 +225,7 @@ $('tabs').addEventListener('click',e=>{const b=e.target.closest('button[data-t]'
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-t0>3000)load();});
 
 /* ---------- 예시 데이터 (?demo=1) ---------- */
-function demo(){const L=Object.keys(LCOL),BGS=['감염병 학자','기업인','인권 변호사','군 장성','정치 명문가'],EX=['명예롭게 퇴임했다','재선에 실패했다','경제 붕괴로 정권이 무너졌다','거리로 쫓겨났다','더는 출마할 수 없었다'];
+function demo(){const L=Object.keys(LCOL),BGS=['감염병 학자','기업인','인권 변호사','군 장성','정치 명문가'],EX=['명예롭게 퇴임했다','지지율 미달로 출마하지 못했다','선거에서 패배했다','경제 붕괴로 정권이 무너졌다','거리로 쫓겨났다','더는 출마할 수 없었다'];
   const NK=['조성민','민준','서연','하준','지우','도윤','서윤','예준','하은','시우','지호','수아'];const rows=[];
   for(let i=0;i<24;i++){const terms=1+Math.floor(Math.random()*4),gs='SABCDF';rows.push({id:'d'+i,nick:NK[i%NK.length]+(i>=NK.length?'2':''),score:Math.round(40+terms*60*Math.random()+terms*30),terms:terms,
     years:terms*4-Math.floor(Math.random()*2),exit:EX[Math.floor(Math.random()*EX.length)],leader:L[Math.floor(Math.random()*L.length)],bg:BGS[i%5],grades:Array.from({length:terms},()=>gs[Math.floor(Math.random()*5)]).join('/'),
