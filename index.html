@@ -2761,12 +2761,19 @@ function spOlym(cities,closes,flagLine){return [
  c=>spEv('폐막식','폐막식 날이다. <em>'+(c.open||'개막 도시')+'</em>에서 시작한 대회를 어디서 마무리할까.',closes)];}
 const SP={
  kr:[
-  {id:'amend',n:'연임 개헌',k:'power',perTerm:1,cond:y=>CP.rule==='single'&&vVal('P')>=50&&y>=1,
+  {id:'amend',n:'연임 개헌',k:'power',perTerm:1,cond:y=>CP.rule==='single'&&!CAR.amendPerm&&vVal('P')>=50&&y>=1,
    bn:{k:'bad',h:'여당 "대통령 연임 개헌" 공론화',s:'권력 집중 속 개헌론 급부상… 야권 "장기 집권 시도"',b:'5년 단임의 헌법이 처음으로 흔들린다.'},
    steps:[c=>spEv('연임 개헌론','권력이 대통령에게 쏠리자 여당에서 <em>대통령 연임 개헌</em> 이야기가 공공연해졌다. 지금 헌법으로는 5년 뒤 물러나야 한다.',[
      ['대통령 연임 개헌안을 발의한다',{p:6,chk:-8,u:7,a:-2},'개헌안이 국회에 올라갔다. 광장에서 "장기 집권 반대" 구호가 나왔다.',null,{go:'vote'}],
      ['4년 중임제로 바꾸되 나는 적용받지 않는다',{chk:6,trn:6,a:5,p:-4},'"다음 대통령부터"라는 단서에 야당도 박수를 쳤다. 당신은 5년 뒤 물러난다.',null,{end:'future'}],
      ['개헌 논의를 공식적으로 접는다',{chk:5,trn:3,p:-4,a:2},'"헌법은 제 임기를 위해 있는 것이 아닙니다." 그 말이 오래 인용됐다.',null,{end:'drop'}]])]},
+  // 2차: 연임 개헌 뒤 권력·군사가 모두 70을 넘으면 계엄으로 선거 자체를 없앨 수 있다. 성공하면 영구집권, 실패하면 내란으로 끝난다.
+  {id:'coup',n:'비상계엄',k:'power',perTerm:1,cond:y=>CP.rule==='single'&&CAR.amendPerm&&!CAR.dict&&vVal('P')>=70&&vVal('M')>=70&&y>=1,
+   bn:{k:'bad',h:'군 수뇌부, 대통령과 심야 긴급 회동',s:'"비상계엄 검토" 보도… 국방부 "사실무근"',b:'헌법을 한 번 고친 정부에, 이번에는 총을 든 사람들이 찾아왔다.'},
+   steps:[c=>{const p=c.coupP=coupP();return spEv('비상계엄 건의','군 수뇌부가 밀실에서 <em>비상계엄 선포</em>를 건의했다. 국회를 멈추고 비상통치기구를 세우면 다시는 선거를 치르지 않아도 된다. 지금 권력과 군의 충성이면 거사 성공 가능성은 '+p+'%다.',[
+     ['비상계엄을 선포한다',{p:6,mil:2,chk:-8,u:9,a:-4,trn:-5},'자정 직전 특별 담화가 방송됐다. 장갑차가 도심으로 들어왔다.',null,{nx:'martial'}],
+     ['건의를 물리친다',{chk:4,trn:3,p:-3},'"그런 말은 이 방 밖으로 나가지 않게 하십시오." 회의는 그걸로 끝났다.',null,{end:'refuse'}],
+     ['건의한 장성들을 경질한다',{chk:6,trn:4,a:2,mil:-6,p:-2},'다음 날 아침 국방부 인사 발표에 별 넷이 셋이나 들어 있었다.',null,{end:'fire'}]]);}]},
   {id:'olym',n:'하계올림픽',k:'good',tro:['올림픽 개최국','적자 올림픽'],cond:y=>vVal('E')>=57&&S.a>=52&&vVal('H')>=55,
    bn:{k:'good',h:'하계올림픽 유치 확정',s:'IOC 총회 1차 투표서 과반… 거리마다 환호',b:'나라가 세계의 무대에 선다. 잘 치르면 역사가 되고, 망치면 빚이 된다.'},
    steps:spOlym([
@@ -2869,7 +2876,7 @@ const SP={
      ['값을 받고 판다',{e:3},'돈 있는 집만 책을 가졌다.'],
      ['궐 안 서고에 보관한다',{p:2,trn:-3},'책은 안전했다. 아무도 읽지 않았다.']])]}],
  usa:[
-  {id:'amend22',n:'수정헌법 22조',k:'power',perTerm:1,cond:y=>CP.rule==='two'&&CAR.term>=2&&vVal('P')>=50&&y>=1,
+  {id:'amend22',n:'수정헌법 22조',k:'power',perTerm:1,cond:y=>CP.rule==='two'&&!CAR.amendPerm&&CAR.term>=2&&vVal('P')>=50&&y>=1,
    bn:{k:'bad',h:'"3선 금지 조항 폐지" 결의안 상정',s:'집권당 의원 40명 공동 발의… 워싱턴 술렁',b:'루스벨트 이후 처음으로 3선 이야기가 공식 테이블에 올랐다.'},
    steps:[c=>spEv('3선 금지 폐지론','집권당 의원들이 <em>수정헌법 22조 폐지 결의안</em>을 냈다. 통과되면 세 번째 임기에 도전할 수 있다.',[
      ['폐지 결의안을 공개 지지한다',{p:6,chk:-8,u:8,a:-2},'결의안이 상원과 하원을 통과했다. 이제 주 의회 비준이 남았다.',null,{go:'ratify'}],
@@ -2900,6 +2907,9 @@ const SP={
      ['우주인에게 맡긴다',{trn:3},'우주인은 딸의 이름을 불렀다.']])]}]};
 // 단계 사이에 끼어드는 이어지는 단계
 const SP_NEXT={
+ martial:c=>{const p=c.coupP=coupP();return spEv('계엄의 밤','계엄군이 <em>국회를 둘러쌌다</em>. 의원들이 담을 넘어 본회의장으로 모여든다. 해제 요구안이 가결되기 전에 끝내야 한다. 거사 성공 가능성은 '+p+'%다.',[
+   ['국회를 해산하고 비상통치기구를 세운다',{p:4,chk:-6,u:6,a:-3},'계엄군이 본회의장 문을 밀고 들어갔다.',null,{coup:1}],
+   ['해제 요구를 받아들이고 계엄을 거둔다',{chk:6,p:-8,a:-6,u:-2,trn:-4},'새벽 네 시, 계엄 해제가 발표됐다. 그날 밤은 오래 기억될 것이다.',null,{end:'lift'}]]);},
  vote:c=>{const p=Math.round(Math.max(5,Math.min(95,(S.a-30)*2.6)));c.passP=p;
   return spEv('개헌 국민투표','개헌안이 국회를 통과했다. 이제 <em>국민투표</em>만 남았다. 지금 지지율이면 통과 가능성은 '+p+'%다.',[
    ['정면 승부로 국민투표에 부친다',{u:3},'투표함이 열렸다.',null,{vote:1}],
@@ -3086,19 +3096,28 @@ function spMake(f,i,label){const R0=CAR.spRun;const e=f(R0.ctx);e.sp={i:i,n:R0.t
 // 고른 선택의 뒷일: 맥락 저장, 이어지는 단계, 국민투표, 연임 허용
 function spAct(a,t){const R0=CAR.spRun;if(!R0)return;R0.done++;if(t<=1)R0.ok++;
   if(a&&a.ctx)R0.ctx[a.ctx[0]]=a.ctx[1];
-  // 판정이 실패·대실패면 개헌으로 가는 길도 무너진다: 발의는 좌초, 투표는 부결, 강행은 무산
-  if(a&&t>=2&&(a.go||a.vote||a.force)){const us=CP.id==='usa';CAR.amendFail=CAR.term;
+  // 판정이 실패·대실패면 발의는 좌초, 강행은 무산된다(버튼에 보이는 성공 확률 그대로).
+  // 국민투표는 판정과 상관없이 화면에 보인 통과 가능성으로만 갈린다(판정은 효과 크기만 바꾼다).
+  if(a&&t>=2&&(a.go||a.force)){const us=CP.id==='usa';CAR.amendFail=CAR.term;
     if(a.go){last.x+=' <em>'+(us?'개정안은 의회 문턱을 넘지 못했다':'개헌안은 국회 문턱을 넘지 못했다')+'.</em> 연임의 길은 닫혔다.';CAR.spEnds=CAR.spEnds||[];CAR.spEnds.push(R0.n+': 발의 좌초');}
     else if(a.vote){R0.ctx.share=(30+Math.random()*19).toFixed(1);R0.ctx.states=26+Math.floor(Math.random()*11);
       last.x+=' <em>'+(us?'비준한 주 '+R0.ctx.states+'곳, 부결':'찬성 '+R0.ctx.share+'%, 부결')+'.</em> 투표가 무너진 뒤라 다시 밀어붙일 명분도 남지 않았다.';CAR.spEnds=CAR.spEnds||[];CAR.spEnds.push(R0.n+': 투표 부결');}
     else{CAR.tro.push({id:'coupfail',n:'헌정 파괴 시도',g:0,term:CAR.term,year:Math.floor(S.turn/PY)+1});last.x+=' <em>강행은 무산됐다.</em> 연임의 길은 닫혔고, 시도했다는 기록만 남았다.';CAR.spEnds=CAR.spEnds||[];CAR.spEnds.push(R0.n+': 강행 무산');}
     a=Object.assign({},a,{go:0,vote:0,force:0});}
   if(a&&a.go){const g=a.go;queue.unshift({gen:()=>spMake(SP_NEXT[g],R0.done,'이어지는 단계')});R0.total++;}
+  // 계엄은 판정과 상관없이 화면에 보인 성공 가능성으로만 갈린다
+  if(a&&a.nx){const g=a.nx;queue.unshift({gen:()=>spMake(SP_NEXT[g],R0.done,'이어지는 단계')});R0.total++;}
+  if(a&&a.coup){const p=R0.ctx.coupP||30,ok=Math.random()*100<p,yr=Math.floor(S.turn/PY)+1;RUN.coup=(ok?'성공':'실패')+' ('+p+'%)';CAR.spEnds=CAR.spEnds||[];
+    if(!ok){CAR.tro.push({id:'coupx',n:'내란 실패',g:0,term:CAR.term,year:yr});CAR.spEnds.push(R0.n+': 내란 실패');CAR.spRun=null;return 'coupfail';}
+    CAR.dict=CAR.term;S.p=cl(S.p+10);S.chk=cl(S.chk-22);S.trn=cl(S.trn-12);S.u=cl(S.u+10);S.a=cl(S.a-6);S.mil=cl(S.mil+4);
+    CAR.tro.push({id:'selfcoup',n:'친위 쿠데타',g:0,term:CAR.term,year:yr});CAR.spEnds.push(R0.n+': 영구집권');
+    last.x+=' <em>국회가 해산되고 비상통치기구가 섰다. 이제 선거는 없다.</em> 다음 임기부터는 투표 없이 권좌를 이어 간다. 견제와 신뢰는 무너졌다.';}
+  if(a&&a.end==='lift')CAR.tro.push({id:'martial',n:'계엄 선포',g:0,term:CAR.term,year:Math.floor(S.turn/PY)+1});
   if(a&&a.vote){const p=R0.ctx.passP||50,ok=Math.random()*100<p,share=ok?(50.5+Math.random()*Math.min(25,p/3)).toFixed(1):(30+Math.random()*19).toFixed(1);
     R0.ctx.share=share;R0.ctx.states=ok?38+Math.floor(Math.random()*6):26+Math.floor(Math.random()*11);
-    if(ok){spAmend(CP.id==='usa'?'주 비준':'국민투표');last.x+=' <em>'+(CP.id==='usa'?'비준한 주 '+R0.ctx.states+'곳, 통과':'찬성 '+share+'%, 통과')+'.</em> 다음 임기에 도전할 수 있게 됐다.';}
+    if(ok){spAmend(CP.id==='usa'?'주 비준':'국민투표');last.x+=' <em>'+(CP.id==='usa'?'비준한 주 '+R0.ctx.states+'곳, 통과':'찬성 '+share+'%, 통과')+'.</em> 이제 임기가 끝날 때마다 다시 출마할 수 있다.';}
     else{CAR.amendFail=CAR.term;last.x+=' <em>'+(CP.id==='usa'?'비준한 주 '+R0.ctx.states+'곳, 부결':'찬성 '+share+'%, 부결')+'.</em>';queue.unshift({gen:()=>spMake(SP_NEXT[CP.id==='usa'?'ratifyFail':'fail'],R0.done,'이어지는 단계')});R0.total++;}}
-  if(a&&a.force){spAmend(a.force);CAR.tro.push({id:'coup',n:'헌정 파괴 논란',g:0,term:CAR.term,year:Math.floor(S.turn/PY)+1});last.x+=' <em>다음 임기에 도전할 수 있게 됐다. 그 대가는 기록에 남는다.</em>';}
+  if(a&&a.force){spAmend(a.force);CAR.tro.push({id:'coup',n:'헌정 파괴 논란',g:0,term:CAR.term,year:Math.floor(S.turn/PY)+1});last.x+=' <em>이제 임기가 끝날 때마다 다시 출마할 수 있다. 그 대가는 기록에 남는다.</em>';}
   if(a&&a.endemic){if(t<=1){CAR.endemic=CAR.term;CAR.endemicN=a.endemic;S.i=cl(Math.min(S.i,8));CAR.spEnds=CAR.spEnds||[];CAR.spEnds.push(a.endemic+' 선언');
       last.x+=' <em>'+a.endemic+' 선언.</em> 남은 임기 동안 위기가 다시 커지지 않고, 해마다 내실이 쌓인다.';}
     else last.x+=' <em>선언은 했지만 곧 환자가 다시 늘었다.</em> 선언은 없던 일이 됐다.';}
@@ -3107,8 +3126,13 @@ function spAct(a,t){const R0=CAR.spRun;if(!R0)return;R0.done++;if(t<=1)R0.ok++;
     if(R0.k==='good'&&R0.tro){const g=R0.ok*2>R0.done;CAR.tro.push({id:'sp_'+R0.id,n:R0.tro[g?0:1],g:g?1:0,term:CAR.term,year:Math.floor(S.turn/PY)+1});
       last.x+=' <em>'+R0.n+' 마무리: '+(g?R0.tro[0]:R0.tro[1])+'</em>.';}
     CAR.spRun=null;}}
-const SPEND={future:'다음 대통령부터 적용',drop:'논의를 접음',withdraw:'발의 철회',accept:'부결에 승복',purge:'공신 숙청',appease:'녹봉으로 회유',step:'권한 일부 반환',balance:'대간 강화',swap:'영의정 교체',trust:'재상에게 맡김',keep:'현행 유지'};
-function spAmend(how){CAR.amendOK=CAR.term;CAR.amend=(CAR.amend||0)+1;CAR.amendHow=(CAR.amendHow?CAR.amendHow+' / ':'')+CAR.term+'기 '+how;}
+const SPEND={future:'다음 대통령부터 적용',drop:'논의를 접음',withdraw:'발의 철회',accept:'부결에 승복',refuse:'계엄 건의 거절',fire:'장성 경질',lift:'계엄 해제',purge:'공신 숙청',appease:'녹봉으로 회유',step:'권한 일부 반환',balance:'대간 강화',swap:'영의정 교체',trust:'재상에게 맡김',keep:'현행 유지'};
+// 한 번 고친 헌법은 계속 유지된다(amendPerm): 이후 임기마다 다시 출마할 수 있다
+// 판정 주사위를 굴리지 않고 이벤트 확률로만 결과가 갈리는 선택지(국민투표 정면 승부, 계엄 국회 해산)
+function spFixed(o){return !!(cur&&cur.sp&&o&&o[4]&&(o[4].vote||o[4].coup));}
+// 계엄 성공 가능성: 지지율과는 상관없다. 권력·군사가 70에서 오를수록, 나라가 혼란할수록(혼란 30 기준) 높다
+function coupP(){return Math.round(Math.max(10,Math.min(90,35+(vVal('P')-70)*1.5+(vVal('M')-70)*1.5+(vVal('X')-30)+5*cnPow('S'))));}
+function spAmend(how){CAR.amendOK=CAR.term;CAR.amendPerm=1;CAR.amend=(CAR.amend||0)+1;CAR.amendHow=(CAR.amendHow?CAR.amendHow+' / ':'')+CAR.term+'기 '+how;}
 
 /* ---------- AUDIO ---------- */
 const AU={ac:null,m:null,on:true,filt:null,dg:null,hb:0};
@@ -3444,10 +3468,13 @@ function ev(){if(pendingNews){const n=pendingNews;pendingNews=null;return breaki
     const tt=document.createElement('span');tt.className='opt-tt';tt.appendChild(document.createTextNode(o[0]));tx.appendChild(tt);b.appendChild(tx);
     if(o[1].X==='quit'){add('opt-m','<span class="stk sq">커리어 종료</span>');}
     else{const s=stakeOf(o,cur.o),P=stakeP(fitOf(o,cur.o).q,s),ok=Math.round((P[0]+P[1])*100),bg=Math.round(P[0]*100),cf=Math.round(P[3]*100),rc=recOf(k);
-      tx.insertAdjacentHTML('beforeend','<span class="opt-ok"><b>'+ok+'<small>%</small></b><span>성공</span></span>');
+      // 국민투표·계엄은 판정이 아니라 이벤트 확률로 결과가 갈리므로 그 확률을 크게 보여 준다
+      const sx=spFixed(o)&&CAR.spRun?(o[4].vote?[CAR.spRun.ctx.passP,'통과']:[CAR.spRun.ctx.coupP,'거사 성공']):null;
+      tx.insertAdjacentHTML('beforeend',sx?'<span class="opt-ok"><b>'+sx[0]+'<small>%</small></b><span>'+sx[1]+'</span></span>':'<span class="opt-ok"><b>'+ok+'<small>%</small></b><span>성공</span></span>');
       add('opt-c',chipsHTML(o[1]));
+      if(sx){add('opt-m','<span class="opt-p">판정 주사위 없이 '+sx[1]+' 확률 '+sx[0]+'%로만 갈린다</span>');}else{
       add('opt-bar',P.map((p,j)=>p>.0005?'<i class="t'+j+'" style="flex:'+p.toFixed(4)+'"></i>':'').join(''));
-      add('opt-m','<span class="stk s'+s+'">'+STK[s].n+'</span><span class="opt-p">대성공 '+bg+'% · <span class="pp-c">'+(cf?'대실패 '+cf+'%':'대실패 없음')+'</span></span>'+(rc?'<span class="opt-rec">★ '+rc+'</span>':''));}
+      add('opt-m','<span class="stk s'+s+'">'+STK[s].n+'</span><span class="opt-p">대성공 '+bg+'% · <span class="pp-c">'+(cf?'대실패 '+cf+'%':'대실패 없음')+'</span></span>'+(rc?'<span class="opt-rec">★ '+rc+'</span>':''));}}
     b.onclick=()=>choose(k);ob.appendChild(b);});
   if(cur.mg){ob.innerHTML='';const rc=ob.parentNode.querySelector('.advrec');if(rc)rc.remove();const eb=document.getElementById('cnEm');if(eb)eb.remove();mgRun(cur.mg,ob);}
   bindSnd();}
@@ -3582,7 +3609,10 @@ function tip(id){if(!tutOn()||!CAR||(CAR.tips=CAR.tips||{})[id])return '';CAR.ti
 function bindTips(){document.querySelectorAll('.tip').forEach(el=>{const ok=el.querySelector('.tip-ok'),off=el.querySelector('.tip-off');
   if(ok)ok.onclick=()=>{SFX.click();el.remove();};if(off)off.onclick=()=>{SFX.click();MEM.tut=false;msave();document.querySelectorAll('.tip').forEach(x=>x.remove());};});}
 function choose(k){SFX.click();document.querySelectorAll('#gOpts button').forEach(b=>b.disabled=true);
-  takeSnap();lastO=cur.o[k];if(lastO[1].X==='crush')CAR.crush++;lastFit=fitOf(lastO,cur.o);lastS=stakeOf(lastO,cur.o);logChoice(k);let t=roll(lastFit.q,lastS);
+  takeSnap();lastO=cur.o[k];if(lastO[1].X==='crush')CAR.crush++;lastFit=fitOf(lastO,cur.o);lastS=stakeOf(lastO,cur.o);logChoice(k);
+  // 국민투표·계엄은 판정 주사위 없이 이벤트 확률로만 갈린다: 효과는 '성공' 기준으로 적용
+  if(spFixed(lastO)){lastT=1;return resolve(lastO,1);}
+  let t=roll(lastFit.q,lastS);
   {const yk=CAR.term+'-'+Math.floor(S.turn/PY);if(t===3&&cnHas('save3')&&CAR.saveY!==yk){t=2;CAR.saveY=yk;cnSaveMsg='화타 · 마비산: 대실패를 실패로 막았다';}}
   lastT=t;tally[t]++;yTally[t]++;CAR.tt[t]++;reel(t,()=>resolve(lastO,t));}
 function reroll(){if(tok<=0)return;SFX.coin();tok--;RUN.rr++;{const _l=LOG[LOG.length-1];if(_l)_l.rerolls++;}useSnap();tally[lastT]--;yTally[lastT]--;CAR.tt[lastT]--;const t2=roll(lastFit.q,lastS);lastT=t2;tally[t2]++;yTally[t2]++;CAR.tt[t2]++;
@@ -3603,7 +3633,7 @@ function resolve(o,t){const e=o[1],ch=o[3];logTier(t);
     if(lastS===2&&t===0){S.a=cl(S.a+4);last.x+=' <em>승부수가 통했다.</em> 결단력 있는 지도자라는 평가가 붙었다.';CAR.boldWin=(CAR.boldWin||0)+1;}
     if(lastS===2&&t===3){S.a=cl(S.a-2);S.u=cl(S.u+2);last.x+=' <em>무리수였다</em>는 비판이 쏟아졌다.';CAR.boldLoss=(CAR.boldLoss||0)+1;}
     if(ch){const id=t<=1?ch.ok:ch.bad;if(id&&CH[id])queue.push(CH[id]);}
-    if(cur.sp)spAct(o[4],t);
+    if(cur.sp&&spAct(o[4],t)==='coupfail')return breaking({k:'bad',h:'계엄 해제 요구안 가결… 내란 실패',s:'계엄군 철수, 대통령 관저 앞에 시민 수만 명',b:'군은 끝내 국회 진입 명령을 따르지 않았다. 내란 혐의 수사가 시작됐고, 정권은 그날 밤으로 끝났다.'},()=>careerEnd('coupfail'));
     pathAfter(e);}
   for(let k=0;k<TPT;k++)tick();
   TH.push({a:S.a,i:S.i,h:vVal('H')});logAfter();MAP.tgt=S.i;MAP.dtgt=deaths;setAmb(S.i);
@@ -3628,8 +3658,11 @@ function gate(kind){if(tok<=0)return careerEnd(kind);SFX.gate();vib([120,80,160]
   '<button id="ac" style="width:100%;font-size:13px;color:var(--text-secondary)">운명을 받아들인다</button></div>';
   document.getElementById('rr').onclick=reroll;document.getElementById('ac').onclick=()=>{SFX.click();careerEnd(kind);};}
 
+// 영구집권(계엄) 상태에서는 지지율이 떨어질 때 DICT_AK배로 더 크게 떨어진다
+const DICT_AK=1.5;
 function apply(e,raw,t,M){const T=TIER[t===undefined?1:t],mom=streak>=4?1.1:1;M=M||STK[1];
-  for(const k in e){if(k==='X')continue;const v=e[k],good=BAD[k]?v<0:v>0;S[k]=cl(S[k]+(raw?v:v*EVS*(good?M.g*T.g*mom:M.b*T.b)));}}
+  for(const k in e){if(k==='X')continue;const v=e[k],good=BAD[k]?v<0:v>0;let d=raw?v:v*EVS*(good?M.g*T.g*mom:M.b*T.b);
+    if(k==='a'&&d<0&&CAR&&CAR.dict)d*=DICT_AK;S[k]=cl(S[k]+d);}}
 
 // 한 번 호출 = 1개월. 결정 빈도와 상관없이 1년에 12번 돈다. 임기가 거듭될수록(TD) 확산·피해·부패 압력이 커지고 지지율은 더 빨리 빠진다.
 function tick(){const te=MOD.te||1,D=DIFF[dif],yr=Math.floor(S.turn/PY),TD=(CAR.term-1)*(CP.tdk||1);
@@ -3640,7 +3673,8 @@ function tick(){const te=MOD.te||1,D=DIFF[dif],yr=Math.floor(S.turn/PY),TD=(CAR.
   S.e=cl(S.e-S.i/72-S.p/170+S.saf/210+.48+(MOD.ep||0)-S.c/62+(TD>0?SCX().eb||0:0));
   S.c=cl(S.c+.22+TD*.07+Math.max(0,S.p-34)/22*(1-(S.trn*te)/150)-(S.trn*te)/320);
   S.u=cl(S.u+S.i/95+Math.max(0,S.p-45)/47+Math.max(0,45-S.e)/58-S.saf/230-.32+(MOD.up||0));
-  S.a=cl(S.a-.32-D.ad-TD*.06-Math.max(0,S.a-55)/65+Math.max(0,S.p-40)/260*(S.i>40?1:0)-S.i/85-Math.max(0,48-S.e)/62-S.u/130-S.c/160+Math.max(0,S.e-55)/95+(MOD.ap||0));
+  const a0=S.a;S.a=cl(S.a-.32-D.ad-TD*.06-Math.max(0,S.a-55)/65+Math.max(0,S.p-40)/260*(S.i>40?1:0)-S.i/85-Math.max(0,48-S.e)/62-S.u/130-S.c/160+Math.max(0,S.e-55)/95+(MOD.ap||0));
+  if(CAR&&CAR.dict&&S.a<a0)S.a=cl(a0-(a0-S.a)*DICT_AK);
   S.p=cl(S.p-S.chk/100*(S.p/115));
   S.chk=cl(S.chk-.12-TD*.03-Math.max(0,S.p-45)/70);S.trn=cl(S.trn-.1-S.c/260);S.saf=cl(S.saf-.08);
   S.mil=cl((S.mil==null?50:S.mil)-.11+(S.e-50)/1500);
@@ -3659,10 +3693,11 @@ function res(){const T=TIER[last.t],wc=last.x.split(' ').length,dl=Math.min(650,
   '<div id="txt" style="background:color-mix(in srgb,'+T.bd+' 7%,var(--surface-2));border:1px solid color-mix(in srgb,'+T.bd+' 32%,transparent);border-radius:14px;padding:16px 17px;margin-bottom:14px;cursor:pointer"><div style="font-size:15.5px;line-height:1.85">'+words(last.x,40)+'</div></div>'+
   '<div style="margin-bottom:12px;min-height:28px">'+deltas()+'</div>'+
   (last.cn&&last.cn.length?'<div class="cn-fx">'+last.cn.map(x=>'<span>'+x+'</span>').join('')+'</div>':'')+
-  (()=>{if(cur.mg)return '<div class="jdg"><span>판정</span><b>경기 결과로 정해졌다</b></div>';const fw=fitWord(lastFit.q),P=stakeP(lastFit.q,lastS);return '<div class="jdg"><span>판정</span><span class="stk s'+lastS+'">'+STK[lastS].n+'</span><b style="color:'+fw[1]+'">'+fw[0]+'</b><span class="jdg-p">성공 이상 '+Math.round((P[0]+P[1])*100)+'%</span></div>';})()+
+  (()=>{if(cur.mg)return '<div class="jdg"><span>판정</span><b>경기 결과로 정해졌다</b></div>';
+  if(spFixed(lastO))return '<div class="jdg"><span>판정</span><b>'+(lastO[4].vote?'투표로':'거사 결과로')+' 정해졌다</b></div>';const fw=fitWord(lastFit.q),P=stakeP(lastFit.q,lastS);return '<div class="jdg"><span>판정</span><span class="stk s'+lastS+'">'+STK[lastS].n+'</span><b style="color:'+fw[1]+'">'+fw[0]+'</b><span class="jdg-p">성공 이상 '+Math.round((P[0]+P[1])*100)+'%</span></div>';})()+
   (lastFit.why.length?'<div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:6px">판정에 영향을 준 것</div><div style="display:flex;flex-direction:column;gap:5px;margin-bottom:18px">'+lastFit.why.map((w,j)=>'<div style="font-size:13px;color:var(--text-secondary);opacity:0;animation:fdIn .3s ease-out forwards;animation-delay:'+(200+j*90)+'ms"><b style="color:'+(w[0]==='+'?'#2e7d55':'#b3261e')+'">'+(w[0]==='+'?'▲':'▼')+'</b> '+w[1]+'</div>').join('')+'</div>':'<div style="height:4px"></div>')+
   '<button id="nx" class="late pri" style="width:100%;margin-bottom:8px;padding:14px;font-size:15px;opacity:0;animation:fdIn .3s ease-out forwards;animation-delay:'+dl+'ms">계속</button>'+
-  (tok>0&&last.t>=2&&!cur.mg?'<button id="rr" class="late" style="width:100%;font-size:13.5px;font-weight:600;color:#3d5a80;border-color:rgba(47,74,107,.45);background:rgba(47,74,107,.08);display:flex;align-items:center;justify-content:center;gap:8px;opacity:0;animation:fdIn .3s ease-out forwards;animation-delay:'+(dl+120)+'ms"><span class="dots"><i></i></span>운명에 개입한다 (남은 '+tok+'회)</button>':'')+
+  (tok>0&&last.t>=2&&!cur.mg&&!(cur.sp&&lastO&&lastO[4])?'<button id="rr" class="late" style="width:100%;font-size:13.5px;font-weight:600;color:#3d5a80;border-color:rgba(47,74,107,.45);background:rgba(47,74,107,.08);display:flex;align-items:center;justify-content:center;gap:8px;opacity:0;animation:fdIn .3s ease-out forwards;animation-delay:'+(dl+120)+'ms"><span class="dots"><i></i></span>운명에 개입한다 (남은 '+tok+'회)</button>':'')+
   '<div style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:8px">글을 누르면 바로 넘길 수 있다</div></div>';
   bindSnd();
   const w=document.getElementById('wrap');document.getElementById('txt').onclick=()=>{w.classList.add('skip');};
@@ -3800,19 +3835,28 @@ const winPct=a=>a<35?0:a>=65?100:Math.round(1+(a-35)*99/30);
 function termEnd(){window.scrollTo(0,0);
   const te=evalTerm('done');CAR.terms.push(te);CAR.tEval=CAR.term;MEM.ends[te.eid]=1;msave();
   if(CP.rule==='reign')return reignEnd(te);
-  const av=Math.round(cl(S.a)),pct=winPct(av),amended=CAR.amendOK===CAR.term,limit=CP.rule==='single'?!amended:CP.rule==='two'?(CAR.term>=2&&!amended):false;
-  const isLast=CAR.term>=MAXT||limit,can=pct>0&&!isLast,n=CAR.term+1;
+  // 개헌(amendPerm)이나 영구집권(dict)이면 임기 한도가 두 배로 늘어난다
+  const av=Math.round(cl(S.a)),pct=winPct(av),amended=!!CAR.amendPerm||CAR.amendOK===CAR.term,limit=CP.rule==='single'?!amended:CP.rule==='two'?(CAR.term>=2&&!amended):false;
+  const capT=amended||CAR.dict?MAXT*2:MAXT,isLast=CAR.term>=capT||limit,can=!CAR.dict&&pct>0&&!isLast,n=CAR.term+1;
+  const risk=av>=35?0:av<15?100:Math.round((35-av)*5);
   // 마지막 승부: 헌법이 막고 있어도 임기 말에 한 번, 개헌을 밀어붙일 수 있다(커리어에 한 번, 지지율 35 이상)
   const lsOK=limit&&!CAR.lastShot&&CAR.amendFail!==CAR.term&&CAR.term<MAXT&&av>=35,lsP=Math.max(.1,Math.min(.8,.15+(av-35)/90+(vVal('P')-40)/160+.05*cnPow('S')));
-  te.winP=isLast?'':pct;
+  te.winP=isLast?'':CAR.dict?100-risk:pct;
   const acol=av>=65?'#2e7d55':av>=35?'#9a6400':'#b3261e';
   const opt=(id,t,sub,col)=>'<button id="'+id+'" style="width:100%;text-align:left;padding:14px 15px;margin-bottom:8px;'+(col?'border-color:'+col+'99;':'')+'"><span style="display:block;font-size:15px;font-weight:600">'+t+'</span><span style="display:block;font-size:12px;color:var(--text-muted);margin-top:3px">'+sub+'</span></button>';
   let msg,btns;
-  if(can){msg=pct>=100?'압도적인 지지. <b>출마하면 반드시 당선된다.</b>':'출마할 수 있다. <b>당선 가능성 '+pct+'%</b> · 떨어지면 그대로 커리어가 끝난다.';
+  // 영구집권: 선거 없이 다음 임기로. 지지율이 35 아래면 봉기 위험, 15 아래면 봉기.
+  if(CAR.dict){
+    if(isLast){msg='<b>'+ageNow()+'세.</b> 종신 집권도 세월은 이기지 못한다. 권좌를 내려놓을 때다.';btns=opt('fin','권좌에서 내려온다','종신 집권을 마친다','#2f5f99');}
+    else if(risk>=100){msg='민심이 완전히 등을 돌렸다. <b>광장에 백만 명이 모였고, 군도 흔들린다.</b>';btns=opt('dep','운명을 맞는다','민중 봉기가 일어난다','#b3261e');}
+    else{msg='<b>선거는 없다.</b> 비상통치기구가 당신의 집권을 '+n+'기로 연장한다.'+(risk?' 다만 민심이 흔들린다. <b>봉기 가능성 '+risk+'%</b>.':'');
+      btns=opt('stay',n+'기 집권을 이어 간다',(risk?'봉기 위험 '+risk+'% · ':'투표 없이 다음 임기로 · ')+'다음 임기에는 새로운 위기가 온다','#b3261e')+
+        opt('retire','스스로 권좌에서 내려온다','여기서 커리어를 마친다','#2f5f99');}}
+  else if(can){msg=pct>=100?'압도적인 지지. <b>출마하면 반드시 당선된다.</b>':'출마할 수 있다. <b>당선 가능성 '+pct+'%</b> · 떨어지면 그대로 커리어가 끝난다.';
     btns=(amended?opt('run','고친 헌법으로 '+n+'선에 도전한다','당선 가능성 '+pct+'% · '+(CAR.amendHow||'개헌')+'으로 열린 길이다','#b3261e'):
       opt('run','재선에 도전한다','당선 가능성 '+pct+'% · 다음 임기에는 전혀 다른 위기가 온다','#2f4a6b'))+
       opt('retire',amended?'개헌은 했지만 물러난다':'명예롭게 퇴임한다','여기서 커리어를 마친다','#2f5f99');}
-  else{msg=limit?(CP.rule==='single'?'<b>'+YRS+'년 단임.</b> 헌법이 연임을 허락하지 않는다. 임기를 마치고 물러난다.':'<b>수정헌법 22조.</b> 세 번째 임기는 없다. 임기를 마치고 물러난다.'):CAR.term>=MAXT?'더는 출마할 수 없다. <b>시대가 바뀌었다.</b>':'지지율이 35에 미치지 못했다. <b>출마조차 할 수 없다.</b> 정권이 교체된다.';
+  else{msg=limit?(CP.rule==='single'?'<b>'+YRS+'년 단임.</b> 헌법이 연임을 허락하지 않는다. 임기를 마치고 물러난다.':'<b>수정헌법 22조.</b> 세 번째 임기는 없다. 임기를 마치고 물러난다.'):isLast?(amended?'<b>'+ageNow()+'세.</b> 고친 헌법도 세월은 막지 못한다. 더는 출마할 기력이 없다.':'더는 출마할 수 없다. <b>시대가 바뀌었다.</b>'):'지지율이 35에 미치지 못했다. <b>출마조차 할 수 없다.</b> 정권이 교체된다.';
     btns=(lsOK?opt('last','마지막 승부: 임기 말 개헌을 밀어붙인다','성공 가능성 '+Math.round(lsP*100)+'% · 통과하면 출마하지만 권력이 쏠리고 견제·민심이 크게 깎인다 · 실패하면 쫓겨난다 · 커리어에 한 번','#b3261e'):'')+
       opt('fin',limit?'임기를 마치고 퇴임한다':'커리어 결산 보기','지금까지의 인생을 돌아본다');}
   const mk=(v,t,c)=>'<span style="position:absolute;left:calc('+v+'% - 1px);top:-5px;bottom:-5px;width:2px;background:'+c+'"></span>';
@@ -3835,7 +3879,15 @@ function termEnd(){window.scrollTo(0,0);
   if(b('run'))b('run').onclick=()=>{SFX.click();te.decision=amended?'개헌 후 '+n+'선 도전':'재선 도전';logSpecial(te.decision,amended?25:0,amended?'권력 집중':'중립');election(amended,pct,te);};
   if(b('retire'))b('retire').onclick=()=>{SFX.click();te.decision='퇴임 (출마 가능했음)';CAR.retireElig=true;logSpecial('퇴임 (출마 가능했음)',-10,'견제·분산');careerEnd('retire');};
   if(b('last'))b('last').onclick=()=>{SFX.click();lastShot(te,lsP,n);};
-  if(b('fin'))b('fin').onclick=()=>{SFX.click();te.decision=limit?'임기 완료 (연임 불가)':isLast?'임기 한도로 퇴장':'출마 불가 (지지율 35 미만)';careerEnd(limit?'served':isLast?'limit':'lost');};}
+  if(b('stay'))b('stay').onclick=()=>{SFX.click();te.decision='무투표 집권 연장';logSpecial(te.decision,30,'권력 집중');
+    if(Math.random()*100>=risk){te.elect=risk?'봉기 진압':'무투표';CAR.elections.push(n+'기 '+te.elect);
+      if(!risk)return newTerm();
+      S.a=cl(S.a-3);S.chk=cl(S.chk-4);
+      return breaking({k:'bad',h:'전국 동시 집회, 계엄군 투입으로 해산',s:'비상통치기구 "질서 회복"… 사상자 집계는 발표되지 않아',b:'광장은 비워졌다. '+n+'기 집권이 시작됐지만, 그날의 사진은 지워지지 않는다.'},()=>newTerm());}
+    te.elect='봉기';CAR.elections.push(n+'기 봉기');
+    breaking({k:'bad',h:'민중 봉기… 군, 시위대에 발포 거부',s:'비상통치기구 붕괴, 대통령 행방 묘연',b:'총을 든 사람들이 끝내 등을 돌렸다. 영구집권은 '+CAR.term+'기에서 끝났다.'},()=>careerEnd('ousted'));};
+  if(b('dep'))b('dep').onclick=()=>{SFX.click();te.decision='민중 봉기';careerEnd('ousted');};
+  if(b('fin'))b('fin').onclick=()=>{SFX.click();te.decision=CAR.dict?'종신 집권 끝에 퇴장':limit?'임기 완료 (연임 불가)':isLast?'임기 한도로 퇴장':'출마 불가 (지지율 35 미만)';careerEnd(CAR.dict?'lifelong':limit?'served':isLast?'limit':'lost');};}
 function lastShot(te,p,n){CAR.lastShot=1;const ok=Math.random()<p,us=CP.id==='usa';RUN.lastShot=(ok?'성공':'실패')+' ('+Math.round(p*100)+'%)';
   logSpecial('임기 말 개헌 강행 · '+(ok?'통과':'부결'),30,'권력 집중');
   if(!ok){te.decision='임기 말 개헌 강행 → 부결';
@@ -3900,22 +3952,25 @@ function election(amend,pct,te){window.scrollTo(0,0);
     g.onclick=()=>{if(win){SFX.coin();newTerm();}else{SFX.click();careerEnd(RG?'deposed':'defeated');}};},1800);}
 
 /* ---------- 커리어 결산 ---------- */
-const EXH={served:'임기를 마치고 물러났다',deposed:'반정으로 폐위됐다',retire:'명예롭게 퇴임했다',lost:'지지율 미달로 출마하지 못했다',defeated:'선거에서 패배했다',limit:'더는 출마할 수 없었다',ousted:'거리로 쫓겨났다',amendfail:'무리한 개헌이 무너지며 쫓겨났다',medfail:'의료 붕괴로 정권이 무너졌다',ecofail:'경제 붕괴로 정권이 무너졌다',quit:'스스로 하야했다'};
+const EXH={served:'임기를 마치고 물러났다',deposed:'반정으로 폐위됐다',retire:'명예롭게 퇴임했다',lost:'지지율 미달로 출마하지 못했다',defeated:'선거에서 패배했다',limit:'더는 출마할 수 없었다',ousted:'거리로 쫓겨났다',amendfail:'무리한 개헌이 무너지며 쫓겨났다',coupfail:'내란이 실패하며 체포됐다',lifelong:'종신 집권 끝에 권좌에서 내려왔다',medfail:'의료 붕괴로 정권이 무너졌다',ecofail:'경제 붕괴로 정권이 무너졌다',quit:'스스로 하야했다'};
 function careerStats(){const N=LOG.filter(x=>x.eventType!=='임기 결정'),avg=a=>a.length?a.reduce((p,q)=>p+q,0)/a.length:0;
   const cs=CAR.cs.length?CAR.cs:[S.c],ts=CAR.ts.length?CAR.ts:[S.trn],us=CAR.us.length?CAR.us:[S.u],ss=CAR.ss.length?CAR.ss:[S.saf];
   const pc={};N.forEach(x=>{if(x.priority&&x.priority!=='없음')pc[x.priority]=(pc[x.priority]||0)+1;});
   const prio=Object.keys(pc).sort((a,b)=>pc[b]-pc[a])[0]||'';
   const h=Math.floor(N.length/2),h1=N.length>=8?avg(N.slice(0,h).map(x=>x.dirScore)):0,h2=N.length>=8?avg(N.slice(h).map(x=>x.dirScore)):0;
   return {dir:avg(N.map(x=>x.dirScore)),perf:avg(CAR.terms.map(t=>t.sc)),cor:avg(cs),trn:avg(ts),u:avg(us),saf:avg(ss),ins:avg(CAR.terms.map(t=>t.ins||0)),
-    prio:prio,h1:h1,h2:h2,terms:CAR.term,exit:CAR.exit,amend:CAR.amend};}
+    prio:prio,h1:h1,h2:h2,terms:CAR.term,exit:CAR.exit,amend:CAR.amend,dict:CAR.dict};}
 // 선택 패턴·성과·퇴장 방식으로 닮은 지도자(24명)를 고른다. 위에서부터 먼저 맞는 조건이 이긴다.
-function leaderOf(C){const d=C.dir,f=C.perf,ex=C.exit,fall=ex==='ousted'||ex==='amendfail'||ex==='quit'||ex==='medfail'||ex==='ecofail'||ex==='deposed';
+function leaderOf(C){const d=C.dir,f=C.perf,ex=C.exit,fall=ex==='ousted'||ex==='amendfail'||ex==='coupfail'||ex==='quit'||ex==='medfail'||ex==='ecofail'||ex==='deposed';
+  if(ex==='coupfail')return 'boli';
   // 스스로 내려온 경우
   if(ex==='retire'){
     if(C.amend)return 'sulla';
     if(C.ins>=40&&d<=-8)return 'solon';
     if(C.terms===1)return d<=3?'cinc':'sulla';
     return d>=3?'sulla':'wash';}
+  // 계엄으로 영구집권한 경우: 무너지면 카이사르, 끝까지 버티면 성과에 따라 아우구스투스 또는 루이 14세
+  if(C.dict){if(fall)return 'caesar';return f>=60?'augu':'louis14';}
   // 개헌으로 임기를 늘린 경우
   if(C.amend){
     if(fall)return 'boli';
@@ -3937,10 +3992,10 @@ function leaderOf(C){const d=C.dir,f=C.perf,ex=C.exit,fall=ex==='ousted'||ex==='
 //  연임: 1선 0 · 2선 9 · 3선 12 · 4선 14 · 5선 15 (첫 재선의 혜택이 가장 크고 그 뒤로는 조금씩)
 //  명예: 7 + 3 × (1년당 업적 − 1.5 × 불명예) + 퇴장 방식(명예 퇴임 +2, 임기 한도 +1, 출마 불가·낙선 0, 하야 −3, 붕괴·축출 −5), 0~15
 // 커리어 점수(100점) = 성과 80 + 명예 20. 오래 버틴 것은 점수가 아니다. 개헌은 명예에서 3점씩 깎인다.
-const CONT=[0,0,0,0,0],EXITPT={served:2,retire:3,limit:1,lost:0,defeated:0,quit:-3,ousted:-5,amendfail:-6,deposed:-5,medfail:-5,ecofail:-5};
+const CONT=[0,0,0,0,0],EXITPT={served:2,retire:3,limit:1,lost:0,defeated:0,quit:-3,ousted:-5,amendfail:-6,coupfail:-8,lifelong:-2,deposed:-5,medfail:-5,ecofail:-5};
 function careerScore(kind,years){const n=Math.max(1,CAR.terms.length),avg=CAR.terms.reduce((s,t)=>s+cl(t.sc),0)/n;
   const good=CAR.tro.filter(t=>t.g).length,bad=CAR.tro.length-good,net=(good-1.5*bad)/Math.max(1,years),ex=EXITPT[kind]||0;
-  const perf=r1(avg*.8),cont=0,honor=r1(Math.max(0,Math.min(20,10+3*net+ex-3*(CAR.amend||0))));
+  const perf=r1(avg*.8),cont=0,honor=r1(Math.max(0,Math.min(20,10+3*net+ex-3*(CAR.amend||0)-(CAR.dict?6:0))));
   return {total:Math.max(0,Math.min(100,Math.round(perf+honor))),perf:perf,cont:cont,honor:honor,avg:r1(avg),ex:ex};}
 function careerEnd(kind){if(CAR.done)return;CAR.done=1;window.scrollTo(0,0);
   if(CAR.tEval!==CAR.term){const te=evalTerm(ENDS[kind]||kind==='quit'?kind:'done');te.decision=EXH[kind]||kind;CAR.terms.push(te);CAR.tEval=CAR.term;MEM.ends[te.eid]=1;
@@ -3979,10 +4034,10 @@ function careerEnd(kind){if(CAR.done)return;CAR.done=1;window.scrollTo(0,0);
    card(lab('업적 '+good+' · 불명예 '+badN)+tro)+
    '<div style="background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px">'+
      '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px"><span style="font-size:13px;color:var(--text-secondary)">커리어 점수'+(newBest?' <span style="font-size:11px;color:#2e7d55;margin-left:4px">최고 기록</span>':'')+'</span><span><span id="scn" style="font-size:34px;font-weight:700">0</span><span style="font-size:13px;color:var(--text-muted)"> / 100</span></span></div>'+
-     sbar('성과',SC.perf,80,'#2f5f99','임기 평균 '+SC.avg+'점 × 0.8',0)+sbar('명예',SC.honor,20,'#2e7d55','업적·불명예, '+(SC.ex>0?'명예로운 퇴장 +'+SC.ex:SC.ex<0?'불명예 퇴장 '+SC.ex:'퇴장 보너스 없음')+(CAR.amend?' · 개헌 −'+3*CAR.amend:''),1)+'</div>'+
+     sbar('성과',SC.perf,80,'#2f5f99','임기 평균 '+SC.avg+'점 × 0.8',0)+sbar('명예',SC.honor,20,'#2e7d55','업적·불명예, '+(SC.ex>0?'명예로운 퇴장 +'+SC.ex:SC.ex<0?'불명예 퇴장 '+SC.ex:'퇴장 보너스 없음')+(CAR.amend?' · 개헌 −'+3*CAR.amend:'')+(CAR.dict?' · 영구집권 −6':''),1)+'</div>'+
    lab('마지막 순간의 숫자')+
    '<div style="background:var(--surface-1);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px">'+
-   VORD.map(k=>row(vName(k),Math.round(vVal(k)))).join('')+row(SCX().iName,Math.round(S.i))+row('누적 인명 피해 지수',Math.round(cDeaths))+row('개헌',(CAR.amend||0)+'회'+(CAR.amendHow?' ('+CAR.amendHow+')':''))+(CAR.spLog&&CAR.spLog.length?row('특별 이벤트',CAR.spLog.join(', ')):'')+'</div>'+
+   VORD.map(k=>row(vName(k),Math.round(vVal(k)))).join('')+row(SCX().iName,Math.round(S.i))+row('누적 인명 피해 지수',Math.round(cDeaths))+row('개헌',(CAR.amend||0)+'회'+(CAR.amendHow?' ('+CAR.amendHow+')':''))+(CAR.dict?row('영구집권',CAR.dict+'기 계엄으로 시작'):'')+(CAR.spLog&&CAR.spLog.length?row('특별 이벤트',CAR.spLog.join(', ')):'')+'</div>'+
    '<button id="again" style="width:100%;margin-bottom:8px;padding:14px;font-weight:600;background:#2f4a6b;border-color:#2f4a6b">새 인생 시작</button>'+
    '<button id="lbMine" style="display:block;width:100%;margin-bottom:8px;padding:13px;border-radius:10px;font-size:14px;font-weight:600;color:#8f6a12;border:1px solid rgba(143,106,18,.45);background:rgba(143,106,18,.08)">명예의 전당에서 내 순위 보기</button>'+
    '<button id="cp" style="width:100%;font-size:13px">결과 복사하기</button></div>';
@@ -4228,9 +4283,10 @@ function guideText(back){window.scrollTo(0,0);
   const S6=sec('scen','6. 위기와 특별 이벤트',
    '<p>위기는 임기마다 다르다. 무엇이 올지는 미리 알 수 없다. 해가 바뀔 때마다 위기가 다시 커지고, 큰일이 터지면 <b>호외</b>가 뜬다. 위기마다 사건과 참모, 뉴스, 상황판 숫자가 모두 다르다.</p>'+
    '<p><b style="color:#8f6a12">특별 국정 과제</b> · 해마다 참모 회의가 끝나면 6칸짜리 판이 열린다. 조건을 채운 과제만 색이 들어오고, 하나를 골라 벌이거나 넘어갈 수 있다. 단계가 2~4개 이어지고, 절반 넘게 성공하면 업적, 아니면 불명예가 붙는다. 올림픽은 <b>수영과 승부차기</b>를, 방역 총력전(조선은 역병 퇴치, 미국은 대유행 총력 대응)은 <b>백신 슬래시</b>를 직접 해야 하고, 그 단계는 주사위 대신 경기 결과로 판정한다. 백신 슬래시에서 <b>S등급</b>을 받고 선언에 성공하면 엔데믹(종식)이 선포되어, 남은 임기 동안 위기가 다시 커지지 않고 해마다 경제·안전망·지지율이 오른다. <b>군사가 70 이상</b>이면 전쟁 과제(다국적 연합 작전 · 대마도 정벌 · 해외 원정)가 열린다.</p>'+
-   '<p><b style="color:#b3261e">연임 개헌</b> · 대한민국은 5년 단임이다. 하지만 <b>권력이 50 이상</b>이면 판에 연임 개헌 과제가 열린다. 개헌안을 내면 국민투표(지지율이 높을수록 통과 가능성이 크다)를 거치고, 통과해야 다음 대선에 나갈 수 있다. 편법이나 재투표 강행 같은 길도 있지만 기록에 남는다. 미국은 두 번째 임기에 같은 방식으로 3선 금지 조항 폐지 이벤트가 열린다.</p>');
+   '<p><b style="color:#b3261e">연임 개헌</b> · 대한민국은 5년 단임이다. 하지만 <b>권력이 50 이상</b>이면 판에 연임 개헌 과제가 열린다. 개헌안을 내면 국민투표(지지율이 높을수록 통과 가능성이 크다)를 거친다. 국민투표는 판정 주사위 없이 화면에 보인 통과 가능성으로만 갈린다. <b>한 번 통과한 개헌은 계속 유지돼</b>, 이후 임기마다 다시 대선에 나갈 수 있고 임기 한도도 두 배로 늘어난다. 편법이나 재투표 강행 같은 길도 있지만 기록에 남는다. 미국은 두 번째 임기에 같은 방식으로 3선 금지 조항 폐지 이벤트가 열린다.</p>'+
+   '<p><b style="color:#b3261e">비상계엄</b> · 대한민국에서 연임 개헌을 마친 뒤 <b>권력 70 이상, 군사 70 이상</b>이면 군 수뇌부가 계엄을 건의한다. 거사 성공 가능성은 지지율과 상관없고, 권력·군사가 높을수록, <b>나라가 혼란할수록</b> 오른다(10~90%, 판정 주사위 없음). 성공하면 선거가 사라지는 <b>영구집권</b>이 시작된다. 견제·신뢰가 무너지고, 이후 지지율은 떨어질 때마다 1.5배로 떨어진다. 임기 말 지지율이 35 미만이면 봉기 위험이 생기고 15 미만이면 봉기로 쫓겨난다. 실패하면 내란으로 체포돼 그대로 끝난다(명예 −8).</p>');
   const S7=sec('elect','7. 임기 말 규칙',
-   '<table class="gb-t">'+row('대한민국','5년 단임. 연임 개헌이 통과된 임기에만 다음 대선에 나갈 수 있다. 개헌 이벤트의 선택이 실패·대실패로 판정되면 발의는 좌초되고, 투표는 부결되며, 강행은 무산된다. 개헌이 무너진 임기에는 임기 말 마지막 승부도 열리지 않는다.')+row('미국','4년 중임. 1기 말에는 선거로 재선에 도전한다. 2기 말에는 3선 금지 조항이 폐지된 경우에만 나갈 수 있다.')+row('조선','선거가 없다. 치세 5년마다 민심의 심판이 있다. 민심 35 이상이면 이어 가고, 20~35는 반정 위험이 생기며, 20 미만이면 반정이 일어난다. 최대 네 번의 치세.')+'</table>'+
+   '<table class="gb-t">'+row('대한민국','5년 단임. 연임 개헌이 한 번 통과되면 그 뒤로는 임기마다 대선에 나갈 수 있다(최대 10기). 발의·편법·재투표 강행은 실패·대실패로 판정되면 무너지고, 국민투표는 통과 가능성으로만 갈린다. 개헌이 무너진 임기에는 임기 말 마지막 승부도 열리지 않는다. 계엄으로 영구집권하면 선거 없이 이어 간다.')+row('미국','4년 중임. 1기 말에는 선거로 재선에 도전한다. 2기 말에는 3선 금지 조항이 폐지된 경우에만 나갈 수 있다.')+row('조선','선거가 없다. 치세 5년마다 민심의 심판이 있다. 민심 35 이상이면 이어 가고, 20~35는 반정 위험이 생기며, 20 미만이면 반정이 일어난다. 최대 네 번의 치세.')+'</table>'+
    '<table class="gb-t">'+row('35 미만','출마할 수 없다.')+row('35 ~ 65','당선 가능성이 1%에서 100%까지 비례해서 오른다.')+row('65 이상','출마하면 반드시 당선된다.')+'</table>'+
    '<p>나갈 수 있어도 스스로 내려올 수 있다. 명예로운 퇴임은 명예 점수에 보너스가 붙는다.</p>'+
    '<p><b>마지막 승부</b> · 헌법에 막혀 출마할 수 없어도, 지지율이 35 이상이면 커리어에 한 번 임기 말 개헌을 밀어붙일 수 있다. 성공 확률(10~80%)은 지지율과 권력이 높을수록, 책략가가 곁에 있을수록 오른다. 통과하면 권력 +8, 견제 −10, 혼란이 오르고 지지율 −6에 불명예 "임기 말 개헌 강행"이 붙은 채 출마한다. 부결되면 그대로 쫓겨난다(명예 점수 −6).</p>');
@@ -4239,7 +4295,7 @@ function guideText(back){window.scrollTo(0,0);
    '<table class="gb-t">'+row('등급','S 82↑ · A 70↑ · B 58↑ · C 46↑ · D 33↑ · F')+row('생명 보호','임기 중 인명 피해가 적을수록 높다(0~100)')+row('청렴','부패가 낮을수록 높다')+row('제도 변화','취임 때보다 권력 견제·정보 공개·안전망이 얼마나 늘었는가')+'</table>'+
    '<p><b>커리어 점수(100점)</b> = 성과 80 + 명예 20. 오래 버틴 것 자체는 점수가 아니다.</p>'+
    '<table class="gb-t">'+row('성과','모든 임기 점수의 평균 × 0.8 (임기가 많아도 합이 아니라 평균)')+
-   row('명예','10 + 3 × (1년당 업적 − 1.5 × 불명예) + 퇴장 방식 − 개헌 1회당 3, 0~20점')+row('퇴장 방식','나갈 수 있었는데 퇴임 +3 · 임기 완료 +2 · 임기 한도 +1 · 출마 불가·낙선 0 · 하야 −3 · 붕괴·축출·반정 −5')+'</table>'+
+   row('명예','10 + 3 × (1년당 업적 − 1.5 × 불명예) + 퇴장 방식 − 개헌 1회당 3 − 영구집권 6, 0~20점')+row('퇴장 방식','나갈 수 있었는데 퇴임 +3 · 임기 완료 +2 · 임기 한도 +1 · 출마 불가·낙선 0 · 종신 집권 끝 −2 · 하야 −3 · 붕괴·축출·반정 −5 · 개헌 실패 −6 · 내란 실패 −8')+'</table>'+
    '<p class="gb-n">업적: '+good.join(', ')+'<br>불명예: '+bad.join(', ')+'</p>');
   const lg=LEADK.map(id=>{const L=LEAD[id],on=MEM.leaders&&MEM.leaders[id];return '<span class="gb-lead" style="border-color:'+(on?L.col:'var(--border)')+'">'+(on?'<b>'+L.n+'</b> · '+L.k:'??? · '+L.k)+'</span>';}).join('');
   const S9=sec('lead','9. 닮은 지도자 '+LEADK.length+'명',
