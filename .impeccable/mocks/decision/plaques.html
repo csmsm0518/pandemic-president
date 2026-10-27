@@ -1,0 +1,52 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=390">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+html,body{width:390px;height:844px;overflow:hidden}
+body{font-family:-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#efe7d6;
+ background:radial-gradient(120% 50% at 50% 0%,#3a2c18 0%,#15110c 55%,#0b0907 100%)}
+.wall{position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.015) 0 2px,transparent 2px 46px)}
+.top{position:relative;display:flex;justify-content:space-between;align-items:center;padding:14px 16px 0}
+.live{font-size:11px;letter-spacing:.18em;color:#c9a24a;display:flex;align-items:center;gap:6px}
+.live i{width:7px;height:7px;border-radius:50%;background:#3fc38f;box-shadow:0 0 8px #3fc38f}
+.play{font-size:12.5px;font-weight:700;color:#15110c;background:linear-gradient(180deg,#f6dc8f,#c49a3e);padding:7px 13px;border-radius:999px}
+h1{position:relative;text-align:center;margin:14px 0 2px;font:900 30px/1.1 "Noto Serif KR",serif;letter-spacing:.06em;
+ background:linear-gradient(100deg,#8a6a24,#e3b94f 30%,#fff3c4 46%,#e3b94f 60%,#8a6a24);-webkit-background-clip:text;color:transparent}
+.sub{position:relative;text-align:center;font-size:11px;letter-spacing:.34em;color:#8f7a52}
+.difs{position:relative;display:flex;gap:6px;justify-content:center;margin:14px 0 16px}
+.difs span{font-size:12px;font-weight:700;padding:5px 11px;border-radius:4px;color:#cbbd9c;border:1px solid rgba(201,162,74,.3);background:rgba(0,0,0,.25)}
+.difs .on{color:#15110c;background:linear-gradient(180deg,#f6dc8f,#c49a3e);border-color:#f1d589}
+.plate{position:relative;margin:0 16px;border-radius:6px;padding:16px 16px 14px;color:#2a1d08;
+ background:linear-gradient(160deg,#f7e2a2 0%,#d8b25a 38%,#a9802f 70%,#e0bd66 100%);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -2px 0 rgba(0,0,0,.25),0 14px 30px -12px rgba(0,0,0,.8)}
+.plate::before,.plate::after{content:"";position:absolute;top:10px;width:9px;height:9px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff3c4,#6b5018)}
+.plate::before{left:10px}.plate::after{right:10px}
+.p1{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:center}
+.med{width:96px;height:96px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#3b2f1c,#120f0b);border:4px solid #6b5018;box-shadow:0 0 0 2px #f1d589;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.med b{width:54px;height:62px;border-radius:27px 27px 6px 6px;background:#3d5a80;margin-bottom:-6px}
+.rk{font:900 13px "Noto Serif KR",serif;letter-spacing:.3em;color:#5a3f0c}
+.nm{font:900 26px/1.15 "Noto Serif KR",serif;letter-spacing:.02em;text-shadow:0 1px 0 rgba(255,255,255,.45)}
+.sc{font:800 34px/1 "Noto Serif KR",serif;letter-spacing:-.01em;margin-top:6px}
+.sc small{font-size:13px;font-weight:700;margin-left:3px}
+.ld{font-size:12px;font-weight:700;color:#5a3f0c;margin-top:6px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 16px 0}
+.row2 .plate{margin:0;padding:13px 12px 11px;background:linear-gradient(160deg,#e9eef2,#b7c0c8 45%,#8b949c 75%,#cfd6dc)}
+.row2 .bz{background:linear-gradient(160deg,#f0c49a,#c4834d 45%,#8f5a2c 75%,#d79a66)}
+.row2 .nm{font-size:17px}.row2 .sc{font-size:22px}.row2 .rk{font-size:11px}
+.me{position:relative;margin:16px 16px 0;padding:12px 14px;border:1px dashed rgba(241,213,137,.55);border-radius:6px;background:rgba(241,213,137,.07);display:flex;justify-content:space-between;align-items:center}
+.me b{font:800 20px "Noto Serif KR",serif;color:#f1d589}
+.me span{font-size:12.5px;color:#cbbd9c;line-height:1.5}
+.list{position:relative;margin:14px 16px 0;border-top:1px solid rgba(201,162,74,.25)}
+.list div{display:grid;grid-template-columns:28px 1fr auto;align-items:center;padding:10px 2px;border-bottom:1px solid rgba(201,162,74,.14);font-size:14px}
+.list i{font:800 14px "Noto Serif KR",serif;font-style:normal;color:#8f7a52}
+.list em{font-style:normal;font-size:11.5px;color:#8f7a52;display:block}
+.list strong{font:800 16px "Noto Serif KR",serif;color:#f1d589}
+</style></head><body><div class="wall"></div>
+<div class="top"><span class="live"><i></i>LIVE · 15초마다</span><span class="play">게임 하러 가기</span></div>
+<h1>명예의 전당</h1><div class="sub">HALL OF FAME</div>
+<div class="difs"><span>쉬움</span><span class="on">보통</span><span>어려움</span><span>지옥</span><span>전체</span></div>
+<div class="plate p1"><div class="med"><b></b></div><div><div class="rk">제 1 위</div><div class="nm">백신대통령</div><div class="sc">9,842<small>점</small></div><div class="ld">3선 · 15년 · 닮은 지도자 세종</div></div></div>
+<div class="row2"><div class="plate"><div class="rk">제 2 위</div><div class="nm">서연</div><div class="sc">8,710</div></div><div class="plate bz"><div class="rk">제 3 위</div><div class="nm">하준</div><div class="sc">8,055</div></div></div>
+<div class="me"><span>내 커리어는<br>1위까지 4,120점</span><b>23위</b></div>
+<div class="list"><div><i>4</i><span>도윤<em>2선 · 넬슨 만델라</em></span><strong>7,940</strong></div><div><i>5</i><span>지우<em>1선 · 리콴유</em></span><strong>7,612</strong></div><div><i>6</i><span>예준<em>2선 · 링컨</em></span><strong>7,301</strong></div></div>
+</body></html>

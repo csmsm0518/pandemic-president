@@ -1,0 +1,35 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "undersized-ui-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/annals.html"
+        ],
+        "createdAt": "2026-10-27T17:41:02.493Z",
+        "reason": "assistant: unchosen decision-round sketch (the user picked plaques), never shipped"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "leaderboard.html"
+        ],
+        "createdAt": "2026-10-27T17:46:06.755Z",
+        "reason": "user confirmed: asked for the 개표 방송 bottom 속보 ticker on the leaderboard; it pauses on hover/focus and is static under reduced motion"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/*.html"
+        ],
+        "createdAt": "2026-10-27T17:55:52.223Z",
+        "reason": "assistant: decision-round sketches, never shipped; they use the same Noto Serif KR face as DESIGN.md with a shorter fallback stack"
+      }
+    ]
+  }
+}

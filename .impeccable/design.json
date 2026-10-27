@@ -1,0 +1,811 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-28T12:00:00Z",
+  "title": "Design System: 팬데믹 대통령",
+  "extensions": {
+    "colorMeta": {
+      "wall": {
+        "role": "neutral",
+        "displayName": "전당 어둠",
+        "canonical": "#120f0b",
+        "oklch": "oklch(17.1% 0.009 75.0)",
+        "tonalRamp": [
+          "#0c0b09",
+          "#272522",
+          "#44413e",
+          "#64615c",
+          "#86827c",
+          "#a8a4a0",
+          "#ccc8c4",
+          "#f1eeea"
+        ]
+      },
+      "wall-2": {
+        "role": "neutral",
+        "displayName": "어둠 2",
+        "canonical": "#1d1812",
+        "oklch": "oklch(21.3% 0.014 72.0)",
+        "tonalRamp": [
+          "#0d0b08",
+          "#282421",
+          "#45413c",
+          "#66605a",
+          "#88817a",
+          "#aaa49d",
+          "#cdc8c2",
+          "#f2eee9"
+        ]
+      },
+      "wall-3": {
+        "role": "neutral",
+        "displayName": "어둠 3",
+        "canonical": "#2a2219",
+        "oklch": "oklch(25.8% 0.020 70.0)",
+        "tonalRamp": [
+          "#0e0a07",
+          "#29241f",
+          "#47413a",
+          "#686057",
+          "#8a8176",
+          "#aca39a",
+          "#cfc8bf",
+          "#f4ede6"
+        ]
+      },
+      "gold": {
+        "role": "primary",
+        "displayName": "명판 금",
+        "canonical": "#f1d589",
+        "oklch": "oklch(88.0% 0.100 90.0)",
+        "tonalRamp": [
+          "#130900",
+          "#302300",
+          "#514005",
+          "#755f1c",
+          "#997f34",
+          "#baa364",
+          "#dbc893",
+          "#feeec2"
+        ]
+      },
+      "gold-2": {
+        "role": "primary",
+        "displayName": "바랜 금",
+        "canonical": "#c9a24a",
+        "oklch": "oklch(73.1% 0.115 85.2)",
+        "tonalRamp": [
+          "#150800",
+          "#342100",
+          "#573d00",
+          "#7b5c00",
+          "#a17c1e",
+          "#c1a058",
+          "#e2c68a",
+          "#ffecbb"
+        ]
+      },
+      "gold-3": {
+        "role": "primary",
+        "displayName": "그늘진 금",
+        "canonical": "#8a6a24",
+        "oklch": "oklch(54.3% 0.095 83.4)",
+        "tonalRamp": [
+          "#140900",
+          "#322200",
+          "#543e0c",
+          "#785d22",
+          "#9d7d3a",
+          "#bea169",
+          "#dfc696",
+          "#ffecc4"
+        ]
+      },
+      "brass-hi": {
+        "role": "primary",
+        "displayName": "황동 윗면",
+        "canonical": "#f8e3a3",
+        "oklch": "oklch(91.8% 0.085 92.0)",
+        "tonalRamp": [
+          "#110a00",
+          "#2e2402",
+          "#4e4116",
+          "#70602c",
+          "#948144",
+          "#b5a470",
+          "#d7c99c",
+          "#faeec9"
+        ]
+      },
+      "brass-mid": {
+        "role": "primary",
+        "displayName": "황동 가운데",
+        "canonical": "#d9b158",
+        "oklch": "oklch(77.9% 0.117 85.2)",
+        "tonalRamp": [
+          "#150800",
+          "#352100",
+          "#573d00",
+          "#7c5c00",
+          "#a27c1b",
+          "#c2a057",
+          "#e2c689",
+          "#ffecba"
+        ]
+      },
+      "brass-low": {
+        "role": "primary",
+        "displayName": "황동 아랫면",
+        "canonical": "#b88b34",
+        "oklch": "oklch(66.4% 0.116 80.6)",
+        "tonalRamp": [
+          "#170700",
+          "#362000",
+          "#593c00",
+          "#7f5a02",
+          "#a67a1f",
+          "#c59e59",
+          "#e6c48a",
+          "#ffeabb"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "양피지 글자",
+        "canonical": "#efe7d6",
+        "oklch": "oklch(93.0% 0.024 85.8)",
+        "tonalRamp": [
+          "#0d0b06",
+          "#28251d",
+          "#464137",
+          "#676154",
+          "#898272",
+          "#aba497",
+          "#cec9bd",
+          "#f3eee4"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "양피지 보조",
+        "canonical": "#cdbf9f",
+        "oklch": "oklch(80.8% 0.046 87.2)",
+        "tonalRamp": [
+          "#0f0b02",
+          "#2b2415",
+          "#4a412d",
+          "#6b6047",
+          "#8e8163",
+          "#b0a489",
+          "#d2c8b1",
+          "#f6eeda"
+        ]
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "양피지 각주",
+        "canonical": "#a8987a",
+        "oklch": "oklch(68.6% 0.046 83.1)",
+        "tonalRamp": [
+          "#100a03",
+          "#2c2415",
+          "#4b412d",
+          "#6c5f47",
+          "#908063",
+          "#b1a389",
+          "#d4c8b1",
+          "#f7edda"
+        ]
+      },
+      "engraved-ink": {
+        "role": "neutral",
+        "displayName": "새긴 글자",
+        "canonical": "#2a1c07",
+        "oklch": "oklch(23.9% 0.040 75.0)",
+        "tonalRamp": [
+          "#100a04",
+          "#2c2318",
+          "#4b4030",
+          "#6d5f4b",
+          "#917f68",
+          "#b2a28e",
+          "#d5c7b5",
+          "#f8eddd"
+        ]
+      },
+      "button-ink": {
+        "role": "neutral",
+        "displayName": "단추 글자",
+        "canonical": "#24170a",
+        "oklch": "oklch(21.8% 0.031 65.0)",
+        "tonalRamp": [
+          "#100a05",
+          "#2c231c",
+          "#4b4035",
+          "#6c5e51",
+          "#907f6f",
+          "#b1a294",
+          "#d4c7ba",
+          "#f8ece2"
+        ]
+      },
+      "silver-plate": {
+        "role": "secondary",
+        "displayName": "은판",
+        "canonical": "#c1c9d0",
+        "oklch": "oklch(83.2% 0.013 244.3)",
+        "tonalRamp": [
+          "#090b0e",
+          "#222629",
+          "#3e4347",
+          "#5c6267",
+          "#7c838a",
+          "#9fa6ac",
+          "#c4cacf",
+          "#eaeff3"
+        ]
+      },
+      "silver-ink": {
+        "role": "secondary",
+        "displayName": "은판 글자",
+        "canonical": "#1c2126",
+        "oklch": "oklch(24.5% 0.012 248.3)",
+        "tonalRamp": [
+          "#090b0d",
+          "#222529",
+          "#3e4247",
+          "#5d6267",
+          "#7d8389",
+          "#a0a6ab",
+          "#c5cacf",
+          "#ebeff3"
+        ]
+      },
+      "bronze-plate": {
+        "role": "secondary",
+        "displayName": "동판",
+        "canonical": "#c6874f",
+        "oklch": "oklch(67.5% 0.106 61.1)",
+        "tonalRamp": [
+          "#190500",
+          "#3b1c00",
+          "#5f370d",
+          "#875423",
+          "#af733b",
+          "#cf9869",
+          "#efbe96",
+          "#ffe6c4"
+        ]
+      },
+      "bronze-ink": {
+        "role": "secondary",
+        "displayName": "동판 글자",
+        "canonical": "#2a1405",
+        "oklch": "oklch(21.9% 0.044 53.9)",
+        "tonalRamp": [
+          "#120904",
+          "#302219",
+          "#503d32",
+          "#735c4d",
+          "#987c6a",
+          "#b99f8f",
+          "#dbc4b6",
+          "#fdeade"
+        ]
+      },
+      "broadcast-red": {
+        "role": "tertiary",
+        "displayName": "방송 빨강",
+        "canonical": "#ff5a4f",
+        "oklch": "oklch(68.7% 0.202 27.5)",
+        "tonalRamp": [
+          "#280000",
+          "#520000",
+          "#7f060a",
+          "#b02320",
+          "#e13f37",
+          "#ff7366",
+          "#ffa294",
+          "#ffcfc2"
+        ]
+      },
+      "broadcast-red-soft": {
+        "role": "tertiary",
+        "displayName": "방송 빨강 연",
+        "canonical": "#ff8f86",
+        "oklch": "oklch(76.8% 0.137 25.6)",
+        "tonalRamp": [
+          "#200000",
+          "#450f0e",
+          "#6e2724",
+          "#9a413c",
+          "#c75d57",
+          "#e5877f",
+          "#ffb0a8",
+          "#ffdad3"
+        ]
+      },
+      "broadcast-red-deep": {
+        "role": "tertiary",
+        "displayName": "방송 빨강 진",
+        "canonical": "#c2372e",
+        "oklch": "oklch(54.5% 0.177 28.2)",
+        "tonalRamp": [
+          "#250000",
+          "#4d0001",
+          "#791914",
+          "#a73229",
+          "#d74d41",
+          "#f67b6d",
+          "#ffa89a",
+          "#ffd4c7"
+        ]
+      },
+      "live-green": {
+        "role": "neutral",
+        "displayName": "연결됨",
+        "canonical": "#3fc38f",
+        "oklch": "oklch(73.3% 0.138 162.8)",
+        "tonalRamp": [
+          "#001204",
+          "#003118",
+          "#005231",
+          "#00764d",
+          "#009b6a",
+          "#54bc8f",
+          "#8adeb6",
+          "#bdffdf"
+        ]
+      },
+      "alarm-red": {
+        "role": "neutral",
+        "displayName": "연결 끊김",
+        "canonical": "#f0605f",
+        "oklch": "oklch(67.3% 0.178 23.5)",
+        "tonalRamp": [
+          "#250000",
+          "#4d0008",
+          "#79171d",
+          "#a83033",
+          "#d84b4c",
+          "#f67a76",
+          "#ffa6a1",
+          "#ffd3cd"
+        ]
+      },
+      "diff-easy": {
+        "role": "neutral",
+        "displayName": "쉬움",
+        "canonical": "#3fc38f",
+        "oklch": "oklch(73.3% 0.138 162.8)",
+        "tonalRamp": [
+          "#001204",
+          "#003118",
+          "#005231",
+          "#00764d",
+          "#009b6a",
+          "#54bc8f",
+          "#8adeb6",
+          "#bdffdf"
+        ]
+      },
+      "diff-normal": {
+        "role": "neutral",
+        "displayName": "보통",
+        "canonical": "#e3b341",
+        "oklch": "oklch(79.0% 0.139 85.2)",
+        "tonalRamp": [
+          "#170700",
+          "#372000",
+          "#5a3c00",
+          "#805a00",
+          "#a77a00",
+          "#c79f43",
+          "#e7c57b",
+          "#ffebaf"
+        ]
+      },
+      "diff-hard": {
+        "role": "neutral",
+        "displayName": "어려움",
+        "canonical": "#e0604f",
+        "oklch": "oklch(64.7% 0.164 29.8)",
+        "tonalRamp": [
+          "#230000",
+          "#4a0603",
+          "#751f16",
+          "#a3382c",
+          "#d25444",
+          "#f0806f",
+          "#ffab9b",
+          "#ffd7c8"
+        ]
+      },
+      "diff-hell": {
+        "role": "neutral",
+        "displayName": "지옥",
+        "canonical": "#ff4d4d",
+        "oklch": "oklch(67.3% 0.215 25.0)",
+        "tonalRamp": [
+          "#290000",
+          "#540000",
+          "#82000d",
+          "#b41722",
+          "#e6353a",
+          "#ff6e68",
+          "#ff9e95",
+          "#ffcdc3"
+        ]
+      },
+      "diff-all": {
+        "role": "neutral",
+        "displayName": "전체",
+        "canonical": "#c9a24a",
+        "oklch": "oklch(73.1% 0.115 85.2)",
+        "tonalRamp": [
+          "#150800",
+          "#342100",
+          "#573d00",
+          "#7b5c00",
+          "#a17c1e",
+          "#c1a058",
+          "#e2c68a",
+          "#ffecbb"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "금 선",
+        "canonical": "rgba(201,162,74,.28)",
+        "tonalRamp": [
+          "#150800",
+          "#342100",
+          "#573d00",
+          "#7b5c00",
+          "#a17c1e",
+          "#c1a058",
+          "#e2c68a",
+          "#ffecbb"
+        ]
+      },
+      "line-2": {
+        "role": "neutral",
+        "displayName": "연한 금 선",
+        "canonical": "rgba(201,162,74,.14)",
+        "tonalRamp": [
+          "#150800",
+          "#342100",
+          "#573d00",
+          "#7b5c00",
+          "#a17c1e",
+          "#c1a058",
+          "#e2c68a",
+          "#ffecbb"
+        ]
+      },
+      "wall-glow": {
+        "role": "neutral",
+        "displayName": "어둠 윗빛",
+        "canonical": "#1b1610",
+        "tonalRamp": [
+          "#0c0b09",
+          "#272522",
+          "#44413e",
+          "#64615c",
+          "#86827c",
+          "#a8a4a0",
+          "#ccc8c4",
+          "#f1eeea"
+        ]
+      },
+      "ticker-ground": {
+        "role": "neutral",
+        "displayName": "자막 바탕",
+        "canonical": "#15110c",
+        "tonalRamp": [
+          "#0c0b09",
+          "#272522",
+          "#44413e",
+          "#64615c",
+          "#86827c",
+          "#a8a4a0",
+          "#ccc8c4",
+          "#f1eeea"
+        ]
+      },
+      "detail-hi": {
+        "role": "neutral",
+        "displayName": "세부 카드 위",
+        "canonical": "#221c14",
+        "tonalRamp": [
+          "#0d0b08",
+          "#282421",
+          "#45413c",
+          "#66605a",
+          "#88817a",
+          "#aaa49d",
+          "#cdc8c2",
+          "#f2eee9"
+        ]
+      },
+      "detail-lo": {
+        "role": "neutral",
+        "displayName": "세부 카드 아래",
+        "canonical": "#16120d",
+        "tonalRamp": [
+          "#0c0b09",
+          "#272522",
+          "#44413e",
+          "#64615c",
+          "#86827c",
+          "#a8a4a0",
+          "#ccc8c4",
+          "#f1eeea"
+        ]
+      },
+      "selection-ink": {
+        "role": "neutral",
+        "displayName": "선택 글자",
+        "canonical": "#1d1406",
+        "tonalRamp": [
+          "#100a05",
+          "#2c231c",
+          "#4b4035",
+          "#6c5e51",
+          "#907f6f",
+          "#b1a294",
+          "#d4c7ba",
+          "#f8ece2"
+        ]
+      },
+      "exit-retired": {
+        "role": "neutral",
+        "displayName": "퇴임",
+        "canonical": "#6f9be0",
+        "tonalRamp": [
+          "#000b24",
+          "#00224a",
+          "#123d70",
+          "#2f5b96",
+          "#4f7bbd",
+          "#6f9be0",
+          "#9dbcf2",
+          "#cfe0ff"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "'명예의 전당' 제목 하나. 금색, 가운데, 520px 이하에서 28px. 부제·트로피 없음."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "1위 명판 점수. 520px 이하 38px, 은·동 판 23px, 기본 판 30px."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "명판 닉네임. 1위 clamp(24px,6.6vw,32px), 은·동 17px."
+      },
+      "title-sm": {
+        "displayName": "Title-sm",
+        "purpose": "통계 구역·세부 수치 제목, 금색 명조."
+      },
+      "numeral": {
+        "displayName": "Numeral",
+        "purpose": "줄 점수(금)와 순위 숫자(17px 바랜 금). 판 가장자리 순위 숫자는 48px(은·동 38px)."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "내 커리어 문장, 세부 설명, 통계 각주 (12.5–13.5px)."
+      },
+      "body-strong": {
+        "displayName": "Body-strong",
+        "purpose": "새김 줄 닉네임. 단추 글자는 800 14px(넓은 단추 15px)."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "난이도 알약 13px, 보기 탭 14px, 메타·각주 12.5px."
+      }
+    },
+    "shadows": [
+      {
+        "name": "plaque-hung",
+        "value": "inset 0 1px 0 rgba(255,250,228,.6), 0 14px 24px -14px rgba(0,0,0,.85)",
+        "purpose": "금·은·동 명판 전용: 위쪽 안쪽 빛 1px + 아래 그림자 하나."
+      },
+      {
+        "name": "brass-button",
+        "value": "inset 0 1px 0 rgba(255,250,230,.7), inset 0 -1px 0 rgba(80,50,10,.45), 0 6px 14px -6px rgba(0,0,0,.7)",
+        "purpose": "금빛 행동 단추."
+      },
+      {
+        "name": "detail-card",
+        "value": "inset 0 0 0 1px rgba(241,213,137,.45), 0 12px 22px -16px rgba(0,0,0,.8)",
+        "purpose": "명판 아래 펼쳐지는 세부 수치 카드."
+      },
+      {
+        "name": "medal-ring",
+        "value": "0 0 0 3px rgba(255,248,226,.6)",
+        "purpose": "초상 메달의 반투명 크림 고리."
+      },
+      {
+        "name": "ticker-lift",
+        "value": "0 -8px 18px -10px rgba(0,0,0,.8)",
+        "purpose": "아래 고정 속보 자막."
+      }
+    ],
+    "motion": [
+      {
+        "name": "hang",
+        "value": ".62s cubic-bezier(.16,1,.3,1), from translateY(-16px) rotate(-1.2deg) opacity .6, 55ms stagger",
+        "purpose": "처음 그릴 때와 난이도·탭을 바꿀 때 명판과 줄이 위에서 걸린다."
+      },
+      {
+        "name": "sheen",
+        "value": "1.5s cubic-bezier(.4,0,.2,1) .2s, 105deg rgba(255,248,220,.75) 빛 띠가 -110%→110%",
+        "purpose": "새 기록 위로 빛이 한 번 쓸고 지나간다."
+      },
+      {
+        "name": "detail-in",
+        "value": ".38s cubic-bezier(.16,1,.3,1), from translateY(-8px) opacity 0",
+        "purpose": "세부 수치 카드 펼침."
+      },
+      {
+        "name": "ticker",
+        "value": "42s linear infinite translateX(-50%)",
+        "purpose": "속보 자막 흐름. hover·focus·멈춤 단추로 정지, reduced-motion에서 정지 + 가로 스크롤."
+      },
+      {
+        "name": "live-blink",
+        "value": ".9s ease-out 1회",
+        "purpose": "새 데이터를 받은 순간 상태 점이 한 번 깜빡인다."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "prefers-reduced-motion: reduce",
+        "purpose": "ticker, detail-in, hang, sheen, blink, skeleton 모두 끈다. 자막은 가로 스크롤 정지 글."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact",
+        "value": "max-width: 520px",
+        "purpose": "제목 28px, 탭 간격 14px, 판 패딩·여백 축소. 넓은 화면 분기는 없다(단일 컬럼 720px)."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "금빛 행동 단추",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "'게임 하러 가기', '다시 출마하기' 같은 주 행동. 황동 그라데이션 알약형.",
+      "html": "<a class=\"ds-btn\" href=\"#\">게임 하러 가기</a>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font:800 14px 'Pretendard Variable',Pretendard,sans-serif;color:#24170a;padding:10px 16px;border-radius:999px;border:0;background:linear-gradient(180deg,#f8e3a3 0%,#d9b158 55%,#b88b34 100%);box-shadow:inset 0 1px 0 rgba(255,250,230,.7),inset 0 -1px 0 rgba(80,50,10,.45),0 6px 14px -6px rgba(0,0,0,.7)}.ds-btn:hover{filter:brightness(1.06)}.ds-btn:active{transform:translateY(1px)}.ds-btn:focus-visible{outline:2px solid #f1d589;outline-offset:3px}"
+    },
+    {
+      "name": "난이도 알약 칸",
+      "kind": "chip",
+      "refersTo": "difficulty-track",
+      "description": "한 줄로 이어진 알약 트랙. 선택된 칸만 금 알약.",
+      "html": "<div class=\"ds-difs\" role=\"group\" aria-label=\"난이도\"><button aria-pressed=\"false\">쉬움</button><button aria-pressed=\"true\">보통</button><button aria-pressed=\"false\">어려움</button><button aria-pressed=\"false\">지옥</button><button aria-pressed=\"false\">전체</button></div>",
+      "css": ".ds-difs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));max-width:440px;padding:3px;border-radius:999px;background:#120f0b linear-gradient(rgba(255,236,190,.05),rgba(255,236,190,.05));box-shadow:inset 0 0 0 1px rgba(201,162,74,.28)}.ds-difs button{min-width:0;min-height:34px;padding:0 4px;white-space:nowrap;font:700 13px 'Pretendard Variable',Pretendard,sans-serif;color:#cdbf9f;border:0;border-radius:999px;background:none;cursor:pointer}.ds-difs button:hover{color:#efe7d6}.ds-difs button[aria-pressed=\"true\"]{color:#24170a;background:#f1d589}.ds-difs button:focus-visible{outline:2px solid #f1d589;outline-offset:3px}"
+    },
+    {
+      "name": "보기 탭",
+      "kind": "nav",
+      "refersTo": "view-tab",
+      "description": "글자 탭. 선택되면 금 글자 + 2px 금 밑줄.",
+      "html": "<div class=\"ds-tabs\" role=\"tablist\"><button role=\"tab\" aria-selected=\"true\">커리어 점수</button><button role=\"tab\" aria-selected=\"false\">최장 집권</button><button role=\"tab\" aria-selected=\"false\">최근 기록</button><button role=\"tab\" aria-selected=\"false\">권력 통계</button></div>",
+      "css": ".ds-tabs{position:relative;display:flex;justify-content:center;gap:18px;padding:0 12px;background:#120f0b}.ds-tabs::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:rgba(201,162,74,.14)}.ds-tabs button{position:relative;z-index:1;min-height:40px;padding:0 2px;font:700 14px 'Pretendard Variable',Pretendard,sans-serif;white-space:nowrap;color:#a8987a;background:none;border:0;border-bottom:2px solid transparent;cursor:pointer}.ds-tabs button:hover{color:#efe7d6}.ds-tabs button[aria-selected=\"true\"]{color:#f1d589;border-bottom-color:#f1d589}.ds-tabs button:focus-visible{outline:2px solid #f1d589;outline-offset:3px}"
+    },
+    {
+      "name": "금 명판",
+      "kind": "card",
+      "refersTo": "plaque-gold",
+      "description": "1위 명판. 금속 그라데이션, 그림자 하나, 초상 메달, 큰 반투명 순위 숫자, 세부 수치 보기 띠.",
+      "html": "<div class=\"ds-wall\"><article class=\"ds-pl\"><span class=\"ds-med\"><b>서</b></span><span class=\"ds-no\" aria-hidden=\"true\">1</span><div style=\"min-width:0\"><div class=\"ds-nm\">서연3</div><div class=\"ds-sc\">7,299<small>점</small></div><div class=\"ds-mt\">3선 · 11년 · 닮은 지도자 함무라비</div></div><button class=\"ds-more\">세부 수치 보기</button></article></div>",
+      "css": ".ds-wall{padding:18px;background:linear-gradient(180deg,#1b1610,#120f0b)}.ds-pl{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center;padding:22px 20px 42px;border-radius:8px;color:#2a1c07;overflow:hidden;cursor:pointer;background:linear-gradient(158deg,#f3dc9c 0%,#d7b25c 34%,#a98030 68%,#d9b765 100%);box-shadow:inset 0 1px 0 rgba(255,250,228,.6),0 14px 24px -14px rgba(0,0,0,.85)}.ds-pl:hover{filter:brightness(1.05)}.ds-med{position:relative;width:92px;height:92px;border-radius:50%;overflow:hidden;background:#1d1812;box-shadow:0 0 0 3px rgba(255,248,226,.6);display:flex;align-items:center;justify-content:center}.ds-med b{font:900 38px 'Noto Serif KR',serif;color:#f1d589}.ds-no{position:absolute;right:18px;top:12px;font:900 48px/1 'Noto Serif KR',serif;color:rgba(40,26,6,.55)}.ds-nm{font:900 28px/1.2 'Noto Serif KR',serif;letter-spacing:.01em}.ds-sc{font:900 44px/1 'Noto Serif KR',serif;letter-spacing:-.01em;margin-top:6px;font-variant-numeric:tabular-nums}.ds-sc small{font:700 .45em 'Pretendard Variable',Pretendard,sans-serif;margin-left:3px}.ds-mt{font:700 12.5px 'Pretendard Variable',Pretendard,sans-serif;margin-top:7px;opacity:.82}.ds-more{position:absolute;left:0;right:0;bottom:0;height:30px;font:700 12.5px 'Pretendard Variable',Pretendard,sans-serif;color:inherit;border:0;border-top:1px solid rgba(40,26,6,.18);border-radius:0 0 8px 8px;background:none;opacity:.85;cursor:pointer}.ds-more:hover{opacity:1;background:rgba(40,26,6,.08)}.ds-more:focus-visible{outline:2px solid #f1d589;outline-offset:3px}"
+    },
+    {
+      "name": "은·동 명판",
+      "kind": "card",
+      "refersTo": "plaque-silver",
+      "description": "2·3위 명판. 금 명판과 같은 구조, 재질 색만 은·동.",
+      "html": "<div class=\"ds-pods\"><div class=\"ds-p ds-s\"><span class=\"ds-pno\">2</span><div class=\"ds-pnm\">하준3</div><div class=\"ds-psc\">5,496</div><div class=\"ds-pmt\">3선 · 세종</div></div><div class=\"ds-p ds-b\"><span class=\"ds-pno\">3</span><div class=\"ds-pnm\">시우2</div><div class=\"ds-psc\">5,207</div><div class=\"ds-pmt\">2선 · 정조</div></div></div>",
+      "css": ".ds-pods{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:18px;background:#120f0b}.ds-p{position:relative;padding:18px 14px 40px;border-radius:8px;box-shadow:inset 0 1px 0 rgba(255,250,228,.6),0 14px 24px -14px rgba(0,0,0,.85)}.ds-s{color:#1c2126;background:linear-gradient(158deg,#eef1f3 0%,#c1c9d0 38%,#8b949c 70%,#d0d6db 100%)}.ds-b{color:#2a1405;background:linear-gradient(158deg,#f0c69b 0%,#c6874f 38%,#90572a 70%,#d49966 100%)}.ds-pno{position:absolute;right:14px;top:10px;font:900 38px/1 'Noto Serif KR',serif;opacity:.55}.ds-pnm{font:900 17px/1.2 'Noto Serif KR',serif}.ds-psc{font:900 23px/1 'Noto Serif KR',serif;margin-top:4px;font-variant-numeric:tabular-nums}.ds-pmt{font:700 11.5px 'Pretendard Variable',Pretendard,sans-serif;margin-top:5px;opacity:.82}"
+    },
+    {
+      "name": "목록 줄",
+      "kind": "custom",
+      "refersTo": "list-row",
+      "description": "4위부터. 판 없이 이름 · 지도자 · 선 수 · 점수만. 내 기록은 금 10% 틴트.",
+      "html": "<div class=\"ds-rows\"><div class=\"ds-rw\"><b class=\"ds-rk\">4</b><div><div class=\"ds-rn\">민준</div><div class=\"ds-rm\"><span>세종</span> · 2선</div></div><b class=\"ds-rs\">4,980</b></div><div class=\"ds-rw ds-mine\"><b class=\"ds-rk\">5</b><div><div class=\"ds-rn\">지우2</div><div class=\"ds-rm\"><span>정조</span> · 1선</div></div><b class=\"ds-rs\">4,512</b></div></div>",
+      "css": ".ds-rows{padding:0 18px;background:#120f0b;color:#efe7d6;font-family:'Pretendard Variable',Pretendard,sans-serif}.ds-rw{display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid rgba(201,162,74,.14)}.ds-rk{font:900 17px 'Noto Serif KR',serif;text-align:center;color:#c9a24a}.ds-rn{font-size:15.5px;font-weight:700}.ds-rm{margin-top:3px;font-size:12.5px;color:#a8987a}.ds-rm span{color:#cdbf9f}.ds-rs{font:900 18px 'Noto Serif KR',serif;color:#f1d589;font-variant-numeric:tabular-nums}.ds-mine{border-radius:6px;background:rgba(241,213,137,.1)}"
+    },
+    {
+      "name": "내 커리어 줄",
+      "kind": "custom",
+      "refersTo": "my-career-row",
+      "description": "사용자 요청으로 개표 방송에서 들여온 '내 자리' 줄. 리더보드의 이 한 곳에만 쓴다.",
+      "html": "<div class=\"ds-me\"><p><b>내 커리어</b> · 1위까지 4,189점<small>지우2 · 보통 난이도 12개 커리어 중</small></p><span class=\"ds-mrk\">7위</span></div>",
+      "css": ".ds-me{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;background:#120f0b linear-gradient(rgba(255,90,79,.09),rgba(255,90,79,.09));border-left:3px solid #ff5a4f;font-family:'Pretendard Variable',sans-serif}.ds-me p{margin:0;font-size:13.5px;line-height:1.5;color:#cdbf9f}.ds-me b{color:#efe7d6;font-weight:800}.ds-me small{display:block;font-size:12px;color:#a8987a}.ds-mrk{font:900 26px/1 'Noto Serif KR',serif;color:#ff8f86}"
+    },
+    {
+      "name": "속보 자막",
+      "kind": "custom",
+      "refersTo": "ticker",
+      "description": "사용자 요청으로 개표 방송에서 들여온 아래 고정 자막. 멈춤 단추, hover·focus 정지, reduced-motion 정지.",
+      "html": "<div class=\"ds-tick\"><b>속보</b><div class=\"ds-tw\"><span class=\"ds-tm\"><span>7분 전 · 민준 <em>2,922점</em> · 1선 · 명예롭게 퇴임했다</span><span>12분 전 · 서연3 <em>7,299점</em> · 3선</span></span></div><button class=\"ds-tp\" aria-label=\"속보 멈추기\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" aria-hidden=\"true\"><path d=\"M7 5h3.5v14H7zM13.5 5H17v14h-3.5z\" fill=\"currentColor\"/></svg></button></div>",
+      "css": ".ds-tick{display:flex;align-items:stretch;height:36px;background:#15110c;border-top:1px solid rgba(201,162,74,.45);box-shadow:0 -8px 18px -10px rgba(0,0,0,.8);font-family:'Pretendard Variable',sans-serif}.ds-tick>b{display:flex;align-items:center;padding:0 12px;background:#c2372e;color:#fff;font:800 12px 'Pretendard Variable',sans-serif;letter-spacing:.12em}.ds-tw{flex:1;min-width:0;display:flex;align-items:center;overflow:hidden;white-space:nowrap}.ds-tm{display:inline-block;animation:ds-tk 42s linear infinite}.ds-tm span{padding:0 18px;font-size:12.5px;color:#efe7d6}.ds-tm em{font-style:normal;font-weight:700;color:#f1d589}.ds-tick:hover .ds-tm,.ds-tick:focus-within .ds-tm{animation-play-state:paused}@keyframes ds-tk{to{transform:translateX(-50%)}}.ds-tp{width:40px;display:flex;align-items:center;justify-content:center;border:0;border-left:1px solid rgba(201,162,74,.3);background:#1d1812;color:#f1d589;cursor:pointer}.ds-tp:focus-visible{outline:2px solid #f1d589;outline-offset:-2px}@media (prefers-reduced-motion:reduce){.ds-tm{animation:none}.ds-tw{overflow-x:auto}}"
+    },
+    {
+      "name": "세부 수치 카드",
+      "kind": "card",
+      "refersTo": "detail-panel",
+      "description": "1~3위 명판 아래 펼쳐지는 세부 수치. 이 세계에 남은 유일한 카드 상자.",
+      "html": "<section class=\"ds-det\"><h3>1위 서연3의 마지막 순간</h3><dl class=\"ds-led\"><div><dt>평균 임기 점수</dt><dd>612</dd></div><div><dt>내린 결정</dt><dd>48번</dd></div></dl></section>",
+      "css": ".ds-det{padding:16px 16px 14px;border-radius:6px;background:linear-gradient(180deg,#221c14,#16120d);box-shadow:inset 0 0 0 1px rgba(241,213,137,.45),0 12px 22px -16px rgba(0,0,0,.8);font-family:'Pretendard Variable',Pretendard,sans-serif}.ds-det h3{margin:0 0 12px;font:800 15px 'Noto Serif KR',serif;color:#f1d589}.ds-led{margin:0;display:grid;grid-template-columns:1fr 1fr;column-gap:18px}.ds-led div{display:flex;align-items:baseline;gap:6px;padding:8px 0;border-bottom:1px dotted rgba(201,162,74,.28)}.ds-led dt{font-size:12.5px;color:#cdbf9f}.ds-led dd{margin:0 0 0 auto;font:800 16px 'Noto Serif KR',serif;color:#efe7d6}"
+    }
+  ],
+  "narrative": {
+    "northStar": "명판의 벽",
+    "overview": "순위는 표가 아니라 어두운 전당에 거는 금·은·동 명판이다. 게임 안 명예의 전당(어두운 무대, 금·은·동 시상대, 지도자 초상)과 같은 금빛 세계를 공유하지만, 리더보드는 사용자 요청(\"리더보드 디자인 없앨거 없애고 좀 더 깔끔하게\")에 따라 장식을 덜어 냈다. 판자 결, 금속 노이즈, 리벳, 안쪽 새김 테두리, 파낸 글자 그림자, 월계관 트로피, 부제, 갱신 타이머 막대는 더 이상 이 세계에 없다. 남은 것은 금속 색 그라데이션과 그림자 하나를 가진 명판, 판 가장자리의 큰 순위 숫자, 초상 메달이다.\n\n밀도는 휴대폰 한 손 화면이 기준이다. 제목 하나 아래 난이도 알약 칸과 밑줄 보기 탭, 그리고 1위 대형 금 명판, 은·동 두 장, '내 커리어' 줄, 넓은 금빛 단추가 첫 화면에 든다. 4위부터는 판이 아니라 이름 · 지도자 · 선 수 · 점수만 담은 조용한 줄이다. 무게는 위계를 따른다: 판이 될수록 귀하고, 줄은 조용하다.\n\n색은 금이 주인공이고 나머지는 따뜻한 검정과 양피지색 글자다. 빨강은 개표 방송에서 들여온 두 장치('내 커리어' 줄과 속보 자막)에만 쓰는 방송의 목소리이며, 사용자가 직접 고른 것이다. 흰 바탕 표에 숫자 줄을 세우는 리더보드 기본형은 이 세계가 거부한 형태다.",
+    "keyCharacteristics": [
+      "무늬 없는 따뜻한 어둠: 위쪽 480px만 살짝 밝은 세로 그라데이션",
+      "명판은 금속 색 그라데이션 + 그림자 하나, 모서리 8px, 장식 없음",
+      "이름·점수·순위·제목은 Noto Serif KR 900, UI와 설명은 Pretendard",
+      "금·은·동은 재질 색으로 구분하고, 4위부터는 판 없이 줄",
+      "움직임은 두 가지뿐: 명판이 위에서 '걸리고', 새 기록 위로 빛이 한 번 쓸고 지나간다",
+      "모든 숫자는 tabular-nums"
+    ],
+    "rules": [
+      {
+        "name": "The 금 하나 Rule",
+        "body": "어둠 위의 강조는 금 계열 하나다. 새 강조색을 만들지 말고 gold / gold-2 / gold-3 중에서 고른다. 선택 상태도 금이다.",
+        "section": "colors"
+      },
+      {
+        "name": "The 방송 빨강 Rule",
+        "body": "빨강은 개표 방송에서 들여온 '내 커리어' 줄과 속보 자막에만 쓴다(사용자 요청). 명판, 탭, 단추에는 빨강을 쓰지 않는다.",
+        "section": "colors"
+      },
+      {
+        "name": "The 재질이 순위다 Rule",
+        "body": "1·2·3위는 금·은·동 재질 색으로 구분한다. 순위를 나타내는 메달 아이콘이나 별도 색 딱지를 더하지 않는다(초상 메달은 지도자를 보여 주는 것이지 순위 표시가 아니다).",
+        "section": "colors"
+      },
+      {
+        "name": "The 숫자 정렬 Rule",
+        "body": "페이지 전체가 tabular-nums다. 점수 비교가 이 화면의 일이다.",
+        "section": "typography"
+      },
+      {
+        "name": "The 걸린 물건 Rule",
+        "body": "큰 그림자는 '걸린' 명판에만 준다. 통계 구역·목록·알약 칸은 선 이상으로 띄우지 않는다.",
+        "section": "elevation"
+      },
+      {
+        "name": "The 덜어낸 판 Rule",
+        "body": "사용자 요청으로 걷어 낸 장식을 되살리지 않는다: 바탕이나 판 위의 노이즈 질감, 리벳, 판 안쪽 새김 테두리, 여러 겹 베벨 그림자, 글자 그림자, 트로피·부제·타이머 막대. 명판은 색 그라데이션 + 안쪽 빛 1px + 그림자 하나로 끝난다.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** 새 화면도 무늬 없는 따뜻한 어둠(wall-glow → wall 세로 그라데이션) 위에 둔다.",
+      "**Do** 이름·점수·순위·제목은 Noto Serif KR 900으로, 설명·탭·단추는 Pretendard로 쓴다.",
+      "**Do** 1·2·3위는 금·은·동 명판 재질로, 4위부터는 판 없이 줄로 내린다. 줄에는 이름 · 지도자 · 선 수 · 점수만 둔다.",
+      "**Do** 선택 상태는 금으로 표시한다: 난이도는 금 알약, 보기는 금 글자 + 2px 밑줄.",
+      "**Do** 새 기록에는 빛이 한 번 쓸고 지나가는 sheen(1.5s, cubic-bezier(.4,0,.2,1))을, 목록을 다시 그릴 때는 위에서 걸리는 hang(.62s, cubic-bezier(.16,1,.3,1), 55ms 간격)을 쓰고, reduced-motion에서는 모두 끈다.",
+      "**Do** 행동 단추는 황동 그라데이션 알약형 하나로 통일한다."
+    ],
+    "donts": [
+      "**Don't** 흰 바탕 표에 숫자 줄을 세우는 리더보드 기본형으로 돌아가지 않는다.",
+      "**Don't** 걷어 낸 장식(노이즈 질감, 리벳, 안쪽 새김 테두리, 여러 겹 베벨, 글자 그림자, 트로피, 부제, 갱신 타이머 막대)을 되살리지 않는다(사용자 요청).",
+      "**Don't** 통계나 보조 정보를 카드 상자나 옆 사이드바에 담지 않는다. 통계는 '권력 통계' 탭 안의 맨 구역이다.",
+      "**Don't** 방송 빨강을 '내 커리어' 줄과 속보 자막 밖으로 퍼뜨리지 않는다. 특히 왼쪽 굵은 색 선은 '내 커리어' 줄 한 곳의 방송 장치이며 다른 카드의 강조 방식이 아니다.",
+      "**Don't** 통계 구역·목록·알약 칸에 명판 걸림 그림자를 주지 않는다.",
+      "**Don't** 닉네임과 점수 밖의 개인정보(학교·이름·전화번호)를 어떤 장치에도 표시하지 않는다."
+    ]
+  }
+}

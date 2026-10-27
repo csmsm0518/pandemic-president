@@ -3,123 +3,198 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#101418">
+<meta name="theme-color" content="#120f0b">
 <title>팬데믹 대통령 · 명예의 전당</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
+/* 명예의 전당: 어두운 바탕에 금·은·동 명판. 장식은 덜고 순위와 내 자리가 먼저 읽히게 한다. */
 :root{
-  --bg:#101418;--surface-0:#171c22;--surface-1:#1d232b;--surface-2:#1a2027;
-  --border:rgba(255,255,255,.09);--border-strong:rgba(255,255,255,.22);
-  --text-primary:#e9ecef;--text-secondary:#a7afb8;--text-muted:#6b737d;
-  --danger:#f0605f;--success:#3fc38f;--warning:#eda100;--blue:#4a8fe0;--purple:#8b7cf6;
-  --gold:#f5c451;--silver:#c9d1d9;--bronze:#d08b5b;
-  --radius:10px;
-  --font-ui:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic","Segoe UI",sans-serif;
+  --wall:#120f0b;--wall-2:#1d1812;--wall-3:#2a2219;
+  --gold:#f1d589;--gold-2:#c9a24a;--gold-3:#8a6a24;--ink:#efe7d6;--ink-2:#cdbf9f;--ink-3:#a8987a;
+  --line:rgba(201,162,74,.28);--line-2:rgba(201,162,74,.14);
+  --serif:"Noto Serif KR","Apple Myungjo","Batang",Georgia,serif;
+  --ui:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--text-primary);font-family:var(--font-ui);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+html{background:var(--wall);color-scheme:dark;scrollbar-color:var(--gold-3) var(--wall)}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:var(--ui);word-break:keep-all;overflow-wrap:anywhere;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;font-variant-numeric:tabular-nums;
+  background:linear-gradient(180deg,#1b1610 0,var(--wall) 480px)}
+::selection{background:var(--gold);color:#1d1406}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:var(--wall)}::-webkit-scrollbar-thumb{background:var(--gold-3);border-radius:5px;border:2px solid var(--wall)}
 a{color:inherit}
-button{font:inherit;color:var(--text-primary);background:var(--surface-0);border:1px solid var(--border-strong);border-radius:10px;padding:9px 14px;cursor:pointer}
-button:focus-visible,a:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
-#app{max-width:1180px;margin:0 auto;padding:22px 16px 56px}
-.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px}
-.eyebrow{font-size:11px;letter-spacing:3px;color:var(--text-muted);margin-bottom:6px}
-h1{font-size:28px;line-height:1.15;margin:0}
-.live{display:flex;align-items:flex-start;gap:7px;font-size:12px;line-height:1.5;color:var(--text-secondary);margin-top:8px}
-.live .dot{margin-top:5px;flex-shrink:0}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--success);box-shadow:0 0 0 0 rgba(63,195,143,.6);animation:ping 1.8s infinite}
-.dot.off{background:var(--danger);animation:none}
-@keyframes ping{0%{box-shadow:0 0 0 0 rgba(63,195,143,.55)}70%{box-shadow:0 0 0 8px rgba(63,195,143,0)}100%{box-shadow:0 0 0 0 rgba(63,195,143,0)}}
-.prog{height:2px;background:rgba(255,255,255,.06);border-radius:1px;overflow:hidden;margin-top:10px;max-width:220px}
-.prog span{display:block;height:100%;width:0;background:var(--purple)}
-.play{flex-shrink:0;text-decoration:none;font-size:13px;font-weight:600;padding:10px 14px;border-radius:10px;background:#6250d6;border:1px solid #6250d6}
-.banner{border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:14px;line-height:1.6;border:1px solid var(--border);background:var(--surface-2)}
-.banner b{font-size:18px}
-.banner.me{border-color:rgba(139,124,246,.55);background:linear-gradient(135deg,rgba(139,124,246,.18),var(--surface-2) 70%)}
-.banner.err{border-color:rgba(240,96,95,.5)}
-.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
-.tile{background:var(--surface-1);border-radius:var(--radius);padding:10px 12px;min-width:0}
-.tile .k{font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tile .v{font-size:20px;font-weight:700;margin-top:2px}
-.layout{display:block}
-.tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tabs button{flex-shrink:0;font-size:13px;padding:8px 13px}
-.tabs button[aria-selected="true"]{border-color:var(--purple);background:rgba(139,124,246,.14);font-weight:600}
-.card{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px 15px;margin-bottom:12px}
-.lab{font-size:11px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px}
-.podium{display:grid;grid-template-columns:1fr 1.12fr 1fr;gap:8px;align-items:end;margin-bottom:12px}
-.pod{border-radius:12px;padding:12px 8px 12px;text-align:center;background:var(--surface-1);border:1px solid var(--border);min-width:0;animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
-.pod .medal{width:30px;height:30px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#14181d}
-.pod .nm{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pod .sc{font-size:22px;font-weight:800;margin:4px 0 2px}
-.pod .ld{font-size:11px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pod.p1{padding-top:18px;padding-bottom:18px;border-color:rgba(245,196,81,.5);background:linear-gradient(180deg,rgba(245,196,81,.16),var(--surface-1) 70%)}
-.pod.p1 .sc{font-size:28px}
-@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.row{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid var(--border);animation:rise .35s ease-out both}
-.row:last-child{border-bottom:none}
-.rk{width:30px;text-align:center;font-size:15px;font-weight:700;color:var(--text-secondary);flex-shrink:0}
-.who{flex:1;min-width:0}
-.who .nm{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.who .mt{font-size:12px;color:var(--text-secondary);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.who .ex{font-size:11px;color:var(--text-muted);margin-top:3px;display:flex;gap:4px;align-items:center;flex-wrap:wrap}
-.val{text-align:right;flex-shrink:0}
-.val .b{font-size:18px;font-weight:800}
-.val .s{font-size:11px;color:var(--text-muted)}
-.g{display:inline-block;min-width:16px;text-align:center;font-size:10px;font-weight:800;border-radius:4px;padding:1px 3px;background:rgba(255,255,255,.07)}
-.row.mine{background:rgba(139,124,246,.13);border-radius:10px;box-shadow:inset 3px 0 0 var(--purple)}
-.row.fresh,.pod.fresh{animation:fresh 2.4s ease-out both}
-@keyframes fresh{0%{background:rgba(63,195,143,.35)}100%{background:transparent}}
-.tag{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:var(--success);color:#0f1a14}
-.hb{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:12px}
-.hb .n{width:118px;flex-shrink:0;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hb .tr{flex:1;height:10px;border-radius:5px;background:rgba(255,255,255,.06);position:relative;overflow:hidden}
-.hb .tr span{position:absolute;left:0;top:0;bottom:0;border-radius:5px;animation:grow .9s cubic-bezier(.2,.8,.2,1) both}
-.hb .c{width:34px;text-align:right;color:var(--text-muted);flex-shrink:0}
-@keyframes grow{from{width:0}}
-.note{font-size:12px;color:var(--text-muted);line-height:1.6;margin-top:8px}
-.empty{text-align:center;padding:36px 10px;color:var(--text-secondary);font-size:14px;line-height:1.8}
-.skel{height:52px;border-radius:10px;background:linear-gradient(90deg,var(--surface-1),#232a33,var(--surface-1));background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:8px}
-@keyframes sh{from{background-position:200% 0}to{background-position:-200% 0}}
-#statsWide{display:none}
-@media (min-width:960px){
-  .tiles{grid-template-columns:repeat(6,1fr)}
-  .layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:18px;align-items:start}
-  #statsWide{display:block}
-  .tabs button[data-t="stats"]{display:none}
-  h1{font-size:34px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:6px}
+#app{max-width:720px;margin:0 auto;padding:14px 16px 96px;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+
+/* 머리: 실시간 표시 · 게임 하러 가기 */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.live{display:flex;align-items:center;gap:8px;min-width:0;font-size:12px;color:var(--ink-2);line-height:1.4}
+.live b{color:var(--gold);font-weight:700;letter-spacing:.08em}
+.live span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dot{flex-shrink:0;width:8px;height:8px;border-radius:50%;background:#3fc38f}
+.dot.got{animation:blink .9s ease-out 1}   /* 새 데이터를 받은 순간에만 한 번 깜빡인다 */
+.dot.off{background:#f0605f;animation:none}
+@keyframes blink{30%{opacity:.25}}
+.btn{flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-weight:800;font-size:14px;color:#24170a;padding:10px 16px;border-radius:999px;border:0;
+  background:linear-gradient(180deg,#f8e3a3 0%,#d9b158 55%,#b88b34 100%);box-shadow:inset 0 1px 0 rgba(255,250,230,.7),inset 0 -1px 0 rgba(80,50,10,.45),0 6px 14px -6px rgba(0,0,0,.7)}
+.btn:hover{filter:brightness(1.06)}
+.btn:active{transform:translateY(1px)}
+.btn svg{width:14px;height:14px}
+.bar .ext{margin-left:auto;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;color:var(--ink-2);text-decoration:none;padding:8px 6px}
+.bar .ext:hover{color:var(--gold)}
+.bar .ext svg{width:13px;height:13px}
+
+h1{margin:22px 0 0;text-align:center;font:900 clamp(30px,8vw,44px)/1.15 var(--serif);letter-spacing:.06em;color:var(--gold)}
+
+/* 고르는 칸: 난이도는 한 줄로 이어진 칸, 보기는 밑줄 탭 */
+.difs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));max-width:440px;margin:18px auto 0;padding:3px;border-radius:999px;background:rgba(255,236,190,.05);box-shadow:inset 0 0 0 1px var(--line)}
+.difs button{min-width:0;min-height:34px;padding:0 4px;white-space:nowrap;font-size:13px;font-weight:700;color:var(--ink-2);border:0;border-radius:999px;background:none}
+.difs button:hover{color:var(--ink)}
+.difs button[aria-pressed="true"]{color:#24170a;background:var(--gold)}
+.tabs{position:relative;display:flex;justify-content:center;gap:18px;margin:14px 0 18px}
+.tabs::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--line-2)}
+
+.tabs button{position:relative;z-index:1;min-height:40px;padding:0 2px;font-size:14px;font-weight:700;white-space:nowrap;color:var(--ink-3);background:none;border:0;border-bottom:2px solid transparent}
+.tabs button[aria-selected="true"]{color:var(--gold);border-bottom-color:var(--gold)}
+.tabs button:hover{color:var(--ink)}
+
+
+@media (max-width:520px){
+  h1{margin-top:16px;font-size:28px}
+  .difs{margin-top:14px}.tabs{gap:14px;margin:10px 0 14px}.tabs button{font-size:13.5px}.me{margin-top:10px;padding:10px 12px}.btn.wide{margin-top:8px;padding:11px 16px}
+  .p1{padding:18px 16px 38px}.p1 .pl-sc{font-size:38px}.pods{margin-top:8px}.pods .pl{padding:14px 12px 38px}
 }
-.settled .row,.settled .pod,.settled .hb .tr span{animation:none}
-.settled .row.fresh,.settled .pod.fresh{animation:fresh 2.4s ease-out both}
-@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+
+
+/* 명판: 금·은·동 색과 그림자 하나 */
+.pl{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center;padding:16px 18px;border-radius:8px;color:#2a1c07;overflow:hidden;
+  background:linear-gradient(158deg,#f3dc9c 0%,#d7b25c 34%,#a98030 68%,#d9b765 100%);
+  box-shadow:inset 0 1px 0 rgba(255,250,228,.6),0 14px 24px -14px rgba(0,0,0,.85)}
+.pl-s{color:#1c2126;background:linear-gradient(158deg,#eef1f3 0%,#c1c9d0 38%,#8b949c 70%,#d0d6db 100%)}
+.pl-b{color:#2a1405;background:linear-gradient(158deg,#f0c69b 0%,#c6874f 38%,#90572a 70%,#d49966 100%)}
+.nw{white-space:nowrap}
+.med{position:relative;width:var(--m);height:var(--m);border-radius:50%;flex-shrink:0;overflow:hidden;background:#1d1812;box-shadow:0 0 0 3px rgba(255,248,226,.6)}
+.med svg{position:absolute;inset:0;width:100%;height:100%}
+.med>b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:900 calc(var(--m)*.42) var(--serif);color:var(--gold)}
+.pl-nm{font:900 22px/1.2 var(--serif);letter-spacing:.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-sc{font:900 30px/1 var(--serif);letter-spacing:-.01em;margin-top:6px}
+.pl-sc small,.rw-sc small{font:700 .45em var(--ui);margin-left:3px;letter-spacing:0}
+.pl-mt{font-size:12.5px;font-weight:700;margin-top:7px;opacity:.82;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-no{position:absolute;right:18px;top:12px;font:900 48px/1 var(--serif);color:rgba(40,26,6,.55);pointer-events:none}   /* 순위는 판 가장자리에 크게 */
+.pods .pl-no{font-size:38px;right:14px;top:10px}
+.p1{padding:22px 20px 42px}
+.p1 .pl-nm{font-size:clamp(24px,6.6vw,32px)}
+.p1 .pl-sc{font-size:clamp(34px,10vw,46px)}
+.pods{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.pods .pl{grid-template-columns:1fr;gap:10px;padding:18px 14px 40px}
+.pods .pl-nm{font-size:17px}.pods .pl-sc{font-size:23px;margin-top:4px}.pods .pl-mt{font-size:11.5px;margin-top:5px}
+.pods .head{display:flex;align-items:center;gap:10px}
+.mine{outline:2px solid var(--gold);outline-offset:3px}
+/* 1~3위 명판을 누르면 그 아래에 세부 수치가 펼쳐진다 */
+.pl[data-open]{cursor:pointer}
+.pl[data-open]:hover{filter:brightness(1.05)}
+.more{position:absolute;left:0;right:0;bottom:0;height:30px;display:flex;align-items:center;justify-content:center;gap:5px;padding:0;font:700 12.5px var(--ui);color:inherit;cursor:pointer;border:0;border-top:1px solid rgba(40,26,6,.18);border-radius:0 0 8px 8px;background:none;opacity:.85}
+.more:hover{opacity:1;background:rgba(40,26,6,.08)}
+.more svg{width:14px;height:14px;transition:transform .25s}
+.more[aria-expanded="true"] svg{transform:rotate(180deg)}
+.det{margin:10px 0 0;padding:16px 16px 14px;border-radius:6px;background:linear-gradient(180deg,#221c14,#16120d);box-shadow:inset 0 0 0 1px rgba(241,213,137,.45),0 12px 22px -16px rgba(0,0,0,.8);animation:detIn .38s cubic-bezier(.16,1,.3,1) both}
+@keyframes detIn{from{opacity:0;transform:translateY(-8px)}}
+.det h3{margin:0 0 12px;font:800 15px var(--serif);color:var(--gold)}
+.det-g{display:grid;grid-template-columns:1fr 1fr;gap:9px 18px;margin-bottom:10px}
+.ds{display:grid;grid-template-columns:3.4em minmax(0,1fr) 2em;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-2)}
+.ds i{height:7px;border-radius:2px;background:rgba(255,236,190,.08);overflow:hidden}
+.ds s{display:block;height:100%;border-radius:2px}
+.ds b{text-align:right;font:800 13px var(--serif);color:var(--ink)}
+.det-p{margin:9px 0 0;font-size:12.5px;line-height:1.65;color:var(--ink-2)}
+.det-p b{color:var(--gold);margin-right:6px}
+
+
+
+/* 개표 방송식 '내 커리어' 줄과 맨 아래 속보 자막 */
+.me{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 0;padding:12px 14px;background:rgba(255,90,79,.09);border-left:3px solid #ff5a4f}
+.me p{margin:0;min-width:0;font-size:13.5px;line-height:1.5;color:var(--ink-2)}
+.me p b{color:var(--ink);font-weight:800}
+.me p small{display:block;font-size:12px;color:var(--ink-3)}
+.me-rk{flex-shrink:0;font:900 26px/1 var(--serif);color:#ff8f86;white-space:nowrap}
+.btn.wide{display:flex;width:100%;margin-top:10px;padding:13px 16px;font-size:15px}
+.tick{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;align-items:stretch;height:calc(36px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:#15110c;border-top:1px solid rgba(201,162,74,.45);box-shadow:0 -8px 18px -10px rgba(0,0,0,.8)}
+.tick[hidden]{display:none}
+.tick b{flex-shrink:0;display:flex;align-items:center;padding:0 12px;background:#c2372e;color:#fff;font:800 12px var(--ui);letter-spacing:.12em}
+.tick-w{flex:1;min-width:0;display:flex;align-items:center;overflow:hidden;white-space:nowrap}
+.tick-m{display:inline-block;animation:tick 42s linear infinite}
+.tick-m span{padding:0 18px;font-size:12.5px;color:var(--ink)}
+.tick-m em{font-style:normal;font-weight:700;color:var(--gold)}
+.tick-m i{font-style:normal;color:var(--ink-3)}
+@keyframes tick{to{transform:translateX(-50%)}}
+.tick:hover .tick-m,.tick:focus-within .tick-m,.tick.stop .tick-m{animation-play-state:paused}   /* 올리거나 멈춤 단추를 누르면 멈춰서 읽을 수 있다 */
+.tick-m .dup{padding:0}
+.tick-p{flex-shrink:0;width:40px;padding:0;display:flex;align-items:center;justify-content:center;border:0;border-left:1px solid rgba(201,162,74,.3);background:#1d1812;color:var(--gold);cursor:pointer}
+.tick-p svg{width:14px;height:14px}
+/* 새김 목록: 4위부터, 최장 집권, 최근 기록 */
+.rows{margin:18px 0 0}
+.rw{position:relative;display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid var(--line-2)}
+.rw-rk{font:900 17px var(--serif);text-align:center;color:var(--gold-2)}
+.rw-rk small{display:block;font:700 10.5px var(--ui);color:var(--ink-3)}
+.rw-nm{font-size:15.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rw-mt{margin-top:3px;font-size:12.5px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rw-mt .ld{color:var(--ink-2)}
+.rw-v{text-align:right}
+.rw-sc{font:900 18px var(--serif);color:var(--gold)}
+.rw-s{margin-top:2px;font-size:11.5px;color:var(--ink-3)}
+.rw.mine{outline:none;border-radius:6px;background:rgba(241,213,137,.1)}
+.new{display:inline-block;margin-left:6px;padding:0 6px;font:800 10px/16px var(--ui);color:#24170a;background:var(--gold);border-radius:3px;vertical-align:2px}
+.dt{display:inline-block;margin-left:6px;padding:0 6px;border-radius:3px;border:1px solid var(--dc);color:var(--dc);font:700 10.5px/16px var(--ui);vertical-align:1px}
+.pl .dt{border-color:rgba(40,26,6,.45);color:inherit}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.note{margin:12px 2px 0;font-size:12.5px;line-height:1.6;color:var(--ink-3)}
+
+/* 통계: 기록 보관소 명부 · 권력 방향 · 분포 */
+.panel{margin:0 0 28px}
+.panel h2{margin:0 0 12px;font:800 15px var(--serif);color:var(--gold);letter-spacing:.02em}
+.ledger{margin:0;display:grid;grid-template-columns:1fr 1fr;column-gap:18px}
+.ledger div{display:flex;align-items:baseline;gap:6px;padding:8px 0;border-bottom:1px dotted var(--line)}
+.ledger dt{font-size:12.5px;color:var(--ink-2)}
+.ledger dd{margin:0 0 0 auto;font:800 16px var(--serif);color:var(--ink)}
+.hb{display:grid;grid-template-columns:minmax(0,9em) minmax(0,1fr) 2.4em;align-items:center;gap:10px;margin-bottom:9px;font-size:12.5px}
+.hb .n{color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb .tr{height:9px;border-radius:2px;background:rgba(255,236,190,.07);overflow:hidden}
+.hb .tr span{display:block;height:100%;border-radius:2px}
+.hb .c{text-align:right;color:var(--ink-3)}
+.panel .note{margin-top:8px}
+
+.empty{padding:34px 16px;text-align:center;font-size:14px;line-height:1.8;color:var(--ink-2);border-radius:6px;box-shadow:inset 0 0 0 1px var(--line)}
+.empty .btn{margin-top:14px}
+.skel{height:64px;margin-bottom:10px;border-radius:6px;background:linear-gradient(180deg,#2a2219,#1d1812);animation:skel 1.4s ease-in-out infinite}
+.skel.big{height:150px}
+@keyframes skel{50%{opacity:.55}}
+
+/* 움직임: 처음 그릴 때와 난이도·탭을 바꿀 때 명판이 위에서 걸린다. 새 기록은 금빛이 한 번 쓸고 지나간다. */
+.hang .pl,.hang .rw{animation:hang .62s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--d,0)*55ms)}
+@keyframes hang{from{opacity:.6;transform:translateY(-16px) rotate(-1.2deg)}to{opacity:1;transform:none}}
+.fresh::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 30%,rgba(255,248,220,.75) 50%,transparent 70%);transform:translateX(-110%);animation:sheen 1.5s cubic-bezier(.4,0,.2,1) .2s both}
+@keyframes sheen{to{transform:translateX(110%)}}
+@media (prefers-reduced-motion:reduce){.tick-m{animation:none}.tick-w{overflow-x:auto}.det,.hang .pl,.hang .rw,.fresh::after,.dot,.skel{animation:none}.fresh::after{display:none}}
 </style>
 </head>
 <body>
 <div id="app">
-  <div class="top">
-    <div>
-      <div class="eyebrow">팬데믹 대통령</div>
-      <h1>명예의 전당</h1>
-      <div class="live"><span class="dot" id="dot"></span><span id="liveTxt">불러오는 중</span></div>
-      <div class="prog"><span id="prog"></span></div>
-    </div>
-    <a class="play" href="index.html">게임 하러 가기</a>
+  <div class="bar">
+    <div class="live" aria-live="polite"><span class="dot" id="dot"></span><span id="liveTxt">불러오는 중</span></div>
+    <a class="btn" href="index.html">게임 하러 가기</a>
   </div>
-  <div id="banner"></div>
-  <div class="tiles" id="tiles"></div>
-  <div class="layout">
-    <section>
-      <div class="tabs" role="tablist" id="tabs">
-        <button role="tab" data-t="top" aria-selected="true">커리어 점수</button>
-        <button role="tab" data-t="longest" aria-selected="false">최장 집권</button>
-        <button role="tab" data-t="recent" aria-selected="false">최근 기록</button>
-        <button role="tab" data-t="stats" aria-selected="false">권력 통계</button>
-      </div>
-      <div id="board"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
-    </section>
-    <aside id="statsWide"></aside>
+  <h1>명예의 전당</h1>
+  <div class="difs" id="difs" role="group" aria-label="난이도"></div>
+  <div class="tabs" role="tablist" id="tabs">
+    <button role="tab" data-t="top" aria-selected="true">커리어 점수</button>
+    <button role="tab" data-t="longest" aria-selected="false">최장 집권</button>
+    <button role="tab" data-t="recent" aria-selected="false">최근 기록</button>
+    <button role="tab" data-t="stats" aria-selected="false">권력 통계</button>
   </div>
+  <main id="board"><div class="skel big"></div><div class="skel"></div><div class="skel"></div></main>
 </div>
+<div class="tick" id="tick" role="region" aria-label="방금 들어온 기록" hidden><b>속보</b><div class="tick-w"><span class="tick-m" id="tickM"></span></div><button class="tick-p" id="tickP" aria-label="속보 멈추기" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg></button></div>
 <script>
 (function(){
 // 게임(index.html)과 같은 Apps Script 웹 앱 주소
@@ -129,18 +204,179 @@ const Q=new URLSearchParams(location.search),MY_ID=Q.get('id')||'',MY_NICK=Q.get
 const LCOL={'킨키나투스':'#4a8fe0','조지 워싱턴':'#4a8fe0','루이 14세':'#f0605f','나폴레옹':'#f0605f','진시황':'#f0605f','루이 16세':'#8a9099',
   '마르쿠스 아우렐리우스':'#8b7cf6','율리우스 카이사르':'#eb6834','에이브러햄 링컨':'#3fc38f','세종':'#3fc38f','페리클레스':'#8a9099',
   '술라':'#eb6834','솔론':'#4a8fe0','정조':'#3fc38f','프리드리히 2세':'#eb6834','표트르 대제':'#f0605f','오토 폰 비스마르크':'#eb6834','아우구스투스':'#f0605f',
-  '프랭클린 루스벨트':'#8b7cf6','광해군':'#8a9099','윈스턴 처칠':'#4a8fe0','아소카':'#3fc38f','시몬 볼리바르':'#eb6834','함무라비':'#8b7cf6'};
-const GC={S:'#3fc38f',A:'#3fc38f',B:'#4a8fe0',C:'#8a9099',D:'#eb6834',F:'#f0605f'};
-let data=null,tab='top',seen=null,fresh=new Set(),lastOk=0,t0=0,loading=false,lastSig='',settleT=0;
-// 처음 그릴 때와 탭을 바꿀 때만 등장 애니메이션을 보여주고, 자동 갱신 때는 새 기록만 반짝인다
-function animateOnce(){document.body.classList.remove('settled');clearTimeout(settleT);settleT=setTimeout(()=>document.body.classList.add('settled'),1600);}
+  '프랭클린 루스벨트':'#8b7cf6','광해군':'#8a9099','윈스턴 처칠':'#4a8fe0','아소카':'#3fc38f','시몬 볼리바르':'#eb6834','함무라비':'#8b7cf6',
+  '니콜라이 2세':'#8a9099','찰스 1세':'#eb6834','리처드 닉슨':'#8a9099','로베스피에르':'#f0605f','페르디난드 마르코스':'#f0605f','니콜라에 차우셰스쿠':'#f0605f','수하르토':'#eb6834','허버트 후버':'#8a9099','지미 카터':'#4a8fe0','조지 H. W. 부시':'#8b7cf6','넬슨 만델라':'#3fc38f','디오클레티아누스':'#eb6834','태종':'#eb6834','토머스 제퍼슨':'#4a8fe0','드와이트 아이젠하워':'#8b7cf6','로널드 레이건':'#eb6834','엘리자베스 1세':'#8b7cf6','아크바르':'#3fc38f','리콴유':'#8b7cf6','무스타파 케말 아타튀르크':'#eb6834','바츨라프 하벨':'#4a8fe0','유스티니아누스 1세':'#8b7cf6','측천무후':'#f0605f','당 태종':'#3fc38f','수 양제':'#f0605f','왕망':'#eb6834','공민왕':'#8a9099','연산군':'#f0605f','세조':'#eb6834','영조':'#3fc38f','흥선대원군':'#eb6834','고종':'#8a9099','클레멘트 애틀리':'#3fc38f','샤를 드골':'#8b7cf6','호세 무히카':'#3fc38f','예카테리나 2세':'#eb6834','시어도어 루스벨트':'#8b7cf6','율리시스 S. 그랜트':'#8a9099','우드로 윌슨':'#8a9099','올리버 크롬웰':'#eb6834','앨프레드 대왕':'#3fc38f','해리 트루먼':'#8b7cf6','마리아 테레지아':'#8b7cf6','이승만':'#8a9099','보리스 옐친':'#8a9099','에드워드 8세':'#4a8fe0','네빌 체임벌린':'#8a9099','미하일 고르바초프':'#4a8fe0'};
+// 지도자 초상과 월계관: 게임(index.html)의 것을 그대로 옮겨 왔다. 게임에서 바꾸면 여기도 같이 바꾼다.
+/* ---------- 지도자 초상 ---------- */
+// 신문 삽화풍 초상. 실제 얼굴을 닮게 그리지 않고, 시대와 신분은 옷차림·머리·소품으로만 드러낸다.
+// c 옷, cc 옷 색, t 넥타이 색, h 머리, hc 머리 색, f 수염(+로 겹침), hw 모자, g 안경, w 넓은 얼굴, sk 피부
+const PFS={
+ '박정희':'c=mil,cc=#5b6146,h=side,a=sung','김대중':'c=suit,cc=#2b3a55,t=#a8321f,h=side,hc=#9a948a,w,a=smile','노무현':'c=shirt,cc=#e9e2d2,h=short,hw=straw,a=smile',
+ '정주영':'c=work,cc=#6f7a6a,h=side,hc=#8d877c,w','안철수':'c=doctor,t=#3d5a80,h=side,g',
+ '태조 이성계':'c=gon,cc=#2c5a7a,hw=ikseon,f=mus+full,hc=#6a645b','세종':'c=gon,hw=ikseon,f=mus+jbeard','세조':'c=gon,cc=#7d241a,hw=ikseon,f=full',
+ '광해군':'c=gon,hw=ikseon,f=mus','정조':'c=gon,cc=#9a2d22,hw=ikseon,f=mus+goatee',
+ '조지 워싱턴':'c=coat18,cc=#1f3a5f,h=wigw,w','에이브러햄 링컨':'c=bow,cc=#1d1b18,t=#1d1b18,h=messy,f=chin,hw=tophat','시어도어 루스벨트':'c=suit,cc=#4b3a26,t=#1d1b18,h=short,hc=#5a4632,f=bigmus,a=pn+grin,w',
+ '프랭클린 루스벨트':'c=suit,cc=#2b3a55,t=#7a2e2a,h=side,hc=#7d776c,a=pn+holder','드와이트 아이젠하워':'c=mil,cc=#6b5e3c,h=bald,hc=#b8ad98,a=grin',
+ '킨키나투스':'c=toga,cc=#8a7a5a,h=curly,hc=#8d877c,f=full,a=wheat','솔론':'c=robe,cc=#5d6b7a,h=bald,hc=#cfc8ba,f=long','아소카':'c=robe,cc=#c27a2c,sk=#b98a62,hw=turb,f=mus',
+ '윈스턴 처칠':'c=bow,cc=#1d1b18,t=#2f4a6b,h=bald,hc=#c9a77a,w,a=cigar','페리클레스':'c=robe,cc=#2f4a6b,hw=helm,f=full,hc=#4a3b2e',
+ '마르쿠스 아우렐리우스':'c=toga,cc=#4a3d7a,h=curly,hc=#5a4632,f=full','함무라비':'c=robe,cc=#7a5a2e,sk=#d4a77d,hw=hcap,f=long',
+ '프리드리히 2세':'c=milcoat,cc=#22314a,h=wigw,hw=tricorn','오토 폰 비스마르크':'c=milcoat,cc=#3a3f45,hw=pickel,f=bigmus,hc=#8d877c,w',
+ '술라':'c=toga,cc=#a8321f,h=short,hc=#8a6a3a','율리우스 카이사르':'c=toga,cc=#7a2e2a,h=bald,hw=laurel','아우구스투스':'c=toga,cc=#4a3d7a,h=short,hc=#6b5038',
+ '나폴레옹':'c=milcoat,cc=#1f3a5f,col=#a8321f,h=fore,hw=bicorne','시몬 볼리바르':'c=milcoat,cc=#1d2a3f,col=#a8321f,h=curly,sk=#dcb48c,f=burns',
+ '루이 14세':'c=royal,cc=#2f4a8a,h=wigl','표트르 대제':'c=milcoat,cc=#2e5a3a,h=long,f=mus','진시황':'c=robe,cc=#1d1b18,hw=myeon,f=mus+goatee',
+ '루이 16세':'c=royal,cc=#2f4a8a,h=wigw,w',
+ // 출발 인물 추가분
+ '광개토대왕':'c=gap,cc=#7a2e2a,h=short,hw=crown,f=mus+full','선덕여왕':'c=hanfu,cc=#8a2e4a,h=bun,hc=#1d1b18,hw=crown','김춘추':'c=hanfu,cc=#2f4a6b,hw=gwan,f=mus+goatee',
+ '장보고':'c=gap,cc=#2c5a7a,h=short,f=full,w','왕건':'c=hanfu,cc=#7a2e2a,hw=myeon,f=mus+full','서희':'c=dan,cc=#2f5f7a,hw=samo,f=mus+jbeard',
+ '강감찬':'c=gap,cc=#5d6b7a,hw=iron,f=long,hc=#cfc8ba','안창호':'c=suit,cc=#2b3a55,t=#3d5a80,h=side,f=mus','이승만':'c=suit,cc=#3a3f45,t=#2f4a6b,h=side,hc=#cfc8ba',
+ '단군왕검':'c=robe,cc=#e6dcc6,h=long,hc=#e6e0d4,f=long','정영우':'c=suit,cc=#2b3a55,t=#2f5f99,h=side,hc=#3a352e,g,a=smile',
+ // 엔딩 지도자 추가분
+ '니콜라이 2세':'c=milcoat,cc=#2e5a3a,h=side,hc=#6b5038,f=mus+full','찰스 1세':'c=ruff,cc=#3a3f45,h=long,hc=#4a3b2e,f=mus+goatee','로베스피에르':'c=coat18,cc=#2f5f7a,h=wigw',
+ '페르디난드 마르코스':'c=shirt,cc=#e9e2d2,sk=#c99a72,h=side,hc=#1d1b18','니콜라에 차우셰스쿠':'c=suit,cc=#3a3f45,t=#7a2e2a,h=messy,hc=#6a645b','수하르토':'c=suit,cc=#2b3a55,t=#3a3f45,sk=#b98a62,h=side,hc=#1d1b18,a=smile',
+ '허버트 후버':'c=suit,cc=#3a3f45,t=#2f4a6b,h=side,hc=#8d877c,w','지미 카터':'c=suit,cc=#2b3a55,t=#3d5a80,h=side,hc=#c9a77a,a=grin','조지 H. W. 부시':'c=suit,cc=#22314a,t=#a8321f,h=side,hc=#9a948a,g',
+ '넬슨 만델라':'c=shirt,cc=#c28a2c,sk=#6e4a32,h=short,hc=#e6e0d4,a=smile','디오클레티아누스':'c=toga,cc=#7a2e2a,h=short,hc=#9a948a,f=full,hw=laurel','토머스 제퍼슨':'c=coat18,cc=#5a4632,h=wigw',
+ '엘리자베스 1세':'c=ruff,cc=#2f4a8a,h=bun,hc=#b8541e,hw=crown','아크바르':'c=robe,cc=#c27a2c,sk=#b98a62,hw=turb,f=mus','리콴유':'c=shirt,cc=#f7f3ea,h=side,hc=#3a352e',
+ '무스타파 케말 아타튀르크':'c=suit,cc=#1d1b18,t=#3a3f45,h=fore,hc=#c9a77a','바츨라프 하벨':'c=suit,cc=#4b3a26,t=#7a2e2a,h=messy,hc=#9a7a5a,f=mus','유스티니아누스 1세':'c=royal,cc=#4a3d7a,h=short,hw=crown',
+ '측천무후':'c=hanfu,cc=#c28a2c,h=bun,hc=#1d1b18,hw=crown','당 태종':'c=hanfu,cc=#c28a2c,hw=myeon,f=mus+goatee','수 양제':'c=hanfu,cc=#7a2e2a,hw=myeon,f=mus','왕망':'c=hanfu,cc=#2f4a6b,hw=gwan,f=long',
+ '공민왕':'c=gon,cc=#7d241a,hw=ikseon,f=mus+goatee','클레멘트 애틀리':'c=suit,cc=#3a3f45,t=#a8321f,h=bald,hc=#9a948a,f=mus,a=pn','샤를 드골':'c=mil,cc=#5b6146,h=short,hc=#3a352e',
+ '호세 무히카':'c=work,cc=#6f7a6a,h=messy,hc=#cfc8ba,f=mus,w','예카테리나 2세':'c=dress19,cc=#5d6b7a,h=bun,hc=#cfc8ba,hw=crown','율리시스 S. 그랜트':'c=milcoat,cc=#1d2a3f,h=short,hc=#5a4632,f=full',
+ '우드로 윌슨':'c=suit,cc=#3a3f45,t=#1d1b18,h=side,hc=#9a948a,g','올리버 크롬웰':'c=work,cc=#5d4a32,h=long,hc=#6b5038','앨프레드 대왕':'c=robe,cc=#2f4a6b,h=long,hc=#b8862e,f=full,hw=crown',
+ '해리 트루먼':'c=suit,cc=#3a3f45,t=#2f4a6b,h=side,hc=#9a948a,g,a=grin',
+ '보리스 옐친':'c=suit,cc=#3a3f45,t=#2f4a6b,h=side,hc=#e6e0d4,w','에드워드 8세':'c=suit,cc=#3a3f45,t=#7a2e2a,h=side,hc=#c9a77a','네빌 체임벌린':'c=suit,cc=#1d1b18,t=#3a3f45,h=side,hc=#8d877c,f=mus','미하일 고르바초프':'c=suit,cc=#3a3f45,t=#7a2e2a,h=bald,hc=#9a948a','마리아 테레지아':'c=dress19,cc=#c28a2c,h=bun,hc=#c9a77a,hw=crown',
+ '태종':'c=gon,cc=#3a3f45,hw=ikseon,f=mus+full','연산군':'c=gon,cc=#4a3d7a,hw=ikseon,f=mus,a=grin','선조':'c=gon,hw=ikseon,f=mus+goatee',
+ '영조':'c=gon,cc=#9a2d22,hw=ikseon,f=mus+jbeard,hc=#cfc8ba','흥선대원군':'c=dan,cc=#4b3a26,hw=samo,f=mus+goatee,hc=#9a948a','고종':'c=gon,cc=#c28a2c,hw=ikseon,f=mus+goatee',
+ '홍길동':'c=durumagi,cc=#3a3f45,hw=jeonrip,a=grin',
+ '존 F. 케네디':'c=suit,cc=#2b3a55,t=#3d5a80,h=messy,hc=#7a5a2e,a=smile','리처드 닉슨':'c=suit,cc=#3a3f45,t=#7a2e2a,h=side,hc=#3a2b20,w','로널드 레이건':'c=suit,cc=#4b3a26,t=#a8321f,h=fore,hc=#3a2b20,a=grin',
+ '버락 오바마':'c=suit,cc=#22314a,t=#2f5f99,sk=#8a5a3c,h=short,hc=#1d1b18,a=smile','도널드 트럼프':'c=suit,cc=#1f3a5f,t=#b3261e,h=fore,hc=#e0c060,w','엉클 샘':'c=coat18,cc=#1f3a5f,h=side,hc=#f7f3ea,f=goatee,hw=tophat,a=grin',
+ // 좀비 무대
+ '소방 구조대장':'c=work,cc=#b8541e,h=short,w','응급의학과 교수':'c=doctor,t=#1f7a72,h=side,hc=#6a645b,g','편의점 점장':'c=shirt,cc=#2e7d55,h=messy,a=smile',
+ '전교 학생회장':'c=suit,cc=#22314a,t=#a8321f,h=short','예비역 중사':'c=mil,cc=#5b6146,h=bald,a=grin','감염된 대통령':'c=suit,cc=#3a3f45,t=#7a2e2a,sk=#a9c49a,h=messy,hc=#3a3f45,a=grin'};
+const PF_I='#1d1b18',PF_W='#f7f3ea',PF_G='#d9a441';
+const pfLine=(d,w)=>'<path d="'+d+'" fill="none" stroke="'+PF_I+'" stroke-width="'+(w||1.2)+'" stroke-linecap="round"/>';
+const pfFill=(d,f,w)=>'<path d="'+d+'" fill="'+f+'" stroke="'+PF_I+'" stroke-width="'+(w===undefined?1.2:w)+'" stroke-linejoin="round"/>';
+const PF_BACK={
+ long:hc=>pfFill('M19 26C15 40 17 52 21 57H43C47 52 49 40 45 26Z',hc),
+ wigl:hc=>pfFill('M17 24C9 36 11 52 17 60C21 62 25 58 24 52C29 54 35 54 40 52C39 58 43 62 47 60C53 52 55 36 47 24Z','#3a2b20'),
+ wigw:()=>pfFill('M30 40C29 46 30 50 32 52C34 50 35 46 34 40Z',PF_W)};
+const PF_BODY={
+ suit:(o)=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z',o.cc,1.4)+pfFill('M27 46L32 56L37 46Z',PF_W,1)+pfFill('M31 48H33L34.6 57L32 60L29.4 57Z',o.t||'#7a2e2a',.8)+pfLine('M26.5 46.5L30 60M37.5 46.5L34 60',1),
+ bow:(o)=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z',o.cc,1.4)+pfFill('M27 46L32 56L37 46Z',PF_W,1)+pfFill('M27.5 48.5L32 50.5L36.5 48.5V53L32 51L27.5 53Z',o.t||PF_I,.8),
+ mil:(o)=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z',o.cc,1.4)+pfFill('M26 46L32 53L38 46Z','#d8cfb8',1)+pfLine('M12 54L22 50M52 54L42 50',1.6)+'<circle cx="32" cy="57" r="1.3" fill="'+PF_G+'"/><circle cx="32" cy="62" r="1.3" fill="'+PF_G+'"/>',
+ milcoat:(o)=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z',o.cc,1.4)+pfFill('M25 43H39V50H25Z',o.col||o.cc,1.1)+pfFill('M8 53Q14 48 20 51Q15 55 8 56Z',PF_G,.9)+pfFill('M56 53Q50 48 44 51Q49 55 56 56Z',PF_G,.9)+'<circle cx="32" cy="55" r="1.3" fill="'+PF_G+'"/><circle cx="32" cy="60" r="1.3" fill="'+PF_G+'"/>'+pfLine('M27 43.5L32 49L37 43.5',1),
+ coat18:(o)=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z',o.cc,1.4)+pfFill('M28.5 45C29 53 35 53 35.5 45L33.5 60H30.5Z',PF_W,1)+pfLine('M24 47L28 64M40 47L36 64',1),
+ gon:(o)=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z',o.cc||'#a8321f',1.4)+'<path d="M26 46L37 60M38 46L31 54" stroke="'+PF_W+'" stroke-width="2.6" fill="none"/>'+pfLine('M26 46L37 60M38 46L31 54',.6)+'<circle cx="32" cy="60" r="5.5" fill="'+PF_G+'" stroke="'+PF_I+'" stroke-width="1"/>'+pfLine('M29.5 60Q31 57.5 33 59.5T35 60',.9),
+ toga:(o)=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z','#ece4d2',1.4)+'<path d="M15 53C25 49 35 53 43 64" stroke="'+o.cc+'" stroke-width="6" fill="none"/>'+pfLine('M15 53C25 49 35 53 43 64',.7),
+ robe:(o)=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z',o.cc,1.4)+pfFill('M27 46L32 55L37 46Z','#e6dcc6',1),
+ shirt:(o)=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z',o.cc,1.4)+pfFill('M26.5 46L32 52L37.5 46L36 50L32 55L28 50Z','#f3eee2',1)+pfLine('M32 55V64',.9)+'<circle cx="32" cy="58.5" r=".9" fill="'+PF_I+'"/><circle cx="32" cy="62" r=".9" fill="'+PF_I+'"/>',
+ work:(o)=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z',o.cc,1.4)+pfFill('M25 44L32 50L39 44L41 49L32 54L23 49Z',o.cc,1.1)+pfLine('M32 54V64',1.4)+pfFill('M38 56H46V60H38Z',o.cc,.9),
+ doctor:(o)=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z','#f6f3ec',1.4)+pfFill('M26 46L32 58L38 46Z','#22314a',1)+pfFill('M28.5 46L32 53L35.5 46Z',PF_W,.9)+pfFill('M31.2 48H32.8L34 55L32 57.5L30 55Z',o.t,.7)+pfLine('M24 47L29 64M40 47L35 64',1)+pfFill('M40 55H46V58H40Z','#f6f3ec',.8),
+ royal:(o)=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z',o.cc,1.4)+pfFill('M9 56C17 45 47 45 55 56L50 60C42 52 22 52 14 60Z',PF_W,1)+'<g fill="'+PF_I+'"><rect x="15" y="54" width="1.4" height="2.4"/><rect x="22" y="50" width="1.4" height="2.4"/><rect x="41" y="50" width="1.4" height="2.4"/><rect x="48" y="54" width="1.4" height="2.4"/></g>'+pfFill('M28.5 46C29 51 35 51 35.5 46L33.5 54H30.5Z',PF_W,.9)};
+const PF_HAIR={
+ side:hc=>pfFill('M20.5 29C19 17 26 14 33 14C40 14 45.5 18 43.5 29C42 23 37 20.5 29 21.5C26 22.5 23 25 20.5 29Z',hc),
+ short:hc=>pfFill('M20.5 28C20 18 26 15 32 15S44 18 43.5 28C40 22 24 22 20.5 28Z',hc),
+ messy:hc=>pfFill('M20 29C18 18 24 13 32 14C40 13 46 18 44 29C42 24 40 22 37 23L35 19L31 22L27 19.5L25 24C23 25 21 27 20 29Z',hc),
+ bald:hc=>pfFill('M20.6 33C20 27 21 24.5 23 23.5L23.5 33ZM43.4 33C44 27 43 24.5 41 23.5L40.5 33Z',hc,.9),
+ curly:hc=>[[21,26],[23,21],[27,17.5],[32,16.5],[37,17.5],[41,21],[43,26]].map(p=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="'+hc+'" stroke="'+PF_I+'" stroke-width="1"/>').join(''),
+ long:hc=>pfFill('M20.5 30C19 17 26 14 32 14S45 17 43.5 30C41 22 36 20 32 21S23 22 20.5 30Z',hc),
+ wigl:()=>[[20,22],[25,16.5],[32,15],[39,16.5],[44,22],[19,29],[45,29]].map(p=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4.6" fill="#3a2b20" stroke="'+PF_I+'" stroke-width="1"/>').join(''),
+ fore:hc=>pfFill('M20.5 28C20 18 26 15 32 15S44 18 43.5 28C41 23 37 21.5 33 22L31 26.5L29 22.5C25 23 22 25 20.5 28Z',hc),
+ wigw:()=>pfFill('M20.5 28C20 17 26 15 32 15S44 17 43.5 28C40 21 24 21 20.5 28Z',PF_W)+[[19.5,29],[19.5,34.5],[44.5,29],[44.5,34.5]].map(p=>'<ellipse cx="'+p[0]+'" cy="'+p[1]+'" rx="3.4" ry="2.4" fill="'+PF_W+'" stroke="'+PF_I+'" stroke-width="1"/>').join('')};
+const PF_FACE={
+ mus:hc=>pfFill('M27.5 36.6Q32 34.6 36.5 36.6Q32 37.9 27.5 36.6Z',hc,.8),
+ bigmus:hc=>pfFill('M23.5 35.5Q28 33 32 35.4Q36 33 40.5 35.5Q36 38.2 32 36.8Q28 38.2 23.5 35.5Z',hc,.8),
+ goatee:hc=>pfFill('M30 40Q32 46 34 40Z',hc,.8),
+ jbeard:hc=>pfFill('M30.2 40Q32 53 33.8 40Z',hc,.8),
+ chin:hc=>pfFill('M20.8 31Q21.5 46.5 32 47.5Q42.5 46.5 43.2 31Q41.5 41.5 32 41.5Q22.5 41.5 20.8 31Z',hc),
+ full:hc=>pfFill('M20.8 30Q19.5 47 32 50.5Q44.5 47 43.2 30Q42 39.5 36 38.6Q32 40.8 28 38.6Q22 39.5 20.8 30Z',hc)+pfFill('M27 36.4Q32 34.4 37 36.4Q32 38 27 36.4Z',hc,.8),
+ burns:hc=>pfFill('M20.8 24V37Q23 39 24 35V24Z',hc,.8)+pfFill('M43.2 24V37Q41 39 40 35V24Z',hc,.8),
+ long:hc=>pfFill('M20.8 30Q19 50 32 59Q45 50 43.2 30Q42 39.5 36 38.6Q32 40.8 28 38.6Q22 39.5 20.8 30Z',hc)+pfFill('M27 36.4Q32 34.4 37 36.4Q32 38 27 36.4Z',hc,.8)};
+const PF_ACC={
+ sung:()=>'<path d="M23.5 28.2H30.5L30 32.6Q27 34 24 32.6ZM33.5 28.2H40.5L40 32.6Q37 34 34 32.6Z" fill="'+PF_I+'"/>'+pfLine('M30.5 29H33.5M21.5 28.5H23.5M40.5 28.5H42.5',1),
+ smile:()=>'<path d="M28.6 37.8Q32 41.6 35.4 37.8" fill="none" stroke="'+PF_I+'" stroke-width="1.3" stroke-linecap="round"/>'+pfLine('M25.5 33.8Q26 35.2 27.2 35.4M38.5 33.8Q38 35.2 36.8 35.4',.8),
+ grin:()=>pfFill('M27.4 37.6Q32 43.6 36.6 37.6Z',PF_W,1.1)+pfLine('M29.6 38.2V40M32 38.2V41M34.4 38.2V40',.6),
+ pn:()=>'<ellipse cx="27.6" cy="30.4" rx="3" ry="2.6" fill="none" stroke="'+PF_I+'" stroke-width="1.1"/><ellipse cx="36.4" cy="30.4" rx="3" ry="2.6" fill="none" stroke="'+PF_I+'" stroke-width="1.1"/>'+pfLine('M30.6 30H33.4M24.6 30.8Q22 36 23.5 44',.8),
+ holder:()=>'<path d="M35 38.8L48.5 32.5" stroke="'+PF_I+'" stroke-width="1.6" stroke-linecap="round"/><path d="M48.5 32.5L52 30.8" stroke="#f3eee2" stroke-width="2.2" stroke-linecap="round"/><path d="M53 29Q55 25 53 22Q55 19 54 16" fill="none" stroke="#8a847a" stroke-width=".9" stroke-opacity=".7"/>',
+ cigar:()=>'<path d="M34 38.6L45 40.6" stroke="#6b4a2a" stroke-width="3.4" stroke-linecap="round"/><path d="M44.4 40.5L46 40.8" stroke="#b3261e" stroke-width="3.4"/><path d="M47 38Q49 34 47 31Q49 28 48 25" fill="none" stroke="#8a847a" stroke-width=".9" stroke-opacity=".7"/>',
+ wheat:()=>pfLine('M51 64L56 38',1.2)+[[55.5,41],[54.8,44.5],[54.1,48],[53.4,51.5]].map(p=>'<ellipse cx="'+(p[0]-2)+'" cy="'+p[1]+'" rx="2.2" ry="1.1" transform="rotate(-40 '+(p[0]-2)+' '+p[1]+')" fill="#d9a441" stroke="'+PF_I+'" stroke-width=".5"/><ellipse cx="'+(p[0]+2)+'" cy="'+p[1]+'" rx="2.2" ry="1.1" transform="rotate(40 '+(p[0]+2)+' '+p[1]+')" fill="#d9a441" stroke="'+PF_I+'" stroke-width=".5"/>').join('')};
+const PF_HAT={
+ tophat:()=>pfFill('M22 20.5V1.5H42V20.5Z',PF_I)+'<path d="M22 16H42" stroke="#4a443b" stroke-width="2"/>'+pfFill('M16 22.5Q32 18.5 48 22.5Q32 21 16 22.5Z',PF_I),
+ tricorn:()=>pfFill('M10 23Q14 11 32 8Q50 11 54 23Q43 17 32 18Q21 17 10 23Z',PF_I)+'<path d="M14 21Q32 12.5 50 21" stroke="'+PF_G+'" stroke-width=".9" fill="none"/>',
+ straw:()=>pfFill('M20.5 22Q20 9.5 32 9.5T43.5 22Z','#d9bf7a')+'<path d="M20.7 19.5Q32 16 43.3 19.5" stroke="#7a2e2a" stroke-width="2.4" fill="none"/>'+pfFill('M5 24Q32 15 59 24Q32 30 5 24Z','#d9bf7a')+pfLine('M12 23.5Q32 19 52 23.5',.5),
+ ikseon:()=>'<path d="M23 15.5Q20.5 6.5 27.5 9.5L28.5 15ZM41 15.5Q43.5 6.5 36.5 9.5L35.5 15Z" fill="#3a352e" stroke="'+PF_I+'" stroke-width="1"/>'+pfFill('M19.5 25.5C19.5 12.5 44.5 12.5 44.5 25.5Z',PF_I)+'<path d="M20 25H44" stroke="#4a443b" stroke-width="2"/><path d="M26 15.5Q32 12.5 38 15.5" stroke="#4a443b" stroke-width="1" fill="none"/>',
+ laurel:()=>[[20.5,27,-70],[21.5,22,-55],[24,18,-38],[27.5,15.5,-20],[36.5,15.5,20],[40,18,38],[42.5,22,55],[43.5,27,70]].map(p=>'<ellipse cx="'+p[0]+'" cy="'+p[1]+'" rx="3.6" ry="1.7" transform="rotate('+p[2]+' '+p[0]+' '+p[1]+')" fill="#5d7a3e" stroke="'+PF_I+'" stroke-width=".7"/>').join(''),
+ crown:()=>pfFill('M21 20L23 10.5L27.5 15.5L32 8.5L36.5 15.5L41 10.5L43 20Z',PF_G),
+ bicorne:()=>pfFill('M6 22Q32 0 58 22Q32 15.5 6 22Z',PF_I)+'<circle cx="32" cy="12.5" r="2.2" fill="#b3261e" stroke="'+PF_W+'" stroke-width=".8"/>',
+ pickel:()=>pfFill('M19.5 25C19.5 12 44.5 12 44.5 25Z',PF_I)+'<path d="M32 13V3.5" stroke="'+PF_G+'" stroke-width="2.2" stroke-linecap="round"/>'+'<path d="M17 25H47" stroke="'+PF_I+'" stroke-width="2.2"/>',
+ myeon:()=>pfFill('M21.5 22C21.5 14 42.5 14 42.5 22Z',PF_I)+pfFill('M12 9.5H52V13.5H12Z',PF_I,.8)+[16,20,24,40,44,48].map(x=>'<path d="M'+x+' 13.5V22" stroke="'+PF_I+'" stroke-width=".7"/><circle cx="'+x+'" cy="'+(17+(x%8)/2)+'" r="1.1" fill="'+PF_G+'"/>').join(''),
+ helm:()=>pfFill('M18.5 34C17 13 47 13 45.5 34H41.5V27.5H22.5V34Z','#a7783c')+pfFill('M30.5 27.5H33.5V36.5H30.5Z','#a7783c',.9)+pfFill('M18 13Q32 -3 46 13Q32 7 18 13Z','#a8321f'),
+ turb:()=>pfFill('M19.5 22.5C18.5 11 45.5 11 44.5 22.5Z',PF_G)+pfLine('M20 18Q32 13 44 18',.9)+'<circle cx="32" cy="15.5" r="2.6" fill="#a8321f" stroke="'+PF_I+'" stroke-width=".8"/>',
+ hcap:()=>pfFill('M20.5 23V11Q32 4.5 43.5 11V23Z','#5d4b3a')+pfLine('M20.5 16Q32 11 43.5 16',.9)};
+// bust: 둥근 배경 없이 어깨까지 잘린 큰 초상(캐릭터 고르기 화면용)
+function portrait(name,px,ring,bust){const s=PFS[name];if(!s)return '';const o={};s.split(',').forEach(kv=>{const i=kv.indexOf('=');o[i<0?kv:kv.slice(0,i)]=i<0?1:kv.slice(i+1);});
+  const hc=o.hc||'#2b2420',sk=o.sk||'#ecd3b4',rx=o.w?12.6:11;let g='';
+  if(!bust)g+='<circle cx="32" cy="32" r="32" fill="#e3d9c6"/><circle cx="32" cy="32" r="32" fill="url(#pfht)"/>';
+  if(PF_BACK[o.h])g+=PF_BACK[o.h](hc);
+  g+=(PF_BODY[o.c]||PF_BODY.suit)(o);
+  g+=pfFill('M28 39.5V47.5H36V39.5Z',sk,1.1);
+  g+='<ellipse cx="'+(32-rx)+'" cy="31" rx="2.2" ry="3.2" fill="'+sk+'" stroke="'+PF_I+'" stroke-width="1.1"/><ellipse cx="'+(32+rx)+'" cy="31" rx="2.2" ry="3.2" fill="'+sk+'" stroke="'+PF_I+'" stroke-width="1.1"/>';
+  g+='<ellipse cx="32" cy="30" rx="'+rx+'" ry="13" fill="'+sk+'" stroke="'+PF_I+'" stroke-width="1.4"/>';
+  g+='<circle cx="27.6" cy="30.2" r="1.15" fill="'+PF_I+'"/><circle cx="36.4" cy="30.2" r="1.15" fill="'+PF_I+'"/>'+pfLine('M25.2 27H29.6M34.4 27H38.8',1.1)+pfLine('M32.3 31.2V34.8H30.8',1);
+  const acc=String(o.a||'').split('+');
+  if(acc.indexOf('smile')<0&&acc.indexOf('grin')<0)g+=pfLine('M29.3 38.6Q32 39.8 34.7 38.6',1.1);
+  if(o.h&&PF_HAIR[o.h]&&!(o.hw==='ikseon'||o.hw==='helm'||o.hw==='pickel'||o.hw==='turb'||o.hw==='hcap'||o.hw==='myeon'))g+=PF_HAIR[o.h](hc);
+  if(o.f)String(o.f).split('+').forEach(k=>{if(PF_FACE[k])g+=PF_FACE[k](hc);});
+  if(o.g)g+='<circle cx="27.6" cy="30.4" r="3.3" fill="none" stroke="'+PF_I+'" stroke-width="1.1"/><circle cx="36.4" cy="30.4" r="3.3" fill="none" stroke="'+PF_I+'" stroke-width="1.1"/>'+pfLine('M30.9 30.4H33.1',1.1);
+  acc.forEach(k=>{if(PF_ACC[k])g+=PF_ACC[k]();});
+  if(o.hw&&PF_HAT[o.hw])g+=PF_HAT[o.hw]();
+  if(bust)return '<svg class="pf pfb" viewBox="-4 -8 72 72" width="'+px+'" height="'+px+'" aria-hidden="true">'+g+'</svg>';
+  return '<svg class="pf" viewBox="0 0 64 64" width="'+px+'" height="'+px+'" aria-hidden="true" style="'+(ring?'box-shadow:0 0 0 2px '+ring+';':'')+'"><g clip-path="url(#pfclip)">'+g+'</g><circle cx="32" cy="32" r="31.4" fill="none" stroke="'+PF_I+'" stroke-opacity=".35" stroke-width="1.2"/></svg>';}
+document.body.insertAdjacentHTML('beforeend','<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><clipPath id="pfclip"><circle cx="32" cy="32" r="32"/></clipPath><pattern id="pfht" width="3.2" height="3.2" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="1.6" cy="1.6" r=".55" fill="#1d1b18" fill-opacity=".16"/></pattern></defs></svg>');
+// 참모 초상용 부품: 조선 관복(사모·단령), 갑옷, 옛 중국 관, 여성 머리 등
+const PF_BD='M7 64C9 52 19 46 32 46S55 52 57 64Z';
+Object.assign(PF_BODY,{
+ dan:(o)=>pfFill(PF_BD,o.cc||'#2f5f7a',1.4)+pfFill('M25 46.5Q32 55 39 46.5L37 46Q32 51.5 27 46Z','#f3eee2',1)+pfFill('M26.5 54.5H37.5V63H26.5Z','#d9a441',1)+pfLine('M29 60Q32 56 35 60',.8),
+ hanfu:(o)=>pfFill(PF_BD,o.cc,1.4)+'<path d="M26 46L36.5 59M38 46L31.5 53.5" stroke="#f3eee2" stroke-width="2.6" fill="none"/>'+pfLine('M26 46L36.5 59M38 46L31.5 53.5',.6)+pfLine('M14 60H50',1.6),
+ gap:(o)=>pfFill(PF_BD,o.cc,1.4)+'<path d="M12 54.5H52M9.5 59.5H54.5" stroke="'+PF_G+'" stroke-width="1.8" stroke-dasharray="2.2 1.8" fill="none"/>'+pfFill('M25 44H39V49H25Z','#3a352e',1),
+ ruff:(o)=>pfFill(PF_BD,o.cc,1.4)+'<ellipse cx="32" cy="46.5" rx="11" ry="3.8" fill="'+PF_W+'" stroke="'+PF_I+'" stroke-width="1"/>'+pfLine('M24 46.5L25 49M28 45.5L28.5 49.8M32 45.2V50M36 45.5L35.5 49.8M40 46.5L39 49',.6),
+ jeogori:(o)=>pfFill(PF_BD,o.cc,1.4)+pfFill('M26 46L33 56L38 46L35 46L32 51L29 46Z','#f6f3ec',.9)+'<path d="M33 54L39 63M33 54L36 63" stroke="#a8321f" stroke-width="2" fill="none"/>',
+ dress19:(o)=>pfFill(PF_BD,o.cc,1.4)+pfFill('M28 44H36V48H28Z','#f6f3ec',.9)+'<circle cx="32" cy="51" r="1.8" fill="'+PF_G+'" stroke="'+PF_I+'" stroke-width=".7"/>',
+ blouse:(o)=>pfFill(PF_BD,o.cc,1.4)+pfFill('M27 46Q32 52 37 46Z','#f6f3ec',1)+pfLine('M26.5 46.5L30.5 60M37.5 46.5L33.5 60',1),
+ durumagi:(o)=>pfFill(PF_BD,'#e6e1d6',1.4)+pfLine('M26 46L36 60M38 46L32 53',1.1)+pfLine('M34 55L38 61M34 55L35.5 62',1.1),
+ shawl:(o)=>pfFill(PF_BD,'#efe9dc',1.4)+pfLine('M14 52Q30 58 46 64M18 50Q30 54 40 64',.9),
+ cleric:(o)=>pfFill(PF_BD,o.cc,1.4)+pfFill('M28 44.5H36V48.5H28Z',o.cc,1)+pfFill('M30.6 45H33.4V48H30.6Z',PF_W,.6)+'<path d="M32 51V60M28.5 54H35.5" stroke="'+PF_G+'" stroke-width="1.6"/>'});
+Object.assign(PF_BACK,{bun:hc=>'<circle cx="32" cy="14" r="5.4" fill="'+hc+'" stroke="'+PF_I+'" stroke-width="1.1"/>',
+ bob:hc=>pfFill('M18.5 25C16.5 36 17.5 43 21.5 45.5H42.5C46.5 43 47.5 36 45.5 25Z',hc)});
+Object.assign(PF_HAIR,{bun:hc=>pfFill('M20.5 29C20 18 26 15 32 15S44 18 43.5 29C41 22 36 20 32 21C28 20 23 22 20.5 29Z',hc)+pfLine('M32 15.5V20.5',.7),
+ jbun:hc=>pfFill('M20.5 29C20 18 26 15 32 15S44 18 43.5 29C41 22 36 20 32 21C28 20 23 22 20.5 29Z',hc)+pfLine('M32 15.5V20.5',.7)+'<path d="M38 36L47 33" stroke="'+PF_G+'" stroke-width="1.6" stroke-linecap="round"/>',
+ bob:hc=>pfFill('M20.5 28C20 17 26 14.5 32 14.5S44 17 43.5 28C40 24 35 22 28 23C25 24 22 26 20.5 28Z',hc),
+ none:()=>''});
+Object.assign(PF_HAT,{
+ samo:()=>'<ellipse cx="13.5" cy="17.5" rx="7" ry="2.5" fill="'+PF_I+'"/><ellipse cx="50.5" cy="17.5" rx="7" ry="2.5" fill="'+PF_I+'"/>'+pfFill('M25 17C25 8.5 39 8.5 39 17Z',PF_I)+pfFill('M20.5 25C20.5 13.5 43.5 13.5 43.5 25Z',PF_I)+'<path d="M21 24.5H43" stroke="#4a443b" stroke-width="1.8"/>',
+ gwan:()=>pfFill('M27.5 16.5V8.5H36.5V16.5Z',PF_I)+'<path d="M22 12.5H42" stroke="'+PF_G+'" stroke-width="1.4" stroke-linecap="round"/>',
+ jeonrip:()=>pfFill('M21.5 21Q21 9 32 9T42.5 21Z',PF_I)+pfFill('M7 23Q32 14.5 57 23Q32 27.5 7 23Z',PF_I)+'<path d="M32 9.5L36 4.5" stroke="#a8321f" stroke-width="2.6" stroke-linecap="round"/>',
+ iron:()=>pfFill('M19.5 26C19.5 11 44.5 11 44.5 26Z','#6b7078')+pfLine('M32 11.5V26',.8)+'<path d="M32 11.5Q35 5 40 4" stroke="#a8321f" stroke-width="2.2" fill="none" stroke-linecap="round"/>',
+ zucch:()=>pfFill('M23.5 17.5Q32 10 40.5 17.5Q32 15.5 23.5 17.5Z','#a8321f'),
+ nurse:()=>pfFill('M21.5 19Q32 9.5 42.5 19L40.5 22H23.5Z','#f6f3ec')});
+PF_ACC.fan=()=>'<path d="M47 63L50 46" stroke="#6b4a2a" stroke-width="1.6"/>'+pfFill('M50 46C42 42 42 30 48 26C52 30 58 30 60 34C60 40 56 46 50 46Z','#f3eee2',1)+pfLine('M50 46L49 29M50 46L54 30M50 46L58 35',.6);
 
+// 난이도별 순위: 주소의 ?diff=로 처음 볼 난이도를 정한다(없으면 보통). 색은 게임의 난이도 칸과 같다(전체 보기의 난이도 딱지).
+const DIFS=['쉬움','보통','어려움','지옥','전체'],DCOL={'쉬움':'#3fc38f','보통':'#e3b341','어려움':'#e0604f','지옥':'#ff4d4d','전체':'#c9a24a'};
+let diff=DIFS.indexOf(Q.get('diff'))>=0?Q.get('diff'):'보통';
+const GC={S:'#1d5a3c',A:'#1d5a3c',B:'#1f3f6b',C:'#4a4438',D:'#7a3410',F:'#7a1a14'};
+let OPEN=null;   // 세부 수치를 펼친 명판의 판ID
+let data=null,tab='top',seen=null,fresh=new Set(),lastOk=0,t0=0,loading=false,lastSig='',hangT=0;
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $=id=>document.getElementById(id);
+const num=n=>(Number(n)||0).toLocaleString('ko-KR');
+const dtag=d=>d&&DCOL[d]?'<span class="dt" style="--dc:'+DCOL[d]+'">'+esc(d)+'</span>':'';
 function ago(t){const d=(Date.now()-new Date(t).getTime())/1000;if(!isFinite(d))return '';if(d<60)return '방금';if(d<3600)return Math.floor(d/60)+'분 전';if(d<86400)return Math.floor(d/3600)+'시간 전';
   const x=new Date(t);return (x.getMonth()+1)+'월 '+x.getDate()+'일';}
-function grades(s){return String(s||'').split('/').filter(Boolean).map(g=>'<span class="g" style="color:'+(GC[g]||'#a7afb8')+'">'+esc(g)+'</span>').join('');}
-function meta(r){return esc(r.bg)+' · '+r.terms+'선 '+r.years+'년 · <span style="color:'+(LCOL[r.leader]||'#a7afb8')+'">'+esc(r.leader)+'</span>';}
+// 명판이 걸리는 움직임: 처음 그릴 때와 난이도·탭을 바꿀 때만. 자동 갱신 때는 새 기록만 빛이 지나간다.
+function hang(){document.body.classList.add('hang');clearTimeout(hangT);hangT=setTimeout(()=>document.body.classList.remove('hang'),1400);}
+// 지금 고른 난이도의 순위. 서버가 난이도별 순위(byDiff)를 아직 안 보내면 받은 목록에서 걸러 낸다.
+function view(){if(!data||diff==='전체')return data;
+  if(data.byDiff)return data.byDiff[diff]||{careers:0,players:0,top:[],longest:[],recent:[],order:[],stats:{}};
+  const f=a=>(a||[]).filter(r=>r.diff===diff);return Object.assign({},data,{top:f(data.top),longest:f(data.longest),recent:f(data.recent)});}
 
 /* ---------- 데이터 받기: fetch가 막히면 JSONP로 ---------- */
 function jsonp(){return new Promise((res,rej)=>{const cb='__lb'+Date.now()+Math.floor(Math.random()*1e4),s=document.createElement('script');
@@ -150,7 +386,6 @@ function jsonp(){return new Promise((res,rej)=>{const cb='__lb'+Date.now()+Math.
   s.src=API+'?callback='+cb+'&t='+Date.now();document.head.appendChild(s);});}
 function getData(){if(DEMO)return Promise.resolve(demo());
   return fetch(API+'?t='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).catch(()=>jsonp());}
-
 function load(){if(loading)return;loading=true;
   getData().then(d=>{
     if(!d||!Array.isArray(d.top))throw new Error('형식이 다른 응답');
@@ -159,83 +394,129 @@ function load(){if(loading)return;loading=true;
     if(sig===lastSig)return;lastSig=sig;
     const ids=new Set((d.recent||[]).map(r=>r.id));
     fresh=new Set();if(seen)ids.forEach(id=>{if(!seen.has(id))fresh.add(id);});
-    if(!seen)animateOnce();seen=ids;render();
+    if(!seen)hang();seen=ids;render();
   }).catch(e=>{setLive(false,e);if(!data)renderError(e);}).finally(()=>{loading=false;t0=Date.now();});}
-function setLive(ok,e){$('dot').className='dot'+(ok?'':' off');
+function setLive(ok){const dt=$('dot');dt.className='dot'+(ok?'':' off');if(ok){void dt.offsetWidth;dt.classList.add('got');}
   if(ok){const u=data&&data.updated?new Date(data.updated):new Date();
-    $('liveTxt').textContent=(DEMO?'예시 데이터 · ':'실시간 · ')+'15초마다 갱신 · '+u.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' 기준';}
-  else $('liveTxt').textContent='연결이 끊겼어요 · 다시 시도하는 중'+(lastOk?' (마지막 성공 '+ago(lastOk)+')':'');}
-function tickProg(){const k=Math.min(1,(Date.now()-t0)/REFRESH);$('prog').style.width=(k*100)+'%';
+    $('liveTxt').innerHTML='<b>'+(DEMO?'예시':'LIVE')+'</b><span>15초마다 갱신 · '+u.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})+' 기준</span>';}
+  else $('liveTxt').innerHTML='<span>연결이 끊겼어요 · 다시 시도하는 중'+(lastOk?' (마지막 성공 '+ago(lastOk)+')':'')+'</span>';}
+function tickProg(){const k=Math.min(1,(Date.now()-t0)/REFRESH);
   if(k>=1&&!document.hidden)load();requestAnimationFrame(tickProg);}
 
 /* ---------- 그리기 ---------- */
-function render(){renderBanner();renderTiles();renderBoard();$('statsWide').innerHTML=statsHtml();}
-function renderBanner(){const b=$('banner');
-  if(DEMO){b.innerHTML='<div class="banner">지금 보이는 건 <b style="font-size:14px">예시 데이터</b>예요. 주소에서 <code>?demo=1</code>을 지우면 실제 기록이 나와요.</div>';return;}
-  if(!MY_ID){b.innerHTML='';return;}
-  const rk=data.order.indexOf(MY_ID)+1;
-  if(rk)b.innerHTML='<div class="banner me">'+(MY_NICK?esc(MY_NICK)+' 대통령의 이번 커리어는 ':'이번 커리어는 ')+'<b>'+rk+'위</b> <span style="color:var(--text-secondary)">/ 전체 '+data.order.length+'개 커리어</span>'+
-    (rk>30?'<div class="note" style="margin-top:4px">점수 순위표에는 상위 30명까지만 보여요.</div>':'')+'</div>';
-  else b.innerHTML='<div class="banner me">방금 끝낸 커리어를 시트에 반영하는 중이에요. <span style="color:var(--text-secondary)">잠시 뒤 자동으로 순위가 나타나요.</span></div>';}
-function renderTiles(){const s=data.stats||{},t=(k,v)=>'<div class="tile"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>';
-  $('tiles').innerHTML=t('지나간 인생',data.careers||0)+t('참가자',data.players||0)+t('평균 임기',(s.avgTerms||0)+'선')+t('연임 성공률',(s.reelectRate||0)+'%')+t('개헌한 비율',(s.amendRate||0)+'%')+t('스스로 퇴임',(s.retireRate||0)+'%');}
-function rowHtml(r,i,mode){const cls='row'+(r.id===MY_ID?' mine':'')+(fresh.has(r.id)?' fresh':'');
-  const right=mode==='longest'?'<div class="b">'+r.years+'<span style="font-size:12px">년</span></div><div class="s">'+r.score+'점</div>':
-    mode==='recent'?'<div class="b">'+r.score+'</div><div class="s">'+esc(ago(r.t))+'</div>':'<div class="b">'+r.score+'</div><div class="s">'+r.terms+'선</div>';
-  const rk=mode==='recent'?'<span style="font-size:11px;color:var(--text-muted)">'+(data.order.indexOf(r.id)+1||'–')+'위</span>':i+1;
-  return '<div class="'+cls+'" style="animation-delay:'+Math.min(i,12)*35+'ms"><div class="rk">'+rk+'</div><div class="who"><div class="nm">'+esc(r.nick)+(fresh.has(r.id)?' <span class="tag">NEW</span>':'')+'</div>'+
-    '<div class="mt">'+meta(r)+'</div><div class="ex">'+grades(r.grades)+'<span>'+esc(r.exit)+'</span>'+(r.amend?'<span style="color:var(--danger)">· 개헌 '+r.amend+'회</span>':'')+'</div></div><div class="val">'+right+'</div></div>';}
-function podium(list){const m=[list[1],list[0],list[2]],cls=['p2','p1','p3'],col=['var(--silver)','var(--gold)','var(--bronze)'],rk=[2,1,3];
-  return '<div class="podium">'+m.map((r,j)=>r?'<div class="pod '+cls[j]+(fresh.has(r.id)?' fresh':'')+'" style="animation-delay:'+[120,0,220][j]+'ms;'+(r.id===MY_ID?'box-shadow:0 0 0 2px var(--purple);':'')+'">'+
-    '<div class="medal" style="background:'+col[j]+'">'+rk[j]+'</div><div class="nm">'+esc(r.nick)+'</div><div class="sc">'+r.score+'</div><div class="ld">'+r.terms+'선 · '+esc(r.leader)+'</div></div>':'<div></div>').join('')+'</div>';}
+function render(){renderDifs();renderBoard();renderTick();}
+// 속보 자막: 지금 고른 난이도에서 가장 최근에 끝난 커리어들이 맨 아래를 흘러간다(새 기록은 앞에 NEW)
+function renderTick(){const V=view(),L=(V&&V.recent||[]).slice(0,10),el=$('tick');if(!L.length){el.hidden=true;return;}
+  const s=L.map(r=>'<span>'+(fresh.has(r.id)?'<em>NEW</em> ':'')+'<i>'+esc(ago(r.t))+'</i> · '+esc(r.nick)+' <em>'+num(r.score)+'점</em> · '+r.terms+'선 · '+esc(r.exit)+(diff==='전체'&&r.diff?' · '+esc(r.diff):'')+'</span>').join('');
+  $('tickM').innerHTML=s+'<span class="dup" aria-hidden="true">'+s+'</span>';el.hidden=false;}   // 이어 붙인 사본은 낭독하지 않는다
+function renderDifs(){$('difs').innerHTML=DIFS.map(k=>'<button data-d="'+k+'" aria-pressed="'+(diff===k)+'">'+
+  k+'</button>').join('');}
+const medal=(r,px)=>'<span class="med" style="--m:'+px+'px">'+(portrait(r.leader,'100%')||'<b>'+esc(String(r.nick||'?').slice(0,1))+'</b>')+'</span>';
+let ME='';const flags=r=>(fresh.has(r.id)?' fresh':'')+(ME&&r.id===ME?' mine':'');
+// 1위: 초상 메달이 달린 큰 금 명판. 2·3위: 은·동 명판.
+const MORE='<button class="more">세부 수치 보기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>';
+const opener=r=>' data-open="'+esc(r.id)+'"';
+const more=r=>MORE.replace('<button class="more"','<button class="more" aria-expanded="'+(OPEN===r.id)+'"'+(OPEN===r.id?' aria-controls="det-'+esc(r.id)+'"':''));   // 펼쳤을 때만 패널을 가리킨다
+function plate1(r){return '<article class="pl p1'+flags(r)+'" style="--d:0"'+opener(r)+'>'+more(r)+''+medal(r,92)+
+  '<span class="pl-no" aria-hidden="true">1</span><div style="min-width:0"><div class="pl-nm"><span class="sr">1위 </span>'+esc(r.nick)+(fresh.has(r.id)?'<span class="new">NEW</span>':'')+'</div><div class="pl-sc">'+num(r.score)+'<small>점</small></div>'+
+  '<div class="pl-mt">'+r.terms+'선 · '+r.years+'년 · 닮은 지도자 '+esc(r.leader)+(diff==='전체'?dtag(r.diff):'')+'</div></div></article>';}
+function plateS(r,rk,cls,d){if(!r)return '<div></div>';return '<article class="pl '+cls+flags(r)+'" style="--d:'+d+'"'+opener(r)+'>'+more(r)+''+
+  '<span class="pl-no" aria-hidden="true">'+rk+'</span><div class="head">'+medal(r,46)+'</div><div style="min-width:0"><div class="pl-nm"><span class="sr">'+rk+'위 </span>'+esc(r.nick)+'</div><div class="pl-sc">'+num(r.score)+'<small>점</small></div>'+
+  '<div class="pl-mt">'+r.terms+'선 · '+esc(r.leader)+(diff==='전체'?dtag(r.diff):'')+'</div></div></article>';}
+// 도전 명판: 내 기록이 있으면 순위와 1위까지 남은 점수, 없으면 1위 점수를 걸고 도전을 권한다
+// 예시 데이터에서는 7위 기록을 '내 기록'으로 삼아 도전 명판을 보여 준다
+const meId=list=>MY_ID||(DEMO&&list.length?list[Math.min(6,list.length-1)].id:'');
+function chal(V,list){const top=list[0],where=diff==='전체'?'':diff+' 난이도 ',id=meId(list);
+  if(id){const rk=V.order.indexOf(id)+1,me=list.find(r=>r.id===id),nick=MY_NICK||(DEMO&&me?me.nick:'');
+    if(!rk)return '<div class="me" style="--d:3"><p><b>내 커리어</b> · 반영하는 중<small>방금 끝낸 커리어를 기록하고 있어요. 잠시 뒤 순위가 나타나요.</small></p></div>';
+    const gap=me&&rk>1?top.score-me.score:null;
+    return '<div class="me" style="--d:3"><p><b>내 커리어</b> · '+(rk===1?'지금 이 벽의 맨 위':gap!=null?'1위까지 <span class="nw">'+num(gap)+'점</span>':where+num(V.order.length)+'개 중')+
+      '<small>'+(nick?esc(nick)+' · ':'')+where+num(V.order.length)+'개 커리어 중</small></p><span class="me-rk">'+rk+'위</span></div>'+(rk>1?'<a class="btn wide" href="index.html">다시 출마하기</a>':'');}
+  return '<div class="me" style="--d:3"><p><b>1위 '+num(top.score)+'점</b> · 다음으로 이 벽에 이름을 새길 사람<small>'+where+num(V.order.length)+'개 커리어가 새겨져 있어요</small></p></div><a class="btn wide" href="index.html">나도 출마하기</a>';}const SN=[['a','지지율'],['e','경제'],['m','의료'],['saf','안전망'],['chk','견제'],['trn','투명성'],['c','유착',1],['u','갈등',1]];
+const dv=v=>v==null||v===''?'–':num(v);
+function detHtml(r,rk){const d=r.det;
+  if(!d)return '<section class="det"><p class="det-p" style="margin:0">세부 수치는 기록 시트를 새 버전으로 배포한 뒤 끝난 커리어부터 보여요.</p></section>';
+  const st=d.stat||{},P=d.part||[],D=d.dice||[],R=d.dir||[],T=d.tro||[],L=(k,v)=>'<div><dt>'+k+'</dt><dd>'+v+'</dd></div>';
+  const bar=([k,l,bad])=>{const v=st[k];if(v==null)return '';const g=bad?100-v:v,col=g>=66?'#3fc38f':g>=40?'#e3b341':'#e0604f';
+    return '<div class="ds"><span>'+l+'</span><i><s style="width:'+Math.max(0,Math.min(100,v))+'%;background:'+col+'"></s></i><b>'+Math.round(v)+'</b></div>';};
+  return '<section class="det" id="det-'+esc(r.id)+'" aria-label="'+esc(r.nick)+' 세부 수치"><h3>'+rk+'위 '+esc(r.nick)+'의 마지막 순간</h3><div class="det-g">'+SN.map(bar).join('')+'</div>'+
+    '<p class="det-p" style="margin:0 0 6px"><b>점수 구성</b>임기 '+dv(P[0])+' · 선거 '+dv(P[1])+' · 업적과 그 밖 '+dv(P[2])+'</p><dl class="ledger">'+L('평균 임기 점수',d.avg==null?'–':d.avg)+
+    L('대성공 · 성공',dv(D[0])+' · '+dv(D[1]))+L('실패 · 대실패',dv(D[2])+' · '+dv(D[3]))+L('권력 집중 선택',dv(R[0]))+L('견제·분산 선택',dv(R[1]))+
+    L('업적 · 불명예',dv(T[0])+' · '+dv(T[1]))+L('내린 결정',dv(d.n)+'번')+'</dl>'+
+    (d.camp||d.scen?'<p class="det-p"><b>겪은 위기</b>'+esc([d.camp,d.scen].filter(Boolean).join(' · '))+'</p>':'')+(d.titles?'<p class="det-p"><b>임기 평가</b>'+esc(d.titles)+'</p>':'')+'</section>';}
+function row(r,i,mode,V){const val=mode==='longest'?'<div class="rw-sc">'+r.years+'<small>년</small></div><div class="rw-s">'+num(r.score)+'점</div>':
+    mode==='recent'?'<div class="rw-sc">'+num(r.score)+'</div><div class="rw-s">'+esc(ago(r.t))+'</div>':'<div class="rw-sc">'+num(r.score)+'</div>';
+  const rk=mode==='recent'?'<span class="rw-rk">'+((V.order.indexOf(r.id)+1)||'–')+'<small>위</small></span>':'<span class="rw-rk">'+(i+1)+'</span>';
+  return '<div class="rw'+flags(r)+'" style="--d:'+Math.min(i,10)+'">'+rk+'<div style="min-width:0"><div class="rw-nm">'+esc(r.nick)+(fresh.has(r.id)?'<span class="new">NEW</span>':'')+'</div>'+
+    '<div class="rw-mt"><span class="ld">'+esc(r.leader)+'</span> · '+r.terms+'선'+(diff==='전체'?dtag(r.diff):'')+'</div></div><div class="rw-v">'+val+'</div></div>';}
 function renderBoard(){const B=$('board');
   if(tab==='stats'){B.innerHTML=statsHtml();return;}
-  const list=data[tab]||[];
-  if(!list.length){B.innerHTML='<div class="card empty">아직 기록이 없어요.<br>첫 번째 대통령이 되어 보세요.<div style="margin-top:14px"><a class="play" href="index.html">게임 하러 가기</a></div></div>';return;}
-  if(tab==='top'){B.innerHTML=podium(list)+(list.length>3?'<div class="card" style="padding:4px 11px">'+list.slice(3).map((r,i)=>rowHtml(r,i+3,'top')).join('')+'</div>':'')+
-    '<div class="note">한 사람의 가장 높은 커리어만 순위에 올라요. 커리어 점수(100점) = 성과 70 + 연임 15 + 명예 15.</div>';return;}
-  B.innerHTML='<div class="card" style="padding:4px 11px">'+list.map((r,i)=>rowHtml(r,i,tab)).join('')+'</div>'+
-    (tab==='longest'?'<div class="note">재임 기간이 같으면 커리어 점수가 높은 순서예요.</div>':'<div class="note">순위와 상관없이 가장 최근에 끝난 커리어 15개예요.</div>');}
-function hbars(obj,colf){const a=Object.entries(obj||{}).sort((x,y)=>y[1]-x[1]);if(!a.length)return '<div class="note">아직 데이터가 없어요.</div>';const mx=a[0][1];
-  return a.map(([k,v],i)=>'<div class="hb"><span class="n">'+esc(k)+'</span><span class="tr"><span style="width:'+(v/mx*100)+'%;background:'+colf(k)+';animation-delay:'+i*50+'ms"></span></span><span class="c">'+v+'</span></div>').join('');}
-function dirChart(rows){const W=320,H=150,mid=75,bw=(W-20)/5,sc=v=>Math.max(-1,Math.min(1,v/12))*58;
+  const V=view(),list=V[tab]||[];ME=meId(V.top||list);
+  if(!list.length){B.innerHTML='<div class="empty">'+(diff==='전체'?'아직 새겨진 이름이 없어요.':'아직 '+esc(diff)+' 난이도에 새겨진 이름이 없어요.')+'<br>첫 번째로 이 벽에 이름을 새겨 보세요.<br><a class="btn" href="index.html">게임 하러 가기</a></div>';return;}
+  const oi=list.slice(0,3).findIndex(r=>r.id===OPEN),det=oi>=0?detHtml(list[oi],oi+1):'';
+  if(tab==='top'){B.innerHTML=plate1(list[0])+(oi===0?det:'')+'<div class="pods">'+plateS(list[1],2,'pl-s',1)+plateS(list[2],3,'pl-b',2)+'</div>'+(oi>0?det:'')+chal(V,list)+
+    (list.length>3?'<div class="rows">'+list.slice(3).map((r,i)=>row(r,i+3,'top',V)).join('')+'</div>':'');return;}
+  B.innerHTML='<div class="rows" style="margin-top:0">'+list.map((r,i)=>row(r,i,tab,V)).join('')+'</div>';}
+function hbars(obj,colf){const a=Object.entries(obj||{}).sort((x,y)=>y[1]-x[1]).slice(0,12);if(!a.length)return '<div class="note">아직 데이터가 없어요.</div>';const mx=a[0][1];
+  return a.map(([k,v])=>'<div class="hb"><span class="n">'+esc(k)+'</span><span class="tr"><span style="width:'+(v/mx*100)+'%;background:'+colf(k)+'"></span></span><span class="c">'+v+'</span></div>').join('');}
+function dirChart(rows){const W=320,H=150,mid=75,bw=(W-20)/5,sc=v=>Math.max(-1,Math.min(1,v/12))*56;
   let s='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block" role="img" aria-label="임기별 평균 권력 방향">';
-  s+='<line x1="8" x2="'+(W-8)+'" y1="'+mid+'" y2="'+mid+'" stroke="rgba(255,255,255,.25)"/>';
-  s+='<text x="10" y="12" font-size="9" fill="rgba(255,255,255,.45)">권력 집중 ↑</text><text x="10" y="'+(H-4)+'" font-size="9" fill="rgba(255,255,255,.45)">견제·분산 ↓</text>';
+  s+='<line x1="8" x2="'+(W-8)+'" y1="'+mid+'" y2="'+mid+'" stroke="rgba(201,162,74,.45)"/>';
+  s+='<text x="10" y="12" font-size="10" fill="#cdbf9f">권력 집중</text><text x="10" y="'+(H-4)+'" font-size="10" fill="#cdbf9f">견제·분산</text>';
   rows.forEach((r,i)=>{const x=10+i*bw+bw*.22,w=bw*.56,cx=x+w/2;
-    s+='<text x="'+cx+'" y="'+(mid+(r.avg>=0||r.avg===null?14:-6))+'" font-size="10" text-anchor="middle" fill="rgba(255,255,255,.6)">'+r.term+'기</text>';
-    if(r.avg===null){s+='<text x="'+cx+'" y="'+(mid-6)+'" font-size="9" text-anchor="middle" fill="rgba(255,255,255,.3)">없음</text>';return;}
-    const h=sc(r.avg),y=h>=0?mid-h:mid,col=h>=0?'#f0605f':'#4a8fe0';
-    s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+Math.max(2,Math.abs(h)).toFixed(1)+'" rx="3" fill="'+col+'"/>';
-    s+='<text x="'+cx+'" y="'+(h>=0?y-5:y+Math.abs(h)+12).toFixed(1)+'" font-size="10" font-weight="700" text-anchor="middle" fill="'+col+'">'+(r.avg>0?'+':'')+r.avg+'</text>';
-    s+='<text x="'+cx+'" y="'+(h>=0?mid+26:mid-18)+'" font-size="8" text-anchor="middle" fill="rgba(255,255,255,.35)">'+r.n+'명</text>';});
+    s+='<text x="'+cx+'" y="'+(mid+(r.avg>=0||r.avg===null?14:-6))+'" font-size="10" text-anchor="middle" fill="#a8987a">'+r.term+'기</text>';
+    if(r.avg===null)return;
+    const h=sc(r.avg),y=h>=0?mid-h:mid,col=h>=0?'#e0604f':'#6f9be0';
+    s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+Math.max(2,Math.abs(h)).toFixed(1)+'" rx="2" fill="'+col+'"/>';
+    s+='<text x="'+cx+'" y="'+(h>=0?y-5:y+Math.abs(h)+12).toFixed(1)+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="'+col+'">'+(r.avg>0?'+':'')+r.avg+'</text>';});
   return s+'</svg>';}
-function statsHtml(){if(!data)return '';const s=data.stats||{};const dt=s.dirByTerm||[];
-  const exitCol=k=>/퇴임/.test(k)?'#4a8fe0':/실패|출마|패배/.test(k)?'#8a9099':/이탈/.test(k)?'#6b737d':'#f0605f';
-  return '<div class="card"><div class="lab">임기가 거듭될수록 선택은 어디로 향했나</div>'+dirChart(dt.length?dt:[1,2,3,4,5].map(t=>({term:t,n:0,avg:null})))+
-    '<div class="note">각 임기에서 고른 선택들의 평균 권력 방향 점수예요. 위로 갈수록 권력 집중, 아래로 갈수록 견제·분산. 막대 아래 숫자는 그 임기까지 간 커리어 수예요.</div></div>'+
-    '<div class="card"><div class="lab">닮은 지도자 분포</div>'+hbars(s.leaders,k=>LCOL[k]||'#8b7cf6')+'</div>'+
-    '<div class="card"><div class="lab">어떻게 물러났나</div>'+hbars(s.exits,exitCol)+'</div>'+
-    '<div class="card"><div class="lab">출신 배경</div>'+hbars(s.backgrounds,()=>'#8b7cf6')+'</div>';}
-function renderError(e){$('board').innerHTML='<div class="card empty">기록을 불러오지 못했어요.<div class="note" style="margin-top:6px">Apps Script를 최신 코드로 바꾸고 <b>새 버전으로 배포</b>했는지 확인해 주세요.<br>('+esc(e&&e.message||e)+')</div>'+
-  '<div style="margin-top:14px"><button id="retry">다시 시도</button></div></div>';const r=$('retry');if(r)r.onclick=()=>{$('board').innerHTML='<div class="skel"></div><div class="skel"></div>';load();};}
+function statsHtml(){if(!data)return '';const V=view(),s=V.stats||{},dt=(s.dirByTerm&&s.dirByTerm.length)?s.dirByTerm:[1,2,3,4,5].map(t=>({term:t,n:0,avg:null}));
+  const exitCol=k=>/퇴임/.test(k)?'#6f9be0':/실패|출마|패배/.test(k)?'#a8987a':'#e0604f';
+  const L=(k,v)=>'<div><dt>'+k+'</dt><dd>'+v+'</dd></div>';
+  return '<section class="panel"><h2>기록 보관소'+(diff==='전체'?'':' · '+esc(diff))+'</h2><dl class="ledger">'+L('지나간 인생',num(V.careers))+L('참가자',num(V.players))+L('평균 임기',(s.avgTerms||0)+'선')+
+      L('2선 이상',(s.reelectRate||0)+'%')+L('개헌한 비율',(s.amendRate||0)+'%')+L('스스로 퇴임',(s.retireRate||0)+'%')+'</dl></section>'+
+    '<section class="panel"><h2>임기가 거듭될수록 선택은 어디로</h2>'+dirChart(dt)+'<div class="note">각 임기에서 고른 선택들의 평균 권력 방향. 위는 권력 집중, 아래는 견제·분산이다.</div></section>'+
+    '<section class="panel"><h2>닮은 지도자</h2>'+hbars(s.leaders,()=>'#c9a24a')+'</section>'+
+    '<section class="panel"><h2>어떻게 물러났나</h2>'+hbars(s.exits,exitCol)+'</section>';}
+function renderError(e){$('board').innerHTML='<div class="empty">기록을 불러오지 못했어요.<div class="note">인터넷 연결과 Apps Script 배포(새 버전)를 확인해 주세요. ('+esc(e&&e.message||e)+')</div><button class="btn" id="retry" style="margin-top:14px">다시 시도</button></div>';
+  const r=$('retry');if(r)r.onclick=()=>{$('board').innerHTML='<div class="skel big"></div><div class="skel"></div>';load();};}
 
-$('tabs').addEventListener('click',e=>{const b=e.target.closest('button[data-t]');if(!b)return;tab=b.dataset.t;
-  document.querySelectorAll('#tabs button').forEach(x=>x.setAttribute('aria-selected',x===b?'true':'false'));if(data){animateOnce();renderBoard();}});
+// 명판을 누르거나 Enter·Space: 세부 수치를 펼치고 접는다
+$('board').addEventListener('click',e=>{const p=e.target.closest('[data-open]');if(!p)return;OPEN=OPEN===p.dataset.open?null:p.dataset.open;renderBoard();const q=$('board').querySelector('[data-open="'+p.dataset.open+'"] .more');if(q)q.focus({preventScroll:true});});
+$('tabs').addEventListener('click',e=>{const b=e.target.closest('button[data-t]');if(!b||b.dataset.t===tab)return;tab=b.dataset.t;
+  document.querySelectorAll('#tabs button').forEach(x=>x.setAttribute('aria-selected',x===b?'true':'false'));if(data){hang();renderBoard();}});
+$('difs').addEventListener('click',e=>{const b=e.target.closest('button[data-d]');if(!b||b.dataset.d===diff)return;diff=b.dataset.d;
+  try{const u=new URL(location.href);u.searchParams.set('diff',diff);history.replaceState(null,'',u);}catch(e){}
+  const ex=document.querySelector('.bar .ext');if(ex)ex.href='leaderboard.html?diff='+encodeURIComponent(diff);
+  if(data){hang();render();}else renderDifs();});
+// 속보 멈춤: 휴대폰에서도 눌러서 멈추고 다시 흐르게 한다
+$('tickP').addEventListener('click',()=>{const el=$('tick'),on=!el.classList.contains('stop');el.classList.toggle('stop',on);const b=$('tickP');b.setAttribute('aria-pressed',on);   // 이름은 '속보 멈추기'로 두고 눌림 상태로만 알린다
+  b.innerHTML=on?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg>';});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-t0>3000)load();});
 
 /* ---------- 예시 데이터 (?demo=1) ---------- */
-function demo(){const L=Object.keys(LCOL),BGS=['감염병 학자','기업인','인권 변호사','군 장성','정치 명문가'],EX=['명예롭게 퇴임했다','지지율 미달로 출마하지 못했다','선거에서 패배했다','경제 붕괴로 정권이 무너졌다','거리로 쫓겨났다','더는 출마할 수 없었다'];
-  const NK=['조성민','민준','서연','하준','지우','도윤','서윤','예준','하은','시우','지호','수아'];const rows=[];
-  for(let i=0;i<24;i++){const terms=1+Math.floor(Math.random()*4),gs='SABCDF';rows.push({id:'d'+i,nick:NK[i%NK.length]+(i>=NK.length?'2':''),score:Math.round(40+terms*60*Math.random()+terms*30),terms:terms,
+function demo(){const L=Object.keys(LCOL),BGS=['감염병 학자','기업인','인권 변호사','군 장성','정치 명문가'],EX=['명예롭게 퇴임했다','지지율 미달로 출마하지 못했다','선거에서 패배했다','경제 붕괴로 정권이 무너졌다','거리로 쫓겨났다','더는 출마할 수 없었다','스스로 하야했다'];
+  const NK=['백신대통령','민준','서연','하준','지우','도윤','서윤','예준','하은','시우','지호','수아'];const rows=[];
+  for(let i=0;i<30;i++){const terms=1+Math.floor(Math.random()*4),gs='SABCDF';rows.push({id:'d'+i,nick:NK[i%NK.length]+(i>=NK.length?String(Math.floor(i/NK.length)+1):''),score:Math.round(800+terms*1800*Math.random()+terms*600),terms:terms,
     years:terms*4-Math.floor(Math.random()*2),exit:EX[Math.floor(Math.random()*EX.length)],leader:L[Math.floor(Math.random()*L.length)],bg:BGS[i%5],grades:Array.from({length:terms},()=>gs[Math.floor(Math.random()*5)]).join('/'),
-    amend:terms>=3?terms-2:0,t:new Date(Date.now()-i*420000).toISOString()});}
-  const by=rows.slice().sort((a,b)=>b.score-a.score),cnt=f=>rows.reduce((m,r)=>{m[f(r)]=(m[f(r)]||0)+1;return m;},{});
-  return {updated:new Date().toISOString(),careers:rows.length,players:NK.length,order:by.map(r=>r.id),top:by.slice(0,30),longest:rows.slice().sort((a,b)=>b.years-a.years||b.score-a.score).slice(0,15),recent:rows.slice(0,15),
-    stats:{avgTerms:2.4,reelectRate:58,amendRate:21,retireRate:25,leaders:cnt(r=>r.leader),exits:cnt(r=>r.exit),backgrounds:cnt(r=>r.bg),
-      dirByTerm:[{term:1,n:24,avg:-4.2},{term:2,n:14,avg:-1.1},{term:3,n:7,avg:3.6},{term:4,n:3,avg:6.8},{term:5,n:1,avg:9.5}]}};}
+    amend:terms>=3?terms-2:0,diff:['쉬움','보통','보통','어려움','지옥'][i%5],t:new Date(Date.now()-i*420000).toISOString()});
+    const R=()=>Math.round(15+Math.random()*80);rows[i].det={stat:{a:R(),e:R(),m:R(),c:R(),u:R(),chk:R(),trn:R(),saf:R()},part:[Math.round(rows[i].score*.7),terms>1?(terms-1)*300:0,Math.round(rows[i].score*.3)-(terms>1?(terms-1)*300:0)],
+      dice:[3+terms,12*terms,4*terms,terms],dir:[6*terms,5*terms,Math.round((Math.random()*16-8)*10)/10],tro:[3*terms,terms],camp:'대한민국',scen:'코로나·변이 → 전쟁',titles:'위기의 선장 / 흔들린 두 번째 임기',avg:Math.round(50+Math.random()*30),sec:900,n:15*terms};}
+  const board=rs=>{const by=rs.slice().sort((a,b)=>b.score-a.score),cnt=f=>rs.reduce((m,r)=>{m[f(r)]=(m[f(r)]||0)+1;return m;},{});
+    return {careers:rs.length,players:new Set(rs.map(r=>r.nick)).size,order:by.map(r=>r.id),top:by.slice(0,30),longest:rs.slice().sort((a,b)=>b.years-a.years||b.score-a.score).slice(0,15),recent:rs.slice(0,15),
+      stats:{avgTerms:2.4,reelectRate:58,amendRate:21,retireRate:25,leaders:cnt(r=>r.leader),exits:cnt(r=>r.exit),backgrounds:cnt(r=>r.bg),
+        dirByTerm:[{term:1,n:24,avg:-4.2},{term:2,n:14,avg:-1.1},{term:3,n:7,avg:3.6},{term:4,n:3,avg:6.8},{term:5,n:1,avg:9.5}]}};};
+  const byDiff={};DIFS.slice(0,4).forEach(d=>byDiff[d]=board(rows.filter(r=>r.diff===d)));
+  return Object.assign({updated:new Date().toISOString(),diffs:DIFS.slice(0,4),byDiff:byDiff},board(rows));}
 
-t0=Date.now();load();requestAnimationFrame(tickProg);
+// 게임 안에 띄울 때(?embed=1): 위쪽 단추는 '게임으로', 출마하기 단추들은 새 게임 고르기. Esc도 돌아가기.
+const EMBED=Q.get('embed')==='1',tell=k=>{try{parent.postMessage({lb:k},'*');}catch(e){}};
+if(EMBED){const b=document.querySelector('.bar .btn');
+  // 게임 안에서는 사이트의 리더보드를 새 창으로 여는 '전체 순위' 링크를 함께 둔다
+  b.insertAdjacentHTML('beforebegin','<a class="ext" href="leaderboard.html?diff='+encodeURIComponent(diff)+'" target="_blank" rel="noopener">전체 순위<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>');b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>게임으로';
+  document.addEventListener('click',e=>{const a=e.target.closest('a[href="index.html"]');if(!a)return;e.preventDefault();tell(a===b?'close':'play');});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')tell('close');});}
+renderDifs();t0=Date.now();load();requestAnimationFrame(tickProg);
 })();
 </script>
 </body>
