@@ -3,6 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script>
+// 큰 태블릿(아이패드 프로 12.9 등)에서는 글자와 버튼이 휴대폰 크기 그대로라 화면이 휑하다. 짧은 변 700px 이상인 터치 기기면
+// 뷰포트 폭을 세로 680px · 가로 1100px로 좁혀 화면 전체를 비례해서 키운다. 휴대폰과 PC는 그대로.
+// 기기 크기는 바뀌지 않으므로 처음 한 번만 잰다(뷰포트를 바꾼 뒤 다시 재면 브라우저에 따라 줄어든 값이 나와 키웠다 줄였다를 반복한다).
+(function(){var m=document.querySelector('meta[name=viewport]'),base=m.getAttribute('content'),
+    s=Math.min(screen.width,screen.height),l=Math.max(screen.width,screen.height);
+  function fit(){var o=screen.orientation&&screen.orientation.type,port=o?o.indexOf('portrait')===0:matchMedia('(orientation:portrait)').matches,
+      touch=navigator.maxTouchPoints>1||matchMedia('(pointer:coarse)').matches,dw=port?s:l,tw=port?680:1100,
+      c=touch&&s>=700&&dw>tw?'width='+tw+',viewport-fit=cover':base;
+    if(m.getAttribute('content')!==c)m.setAttribute('content',c);}
+  fit();addEventListener('orientationchange',function(){setTimeout(fit,60);});addEventListener('resize',fit);})();
+</script>
 <meta name="theme-color" content="#efe9dd">
 <title>팬데믹 대통령</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -710,9 +722,11 @@ button:hover{border-color:var(--gold)}
 /* 라이트 모드: 모든 애니메이션·전환을 즉시 끝난 상태로(사라지지 않게 '없음' 대신 길이 0) */
 html[data-lite] *,html[data-lite] *::before,html[data-lite] *::after{animation-duration:0s!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:0s!important;transition-delay:0s!important}
 html[data-lite] [style*="animation:tk"]{padding-left:0!important;display:block!important;overflow:hidden;text-overflow:ellipsis}
-/* 명언이 있으면 셔터가 맞물리는 금선 위에 연차 제목, 아래에 명언이 오도록 */
-.yrfx-c:has(.yq){justify-content:flex-start;padding-top:calc(50vh - 62px)}
-.yrfx-c:has(.yq) i{margin-bottom:4px}
+/* 명언이 있으면 셔터가 맞물리는 금선 위에 연차 제목, 아래에 명언이 오도록.
+   vh는 주소창을 뺀 실제 화면 높이와 달라서(아이패드 크롬 등) 제목이 금선에 걸리므로, 제목 칸을 화면 위쪽 절반으로 잡고 그 바닥에 선을 붙인다 */
+.yrfx-top{display:flex;flex-direction:column;align-items:center}
+.yrfx-c:has(.yq){justify-content:flex-start}
+.yrfx-c:has(.yq) .yrfx-top{flex:0 0 50%;justify-content:flex-end}
 /* 등급 인장 */
 .seal{position:absolute;right:12px;top:12px;width:66px;height:66px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--sc);border:3px double var(--sc);font-family:var(--font-voice);
   background:color-mix(in srgb,var(--sc) 7%,transparent);transform:rotate(-12deg);animation:sealIn .45s .35s cubic-bezier(.3,1.6,.5,1) both}
@@ -1348,6 +1362,13 @@ html[data-ori="p"] #wrap.fit>.g-main{flex:1;min-height:0;display:flex;flex-direc
 html[data-ori="p"] #wrap.fit .g-sc{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:8px 1px 4px;margin:0 -1px}
 html[data-ori="p"] #wrap.fit .g-sc::-webkit-scrollbar{display:none}
 html[data-ori="p"] #wrap.fit .g-bt{flex:0 0 auto;padding-top:8px}
+/* 자리가 남는 화면(fitP가 loose를 붙인다): 사건과 선택지 사이를 벌리지 않고 둘을 함께 가운데보다 조금 위로(남는 자리를 위 1 : 아래 2) */
+html[data-ori="p"] #wrap.fit.loose>.g-main::before{content:"";flex:1 1 0}
+html[data-ori="p"] #wrap.fit.loose>.g-main::after{content:"";flex:2 1 0}
+html[data-ori="p"] #wrap.fit.loose .g-sc{flex:0 1 auto}
+html[data-ori="p"] #wrap.fit.loose .g-bt{padding-top:14px}
+/* 태블릿 세로: 한 칸 화면을 조금 넓혀 양옆이 휑하지 않게 */
+@media (min-width:600px){html[data-ori="p"] #app:has(#wrap.fit){max-width:640px}}
 /* 상태 바 */
 html[data-ori="p"] .hp-top{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);margin-bottom:5px;white-space:nowrap;min-width:0}
 html[data-ori="p"] .hp-k{background:rgba(47,74,107,.18);color:#3d5a80;font-weight:700;padding:1px 7px;border-radius:6px}
@@ -4955,7 +4976,7 @@ function splitOut(o){if(reduceFx()||!o.isConnected){o.remove();return;}
 function yearFx(label,sub,fn){if(reduceFx()){fn();if(sub&&typeof sub==='object')fxNote(label,sub);return;}
   const Q=sub&&typeof sub==='object'?sub:null,hold=Q?Math.min(7500,2800+(Q.q.length+(Q.s||'').length)*40):1430;
   const o=document.createElement('div');o.className='yrfx';o.setAttribute('role','status');
-  o.innerHTML='<div class="yrfx-h t"></div><div class="yrfx-h b"></div><div class="yrfx-c"><b>'+label+'</b><i></i>'+(Q?lqHTML(Q):'<span>'+sub+'</span>')+'</div>';
+  o.innerHTML='<div class="yrfx-h t"></div><div class="yrfx-h b"></div><div class="yrfx-c"><div class="yrfx-top"><b>'+label+'</b><i></i></div>'+(Q?lqHTML(Q):'<span>'+sub+'</span>')+'</div>';
   document.body.appendChild(o);void o.offsetWidth;o.classList.add('in');
   let shown=false,opened=false;const open=()=>{if(opened)return;opened=true;splitOut(o);};
   setTimeout(()=>{fn();window.scrollTo(0,0);o.classList.add('show');shown=true;},620);
@@ -5503,10 +5524,15 @@ function hudP(o){o=o||{};const y=Math.floor(S.turn/PY)+1,v=Math.round(S.i),X=SCX
   statsHTML()+
   '<div class="hp-line">'+urgentHTML(1)+'<div class="hp-tk"><span><b>'+(CP.id==='joseon'?'풍문':'속보')+'</b>&nbsp; '+headlines()+'</span></div></div>';}
 // 사건 글이 가운데 칸을 넘치면 글씨를 조금씩 줄인다(85%까지). 줄여도 안 들어가면 원래 크기로 두고 그 칸 안에서만 스크롤한다.
+// 반대로 자리가 많이 남으면(아이패드·짧은 사건) 글씨를 18%까지 키우고, 그래도 남으면 선택지를 사건 바로 아래로 붙여 가운데 모은다(loose).
 function fitP(){const w=document.querySelector('#wrap.fit'),sc=w&&w.querySelector('.g-sc');if(!sc||!isP())return;
+  w.classList.remove('loose');
   const over=()=>sc.scrollHeight>sc.clientHeight+1;let f=1;w.style.setProperty('--fz',f);
   while(over()&&f>.86){f=Math.round((f-.03)*100)/100;w.style.setProperty('--fz',f);}
   if(over())w.style.setProperty('--fz',1);
+  else{while(f<1.18){const g=Math.round((f+.03)*100)/100;w.style.setProperty('--fz',g);if(over()){w.style.setProperty('--fz',f);break;}f=g;}
+    const top=sc.getBoundingClientRect().top,used=[...sc.children].reduce((a,c)=>Math.max(a,c.getBoundingClientRect().bottom-top),0);
+    if(sc.clientHeight-used>48)w.classList.add('loose');}
   pMore(sc);}
 // 스크롤 칸 아래를 흐려서 글이 더 있다는 것을 알린다(끝까지 내리면 사라진다)
 function pMore(sc){sc=sc||document.querySelector('.pfit>.p-sc');if(!sc||!isP())return;
