@@ -763,6 +763,20 @@ html[data-lite] [style*="animation:tk"]{padding-left:0!important;display:block!i
 .cs .mm .emb-t{font-size:clamp(36px,6.4vw,62px);margin-top:12px}
 .cine-title{position:absolute;top:30px;left:50%;z-index:3;transform:translateX(-50%);font-size:12.5px;font-weight:700;letter-spacing:.22em;color:#c9a24a;white-space:nowrap}
 .cine-snd svg{width:18px;height:18px}
+/* 소리 설정 창: 효과음 · 음악 크기 막대 */
+.sndp-bg{position:fixed;inset:0;z-index:97;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(14,12,9,.45);animation:fdIn .2s ease-out}
+.sndp{width:min(340px,100%);background:var(--surface-2);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:14px;padding:16px 18px 18px;box-shadow:0 20px 50px -12px rgba(0,0,0,.5);font-family:var(--font-ui)}
+.sndp::before{content:"";display:block;height:3px;margin:-16px -18px 14px;border-radius:14px 14px 0 0;background:linear-gradient(90deg,#8a6a24,#f1d589,#8a6a24)}
+.sndp-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.sndp-h span{font-family:var(--font-voice);font-weight:800;font-size:19px;letter-spacing:.04em}
+.sndp-x{width:32px;height:32px;padding:0;border-radius:50%;font-size:13px;color:var(--text-secondary)}
+.sndp-r{padding:12px 0;border-top:1px solid var(--border)}
+.sndp-l{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.sndp-l b{font-size:15px}
+.sndp-l span{font-size:12px;color:var(--text-muted)}
+.sndp-c{display:flex;align-items:center;gap:12px}
+.sndp-c input{flex:1;min-width:0;height:28px;margin:0;accent-color:#b08a3e;cursor:pointer}
+.sndp-c output{width:34px;text-align:right;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text-secondary)}
 .mm-menu{display:flex;flex-direction:column;gap:10px;width:min(320px,82vw);margin:26px auto 0}
 .mm-b{padding:14px 18px;font-family:var(--font-voice);font-size:17px;font-weight:800;letter-spacing:.06em;color:#eadfc6;background:rgba(21,18,14,.62);border:1px solid rgba(201,162,74,.5)}
 .mm-b:hover{color:#fff4d6;background:rgba(58,46,28,.9);border-color:#f1d589}
@@ -1171,6 +1185,32 @@ html[data-lite] [style*="animation:tk"]{padding-left:0!important;display:block!i
   html[data-ori="l"] #wrap>.g-main{min-width:0}
   html[data-ori="l"] #wrap .evc .evt{font-size:clamp(22px,2.2vw,30px)!important}
   html[data-ori="l"] #wrap .g-side{display:flex;flex-direction:column;gap:12px}}
+/* 가로 화면 사건·결과(fit): 화면 높이에 꼭 맞춰 페이지 스크롤을 없앤다.
+   오른쪽은 사건 칸(g-sc, 넘치면 글씨를 줄이고 그래도 넘치면 그 안에서만 스크롤) 바로 아래에 선택지(g-bt)가 늘 보인다.
+   왼쪽 상황판은 넘치는 만큼 결정 기록 줄을 빼고(fitP), 그래도 넘치면 그 칸 안에서만 스크롤한다. */
+@media (min-width:720px){
+  html[data-ori="l"] #app:has(#wrap.fit){height:100vh;height:100dvh;min-height:0;padding-bottom:clamp(10px,1.6vw,18px);display:flex;flex-direction:column;overflow:hidden}
+  html[data-ori="l"] #app:has(#wrap.fit)>#root{flex:1;min-height:0;display:flex;flex-direction:column}
+  html[data-ori="l"] #wrap.fit{flex:1;min-height:0;grid-template-rows:minmax(0,1fr);align-items:stretch}
+  html[data-ori="l"] #wrap.fit>.g-hud{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+  html[data-ori="l"] #wrap.fit>.g-hud::-webkit-scrollbar{display:none}
+  html[data-ori="l"] #wrap.fit>.g-main{display:flex;flex-direction:column;min-height:0}
+  html[data-ori="l"] #wrap.fit .g-sc{flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+  html[data-ori="l"] #wrap.fit .g-sc::-webkit-scrollbar{display:none}
+  html[data-ori="l"] #wrap.fit .g-sc.more{-webkit-mask-image:linear-gradient(#000 calc(100% - 26px),transparent);mask-image:linear-gradient(#000 calc(100% - 26px),transparent)}
+  html[data-ori="l"] #wrap.fit .g-bt{flex:0 0 auto;padding-top:10px}
+  html[data-ori="l"] #wrap.fit .evc{margin-bottom:12px!important}
+  html[data-ori="l"] #wrap.fit .evc .evt{font-size:calc(clamp(22px,2.2vw,30px)*var(--fz,1))!important}
+  html[data-ori="l"] #wrap.fit .evd{font-size:calc(15px*var(--fz,1))!important}
+  html[data-ori="l"] #wrap.fit .rsd{font-size:calc(15.5px*var(--fz,1))!important}
+  html[data-ori="l"] #wrap.fit .advrec{margin:0 0 12px}
+  html[data-ori="l"] #wrap.fit #gOpts{gap:8px!important}
+  html[data-ori="l"] #wrap.fit #gOpts .opt{gap:6px;padding:11px 14px 10px}
+  html[data-ori="l"] #wrap.fit .g-bt #nx{margin-bottom:6px!important}
+  html[data-ori="l"] #wrap.fit .g-bt .rs-hint{display:none}
+  html[data-ori="l"] #wrap.fit #gOpts .opt-ok{flex-direction:row;align-items:baseline;gap:3px}
+  html[data-ori="l"] #wrap.fit #gOpts .opt-ok span{margin-top:0}}
+.gs-em{margin-left:auto;margin-right:10px;padding:3px 9px;font-size:11.5px;font-weight:700;line-height:1.3;color:#7a150f;border:1.5px dashed rgba(179,38,30,.55);background:rgba(179,38,30,.06);border-radius:7px}
 /* 왼쪽 상황판 아래 패널(가로 2단일 때만 보인다) */
 .g-side{display:none}
 .gs-me{position:relative;display:flex;align-items:flex-end;gap:14px;min-height:118px;padding:0 16px 0 6px;overflow:hidden;border-radius:10px;color:#efe7d6;
@@ -4793,7 +4833,7 @@ function spAmend(how){CAR.amendOK=CAR.term;CAR.amendPerm=1;CAR.amend=(CAR.amend|
 /* ---------- AUDIO ---------- */
 const AU={ac:null,m:null,on:true,filt:null,dg:null,hb:0};
 function aInit(){if(AU.ac){try{if(AU.ac.state==='suspended')AU.ac.resume();}catch(e){}return;}
-  try{AU.ac=new (window.AudioContext||window.webkitAudioContext)();AU.m=AU.ac.createGain();AU.m.gain.value=AU.on?.7:0;AU.m.connect(AU.ac.destination);
+  try{AU.ac=new (window.AudioContext||window.webkitAudioContext)();AU.m=AU.ac.createGain();AU.m.gain.value=.7*sndGet().fx;AU.m.connect(AU.ac.destination);
   const o1=AU.ac.createOscillator(),o2=AU.ac.createOscillator();o1.type='sine';o2.type='triangle';o1.frequency.value=55;o2.frequency.value=82.4;o2.detune.value=-7;
   AU.filt=AU.ac.createBiquadFilter();AU.filt.type='lowpass';AU.filt.frequency.value=160;AU.dg=AU.ac.createGain();AU.dg.gain.value=0;
   o1.connect(AU.filt);o2.connect(AU.filt);AU.filt.connect(AU.dg);AU.dg.connect(AU.m);o1.start();o2.start();
@@ -4805,8 +4845,23 @@ function tone(f,type,dur,vol,when,slide){if(!AU.ac)return;try{when=when||0;const
 function noise(dur,vol,when,cut){if(!AU.ac)return;try{when=when||0;const t0=AU.ac.currentTime+when,n=Math.floor(AU.ac.sampleRate*dur),b=AU.ac.createBuffer(1,n,AU.ac.sampleRate),d=b.getChannelData(0);
   for(let k=0;k<n;k++)d[k]=Math.random()*2-1;const s=AU.ac.createBufferSource();s.buffer=b;const f=AU.ac.createBiquadFilter();f.type='lowpass';f.frequency.value=cut||800;
   const g=AU.ac.createGain();g.gain.setValueAtTime(vol,t0);g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);s.connect(f);f.connect(g);g.connect(AU.m);s.start(t0);}catch(e){}}
+// 휙 지나가는 바람 소리: 띠 필터를 씌운 잡음의 중심 주파수를 f0→f1로 옮기며 커졌다 작아지게 한다
+function sweep(dur,vol,f0,f1,when,q){if(!AU.ac)return;try{when=when||0;const t0=AU.ac.currentTime+when,n=Math.floor(AU.ac.sampleRate*dur),b=AU.ac.createBuffer(1,n,AU.ac.sampleRate),d=b.getChannelData(0);
+  for(let k=0;k<n;k++)d[k]=Math.random()*2-1;const s=AU.ac.createBufferSource();s.buffer=b;const f=AU.ac.createBiquadFilter();f.type='bandpass';f.Q.value=q||.8;
+  f.frequency.setValueAtTime(f0,t0);f.frequency.exponentialRampToValueAtTime(f1,t0+dur);const g=AU.ac.createGain();
+  g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(vol,t0+dur*.45);g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+  s.connect(f);f.connect(g);g.connect(AU.m);s.start(t0);s.stop(t0+dur+.02);}catch(e){}}
+// 딸깍: 아주 짧게 사그라드는 잡음을 높은 띠로 걸러 기계 바늘이 핀에 걸리는 소리를 낸다
+function clk(fr,vol,when){if(!AU.ac)return;try{when=when||0;const t0=AU.ac.currentTime+when,sr=AU.ac.sampleRate,n=Math.floor(sr*.018),b=AU.ac.createBuffer(1,n,sr),d=b.getChannelData(0);
+  for(let k=0;k<n;k++)d[k]=(Math.random()*2-1)*Math.exp(-k/(sr*.0025));const s=AU.ac.createBufferSource();s.buffer=b;const f=AU.ac.createBiquadFilter();f.type='bandpass';f.frequency.value=fr;f.Q.value=3;
+  const g=AU.ac.createGain();g.gain.value=vol;s.connect(f);f.connect(g);g.connect(AU.m);s.start(t0);}catch(e){}}
 const SFX={
  click:()=>tone(880,'sine',.05,.12),
+ spin:()=>sweep(.5,.09,420,2200,0,.7),                       // 룰렛이 뜨며 돌기 시작
+ rtick:()=>{clk(2500+Math.random()*600,.5);tone(1300,'triangle',.02,.035);},   // 룰렛 바늘이 칸 경계를 지날 때
+ swoosh:()=>sweep(.55,.06,300,1500,0,.6),                    // 새 사건 띠가 화면을 가로지를 때
+ shutIn:()=>{sweep(.6,.07,1700,260,0,.6);tone(62,'sine',.34,.26,.56,44);noise(.14,.05,.56,320);},   // 연차 셔터가 닫히며 맞물림
+ shutOut:()=>sweep(.6,.05,260,1500,0,.6),                    // 연차 셔터가 열림
  tick:(k)=>tone(1200+k*40,'square',.025,.05),
  tier:t=>{if(t===0){[523,659,784,1047].forEach((f,k)=>tone(f,'triangle',.5,.22,k*.09));noise(.6,.06,.2,4000);}
   else if(t===1){tone(587,'sine',.16,.14);tone(784,'sine',.28,.12,.11);}
@@ -4818,7 +4873,51 @@ const SFX={
  coin:()=>{tone(1319,'square',.08,.1);tone(1760,'square',.16,.1,.07);}};
 function setAmb(i){if(!AU.ac||!AU.dg)return;try{const now=AU.ac.currentTime;AU.dg.gain.cancelScheduledValues(now);AU.dg.gain.linearRampToValueAtTime(.012+i/100*.07,now+.6);AU.filt.frequency.linearRampToValueAtTime(110+i*7,now+.6);}catch(e){}}
 function hbTick(){if(!S||!AU.ac||S.i<52||!AU.on)return;const per=1350-S.i*7,t=performance.now();if(t-AU.hb>per){AU.hb=t;tone(52,'sine',.13,.32);tone(50,'sine',.12,.26,.2);}}
-function toggleSound(){AU.on=!AU.on;if(AU.m)AU.m.gain.value=AU.on?.7:0;const b=document.getElementById('snd');if(b)b.innerHTML=AU.on?ICO.vol:ICO.mute;}
+// 소리 설정: 효과음(합성음·배경 웅웅거림·심장 박동)과 음악(bgm.mp3)의 크기를 따로 0~100%로 정한다. 이 브라우저에 저장된다.
+const sndGet=()=>{const s=MEM.snd||{};return {fx:s.fx==null?1:s.fx,mu:s.mu==null?1:s.mu};};
+const sndIco=()=>{const s=sndGet();return s.fx>0||s.mu>0?ICO.vol:ICO.mute;};   // 둘 다 0일 때만 음소거 아이콘
+function sndApply(){const s=sndGet();AU.on=s.fx>0;BGM.vol=.45*s.mu;if(AU.m)AU.m.gain.value=.7*s.fx;
+  document.querySelectorAll('#snd').forEach(b=>{b.innerHTML=sndIco();});bgmSync();}
+// 소리 버튼을 누르면 효과음·음악 막대가 있는 작은 창이 뜬다. 창 밖을 누르거나 Esc로 닫는다.
+function toggleSound(){if(document.querySelector('.sndp'))return sndClose();try{aInit();}catch(e){}const s=sndGet();
+  const row=(k,l,d)=>'<div class="sndp-r"><div class="sndp-l"><b>'+l+'</b><span>'+d+'</span></div><div class="sndp-c"><input type="range" min="0" max="100" step="5" data-k="'+k+'" value="'+Math.round(s[k]*100)+'" aria-label="'+l+' 크기"><output>'+Math.round(s[k]*100)+'</output></div></div>';
+  const o=document.createElement('div');o.className='sndp-bg';
+  o.innerHTML='<div class="sndp" role="dialog" aria-label="소리 설정"><div class="sndp-h"><span>소리</span><button class="sndp-x" aria-label="닫기">✕</button></div>'+
+    row('fx','효과음','버튼 · 판정 · 연출')+row('mu','음악','인트로와 메뉴의 배경음악')+'</div>';
+  document.body.appendChild(o);
+  o.onclick=e=>{if(e.target===o)sndClose();};o.querySelector('.sndp-x').onclick=sndClose;
+  o.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape')sndClose();});
+  let pv=0;o.querySelectorAll('input').forEach(r=>r.oninput=()=>{const k=r.dataset.k,v=+r.value/100;r.nextElementSibling.textContent=r.value;
+    MEM.snd=Object.assign(sndGet(),{[k]:v});msave();sndApply();
+    if(k==='fx'&&v>0&&Date.now()-pv>120){pv=Date.now();SFX.click();}});   // 효과음은 움직일 때마다 짧게 들려 준다
+  o.querySelector('input').focus();}
+function sndClose(){const o=document.querySelector('.sndp-bg');if(o)o.remove();}
+// 인트로 배경음악(index.html과 같은 폴더의 bgm.mp3): 메인 메뉴부터 나라·인물 고르기까지 반복하고, 게임이 시작되면 서서히 끈다.
+// 브라우저는 한 번 누르기 전에는 소리를 막으므로, 막히면 첫 터치·키 입력 때 다시 튼다. 소리 끄기와 다른 앱으로 넘어가기를 따른다.
+// 틀 때마다(처음 들어올 때·소리를 다시 켤 때·다른 앱에서 돌아올 때) 0에서 시작해 1초 동안 원래 크기로 커진다.
+const BGM={el:null,want:false,t:0,to:0,vol:.45,ac:null,g:null,gx:false};
+function bgmEl(){if(!BGM.el){try{BGM.el=new Audio('bgm.mp3');BGM.el.loop=true;BGM.el.preload='auto';}catch(e){}}return BGM.el;}
+// 사이트(http/https)에서는 Web Audio 게인으로 음량을 다룬다(아이폰·아이패드는 audio.volume을 바꿀 수 없어서 이렇게 해야 페이드가 된다).
+// 파일로 직접 연 경우에는 브라우저가 이 연결의 소리를 막을 수 있어 audio.volume을 쓴다.
+function bgmGain(a){if(BGM.gx)return BGM.g;BGM.gx=true;if(!/^https?:$/.test(location.protocol))return null;
+  try{const C=window.AudioContext||window.webkitAudioContext;BGM.ac=new C();const s=BGM.ac.createMediaElementSource(a);
+    BGM.g=BGM.ac.createGain();BGM.g.gain.value=0;s.connect(BGM.g);BGM.g.connect(BGM.ac.destination);}catch(e){BGM.g=null;}
+  return BGM.g;}
+// 음량을 ms 동안 v까지 고르게 바꾸고, 끝나면 done을 부른다
+function bgmRamp(v,ms,done){const a=BGM.el,g=BGM.g;clearInterval(BGM.t);clearTimeout(BGM.t);BGM.to=v;
+  if(g){const now=BGM.ac.currentTime,cur=g.gain.value;g.gain.cancelScheduledValues(now);g.gain.setValueAtTime(cur,now);g.gain.linearRampToValueAtTime(v,now+ms/1000);
+    if(done)BGM.t=setTimeout(done,ms);return;}
+  const v0=a.volume,n=Math.max(1,Math.round(ms/50));let k=0;
+  BGM.t=setInterval(()=>{k++;try{a.volume=Math.max(0,Math.min(1,v0+(v-v0)*k/n));}catch(e){}if(k>=n){clearInterval(BGM.t);if(done)done();}},50);}
+function bgmSync(){const a=bgmEl();if(!a)return;
+  if(BGM.want&&BGM.vol>0&&!document.hidden){const g=bgmGain(a);if(BGM.ac&&BGM.ac.state!=='running')try{BGM.ac.resume();}catch(e){}
+    if(a.paused){if(g)g.gain.value=0;else a.volume=0;const p=a.play();if(p&&p.catch)p.catch(()=>{});bgmRamp(BGM.vol,1000);}
+    else if(BGM.to!==BGM.vol)bgmRamp(BGM.vol,300);}   // 이미 원래 크기로 가는 중이면 그대로 둔다(1초 페이드가 끊기지 않게)
+  else if(!a.paused){clearInterval(BGM.t);clearTimeout(BGM.t);BGM.to=0;a.pause();}}
+// 게임이 시작되면 1.2초 동안 줄이다가 멈춘다
+function bgmIntro(on){BGM.want=on;if(on)return bgmSync();const a=BGM.el;if(!a||a.paused)return;bgmRamp(0,1200,()=>a.pause());}
+['pointerdown','touchend','keydown'].forEach(t=>addEventListener(t,()=>{if(BGM.want&&BGM.vol>0&&BGM.el&&(BGM.el.paused||(BGM.ac&&BGM.ac.state!=='running')))bgmSync();},true));
+document.addEventListener('visibilitychange',bgmSync);
 function vib(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
 
 /* ---------- MAP ---------- */
@@ -4977,8 +5076,8 @@ function yearFx(label,sub,fn){if(reduceFx()){fn();if(sub&&typeof sub==='object')
   const Q=sub&&typeof sub==='object'?sub:null,hold=Q?Math.min(7500,2800+(Q.q.length+(Q.s||'').length)*40):1430;
   const o=document.createElement('div');o.className='yrfx';o.setAttribute('role','status');
   o.innerHTML='<div class="yrfx-h t"></div><div class="yrfx-h b"></div><div class="yrfx-c"><div class="yrfx-top"><b>'+label+'</b><i></i></div>'+(Q?lqHTML(Q):'<span>'+sub+'</span>')+'</div>';
-  document.body.appendChild(o);void o.offsetWidth;o.classList.add('in');
-  let shown=false,opened=false;const open=()=>{if(opened)return;opened=true;splitOut(o);};
+  document.body.appendChild(o);void o.offsetWidth;o.classList.add('in');SFX.shutIn();
+  let shown=false,opened=false;const open=()=>{if(opened)return;opened=true;SFX.shutOut();splitOut(o);};
   setTimeout(()=>{fn();window.scrollTo(0,0);o.classList.add('show');shown=true;},620);
   const tm=setTimeout(open,620+hold);if(Q)o.onclick=()=>{if(shown){clearTimeout(tm);open();}};}
 // 지도자 연차 명언: 커리어 n년차(1~10)에 지금 지도자가 한 말(또는 할 법한 말).
@@ -5228,7 +5327,7 @@ document.body.insertAdjacentHTML('beforeend','<div class="rotq" role="alert"><sv
 document.querySelectorAll('.rotq [data-o]').forEach(b=>b.onclick=()=>setView('ori',b.dataset.o));
 
 // 라이트 모드의 메인 화면: 예전 버전처럼 종이 한 장에 무대·출발 인물·결정 빈도·난이도를 두고 바로 취임한다
-function homeLite(){if(CINE)cineClose();window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp))camp='kr';document.documentElement.dataset.camp=camp;
+function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp))camp='kr';document.documentElement.dataset.camp=camp;
   const msg=HUB_MSG;HUB_MSG='';const C=CAMPS[camp],BGS=C.bg;
   // 출발 인물은 드롭다운으로 고른다. 처음엔 '인물을 선택하세요'이고, 고르기 전에는 취임할 수 없다.
   if(bg>=BGS.length||(bg>=0&&bgLock(BGS[bg])))bg=-1;const B=bg>=0?BGS[bg]:null;
@@ -5253,7 +5352,7 @@ function homeLite(){if(CINE)cineClose();window.scrollTo(0,0);CP=CAMPS.kr;if(!cam
   const P=isP(),intro='<div class="hl-in" style="font-size:14px;color:var(--text-secondary);line-height:1.75;margin:12px 0 18px">'+C.intro+'</div>'+
     '<div style="display:flex;gap:8px;margin-bottom:24px">'+stat('최고 커리어 점수',MEM.best100?MEM.best100+'<span style="font-size:12px;color:var(--text-muted)"> /100</span>':'—')+stat('최장 재임',MEM.longest?MEM.longest+'년':'—')+stat('지나온 인생',(MEM.careers||0)+'번')+'</div>';
   R.innerHTML='<div class="hl" style="animation:fdIn .35s ease-out">'+
-  '<div class="hl-hd" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span class="hd" id="ttl" style="font-size:25px;user-select:none">팬데믹 대통령</span><button id="snd" style="width:38px;height:34px;padding:0;display:flex;align-items:center;justify-content:center" aria-label="소리 켜기 끄기">'+(AU.on?ICO.vol:ICO.mute)+'</button></div>'+
+  '<div class="hl-hd" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span class="hd" id="ttl" style="font-size:25px;user-select:none">팬데믹 대통령</span><button id="snd" style="width:38px;height:34px;padding:0;display:flex;align-items:center;justify-content:center" aria-label="소리 설정">'+sndIco()+'</button></div>'+
   (msg?'<div style="font-size:13.5px;line-height:1.7;color:var(--text-secondary);background:var(--surface-1);border-radius:10px;padding:10px 12px;margin-bottom:16px">'+msg+'</div>':'')+
   lab('무대 고르기')+'<div class="cmbs">'+cmb+'</div>'+(P?'<div style="height:14px"></div>':intro)+
   lab('출발 인물')+bgSel+(P?'<div style="height:12px"></div>':bgHint)+
@@ -5287,7 +5386,7 @@ function homeLite(){if(CINE)cineClose();window.scrollTo(0,0);CP=CAMPS.kr;if(!cam
   if(SEC_NEW.length){const nm=SEC_NEW.map(id=>{for(const c in CAMPS){const q=CAMPS[c].bg.find(b=>b.sec===id);if(q)return q.n;}return id;});SEC_NEW=[];eggToast('🔓 비밀 인물 해금: <b>'+nm.join(', ')+'</b>');}
 }
 
-function home(){if(viewGet().lite)return homeLite();
+function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp))camp='kr';document.documentElement.dataset.camp='kr';
   R.innerHTML='<div style="min-height:70vh"></div>';
   const msg=HUB_MSG;HUB_MSG='';
@@ -5306,7 +5405,7 @@ function home(){if(viewGet().lite)return homeLite();
     '<div class="gx-row2"><nav class="gx-menu" aria-label="메인 메뉴">'+M.map((m,i)=>'<button class="gx-mi" id="'+m[0]+'" style="--i:'+i+'"><span class="gx-ic" aria-hidden="true">'+GX_IC[m[3]]+'</span><span class="gx-mt"><b>'+m[1]+'</b><small>'+m[2]+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>').join('')+
     '<button class="gx-mi sub" id="mmView" style="--i:4">화면 설정 · 세로/가로 · 라이트</button><button class="gx-mi sub" id="mmEdit" style="--i:5">인적사항 바꾸기</button></nav>'+pc+'</div></div>'+
     '<div class="gx-foot"><span class="gx-keys"><kbd>↑</kbd><kbd>↓</kbd> 고르기 &nbsp;<kbd>Enter</kbd> 결정</span><span>'+GAME_VER+'</span></div></div>'}],
-    {nav:false,cls:'gm',top:'<button id="snd" class="cine-x cine-snd" aria-label="소리 켜기 끄기">'+(AU.on?ICO.vol:ICO.mute)+'</button>',
+    {nav:false,cls:'gm',top:'<button id="snd" class="cine-x cine-snd" aria-label="소리 설정">'+sndIco()+'</button>',
      key:e=>{const n=MI.length;if(e.key==='ArrowDown'){mark((sel+1)%n,1);return true;}if(e.key==='ArrowUp'){mark((sel-1+n)%n,1);return true;}
        if(gxEnter(e)){MI[sel].click();return true;}}});
   const $=id=>document.getElementById(id),MI=[...document.querySelectorAll('.gx-mi')];
@@ -5430,6 +5529,7 @@ function dexScene(){const got=Object.keys(MEM.ends).length,lg=Object.keys(MEM.le
 
 /* ---------- START / TERM ---------- */
 function start(){
+  bgmIntro(false);
   CP=CAMPS[camp];document.documentElement.dataset.camp=CP.id;YRS=CP.yrs;MAXT=CP.maxT;KN=Object.assign({},KN0,CP.lbl);
   if(!CP.bg[bg]||bgLock(CP.bg[bg])){bg=-1;return home();}
   const B=CP.bg[bg];if(B.once){MEM.secUsed=MEM.secUsed||{};MEM.secUsed[B.sec]=1;msave();}
@@ -5515,7 +5615,7 @@ function hudP(o){o=o||{};const y=Math.floor(S.turn/PY)+1,v=Math.round(S.i),X=SCX
    (streak>=2?'<span class="hp-st">연속 '+streak+'</span>':'')+
    '<span class="hp-r">'+(tok?'<span class="dots" title="운명 개입 '+tok+'회" aria-label="운명 개입 '+tok+'회">'+'<i></i>'.repeat(tok)+'</span>':'')+
    (o.em&&!CAR.cnEm?'<button id="cnEm" class="hp-em" aria-label="비상소집: 전설 '+roleOf().n+' 부르기, 커리어에 한 번">비상소집</button>':'')+
-   '<button id="snd" class="hp-snd" aria-label="소리 켜기 끄기">'+(AU.on?ICO.vol:ICO.mute)+'</button></span></div>'+
+   '<button id="snd" class="hp-snd" aria-label="소리 설정">'+sndIco()+'</button></span></div>'+
   '<div class="hp-seg">'+seg+'</div>'+
   '<button id="hpLive" class="hp-live" aria-expanded="'+hpMap+'"><span class="hp-dot"></span><b class="hp-lv">'+(CP.id==='joseon'?'장계':'LIVE')+' · '+scnName()+'</b>'+
    '<span>'+X.iName+' <b style="color:'+cL+'">'+v+'</b> <span style="color:'+cL+'">'+lb+'</span></span>'+
@@ -5525,8 +5625,12 @@ function hudP(o){o=o||{};const y=Math.floor(S.turn/PY)+1,v=Math.round(S.i),X=SCX
   '<div class="hp-line">'+urgentHTML(1)+'<div class="hp-tk"><span><b>'+(CP.id==='joseon'?'풍문':'속보')+'</b>&nbsp; '+headlines()+'</span></div></div>';}
 // 사건 글이 가운데 칸을 넘치면 글씨를 조금씩 줄인다(85%까지). 줄여도 안 들어가면 원래 크기로 두고 그 칸 안에서만 스크롤한다.
 // 반대로 자리가 많이 남으면(아이패드·짧은 사건) 글씨를 18%까지 키우고, 그래도 남으면 선택지를 사건 바로 아래로 붙여 가운데 모은다(loose).
-function fitP(){const w=document.querySelector('#wrap.fit'),sc=w&&w.querySelector('.g-sc');if(!sc||!isP())return;
+// 가로 화면(720px 이상, 두 칸)도 한 화면에 맞춘다: 오른쪽 사건 칸은 같은 방식으로 글씨를 맞추고, 왼쪽 결정 기록은 넘치는 만큼 오래된 줄부터 뺀다.
+const fitOn=()=>isP()||matchMedia('(min-width:720px)').matches;
+function fitP(){const w=document.querySelector('#wrap.fit'),sc=w&&w.querySelector('.g-sc');if(!sc||!fitOn())return;
   w.classList.remove('loose');
+  if(!isP()){const h=w.querySelector('.g-hud'),rows=h?[...h.querySelectorAll('.gs-lg')]:[];
+    for(let i=rows.length-1;i>0&&h.scrollHeight>h.clientHeight+1;i--)rows[i].remove();}
   const over=()=>sc.scrollHeight>sc.clientHeight+1;let f=1;w.style.setProperty('--fz',f);
   while(over()&&f>.86){f=Math.round((f-.03)*100)/100;w.style.setProperty('--fz',f);}
   if(over())w.style.setProperty('--fz',1);
@@ -5535,7 +5639,7 @@ function fitP(){const w=document.querySelector('#wrap.fit'),sc=w&&w.querySelecto
     if(sc.clientHeight-used>48)w.classList.add('loose');}
   pMore(sc);}
 // 스크롤 칸 아래를 흐려서 글이 더 있다는 것을 알린다(끝까지 내리면 사라진다)
-function pMore(sc){sc=sc||document.querySelector('.pfit>.p-sc');if(!sc||!isP())return;
+function pMore(sc){sc=sc||document.querySelector('.pfit>.p-sc');if(!sc||!fitOn())return;
   const more=()=>sc.classList.toggle('more',sc.scrollTop+sc.clientHeight<sc.scrollHeight-4);more();sc.onscroll=more;}
 {let t=0;addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(fitP,120);});try{document.fonts.ready.then(fitP);}catch(e){}}
 function hud(o){if(isP())return hudP(o);const y=Math.floor(S.turn/PY)+1,v=Math.round(S.i),X=SCX(),hs=hudStats();
@@ -5545,7 +5649,7 @@ function hud(o){if(isP())return hudP(o);const y=Math.floor(S.turn/PY)+1,v=Math.r
   const coins='<span class="dots" aria-label="'+tok+'회">'+'<i></i>'.repeat(tok)+'</span>';
   return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'+
   '<span style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="background:rgba(47,74,107,.18);color:#3d5a80;font-weight:700;padding:2px 8px;border-radius:6px">'+(CP.id==='joseon'?'치세 '+CAR.term:CAR.term+'기')+'</span><span style="color:var(--text-secondary);font-weight:600">'+y+'년차</span><span>'+(S.turn%PY+1)+'/'+PY+'</span><span style="opacity:.75">· '+ageNow()+'세 · '+DIFF[dif].n+(CAR.term>1?' +'+(CAR.term-1):'')+'</span></span>'+
-  '<button id="snd" style="width:32px;height:28px;padding:0;display:flex;align-items:center;justify-content:center" aria-label="소리 켜기 끄기">'+(AU.on?ICO.vol:ICO.mute)+'</button></div>'+
+  '<button id="snd" style="width:32px;height:28px;padding:0;display:flex;align-items:center;justify-content:center" aria-label="소리 설정">'+sndIco()+'</button></div>'+
   '<div style="display:flex;gap:2px;margin-bottom:10px">'+seg+'</div>'+
   '<div style="position:relative;border-radius:10px;overflow:hidden;background:#1d1b18;margin-bottom:12px;--text-secondary:#cfc6b4;--text-muted:#a39a88"><canvas id="map" style="width:100%;height:118px"></canvas>'+
   '<div id="hstat" style="position:absolute;left:8px;top:7px;background:rgba(10,14,20,.66);border:1px solid rgba(255,255,255,.09);border-radius:8px;padding:5px 10px 6px;line-height:1.4">'+
@@ -5556,6 +5660,8 @@ function hud(o){if(isP())return hudP(o);const y=Math.floor(S.turn/PY)+1,v=Math.r
   statsHTML()+
   '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:12px;color:var(--text-muted)">'+
   '<span style="display:inline-flex;align-items:center;gap:6px">운명 개입 '+(tok?coins:'<span style="opacity:.5">없음</span>')+'</span>'+
+  // 가로 화면의 비상소집은 상황판의 작은 버튼으로(세로 화면의 상태 바 버튼과 같은 역할) 둬서 오른쪽 사건 칸을 줄인다
+  (o&&o.em&&!CAR.cnEm?'<button id="cnEm" class="gs-em" aria-label="비상소집: 전설 '+roleOf().n+' 부르기, 커리어에 한 번">비상소집</button>':'')+
   (streak>=2?'<span style="color:#2e7d55;font-weight:700">연속 '+streak+(streak>=4?' 모멘텀':'')+'</span>':'<span></span>')+'</div>'+
   '<div style="overflow:hidden;white-space:nowrap;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:7px 0;margin-bottom:16px"><span style="display:inline-block;padding-left:100%;animation:tk 30s linear infinite;animation-delay:-7s;font-size:12px;color:var(--text-secondary)"><span style="color:var(--text-danger);font-weight:600">'+(CP.id==='joseon'?'풍문':'속보')+'</span>&nbsp; '+headlines()+'</span></div>';}
 function vign(){return '<div style="position:absolute;inset:-6px;pointer-events:none;border-radius:12px;background:radial-gradient(ellipse at center,transparent 55%,rgba(179,38,30,'+(S.i/100*.3).toFixed(3)+') 100%)"></div>';}
@@ -5607,11 +5713,12 @@ function ev(){if(pendingNews){const n=pendingNews;pendingNews=null;return breaki
   const ob=document.getElementById('gOpts');
   // 참모의 조언: 두 사람이 각자 자기 분야에 맞는 선택지를 권한다. 카드에는 누가 권했는지만 붙인다.
   // 세로 화면에서는 조언 블록 대신 선택지에 참모 얼굴을 붙이고, 비상소집은 상태 바의 버튼으로 옮긴다
+  // 가로 화면에서는 조언을 사건 칸(g-sc) 끝에 둔다. 보이는 순서는 같고, 선택지 칸(g-bt)에는 선택지만 남아 늘 화면 아래에 보인다. 비상소집은 왼쪽 상황판 버튼(hud).
   const CR=cur._cr||[],recOf=k=>CR.filter(r=>r.k===k).map(r=>(P?portrait(r.c.n,18):'')+r.c.n).join(P?' ':' · ');
+  const scBox=document.querySelector('#wrap .g-sc')||ob.parentNode;
   if(CR.length&&!P){const rc=document.createElement('div');rc.className='advrec';
     rc.innerHTML=CR.map(r=>'<div class="ar">'+portrait(r.c.n,30)+'<div><span class="rk">'+r.c.n+' <small>'+'★'.repeat(r.c.t)+' '+CN_DOM[r.c.d].n+'</small> → '+(r.k+1)+'번</span> <span class="rq">"'+r.line+'"</span></div></div>').join('');
-    ob.parentNode.insertBefore(rc,ob);}
-  if(!CAR.cnEm&&!P){const eb=document.createElement('div');eb.innerHTML=cnEmBtn();ob.parentNode.insertBefore(eb.firstChild,ob);}
+    scBox.appendChild(rc);}
   {const em=document.getElementById('cnEm');if(em)em.onclick=()=>{SFX.click();cnEmerg(ev);};}
   cur.o.forEach((o,k)=>{const b=document.createElement('button');b.className='opt';
     b.style.animationDelay=(tfd+80+k*70)+'ms';
@@ -5628,7 +5735,7 @@ function ev(){if(pendingNews){const n=pendingNews;pendingNews=null;return breaki
       add('opt-bar',P.map((p,j)=>p>.0005?'<i class="t'+j+'" style="flex:'+p.toFixed(4)+'"></i>':'').join(''));
       add('opt-m','<span class="stk s'+s+'">'+STK[s].n+'</span><span class="opt-p">대성공 '+bg+'% · <span class="pp-c">'+(cf?'대실패 '+cf+'%':'대실패 없음')+'</span></span>'+(rc?'<span class="opt-rec">'+(P?'':'★ ')+rc+'</span>':''));}}
     b.onclick=()=>choose(k);ob.appendChild(b);});
-  if(cur.mg){ob.innerHTML='';const rc=ob.parentNode.querySelector('.advrec');if(rc)rc.remove();const eb=document.getElementById('cnEm');if(eb)eb.remove();mgRun(cur.mg,ob);}
+  if(cur.mg){ob.innerHTML='';const rc=scBox.querySelector('.advrec');if(rc)rc.remove();const eb=document.getElementById('cnEm');if(eb)eb.remove();mgRun(cur.mg,ob);}
   bindSnd();fitP();}
 
 // 판정 룰렛: 칸 크기 = 그 결과가 나올 확률. 바늘이 돌다가 멈춘 칸이 결과다. 상황에 맞는 선택일수록 초록 칸이 넓고, 대실패 칸은 사라진다.
@@ -5652,7 +5759,14 @@ const f=document.getElementById('fx'),w=document.getElementById('wrap'),q=lastFi
    '<div class="whl-l">'+TIER.map((T,k)=>'<span><i style="background:'+WCOL[k]+'"></i>'+T.n+' '+(P[k]>.0005?Math.round(P[k]*100)+'%':'<b style="opacity:.5">없음</b>')+'</span>').join('')+'</div><div class="whl-k">누르면 바로 멈춘다</div></div>';
   const g=document.getElementById('whg'),SP=1350;let done=false;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{g.style.setProperty('transition','transform '+SP+'ms cubic-bezier(.12,.72,.18,1)','important');g.style.transform='rotate('+rot+'deg)';}));
-  [0,70,150,240,340,450,580,730,900,1100].forEach((d,k)=>setTimeout(()=>SFX.tick(k),d));
+  // 바늘이 칸 경계를 지날 때마다 딸깍: 바늘 회전(cubic-bezier .12,.72,.18,1)을 그대로 따라가 경계를 넘는 순간에 소리를 예약한다.
+  // 처음엔 촘촘하다가 바늘이 느려지는 만큼 간격이 벌어진다. 칸이 4개보다 적으면 90°마다 핀이 있는 것으로 친다.
+  const bz=(a,b,s)=>3*(1-s)*(1-s)*s*a+3*(1-s)*s*s*b+s*s*s,
+    ease=x=>{let lo=0,hi=1;for(let i=0;i<18;i++){const m=(lo+hi)/2;if(bz(.12,.18,m)<x)lo=m;else hi=m;}return bz(.72,1,(lo+hi)/2);};
+  let pins=W.segs.filter(Boolean).map(s=>s[0]);if(pins.length<4)pins=[0,90,180,270];
+  const TK=[];{let prev=0,lastT=-99;for(let ms=6;ms<=SP;ms+=6){const a=ease(ms/SP)*rot;let n=0;pins.forEach(b=>{n+=Math.floor((a-b)/360)-Math.floor((prev-b)/360);});
+    if(n>0&&ms-lastT>=28){lastT=ms;TK.push(setTimeout(SFX.rtick,ms+25));}prev=a;}}
+  SFX.spin();
   // 판정 글자는 룰렛 칸 색의 카드에 담아 1초 넘게 띄운다(뒤의 글과 겹쳐도 읽히게, '성공'도 놓치지 않게)
   const fin=()=>{if(done)return;done=true;const T=TIER[t],ms=Math.max(1100,T.ms);SFX.tier(t);vib(t===3?[70,50,90]:t===2?45:t===0?[20,30,20]:0);
      f.innerHTML='<div style="position:absolute;inset:0;background:'+T.tint+';border-radius:12px;animation:fxT '+ms+'ms ease-out forwards!important"></div>'+
@@ -5661,7 +5775,7 @@ const f=document.getElementById('fx'),w=document.getElementById('wrap'),q=lastFi
      setTimeout(()=>{w.style.animation='';f.innerHTML='';cb();},ms);};
   setTimeout(fin,SP+150);
   // 룰렛을 누르면 바늘이 바로 멈춘다
-  const wl=f.querySelector('.whl');if(wl){wl.style.pointerEvents='auto';wl.style.cursor='pointer';wl.onclick=()=>{if(done)return;g.style.setProperty('transition','transform 140ms ease-out','important');g.style.transform='rotate('+rot+'deg)';setTimeout(fin,170);};}}
+  const wl=f.querySelector('.whl');if(wl){wl.style.pointerEvents='auto';wl.style.cursor='pointer';wl.onclick=()=>{if(done)return;TK.forEach(clearTimeout);SFX.rtick();g.style.setProperty('transition','transform 140ms ease-out','important');g.style.transform='rotate('+rot+'deg)';setTimeout(fin,170);};}}
 
 function takeSnap(){snap={S:Object.assign({},S),deaths:deaths,yd:yd,cd:cDeaths,cv:covD,q:queue.slice(),cl:chron.length,hl:hist.length,st:streak,pi:peakI,th:TH.length};}
 function useSnap(){S=Object.assign({},snap.S);deaths=snap.deaths;yd=snap.yd;cDeaths=snap.cd;covD=snap.cv;queue=snap.q.slice();chron.length=snap.cl;hist.length=snap.hl;streak=snap.st;peakI=snap.pi;TH.length=snap.th;}
@@ -5789,7 +5903,7 @@ let tfLast=null;
 function turnFx(){if(reduceFx()||document.documentElement.dataset.lite||tfLast===cur||document.querySelector('.qfx,.yrfx,.cine'))return false;tfLast=cur;
   const o=document.createElement('div');o.className='turnfx';o.setAttribute('aria-hidden','true');
   o.innerHTML='<div class="turnfx-b"><div class="turnfx-in"><span class="turnfx-k">'+(Math.floor(S.turn/PY)+1)+'년차 · 결정 '+(S.turn%PY+1)+' / '+PY+'</span><span class="turnfx-t">'+cur.t+'</span></div></div>';
-  document.body.appendChild(o);if(CP&&CP.dict)skinNode(o);
+  document.body.appendChild(o);if(CP&&CP.dict)skinNode(o);SFX.swoosh();
   const end=()=>{if(o.isConnected)o.remove();};o.onclick=end;setTimeout(end,1250);return true;}
 // 게임 화면 단축키: 숫자로 선택지, Enter·Space로 '계속'. 턴 카드가 떠 있으면 먼저 걷는다.
 document.addEventListener('keydown',e=>{if(CINE||e.repeat||e.ctrlKey||e.metaKey||e.altKey||document.querySelector('.qfx,.yrfx'))return;
@@ -6828,7 +6942,7 @@ function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.len
   bodies.forEach(t=>{try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',keepalive:size(t)<63000,headers:{'Content-Type':'text/plain'},body:t}).catch(()=>{});}catch(e){}});}
 // 커리어 도중에 창을 닫아도 그때까지의 기록을 보낸다
 window.addEventListener('pagehide',()=>{try{if(RUN&&!RUN.sent&&LOG.length&&CAR&&!CAR.done)sendCareer('중도 이탈');}catch(e){}});
-mload();applyView();
+mload();applyView();sndApply();
 const INTRO=R.innerHTML;
 function pfPhone(v){const d=String(v||'').replace(/\D/g,'');if(!d)return '';if(!/^01[016789]\d{7,8}$/.test(d))return null;return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4);}
 function bindIntro(){const $=id=>document.getElementById(id),err=$('pfErr');
@@ -6867,8 +6981,8 @@ function hub(){window.scrollTo(0,0);document.documentElement.dataset.camp='kr';
   const eg=EGGN.find(x=>x[0].test(NICK||''));if(eg&&eg[2])eg[2]();
   HUB_MSG=(PF.name||NICK)+'님, 준비됐어요.'+(NICK&&NICK!=='익명'?' 명예의 전당에는 <b style="color:#f1d589">'+NICK+'</b>(으)로 올라가요.':'')+(eg?'<div class="cs-fx" style="margin-top:12px">✨ '+eg[1]+'</div>':'');
   home();}
-function intro(){window.scrollTo(0,0);document.documentElement.dataset.camp="kr";R.innerHTML=INTRO;bindIntro();}
-bindIntro();
+function intro(){bgmIntro(true);window.scrollTo(0,0);document.documentElement.dataset.camp="kr";R.innerHTML=INTRO;bindIntro();}
+bgmIntro(true);bindIntro();
 })();
 
 </script>
