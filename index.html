@@ -5614,7 +5614,8 @@ function wheelSVG(P){const cx=80,cy=96,r=70,pt=(d,rr)=>{const t=(d-90)*Math.PI/1
     else{const A=pt(a0,r),B=pt(a1,r);s+='<path d="M'+cx+' '+cy+' L'+A[0].toFixed(2)+' '+A[1].toFixed(2)+' A'+r+' '+r+' 0 '+(a1-a0>180?1:0)+' 1 '+B[0].toFixed(2)+' '+B[1].toFixed(2)+' Z" fill="'+WCOL[k]+'" stroke="#1d1b18" stroke-width="2"/>';}
     if(p>=.07){const M=pt((a0+a1)/2,r*.63);s+='<text x="'+M[0].toFixed(1)+'" y="'+M[1].toFixed(1)+'" fill="#fff" font-size="'+(p>=.18?13:10)+'" font-weight="700" text-anchor="middle" dominant-baseline="central">'+Math.round(p*100)+'%</text>';}});
   return {s:s,segs:segs};}
-function reel(t,cb){if(document.documentElement.dataset.lite){try{SFX.tier(t);}catch(e){}return cb();}   // 라이트 모드는 룰렛 없이 바로 결과로
+// 라이트 모드·세로 화면·'동작 줄이기' 기기에서도 룰렛과 판정 글자가 보이도록 바늘 transition과 판정 animation은 important로 건다
+function reel(t,cb){
 const f=document.getElementById('fx'),w=document.getElementById('wrap'),q=lastFit.q,P=stakeP(q,lastS),W=wheelSVG(P),fw=fitWord(q);
   const sg=W.segs[t]||[0,1],th=sg[0]+(sg[1]-sg[0])*(.18+.64*Math.random()),rot=360*4+th;
   f.innerHTML='<div class="whl">'+
@@ -5624,16 +5625,17 @@ const f=document.getElementById('fx'),w=document.getElementById('wrap'),q=lastFi
    '<circle cx="80" cy="96" r="11" fill="#1d1b18" stroke="#fff" stroke-width="2"/></svg>'+
    '<div class="whl-l">'+TIER.map((T,k)=>'<span><i style="background:'+WCOL[k]+'"></i>'+T.n+' '+(P[k]>.0005?Math.round(P[k]*100)+'%':'<b style="opacity:.5">없음</b>')+'</span>').join('')+'</div><div class="whl-k">누르면 바로 멈춘다</div></div>';
   const g=document.getElementById('whg'),SP=1350;let done=false;
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{g.style.transition='transform '+SP+'ms cubic-bezier(.12,.72,.18,1)';g.style.transform='rotate('+rot+'deg)';}));
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{g.style.setProperty('transition','transform '+SP+'ms cubic-bezier(.12,.72,.18,1)','important');g.style.transform='rotate('+rot+'deg)';}));
   [0,70,150,240,340,450,580,730,900,1100].forEach((d,k)=>setTimeout(()=>SFX.tick(k),d));
-  const fin=()=>{if(done)return;done=true;const T=TIER[t],ms=Math.round(T.ms*.7);SFX.tier(t);vib(t===3?[70,50,90]:t===2?45:t===0?[20,30,20]:0);
-     f.innerHTML='<div style="position:absolute;inset:0;background:'+T.tint+';border-radius:12px;animation:fxT '+ms+'ms ease-out forwards"></div>'+
-     '<div style="position:relative;font-size:'+T.fs+'px;font-weight:600;letter-spacing:5px;color:'+T.fg+';animation:fxL '+ms+'ms ease-out forwards;text-shadow:0 0 24px '+T.tint+'">'+T.n+'</div>';
+  // 판정 글자는 룰렛 칸 색의 카드에 담아 1초 넘게 띄운다(뒤의 글과 겹쳐도 읽히게, '성공'도 놓치지 않게)
+  const fin=()=>{if(done)return;done=true;const T=TIER[t],ms=Math.max(1100,T.ms);SFX.tier(t);vib(t===3?[70,50,90]:t===2?45:t===0?[20,30,20]:0);
+     f.innerHTML='<div style="position:absolute;inset:0;background:'+T.tint+';border-radius:12px;animation:fxT '+ms+'ms ease-out forwards!important"></div>'+
+     '<div style="position:relative;padding:12px 30px 12px 35px;border-radius:16px;background:var(--surface-2);border:2px solid '+WCOL[t]+';box-shadow:0 14px 34px -8px rgba(70,50,20,.38);font-size:'+Math.max(30,T.fs)+'px;font-weight:700;letter-spacing:5px;color:'+WCOL[t]+';animation:fxL '+ms+'ms ease-out forwards!important">'+T.n+'</div>';
      if(t>=2)w.style.animation='shk '+(t===3?480:320)+'ms ease-out';
      setTimeout(()=>{w.style.animation='';f.innerHTML='';cb();},ms);};
   setTimeout(fin,SP+150);
   // 룰렛을 누르면 바늘이 바로 멈춘다
-  const wl=f.querySelector('.whl');if(wl){wl.style.pointerEvents='auto';wl.style.cursor='pointer';wl.onclick=()=>{if(done)return;g.style.transition='transform 140ms ease-out';g.style.transform='rotate('+rot+'deg)';setTimeout(fin,170);};}}
+  const wl=f.querySelector('.whl');if(wl){wl.style.pointerEvents='auto';wl.style.cursor='pointer';wl.onclick=()=>{if(done)return;g.style.setProperty('transition','transform 140ms ease-out','important');g.style.transform='rotate('+rot+'deg)';setTimeout(fin,170);};}}
 
 function takeSnap(){snap={S:Object.assign({},S),deaths:deaths,yd:yd,cd:cDeaths,cv:covD,q:queue.slice(),cl:chron.length,hl:hist.length,st:streak,pi:peakI,th:TH.length};}
 function useSnap(){S=Object.assign({},snap.S);deaths=snap.deaths;yd=snap.yd;cDeaths=snap.cd;covD=snap.cv;queue=snap.q.slice();chron.length=snap.cl;hist.length=snap.hl;streak=snap.st;peakI=snap.pi;TH.length=snap.th;}
