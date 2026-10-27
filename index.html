@@ -1336,6 +1336,192 @@ body:has(.vset) .rotq{display:none!important}
   .vset{padding:12px 16px}.vset-h{font-size:28px;margin:2px 0 4px}.vset-p{margin-bottom:12px;font-size:13px}
   .vset-g{margin-bottom:10px}.vset-c{flex-direction:row;justify-content:center;gap:10px;padding:10px}.vset-c svg{width:30px;height:30px}.vset-c span{display:none}
   .vset-go{padding:12px}}
+/* ---------- 세로 화면: 사건·결과 화면을 휴대폰 한 화면에 맞춘다 ----------
+   위 상태 바(고정) · 가운데 사건(남는 공간, 넘치면 그 안에서만 스크롤) · 아래 선택지(엄지 자리에 고정).
+   dvh는 주소창이 나타나고 사라져도 실제 보이는 높이를 따른다. */
+.hp-top,.hp-seg,.hp-live,.hp-map,.hp-line{display:none}
+html[data-ori="p"] #app:has(#wrap.fit){height:100vh;height:100dvh;min-height:0;padding:max(10px,env(safe-area-inset-top)) 12px max(8px,env(safe-area-inset-bottom));display:flex;flex-direction:column;overflow:hidden}
+html[data-ori="p"] #app:has(#wrap.fit)>#root{flex:1;min-height:0;display:flex;flex-direction:column}
+html[data-ori="p"] #wrap.fit{flex:1;min-height:0;display:flex;flex-direction:column}
+html[data-ori="p"] #wrap.fit>.g-hud{flex:0 0 auto}
+html[data-ori="p"] #wrap.fit>.g-main{flex:1;min-height:0;display:flex;flex-direction:column}
+html[data-ori="p"] #wrap.fit .g-sc{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:8px 1px 4px;margin:0 -1px}
+html[data-ori="p"] #wrap.fit .g-sc::-webkit-scrollbar{display:none}
+html[data-ori="p"] #wrap.fit .g-bt{flex:0 0 auto;padding-top:8px}
+/* 상태 바 */
+html[data-ori="p"] .hp-top{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);margin-bottom:5px;white-space:nowrap;min-width:0}
+html[data-ori="p"] .hp-k{background:rgba(47,74,107,.18);color:#3d5a80;font-weight:700;padding:1px 7px;border-radius:6px}
+html[data-ori="p"] .hp-top>b{color:var(--text-secondary);font-weight:700}
+html[data-ori="p"] .hp-m{overflow:hidden;text-overflow:ellipsis;opacity:.8;min-width:0}
+html[data-ori="p"] .hp-st{color:#2e7d55;font-weight:700}
+html[data-ori="p"] .hp-r{margin-left:auto;display:flex;align-items:center;gap:6px;flex-shrink:0}
+html[data-ori="p"] .hp-r .dots i{width:7px;height:7px}
+html[data-ori="p"] .hp-em{padding:3px 8px;font-size:11.5px;font-weight:700;color:#7a150f;border:1.5px dashed rgba(179,38,30,.55);background:rgba(179,38,30,.06);border-radius:7px;line-height:1.3}
+html[data-ori="p"] .hp-snd{width:30px;height:26px;padding:0;display:flex;align-items:center;justify-content:center}
+html[data-ori="p"] .hp-seg{display:flex;gap:2px;margin-bottom:6px}
+html[data-ori="p"] .hp-seg span{flex:1;height:3px;border-radius:2px}
+html[data-ori="p"] .hp-live{display:flex;align-items:center;gap:9px;width:100%;padding:6px 10px;margin-bottom:6px;border:0;border-radius:9px;background:#1d1b18;color:#cfc6b4;font-size:11.5px;line-height:1.3;white-space:nowrap;overflow:hidden;text-align:left}
+html[data-ori="p"] .hp-live>span{flex-shrink:0}
+html[data-ori="p"] .hp-live .odo{color:#fff;font-weight:700;font-size:12.5px}
+html[data-ori="p"] .hp-lv{color:#ff8f86;font-size:11px;letter-spacing:.04em;flex-shrink:0}
+html[data-ori="p"] .hp-live>.hp-hs{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+html[data-ori="p"] .hp-dot{width:6px;height:6px;border-radius:50%;background:#ff8f86;flex-shrink:0;animation:pls 1.4s infinite}
+html[data-ori="p"] .hp-chev{margin-left:auto;font-style:normal;color:#a39a88;transition:transform .2s}
+html[data-ori="p"] .hp-live[aria-expanded="true"]{border-radius:9px 9px 0 0;margin-bottom:0}
+html[data-ori="p"] .hp-live[aria-expanded="true"] .hp-chev{transform:rotate(180deg)}
+html[data-ori="p"] .hp-map{display:block;position:relative;margin-bottom:6px;border-radius:0 0 9px 9px;overflow:hidden;background:#1d1b18}
+html[data-ori="p"] .hp-map[hidden]{display:none}
+html[data-ori="p"] .hp-map canvas{display:block;width:100%;height:96px}
+html[data-ori="p"] .hp-map span{position:absolute;right:10px;bottom:6px;font-size:11px;color:#a39a88}
+/* 지표 6칸을 한 줄로 */
+html[data-ori="p"] #wrap .g-hud .sg6{grid-template-columns:minmax(0,4fr) minmax(0,2fr);gap:5px;margin:0 0 6px}
+html[data-ori="p"] #wrap .g-hud .sg-h{display:none}
+html[data-ori="p"] #wrap .g-hud .sg-r{gap:4px}
+html[data-ori="p"] #wrap .g-hud .sg6 .sb{padding:3px 5px 5px;border-radius:7px}
+html[data-ori="p"] #wrap .g-hud .sg6 .sb-n{font-size:10px;letter-spacing:-.04em}
+html[data-ori="p"] #wrap .g-hud .sg6 .sb b{font-size:15px;line-height:1.1}
+html[data-ori="p"] #wrap .g-hud .sb[data-d]::after{right:3px;top:2px;font-size:10px}
+/* 급한 문제 + 속보 한 줄 */
+html[data-ori="p"] .hp-line{display:flex;align-items:center;gap:8px;padding:5px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);min-width:0}
+html[data-ori="p"] .hp-line .urg{flex:0 1 auto;flex-wrap:nowrap;margin:0;gap:4px;font-size:11.5px;min-width:0;overflow:hidden}
+html[data-ori="p"] .hp-line .urg-l{font-size:11px;white-space:nowrap}
+html[data-ori="p"] .hp-line .urg-c{padding:1px 7px;white-space:nowrap}
+html[data-ori="p"] .hp-line .urg-c b{font-size:9px}
+html[data-ori="p"] .hp-tk{flex:1 1 60px;min-width:60px;overflow:hidden;white-space:nowrap;font-size:11.5px;color:var(--text-secondary)}
+html[data-ori="p"] .hp-tk>span{display:inline-block;padding-left:100%;animation:tk 30s linear infinite;animation-delay:-7s}
+html[data-ori="p"] .hp-tk b{color:var(--text-danger);font-weight:600}
+/* 사건 카드: 글씨는 화면 높이에 맞춰 줄고(--fz), 칸을 넘치면 그 안에서 스크롤 */
+html[data-ori="p"] #wrap.fit .evc{padding:13px 14px 12px!important;margin-bottom:0!important}
+html[data-ori="p"] #wrap.fit .evc .evt{font-size:calc(clamp(17px,2.7vh,21px)*var(--fz,1))!important;line-height:1.32!important}
+html[data-ori="p"] #wrap.fit .evg{font-size:12px!important;margin-top:3px!important}
+html[data-ori="p"] #wrap.fit .evd{font-size:calc(clamp(13.5px,2.05vh,15px)*var(--fz,1))!important;line-height:1.65!important;margin-top:8px!important}
+/* 튜토리얼 안내는 사건 글 아래에 둔다(사건을 먼저 읽게) */
+html[data-ori="p"] #wrap.fit .g-sc{display:flex;flex-direction:column}
+html[data-ori="p"] #wrap.fit .g-sc>*{flex-shrink:0}
+html[data-ori="p"] #wrap.fit .g-sc>.tip{order:2;margin:8px 0 0}
+/* 가운데 칸이 스크롤될 때는 아래를 흐려서 글이 더 있다는 것을 알린다 */
+html[data-ori="p"] #wrap.fit .g-sc.more{-webkit-mask-image:linear-gradient(#000 calc(100% - 26px),transparent);mask-image:linear-gradient(#000 calc(100% - 26px),transparent)}
+/* 선택지: 제목 줄 · 확률 막대 · [지표 칩][성격·추천 참모] 세 줄로 압축 */
+html[data-ori="p"] #wrap.fit #gOpts{gap:6px!important}
+html[data-ori="p"] #wrap.fit #gOpts .opt{flex-flow:row wrap;column-gap:10px;row-gap:4px;padding:8px 11px 11px;font-size:14px;line-height:1.38}
+html[data-ori="p"] #wrap.fit #gOpts .opt-t{flex:1 0 100%;align-items:center}
+html[data-ori="p"] #wrap.fit #gOpts .opt-n{margin-top:0}
+html[data-ori="p"] #wrap.fit #gOpts .opt-ok{flex-direction:row;align-items:baseline;gap:3px}
+html[data-ori="p"] #wrap.fit #gOpts .opt-ok b{font-size:18px}
+html[data-ori="p"] #wrap.fit #gOpts .opt-ok small{font-size:11px}
+html[data-ori="p"] #wrap.fit #gOpts .opt-ok span{font-size:10.5px;margin-top:0}
+/* 확률 막대는 카드 아래 테두리에 얇게 붙인다 */
+html[data-ori="p"] #wrap.fit #gOpts .opt-bar{position:absolute;left:39px;right:11px;bottom:5px;height:3px;margin:0}
+html[data-ori="p"] #wrap.fit #gOpts .opt-c{order:2;flex:0 1 auto;min-width:0}
+html[data-ori="p"] #wrap.fit #gOpts .opt-m{order:2;flex:1 1 auto;padding-left:0;justify-content:flex-end;gap:4px 6px}
+html[data-ori="p"] #wrap.fit #gOpts .opt-t+.opt-m{padding-left:28px;justify-content:flex-start}
+html[data-ori="p"] #wrap.fit #gOpts .opt-p{display:none}
+html[data-ori="p"] #wrap.fit #gOpts .ch{font-size:12px;line-height:1.35}
+html[data-ori="p"] #wrap.fit #gOpts .chs{gap:2px 9px}
+html[data-ori="p"] #wrap.fit #gOpts .stk{font-size:10.5px}
+html[data-ori="p"] #wrap.fit #gOpts .opt-rec{display:inline-flex;align-items:center;gap:3px;margin-left:0;font-size:11px}
+html[data-ori="p"] #wrap.fit #gOpts .opt-rec svg{flex-shrink:0;border-radius:50%}
+/* 결과 화면: 글은 가운데 칸, 계속 버튼은 아래 고정 */
+html[data-ori="p"] #wrap.fit .rsd{font-size:calc(clamp(14px,2.1vh,15.5px)*var(--fz,1))!important;line-height:1.75!important}
+html[data-ori="p"] #wrap.fit #txt{padding:13px 14px!important;margin-bottom:10px!important}
+html[data-ori="p"] #wrap.fit .g-bt #nx{padding:12px!important;margin-bottom:6px!important}
+html[data-ori="p"] #wrap.fit .g-bt #rr{padding:9px 12px}
+html[data-ori="p"] #wrap.fit .g-bt .rs-hint{display:none}
+/* 인물 선택·게임 설정: 인물 그림 칸이 남는 높이만 쓰고, 확인 버튼까지 한 화면에 */
+html[data-ori="p"] .cine.gm .cs:has(.gx-ld,.gx-su){overflow:hidden}
+html[data-ori="p"] .gx-ld,html[data-ori="p"] .gx-su{height:100%;min-height:0;grid-template-rows:52px minmax(80px,1fr) auto auto}
+html[data-ori="p"] .gx-su{grid-template-rows:52px minmax(80px,1fr) auto}
+html[data-ori="p"] .gx-ld .gx-top,html[data-ori="p"] .gx-su .gx-top{height:52px}
+html[data-ori="p"] .gx-wm{font-size:clamp(40px,11vw,64px)}
+html[data-ori="p"] .gx-roster{--tile:clamp(38px,6.4vh,52px);padding:6px 12px 8px}
+html[data-ori="p"] .gx-info,html[data-ori="p"] .gx-panel{overflow:visible;padding:10px 18px max(12px,env(safe-area-inset-bottom))}
+html[data-ori="p"] .gx-info>:first-child,html[data-ori="p"] .gx-panel>:first-child{margin-top:0}
+html[data-ori="p"] .gx-nm{font-size:clamp(26px,4.6vh,40px);margin:2px 0}
+html[data-ori="p"] .gx-s{margin:6px 0 10px;font-size:clamp(13px,1.9vh,15px);line-height:1.6}
+html[data-ori="p"] .gx-st{gap:3px 12px;font-size:12px}
+html[data-ori="p"] .gx-info .gx-ok,html[data-ori="p"] .gx-panel .gx-ok{position:static;margin-top:12px;padding:12px 36px 12px 22px;font-size:16px}
+html[data-ori="p"] .gx-plate b{font-size:clamp(17px,2.8vh,24px);padding:4px 16px}
+html[data-ori="p"] .gx-plate span{margin-top:3px;font-size:11.5px}
+html[data-ori="p"] .gx-ph{font-size:clamp(22px,3.6vh,30px)}
+html[data-ori="p"] .gx-ph-s{margin:2px 0 8px;font-size:12px}
+html[data-ori="p"] .gx-row{padding:5px 10px;gap:0 12px}
+html[data-ori="p"] .gx-ar{width:34px;height:34px}
+html[data-ori="p"] .gx-rd{font-size:11.5px;line-height:1.45}
+/* 라이트 메인: 무대는 한 줄 3칸, 취임 버튼은 화면 아래에 붙어 있다 */
+html[data-ori="p"] .hl .cmbs{grid-template-columns:repeat(3,minmax(0,1fr))}
+html[data-ori="p"] .hl .cmb{flex-direction:column;padding:9px 10px}
+html[data-ori="p"] .hl .cmb-s{display:none}
+html[data-ori="p"] #app:has(.hl){padding-top:max(14px,env(safe-area-inset-top))}
+html[data-ori="p"] .hl .hl-hd{margin-bottom:6px!important}
+html[data-ori="p"] .hl .lbl{margin-bottom:6px}
+html[data-ori="p"] .hl .bgsel{margin-bottom:8px}
+html[data-ori="p"] .hl .bgcard-h{flex-wrap:wrap;column-gap:8px;row-gap:0}
+html[data-ori="p"] .hl .bgcard-h span{white-space:normal}
+html[data-ori="p"] .hl .hl-mode,html[data-ori="p"] .hl .hl-dif{margin-bottom:14px!important}
+html[data-ori="p"] .hl .hl-mode button,html[data-ori="p"] .hl .hl-dif button{padding:8px 6px!important}
+html[data-ori="p"] .hl .bgsel select{padding:11px 40px 11px 12px}
+html[data-ori="p"] .hl .bgcard{padding:11px 12px}
+html[data-ori="p"] .hl .bgcard p{margin:5px 0 4px;font-size:12.5px;line-height:1.55}
+html[data-ori="p"] .hl .bghint{margin-bottom:14px}
+html[data-ori="p"] .hl .hl-go{position:sticky;bottom:0;z-index:3;margin:0 -16px;padding:10px 16px max(2px,env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,var(--bg) 22%)}
+html[data-ori="p"] .hl .hl-go #st{padding:14px!important}
+/* 특별 국정 과제: 카드 높이를 줄이고, 시작·넘어가기 버튼을 한 줄로 아래에 붙인다 */
+html[data-ori="p"] .spw .spb{min-height:108px;padding:10px 10px 9px}
+html[data-ori="p"] .spw .spb .spb-art{width:68px;height:68px}
+html[data-ori="p"] .spw .spb-n{font-size:15.5px}
+html[data-ori="p"] .spw .spb-c{font-size:11px}
+html[data-ori="p"] .spw .hd{font-size:23px!important}
+html[data-ori="p"] .spw-bt{position:sticky;bottom:0;z-index:3;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:8px;margin:0 -16px;padding:10px 16px max(4px,env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,var(--bg) 22%)}
+html[data-ori="p"] .spw-bt button{margin:0!important;padding:13px 8px!important}
+/* 한 화면 틀(pfit): 내용은 가운데 칸에서만 스크롤, 다음으로 가는 버튼은 아래 고정 */
+html[data-ori="p"] #app:has(.pfit){max-width:440px;height:100vh;height:100dvh;min-height:0;padding:max(14px,env(safe-area-inset-top)) 12px max(8px,env(safe-area-inset-bottom));display:flex;flex-direction:column;overflow:hidden}
+html[data-ori="p"] #app:has(.pfit)>#root{flex:1;min-height:0;display:flex;flex-direction:column}
+html[data-ori="p"] .pfit{flex:1;min-height:0;display:flex;flex-direction:column}
+html[data-ori="p"] .pfit>.p-sc{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;margin:0 -12px;padding:0 12px 6px}
+html[data-ori="p"] .pfit>.p-sc::-webkit-scrollbar{display:none}
+html[data-ori="p"] .pfit>.p-sc.more{-webkit-mask-image:linear-gradient(#000 calc(100% - 26px),transparent);mask-image:linear-gradient(#000 calc(100% - 26px),transparent)}
+html[data-ori="p"] .pfit>.p-bt{flex:none;padding-top:8px}
+html[data-ori="p"] .pfit>.p-bt>button{margin:0!important;padding:13px!important}
+/* 연간 총결산 */
+html[data-ori="p"] .rp .rp-h{font-size:22px!important;margin-bottom:6px!important}
+html[data-ori="p"] .rp .cd{padding:11px 12px!important;margin-bottom:8px!important}
+html[data-ori="p"] .rp .lbl{margin-bottom:6px}
+.rp-tl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.rp-t{display:grid;grid-template-columns:1fr auto;align-items:baseline;padding:5px 8px 6px;border-radius:8px;background:color-mix(in srgb,var(--c) 9%,var(--surface-0));border:1px solid color-mix(in srgb,var(--c) 30%,transparent)}
+.rp-t span{grid-column:1/-1;font-size:10.5px;color:var(--text-secondary)}
+.rp-t b{font-size:17px;font-variant-numeric:tabular-nums;line-height:1.15}
+.rp-t i{font-style:normal;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+.rp-ch{margin-top:8px}
+.rp-ch svg{height:64px!important}
+/* 연말 참모 회의 */
+html[data-ori="p"] .gcn .gcn-h{font-size:24px}
+html[data-ori="p"] .gcn .gcn-s{margin-bottom:10px;font-size:12.5px}
+html[data-ori="p"] .gcn .cn-n{font-size:12.5px;line-height:1.5;padding:2px 0}
+html[data-ori="p"] .gcn .cn-enc{padding:12px 13px;margin-bottom:12px;border-radius:12px}
+html[data-ori="p"] .gcn .cn-enc-h{font-size:18px;margin-bottom:4px}
+html[data-ori="p"] .gcn .cn-enc-t{font-size:12.5px;line-height:1.6}
+html[data-ori="p"] .gcn .cn-enc-w{margin:8px 0 2px}
+html[data-ori="p"] .gcn .cn-q-mark{width:32px;height:32px;font-size:16px}
+html[data-ori="p"] .gcn .cn-l{margin-bottom:12px}
+html[data-ori="p"] .gcn .cn-now{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+html[data-ori="p"] .gcn .cn-now>.cn{flex-direction:column;align-items:center;gap:6px;padding:10px 8px;text-align:center}
+html[data-ori="p"] .gcn .cn-now>.cn>.pf{width:44px;height:44px}
+html[data-ori="p"] .gcn .cn-now .cn-h{justify-content:center;gap:2px 6px}
+html[data-ori="p"] .gcn .cn-now .cn-h b{font-size:14.5px;flex-basis:100%}
+html[data-ori="p"] .gcn .cn-now .cn-s,html[data-ori="p"] .gcn .cn-now .cn-q,html[data-ori="p"] .gcn .cn-now .cn-sp{display:none}
+html[data-ori="p"] .gcn .cn-now .cn-e{margin-top:4px;font-size:11px;line-height:1.4}
+html[data-ori="p"] .gcn .cn-now .cn-b{justify-content:center;margin-top:6px}
+html[data-ori="p"] .gcn .cn-now .cn-btn{padding:5px 12px;font-size:12px}
+html[data-ori="p"] .gcn .cn-now>.cn-empty{min-height:0;justify-content:center}
+html[data-ori="p"] .gcn .cn-now>.cn-embtn{padding:8px;margin:0;font-size:12.5px}
+html[data-ori="p"] .gcn .cn-cand{display:flex;flex-direction:row;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;margin:0 -12px 6px;padding:4px 12px 10px;scrollbar-width:none;align-items:stretch}
+html[data-ori="p"] .gcn .cn-cand::-webkit-scrollbar{display:none}
+html[data-ori="p"] .gcn .cn-cand>.cn{flex:0 0 86%;scroll-snap-align:center;padding:12px}
+html[data-ori="p"] .gcn .cn-cand>.cn:only-child{flex-basis:100%}
+html[data-ori="p"] .gcn .cn-cand>.cn>.pf{width:48px;height:48px}
+html[data-ori="p"] .gcn .cn-cand>.cn-s{flex:1 0 100%}
+html[data-ori="p"] .gcn .cn-cand .cn-q{font-size:12.5px;margin-top:4px}
+html[data-ori="p"] .gcn .cn-cand .cn-sp{font-size:12px;padding:6px 9px}
 </style>
 </head>
 <body>
@@ -2656,13 +2842,15 @@ function council(go){window.scrollTo(0,0);const RL=roleOf(),notes=cnYear();let c
        sl(enc.kind==='visit'?'visitjoin':'join')+'<div class="cn-b"><button class="cn-btn" data-enc="skip">부르지 않는다</button></div>')+'</div>';};
   const draw=()=>{const slot=s=>{const i=CAR.cn[s];return i==null?'<div class="cn cn-empty"><div class="cn-x"><b>빈 자리</b><div class="cn-s">아래 후보 중에서 '+RL.n+'을 임명하세요.</div></div></div>':
       cnCard(CN[i],'<div class="cn-b"><button data-fire="'+s+'" class="cn-btn">'+(arm===s?'한 번 더 누르면 해임'+(CN[i].t>=3?' (지지율 −1)':''):'해임')+'</button></div>');};
-    R.innerHTML='<div class="gcn'+(dealt?'':' deal')+'"><div class="gcn-k">'+(CP.id==='joseon'?CAR.term+'번째 치세':CAR.term+'기')+' '+y+'년차를 앞두고</div>'+
+    // 세로 화면: 지금의 참모는 두 칸으로 나란히, 후보는 옆으로 넘기는 카드, 시작 버튼은 아래 고정(pfit)
+    const PO=isP();
+    R.innerHTML='<div class="gcn'+(dealt?'':' deal')+(PO?' pfit':'')+'">'+(PO?'<div class="p-sc">':'')+'<div class="gcn-k">'+(CP.id==='joseon'?CAR.term+'번째 치세':CAR.term+'기')+' '+y+'년차를 앞두고</div>'+
      '<div class="hd gcn-h">'+RL.meet+'</div><div class="gcn-s">'+RL.sub+'. 자리는 둘이다.</div>'+tip('council')+
      (notes.length?card(lab('지난 한 해의 '+RL.n+' 소식')+notes.map(n=>'<div class="cn-n cn-n'+n[0]+'">'+n[2]+'</div>').join('')):'')+
-     encHTML()+lab('지금의 '+RL.n)+'<div class="cn-l">'+slot(0)+slot(1)+cnEmBtn()+'</div>'+
-     lab('올해 찾아온 후보 · '+cands.length+'명')+'<div class="cn-l">'+(cands.length?cands.map((x,j)=>cnCard(x.c,'<div class="cn-b">'+[0,1].map(s=>'<button class="cn-btn pick" data-ap="'+j+','+s+'">'+(CAR.cn[s]==null?'빈 자리에 임명':'<span>'+CN[CAR.cn[s]].n+'</span> 대신')+'</button>').join('')+'</div>',x.rescue?' cn-rescue':'')).join(''):'<div class="cn-s">올해는 찾아온 사람이 없다.</div>')+'</div>'+
-     '<button id="cnGo" class="pri" style="width:100%;padding:15px;font-size:15px;margin-top:6px">'+y+'년차 시작</button></div>';
-    bindTips();dealt=true;
+     encHTML()+lab('지금의 '+RL.n)+'<div class="cn-l cn-now">'+slot(0)+slot(1)+cnEmBtn()+'</div>'+
+     lab('올해 찾아온 후보 · '+cands.length+'명'+(PO&&cands.length>1?' · 옆으로 넘겨 보기':''))+'<div class="cn-l cn-cand">'+(cands.length?cands.map((x,j)=>cnCard(x.c,'<div class="cn-b">'+[0,1].map(s=>'<button class="cn-btn pick" data-ap="'+j+','+s+'">'+(CAR.cn[s]==null?'빈 자리에 임명':'<span>'+CN[CAR.cn[s]].n+'</span> 대신')+'</button>').join('')+'</div>',x.rescue?' cn-rescue':'')).join(''):'<div class="cn-s">올해는 찾아온 사람이 없다.</div>')+'</div>'+
+     (PO?'</div><div class="p-bt">':'')+'<button id="cnGo" class="pri" style="width:100%;padding:15px;font-size:15px;margin-top:6px">'+y+'년차 시작</button></div>'+(PO?'</div>':'');
+    bindTips();dealt=true;pMore();
     R.querySelectorAll('[data-fire]').forEach(b=>b.onclick=()=>{SFX.click();const s=+b.dataset.fire;if(arm!==s){arm=s;return draw();}
       const c=CN[CAR.cn[s]];if(c.t>=3)S.a=cl(S.a-1);CAR.cnGone.add(c.i);CAR.cnLog.push(CAR.term+'기 '+y+'년 해임: '+c.n);CAR.cn[s]=null;arm=-1;draw();});
     R.querySelectorAll('[data-ap]').forEach(b=>b.onclick=()=>{SFX.coin();const [j,s]=b.dataset.ap.split(',').map(Number),x=cands[j],old=CAR.cn[s];
@@ -4300,16 +4488,16 @@ function spBoard(go){const y=Math.round(S.turn/PY);if(y>=YRS)return go();CAR.spD
   const L=(BOARD[CP.id]||[]).map(id=>{const sp=(SP[CP.id]||[]).find(s=>s.id===id);if(!sp)return null;const key=sp.id+(sp.perTerm?'_'+CAR.term:''),nd=(NEED[id]||[]).map(needEval);
     return {sp:sp,key:key,done:!!CAR.spDone[key],nd:nd,ok:nd.every(x=>x.ok)};}).filter(Boolean);
   let sel=-1;
-  const draw=()=>{R.innerHTML='<div style="animation:fdIn .35s ease-out"><div style="font-size:12px;font-weight:600;color:var(--text-muted)">'+(CP.id==='joseon'?CAR.term+'번째 치세':CAR.term+'기')+' '+(y+1)+'년차를 앞두고</div>'+
+  const draw=()=>{R.innerHTML='<div class="spw" style="animation:fdIn .35s ease-out"><div style="font-size:12px;font-weight:600;color:var(--text-muted)">'+(CP.id==='joseon'?CAR.term+'번째 치세':CAR.term+'기')+' '+(y+1)+'년차를 앞두고</div>'+
      '<div class="hd" style="font-size:26px;margin:2px 0 4px">특별 국정 과제</div><div style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px">올해 벌일 큰일을 하나 고를 수 있다. 조건을 채운 과제만 색이 들어온다. 하지 않고 넘어가도 된다.</div>'+tip('board')+
      '<div class="spb-g">'+L.map((x,j)=>{const X=SPX[x.sp.id]||SPX.g20,on=x.ok&&!x.done;
        return '<button class="spb'+(on?' on':'')+(sel===j?' sel':'')+'" data-j="'+j+'"'+(on?'':' disabled')+' style="--sb:'+X.bg+';--sa:'+X.ac+'">'+
         '<svg class="spb-art" viewBox="0 0 120 120" aria-hidden="true">'+SPX_ART[X.art]+(X.ch?'<text x="60" y="76" text-anchor="middle" font-size="44" font-weight="800" stroke="none" fill="currentColor">'+X.ch+'</text>':'')+'</svg>'+
         '<span class="spb-k">'+(x.sp.k==='power'?'권력':'국정')+'</span><b class="spb-n">'+x.sp.n+'</b>'+
         '<span class="spb-c">'+x.nd.map(n=>'<i class="'+(n.ok?'y':'n')+'">'+(n.ok?'✓':'✗')+' '+n.txt+(n.cur!=null?' <small>(지금 '+n.cur+')</small>':'')+'</i>').join('')+'</span>'+
-        (x.done?'<span class="spb-st">이미 치렀다</span>':'')+'</button>';}).join('')+'</div>'+
+        (x.done?'<span class="spb-st">이미 치렀다</span>':'')+'</button>';}).join('')+'</div><div class="spw-bt">'+
      '<button id="spGo" class="pri" style="width:100%;padding:15px;font-size:15px;margin-top:14px"'+(sel<0?' disabled':'')+'>'+(sel<0?'과제를 고르세요':L[sel].sp.n+' 시작')+'</button>'+
-     '<button id="spSkip" style="width:100%;padding:13px;font-size:14px;margin-top:8px">올해는 넘어간다</button></div>';
+     '<button id="spSkip" style="width:100%;padding:13px;font-size:14px;margin-top:8px">올해는 넘어간다</button></div></div>';
     bindTips();
     R.querySelectorAll('.spb.on').forEach(b=>b.onclick=()=>{SFX.click();sel=+b.dataset.j;draw();});
     const log=pick=>{CAR.boardLog=CAR.boardLog||[];CAR.boardLog.push(CAR.term+'기 '+(y+1)+'년: '+(pick||'넘어감')+' [가능: '+(L.filter(x=>x.ok&&!x.done).map(x=>x.sp.n).join(', ')||'없음')+']');};
@@ -5035,21 +5223,22 @@ function homeLite(){if(CINE)cineClose();window.scrollTo(0,0);CP=CAMPS.kr;if(!cam
   const bgSel='<label class="bgsel'+(B?'':' ph')+'"><select id="bgSel" aria-label="출발 인물">'+opts+'</select></label>'+
     (B?'<div class="bgcard">'+portrait(B.n,56)+'<div><div class="bgcard-h"><b>'+B.n+'</b><span>'+ageTxt(B)+'</span></div><div class="bgcard-k">'+(B.k||'')+(B.sec?' · 비밀 인물':'')+'</div>'+
       (B.s?'<p>'+B.s+'</p>':'')+'<div class="bgcard-e">'+bgDesc(B,C)+'</div>'+(B.once?'<div class="bgcard-w">단 한 번만 함께할 수 있다. 취임하는 순간 다시 잠긴다.</div>':'')+'</div></div>'
-     :'<div class="bgcard empty">함께할 인물을 고르면 여기에 소개와 능력치가 나와요.</div>')+
-    (lockd.length?'<div class="bghint">'+lockd.map(x=>'<div>🔒 '+(x[1].used?x[0].n+' · ':'')+x[1].h+'</div>').join('')+'</div>':'<div style="height:14px"></div>');
+     :'<div class="bgcard empty">함께할 인물을 고르면 여기에 소개와 능력치가 나와요.</div>');
+  const bgHint=lockd.length?'<div class="bghint">'+lockd.map(x=>'<div>🔒 '+(x[1].used?x[0].n+' · ':'')+x[1].h+'</div>').join('')+'</div>':'<div style="height:14px"></div>';
   const mdb=MODE.map((q,k)=>'<button class="mdb" data-k="'+k+'" style="flex:1;font-size:13.5px;padding:11px 6px;'+(mode===k?sel:'')+'"><span style="display:block;font-weight:600">'+q.n+'</span><span style="display:block;font-size:12px;color:var(--text-muted);margin-top:1px">'+q.d+'</span></button>').join('');
   const dfb=DIFF.map((q,k)=>'<button class="dfb" data-k="'+k+'" style="flex:1;font-size:13.5px;padding:11px 6px;'+(dif===k?sel:'')+'">'+q.n+'</button>').join('');
   const stat=(a,b)=>'<div style="flex:1;min-width:0;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:10px 12px"><div style="font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+a+'</div><div style="font-size:18px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums">'+b+'</div></div>';
-  R.innerHTML='<div style="animation:fdIn .35s ease-out">'+
-  '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span class="hd" id="ttl" style="font-size:25px;user-select:none">팬데믹 대통령</span><button id="snd" style="width:38px;height:34px;padding:0;display:flex;align-items:center;justify-content:center" aria-label="소리 켜기 끄기">'+(AU.on?ICO.vol:ICO.mute)+'</button></div>'+
+  // 세로 화면에서는 무대 소개와 기록 카드를 취임 버튼 아래로 내려, 게임을 시작하는 데 필요한 것만 첫 화면에 둔다
+  const P=isP(),intro='<div class="hl-in" style="font-size:14px;color:var(--text-secondary);line-height:1.75;margin:12px 0 18px">'+C.intro+'</div>'+
+    '<div style="display:flex;gap:8px;margin-bottom:24px">'+stat('최고 커리어 점수',MEM.best100?MEM.best100+'<span style="font-size:12px;color:var(--text-muted)"> /100</span>':'—')+stat('최장 재임',MEM.longest?MEM.longest+'년':'—')+stat('지나온 인생',(MEM.careers||0)+'번')+'</div>';
+  R.innerHTML='<div class="hl" style="animation:fdIn .35s ease-out">'+
+  '<div class="hl-hd" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span class="hd" id="ttl" style="font-size:25px;user-select:none">팬데믹 대통령</span><button id="snd" style="width:38px;height:34px;padding:0;display:flex;align-items:center;justify-content:center" aria-label="소리 켜기 끄기">'+(AU.on?ICO.vol:ICO.mute)+'</button></div>'+
   (msg?'<div style="font-size:13.5px;line-height:1.7;color:var(--text-secondary);background:var(--surface-1);border-radius:10px;padding:10px 12px;margin-bottom:16px">'+msg+'</div>':'')+
-  lab('무대 고르기')+'<div class="cmbs">'+cmb+'</div>'+
-  '<div style="font-size:14px;color:var(--text-secondary);line-height:1.75;margin:12px 0 18px">'+C.intro+'</div>'+
-  '<div style="display:flex;gap:8px;margin-bottom:24px">'+stat('최고 커리어 점수',MEM.best100?MEM.best100+'<span style="font-size:12px;color:var(--text-muted)"> /100</span>':'—')+stat('최장 재임',MEM.longest?MEM.longest+'년':'—')+stat('지나온 인생',(MEM.careers||0)+'번')+'</div>'+
-  lab('출발 인물')+bgSel+
-  lab('결정 빈도')+'<div style="display:flex;gap:8px;margin-bottom:22px">'+mdb+'</div>'+
-  lab('난이도 · 연임할 때마다 한 단계씩 더 어려워진다')+'<div style="display:flex;gap:8px;margin-bottom:24px">'+dfb+'</div>'+
-  '<button id="st" class="pri"'+(B?'':' disabled')+' style="width:100%;padding:16px;font-size:16.5px;margin-bottom:12px">'+(!B?'인물을 선택하세요':camp==='joseon'?'즉위한다':camp==='zombie'?'지휘를 맡는다':'취임한다')+'</button>'+
+  lab('무대 고르기')+'<div class="cmbs">'+cmb+'</div>'+(P?'<div style="height:14px"></div>':intro)+
+  lab('출발 인물')+bgSel+(P?'<div style="height:12px"></div>':bgHint)+
+  lab('결정 빈도')+'<div class="hl-mode" style="display:flex;gap:8px;margin-bottom:22px">'+mdb+'</div>'+
+  lab('난이도 · 연임할 때마다 한 단계씩 더 어려워진다')+'<div class="hl-dif" style="display:flex;gap:8px;margin-bottom:24px">'+dfb+'</div>'+
+  '<div class="hl-go"><button id="st" class="pri"'+(B?'':' disabled')+' style="width:100%;padding:16px;font-size:16.5px;margin-bottom:12px">'+(!B?'인물을 선택하세요':camp==='joseon'?'즉위한다':camp==='zombie'?'지휘를 맡는다':'취임한다')+'</button></div>'+(P?bgHint+intro:'')+
   '<div class="hm-row"><button id="tutBtn" class="tgl" role="switch" aria-checked="'+tutOn()+'"><span class="tgl-k"></span><span>튜토리얼 '+(tutOn()?'켜짐':'꺼짐')+'</span></button></div>'+
   '<button id="lbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>명예의 전당</b><span>모두의 최고 기록</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="gbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>가이드북</b><span>판정 규칙, 지표, 대선, 점수 계산까지 한 번에</span></span><span class="hm-go">'+CHEV+'</span></button>'+
@@ -5295,7 +5484,35 @@ function pickAdv(){const L=CP.adv?(SCX().adv||[]).concat(CP.adv):isCov()?ADV:(SC
   for(const a of L){if(a.c(S)){adv={who:a.who,l:pk(a.l)};return;}}}
 
 /* ---------- PLAY SCREENS ---------- */
-function hud(){const y=Math.floor(S.turn/PY)+1,v=Math.round(S.i),X=SCX(),hs=hudStats();
+// 세로 화면 상태 바: 한 줄 정보 · 진행 막대 · 누르면 펼쳐지는 상황판 띠 · 지표 6칸 · 급한 문제와 속보 한 줄
+const isP=()=>document.documentElement.dataset.ori==='p';
+let hpMap=false;
+function hudP(o){o=o||{};const y=Math.floor(S.turn/PY)+1,v=Math.round(S.i),X=SCX(),hs=hudStats();
+  const lb=X.lv[Math.min(4,Math.floor(v/20))],cL=v<20?'#7fd8a8':v<40?'#f0c060':v<60?'#f39a62':'#ff8f86',c=v<20?'#2e7d55':v<40?'#9a6400':v<60?'#b8541e':'#b3261e';
+  let seg='';for(let k=0;k<YRS*PY;k++){const col=k<hist.length?TIER[hist[k]].bd:(k===S.turn?c:'rgba(29,27,24,.09)');seg+='<span style="background:'+col+';'+(k===S.turn&&k>=hist.length?'animation:pls 1.2s infinite;':'')+(k%PY===PY-1&&k<YRS*PY-1?'margin-right:3px;':'')+'"></span>';}
+  return '<div class="hp-top"><span class="hp-k">'+(CP.id==='joseon'?'치세 '+CAR.term:CAR.term+'기')+'</span><b>'+y+'년차</b><span>'+(S.turn%PY+1)+'/'+PY+'</span><span class="hp-m">'+ageNow()+'세 · '+DIFF[dif].n+(CAR.term>1?' +'+(CAR.term-1):'')+'</span>'+
+   (streak>=2?'<span class="hp-st">연속 '+streak+'</span>':'')+
+   '<span class="hp-r">'+(tok?'<span class="dots" title="운명 개입 '+tok+'회" aria-label="운명 개입 '+tok+'회">'+'<i></i>'.repeat(tok)+'</span>':'')+
+   (o.em&&!CAR.cnEm?'<button id="cnEm" class="hp-em" aria-label="비상소집: 전설 '+roleOf().n+' 부르기, 커리어에 한 번">비상소집</button>':'')+
+   '<button id="snd" class="hp-snd" aria-label="소리 켜기 끄기">'+(AU.on?ICO.vol:ICO.mute)+'</button></span></div>'+
+  '<div class="hp-seg">'+seg+'</div>'+
+  '<button id="hpLive" class="hp-live" aria-expanded="'+hpMap+'"><span class="hp-dot"></span><b class="hp-lv">'+(CP.id==='joseon'?'장계':'LIVE')+' · '+scnName()+'</b>'+
+   '<span>'+X.iName+' <b style="color:'+cL+'">'+v+'</b> <span style="color:'+cL+'">'+lb+'</span></span>'+
+   '<span class="hp-hs">'+hs.map((q,j)=>q[0]+' '+odoHTML(X.id+(isCov()?'':CAR.term)+'_'+j,q)).join(' &nbsp;')+'</span><i class="hp-chev" aria-hidden="true">▾</i></button>'+
+  '<div class="hp-map"'+(hpMap?'':' hidden')+'><canvas id="map"></canvas><span>'+X.map+'</span></div>'+
+  statsHTML()+
+  '<div class="hp-line">'+urgentHTML(1)+'<div class="hp-tk"><span><b>'+(CP.id==='joseon'?'풍문':'속보')+'</b>&nbsp; '+headlines()+'</span></div></div>';}
+// 사건 글이 가운데 칸을 넘치면 글씨를 조금씩 줄인다(85%까지). 줄여도 안 들어가면 원래 크기로 두고 그 칸 안에서만 스크롤한다.
+function fitP(){const w=document.querySelector('#wrap.fit'),sc=w&&w.querySelector('.g-sc');if(!sc||!isP())return;
+  const over=()=>sc.scrollHeight>sc.clientHeight+1;let f=1;w.style.setProperty('--fz',f);
+  while(over()&&f>.86){f=Math.round((f-.03)*100)/100;w.style.setProperty('--fz',f);}
+  if(over())w.style.setProperty('--fz',1);
+  pMore(sc);}
+// 스크롤 칸 아래를 흐려서 글이 더 있다는 것을 알린다(끝까지 내리면 사라진다)
+function pMore(sc){sc=sc||document.querySelector('.pfit>.p-sc');if(!sc||!isP())return;
+  const more=()=>sc.classList.toggle('more',sc.scrollTop+sc.clientHeight<sc.scrollHeight-4);more();sc.onscroll=more;}
+{let t=0;addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(fitP,120);});try{document.fonts.ready.then(fitP);}catch(e){}}
+function hud(o){if(isP())return hudP(o);const y=Math.floor(S.turn/PY)+1,v=Math.round(S.i),X=SCX(),hs=hudStats();
   const lb=X.lv[Math.min(4,Math.floor(v/20))];
   const c=v<20?'#2e7d55':v<40?'#9a6400':v<60?'#b8541e':'#b3261e';const cL={'#2e7d55':'#7fd8a8','#9a6400':'#f0c060','#b8541e':'#f39a62','#b3261e':'#ff8f86'}[c];
   let seg='';for(let k=0;k<YRS*PY;k++){const col=k<hist.length?TIER[hist[k]].bd:(k===S.turn?c:'rgba(29,27,24,.09)');seg+='<span style="flex:1;height:4px;border-radius:2px;background:'+col+';'+(k===S.turn&&k>=hist.length?'animation:pls 1.2s infinite;':'')+(k%PY===PY-1&&k<YRS*PY-1?'margin-right:4px;':'')+'"></span>';}
@@ -5316,7 +5533,8 @@ function hud(){const y=Math.floor(S.turn/PY)+1,v=Math.round(S.i),X=SCX(),hs=hudS
   (streak>=2?'<span style="color:#2e7d55;font-weight:700">연속 '+streak+(streak>=4?' 모멘텀':'')+'</span>':'<span></span>')+'</div>'+
   '<div style="overflow:hidden;white-space:nowrap;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:7px 0;margin-bottom:16px"><span style="display:inline-block;padding-left:100%;animation:tk 30s linear infinite;animation-delay:-7s;font-size:12px;color:var(--text-secondary)"><span style="color:var(--text-danger);font-weight:600">'+(CP.id==='joseon'?'풍문':'속보')+'</span>&nbsp; '+headlines()+'</span></div>';}
 function vign(){return '<div style="position:absolute;inset:-6px;pointer-events:none;border-radius:12px;background:radial-gradient(ellipse at center,transparent 55%,rgba(179,38,30,'+(S.i/100*.3).toFixed(3)+') 100%)"></div>';}
-function bindSnd(){const b=document.getElementById('snd');if(b)b.onclick=toggleSound;odoRun();bindTips();}
+function bindSnd(){const b=document.getElementById('snd');if(b)b.onclick=toggleSound;odoRun();bindTips();
+  const lv=document.getElementById('hpLive');if(lv)lv.onclick=()=>{hpMap=!hpMap;lv.setAttribute('aria-expanded',hpMap);const m=lv.nextElementSibling;if(m)m.hidden=!hpMap;fitP();};}
 
 // 특별 이벤트 무대: 이벤트마다 고유한 색과 상징을 사건 카드 뒤에 깐다. 처음 보는 사람도 "평소와 다른 순간"임을 알아보도록.
 const SPX_ART={
@@ -5348,25 +5566,27 @@ function ev(){if(pendingNews){const n=pendingNews;pendingNews=null;return breaki
   SHOWN=Date.now();window.scrollTo(0,0);const tfd=turnFx()?820:0;
   const tag=cur.tag||(cur.st?'지표가 부른 사건':cur.tm?'권력의 시험':cur===UPR||cur===IMP?'정권 위기':Object.values(CH).indexOf(cur)>=0?'지난 결정의 여파':'');
   const tc=cur.tc||(cur.st?'#9a6400':cur.tm?'#b3261e':cur===UPR||cur===IMP?'#b3261e':'#2f4a6b');
-  const bn=banner;banner='';
-  R.innerHTML='<div id="wrap" style="position:relative;--tfd:'+tfd+'ms">'+vign()+'<div class="g-hud">'+hud()+sideHTML()+'</div><div class="g-main">'+
+  const bn=banner;banner='';const P=isP();
+  // 세로 화면(fit): 위 상태 바 · 가운데 사건(g-sc, 넘치면 그 안에서만 스크롤) · 아래 선택지(g-bt) 세 칸으로 한 화면에 맞춘다
+  R.innerHTML='<div id="wrap"'+(cur.mg?'':' class="fit"')+' style="position:relative;--tfd:'+tfd+'ms">'+vign()+'<div class="g-hud">'+hud({em:1})+sideHTML()+'</div><div class="g-main"><div class="g-sc">'+
   (bn?'<div style="font-size:12px;color:#a8321f;background:rgba(179,38,30,.12);border:1px solid rgba(179,38,30,.3);border-radius:8px;padding:7px 11px;margin-bottom:10px;animation:fdIn .3s ease-out">'+bn+'</div>':'')+
-  tip('choose')+(cur.path?tip('path'):'')+(cur.sp?tip('special'):'')+urgentHTML()+
+  tip('choose')+(cur.path?tip('path'):'')+(cur.sp?tip('special'):'')+(P?'':urgentHTML())+
   (cur.sp?spxOpen():'')+'<div class="evc go'+(cur.sp?' evsp':'')+'" style="background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:18px 18px 17px;margin-bottom:14px;animation:fdIn .3s ease-out">'+
   '<div class="hd evt" style="font-size:21px;line-height:1.38;text-wrap:balance">'+cur.t+'</div>'+
-  (tag&&!cur.sp?'<div style="font-size:12.5px;font-weight:600;color:'+tc+';margin-top:4px">'+tag+'</div>':'')+
-  '<div style="font-size:15px;color:var(--text-secondary);line-height:1.75;margin-top:12px">'+cur.d+'</div></div>'+(cur.sp?'</div>':'')+
-  '<div id="gOpts" style="display:flex;flex-direction:column;gap:10px"></div>'+
+  (tag&&!cur.sp?'<div class="evg" style="font-size:12.5px;font-weight:600;color:'+tc+';margin-top:4px">'+tag+'</div>':'')+
+  '<div class="evd" style="font-size:15px;color:var(--text-secondary);line-height:1.75;margin-top:12px">'+cur.d+'</div></div>'+(cur.sp?'</div>':'')+
+  '</div><div class="g-bt"><div id="gOpts" style="display:flex;flex-direction:column;gap:10px"></div></div>'+
   (cur._cr=cnRec(cur.o),'')+'</div>'+
   '<div id="fx"style="position:absolute;inset:-6px;display:flex;align-items:center;justify-content:center;pointer-events:none"></div></div>';
   const ob=document.getElementById('gOpts');
   // 참모의 조언: 두 사람이 각자 자기 분야에 맞는 선택지를 권한다. 카드에는 누가 권했는지만 붙인다.
-  const CR=cur._cr||[],recOf=k=>CR.filter(r=>r.k===k).map(r=>r.c.n).join(' · ');
-  if(CR.length){const rc=document.createElement('div');rc.className='advrec';
+  // 세로 화면에서는 조언 블록 대신 선택지에 참모 얼굴을 붙이고, 비상소집은 상태 바의 버튼으로 옮긴다
+  const CR=cur._cr||[],recOf=k=>CR.filter(r=>r.k===k).map(r=>(P?portrait(r.c.n,18):'')+r.c.n).join(P?' ':' · ');
+  if(CR.length&&!P){const rc=document.createElement('div');rc.className='advrec';
     rc.innerHTML=CR.map(r=>'<div class="ar">'+portrait(r.c.n,30)+'<div><span class="rk">'+r.c.n+' <small>'+'★'.repeat(r.c.t)+' '+CN_DOM[r.c.d].n+'</small> → '+(r.k+1)+'번</span> <span class="rq">"'+r.line+'"</span></div></div>').join('');
     ob.parentNode.insertBefore(rc,ob);}
-  if(!CAR.cnEm){const eb=document.createElement('div');eb.innerHTML=cnEmBtn();ob.parentNode.insertBefore(eb.firstChild,ob);
-    document.getElementById('cnEm').onclick=()=>{SFX.click();cnEmerg(ev);};}
+  if(!CAR.cnEm&&!P){const eb=document.createElement('div');eb.innerHTML=cnEmBtn();ob.parentNode.insertBefore(eb.firstChild,ob);}
+  {const em=document.getElementById('cnEm');if(em)em.onclick=()=>{SFX.click();cnEmerg(ev);};}
   cur.o.forEach((o,k)=>{const b=document.createElement('button');b.className='opt';
     b.style.animationDelay=(tfd+80+k*70)+'ms';
     const add=(c,h)=>{if(!h)return;const z=document.createElement('span');z.className=c;z.innerHTML=h;b.appendChild(z);};
@@ -5380,10 +5600,10 @@ function ev(){if(pendingNews){const n=pendingNews;pendingNews=null;return breaki
       add('opt-c',chipsHTML(o[1]));
       if(sx){add('opt-m','<span class="opt-p">판정 주사위 없이 '+sx[1]+' 확률 '+sx[0]+'%로만 갈린다</span>');}else{
       add('opt-bar',P.map((p,j)=>p>.0005?'<i class="t'+j+'" style="flex:'+p.toFixed(4)+'"></i>':'').join(''));
-      add('opt-m','<span class="stk s'+s+'">'+STK[s].n+'</span><span class="opt-p">대성공 '+bg+'% · <span class="pp-c">'+(cf?'대실패 '+cf+'%':'대실패 없음')+'</span></span>'+(rc?'<span class="opt-rec">★ '+rc+'</span>':''));}}
+      add('opt-m','<span class="stk s'+s+'">'+STK[s].n+'</span><span class="opt-p">대성공 '+bg+'% · <span class="pp-c">'+(cf?'대실패 '+cf+'%':'대실패 없음')+'</span></span>'+(rc?'<span class="opt-rec">'+(P?'':'★ ')+rc+'</span>':''));}}
     b.onclick=()=>choose(k);ob.appendChild(b);});
   if(cur.mg){ob.innerHTML='';const rc=ob.parentNode.querySelector('.advrec');if(rc)rc.remove();const eb=document.getElementById('cnEm');if(eb)eb.remove();mgRun(cur.mg,ob);}
-  bindSnd();}
+  bindSnd();fitP();}
 
 // 판정 룰렛: 칸 크기 = 그 결과가 나올 확률. 바늘이 돌다가 멈춘 칸이 결과다. 상황에 맞는 선택일수록 초록 칸이 넓고, 대실패 칸은 사라진다.
 const WCOL=['#2e7d55','#7a7366','#9a6400','#b3261e'];
@@ -5425,9 +5645,9 @@ const URG={i:s=>Math.min(1,(s.i+15)/100),m:s=>(100-s.m)/100,e:s=>(100-s.e)/100,a
 const UNM=k=>({i:SCX().short,m:'대응 여력 부족',e:KN.e+' 침체',a:'민심 이반',u:KN.u,c:'부패',mil:'안보 공백',saf:'안전망 부족',chk:'견제 약화',trn:'불투명'}[k]);
 // 지금 급한 문제: 급한 정도가 0.45 이상인 것 중 위의 두 개
 function urgentKeys(){return ['i','m','e','a','u','c','mil'].map(k=>[k,URG[k](S)]).filter(x=>x[1]>=.45).sort((a,b)=>b[1]-a[1]).slice(0,2);}
-function urgentHTML(){const u=urgentKeys();
-  if(!u.length)return '<div class="urg"><span class="urg-l">지금 급한 문제</span><span class="urg-ok">뚜렷한 위기 없음 · 여유가 있다</span></div>';
-  return '<div class="urg"><span class="urg-l">지금 급한 문제</span>'+u.map(x=>{const lv=x[1]>=.68?3:x[1]>=.56?2:1,col=lv===3?'#b3261e':lv===2?'#b8541e':'#9a6400';
+function urgentHTML(short){const u=urgentKeys();
+  if(!u.length)return '<div class="urg"><span class="urg-l">'+(short?'급한 문제':'지금 급한 문제')+'</span><span class="urg-ok">'+(short?'없음':'뚜렷한 위기 없음 · 여유가 있다')+'</span></div>';
+  return '<div class="urg"><span class="urg-l">'+(short?'급한 문제':'지금 급한 문제')+'</span>'+u.map(x=>{const lv=x[1]>=.68?3:x[1]>=.56?2:1,col=lv===3?'#b3261e':lv===2?'#b8541e':'#9a6400';
     const vk=K2V[x[0]];return '<span class="urg-c" style="border-color:'+col+'66'+(vk?';background:color-mix(in srgb,'+V6[vk].col+' 14%,transparent)':'')+'">'+(vk?'<i class="urg-v" style="background:'+V6[vk].col+'"></i>':'')+'<b style="color:'+col+'">'+'●'.repeat(lv)+'<span style="opacity:.25">'+'●'.repeat(3-lv)+'</span></b> '+UNM(x[0])+'</span>';}).join('')+'</div>';}
 const riskOf=q=>q>=.28?[0,'위험 낮음']:q<=-.28?[2,'위험 높음']:[1,'위험 보통'];
 const fitWord=q=>q>=.28?['상황에 잘 맞는 선택','#2e7d55']:q<=-.28?['상황에 맞지 않는 선택','#b3261e']:['무난한 선택','#9a6400'];
@@ -5622,19 +5842,20 @@ function deltas(){if(!snap)return '';
 
 function res(){const T=TIER[last.t],wc=last.x.split(' ').length,dl=Math.min(650,wc*22+120);
   sbFrom=snap&&snap.S;const hh=hud();sbFrom=null;
-  R.innerHTML='<div id="wrap" style="position:relative">'+vign()+'<div class="g-hud">'+hh+sideHTML()+'</div><div class="g-main">'+
+  R.innerHTML='<div id="wrap" class="fit" style="position:relative">'+vign()+'<div class="g-hud">'+hh+sideHTML()+'</div><div class="g-main"><div class="g-sc">'+
   '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span class="tierb" style="font-size:12.5px;padding:3px 10px;border-radius:999px;background:'+T.tint+';color:'+T.fg+';font-weight:700">'+T.n+'</span><span style="font-size:12.5px;color:var(--text-muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+cur.t+'</span></div>'+
   tip('result')+(tok>0&&last.t>=2&&!cur.mg?tip('reroll'):'')+
-  '<div id="txt" style="background:color-mix(in srgb,'+T.bd+' 7%,var(--surface-2));border:1px solid color-mix(in srgb,'+T.bd+' 32%,transparent);border-radius:14px;padding:16px 17px;margin-bottom:14px;cursor:pointer"><div style="font-size:15.5px;line-height:1.85">'+words(last.x,40)+'</div></div>'+
+  '<div id="txt" style="background:color-mix(in srgb,'+T.bd+' 7%,var(--surface-2));border:1px solid color-mix(in srgb,'+T.bd+' 32%,transparent);border-radius:14px;padding:16px 17px;margin-bottom:14px;cursor:pointer"><div class="rsd" style="font-size:15.5px;line-height:1.85">'+words(last.x,40)+'</div></div>'+
   '<div style="margin-bottom:12px;min-height:28px">'+deltas()+'</div>'+
   (last.cn&&last.cn.length?'<div class="cn-fx">'+last.cn.map(x=>'<span>'+x+'</span>').join('')+'</div>':'')+
   (()=>{if(cur.mg)return '<div class="jdg"><span>판정</span><b>경기 결과로 정해졌다</b></div>';
   if(spFixed(lastO))return '<div class="jdg"><span>판정</span><b>'+(lastO[4].vote?'투표로':'거사 결과로')+' 정해졌다</b></div>';const fw=fitWord(lastFit.q),P=stakeP(lastFit.q,lastS);return '<div class="jdg"><span>판정</span><span class="stk s'+lastS+'">'+STK[lastS].n+'</span><b style="color:'+fw[1]+'">'+fw[0]+'</b><span class="jdg-p">성공 이상 '+Math.round((P[0]+P[1])*100)+'%</span></div>';})()+
   (lastFit.why.length?'<div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:6px">판정에 영향을 준 것</div><div style="display:flex;flex-direction:column;gap:5px;margin-bottom:18px">'+lastFit.why.map((w,j)=>'<div style="font-size:13px;color:var(--text-secondary);opacity:0;animation:fdIn .3s ease-out forwards;animation-delay:'+(200+j*90)+'ms"><b style="color:'+(w[0]==='+'?'#2e7d55':'#b3261e')+'">'+(w[0]==='+'?'▲':'▼')+'</b> '+w[1]+'</div>').join('')+'</div>':'<div style="height:4px"></div>')+
+  '</div><div class="g-bt">'+
   '<button id="nx" class="late pri" style="width:100%;margin-bottom:8px;padding:14px;font-size:15px;opacity:0;animation:fdIn .3s ease-out forwards;animation-delay:'+dl+'ms">계속</button>'+
   (tok>0&&last.t>=2&&!cur.mg&&!(cur.sp&&lastO&&lastO[4])?'<button id="rr" class="late" style="width:100%;font-size:13.5px;font-weight:600;color:#3d5a80;border-color:rgba(47,74,107,.45);background:rgba(47,74,107,.08);display:flex;align-items:center;justify-content:center;gap:8px;opacity:0;animation:fdIn .3s ease-out forwards;animation-delay:'+(dl+120)+'ms"><span class="dots"><i></i></span>운명에 개입한다 (남은 '+tok+'회)</button>':'')+
-  '<div style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:8px">글을 누르면 바로 넘길 수 있다</div></div></div>';
-  bindSnd();
+  '<div class="rs-hint" style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:8px">글을 누르면 바로 넘길 수 있다</div></div></div></div>';
+  bindSnd();fitP();
   const w=document.getElementById('wrap');document.getElementById('txt').onclick=()=>{w.classList.add('skip');};
   document.getElementById('nx').onclick=()=>{SFX.click();S.turn++;if(S.turn%PY===0)return report();next();pickAdv();ev();};
   const r=document.getElementById('rr');if(r)r.onclick=reroll;}
@@ -5669,6 +5890,10 @@ function bars(rows){return rows.map((r,k)=>{const v=Math.round(cl(r.v)),pv=r.pv=
   '<span style="position:absolute;left:0;top:0;bottom:0;width:'+v+'%;border-radius:5px;background:'+col+';animation:barG .9s cubic-bezier(.2,.8,.2,1) both;animation-delay:'+(k*55)+'ms"></span>'+
   (pv!=null?'<span style="position:absolute;top:-3px;bottom:-3px;left:calc('+pv+'% - 1px);width:2px;background:rgba(29,27,24,.6);border-radius:1px"></span>':'')+
   '</span><span style="width:14px;font-size:11px;text-align:center;color:'+ac+'">'+ar+'</span></div>';}).join('');}
+// 세로 화면 결산용 지표 타일: 값과 작년 대비 변화(좋아지면 초록, 나빠지면 빨강)
+function tiles(rows){return '<div class="rp-tl">'+rows.map(r=>{const v=Math.round(cl(r.v)),pv=r.pv==null?null:Math.round(cl(r.pv)),d=pv==null?0:v-pv;
+  const gv=r.bad?100-v:v,col=r.neu?'#2f4a6b':gv>=66?'#2e7d55':gv>=40?'#9a6400':'#b3261e',good=r.bad?d<0:d>0,dc=r.neu?'#3d5a80':!d?'var(--text-muted)':good?'#2e7d55':'#b3261e';
+  return '<div class="rp-t" style="--c:'+r.c+'"><span>'+r.n+'</span><b style="color:'+col+'">'+v+'</b><i style="color:'+dc+'">'+(d>0?'▲'+d:d<0?'▼'+(-d):'–')+'</i></div>';}).join('')+'</div>';}
 function lineChart(series,n){const W=300,H=100,P=5,X=i=>P+i*(W-2*P)/n,Y=v=>P+(100-v)*(H-2*P)/100;
   let s='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block" aria-hidden="true">';
   for(let y=1;y<YRS;y++){const x=X(y*PY).toFixed(1);s+='<line x1="'+x+'" x2="'+x+'" y1="0" y2="'+H+'" stroke="rgba(29,27,24,.06)"/>';}
@@ -5706,21 +5931,24 @@ function report(){SFX.report();window.scrollTo(0,0);
   const cr=chron.map(c=>chip(c.n,TIER[c.t].bd)).join('');
   const worst=[['i',100-S.i],['m',S.m],['a',S.a],['e',S.e],['u',100-S.u],['c',100-S.c]].sort((a,b)=>a[1]-b[1])[0][0];
   const say=RPX(worst)[bd(S[worst])];
-  R.innerHTML='<div style="position:relative;animation:fdIn .35s ease-out">'+
+  // 세로 화면: 지표는 3×2 타일, 흐름 그래프는 같은 카드에 낮게, 다음 버튼은 아래 고정(pfit)
+  const PO=isP(),chart=lineChart([{pts:TH.map(h=>h.h!=null?h.h:100-h.i),col:V6.H.col,w:1.6},{pts:TH.map(h=>h.a),col:'#2e7d55',w:2.4}],YRS*PY),
+    legend='<div style="display:flex;gap:14px;font-size:11px;color:var(--text-muted);margin-top:8px;flex-wrap:wrap"><span><b style="color:#2e7d55">━</b> '+KN.a+'</span><span><b style="color:'+V6.H.col+'">━</b> '+X.ctrl+'</span><span>'+(CP.rule==='reign'?'┄ 반정 위험선 35 · 안정 65':'┄ 출마선 35 · 당선 확정 65')+'</span></div>';
+  R.innerHTML='<div class="'+(PO?'pfit rp':'')+'" style="position:relative;animation:fdIn .35s ease-out">'+(PO?'<div class="p-sc">':'')+
    '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"><span style="font-size:12px;font-weight:600;color:var(--text-muted)">'+(CP.id==='joseon'?CAR.term+'번째 치세':CAR.term+'기')+' '+y+'년차 연말 · '+ageNow()+'세</span><span style="font-size:11px;color:var(--text-muted)">'+MOD.n+'</span></div>'+
-   '<div class="hd" style="font-size:24px;margin-bottom:8px">'+(fin?'임기 마지막 결산':'연간 총결산')+'</div>'+
+   '<div class="hd rp-h" style="font-size:24px;margin-bottom:8px">'+(fin?'임기 마지막 결산':'연간 총결산')+'</div>'+
    '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"><span style="font-size:11px;padding:4px 9px;border-radius:999px;background:rgba(179,38,30,.14);color:#a8321f;font-weight:600">'+(isCov()?(y>=3?'신종 변이':'코로나19'):X.n)+'</span>'+
    hs.map(q=>'<span style="font-size:11px;padding:4px 9px;border-radius:999px;background:var(--surface-1);color:var(--text-secondary)">'+q[0]+' <b style="color:var(--text-primary)">'+fmtStat(q)+'</b></span>').join('')+'</div>'+
    tip('report')+card(lab('올해의 기록')+tro)+
+   (PO?card(lab('국정 지표 · 작년 대비')+tiles(rows.concat(pw))+'<div class="rp-ch">'+chart.replace('<svg ','<svg preserveAspectRatio="none" ')+'</div>'+legend):
    card(lab('국정 지표 · 흰 눈금은 작년')+bars(rows)+'<div style="height:1px;background:var(--border);margin:6px 0 12px"></div>'+bars(pw)+
      '<div style="font-size:11px;color:var(--text-muted);line-height:1.6;margin-top:4px">'+vName('P')+'이 크면 일이 빨라지지만 견제가 사라지고 '+vName('X')+'도 함께 자란다.</div>')+
-   card(lab('임기 흐름')+lineChart([{pts:TH.map(h=>h.h!=null?h.h:100-h.i),col:V6.H.col,w:1.6},{pts:TH.map(h=>h.a),col:'#2e7d55',w:2.4}],YRS*PY)+
-     '<div style="display:flex;gap:14px;font-size:11px;color:var(--text-muted);margin-top:8px;flex-wrap:wrap"><span><b style="color:#2e7d55">━</b> '+KN.a+'</span><span><b style="color:'+V6.H.col+'">━</b> '+X.ctrl+'</span><span>'+(CP.rule==='reign'?'┄ 반정 위험선 35 · 안정 65':'┄ 출마선 35 · 당선 확정 65')+'</span></div>')+
+   card(lab('임기 흐름')+chart+legend))+
    '<div style="display:flex;gap:10px;align-items:flex-start;margin:4px 4px 14px">'+(cnHired()[0]?portrait(cnHired()[0].n,30):'')+
    '<div style="font-size:13px;line-height:1.7;color:var(--text-secondary)">'+(cnHired()[0]?'<b style="color:var(--text-primary)">'+cnHired()[0].n+'</b> ':'')+'<span style="font-family:var(--font-voice)">"'+say+(tr?' '+tr:'')+'"</span></div></div>'+
-   lab('그해의 결정들')+'<div style="margin-bottom:18px">'+cr+'</div>'+
-   '<button id="nx" class="pri" style="width:100%;padding:15px;font-size:15px">'+(fin?'임기 만료':(y+1)+'년차로')+'</button></div>';
-  CAR.yrs.push(yearSnap(y,earned,1));bindTips();
+   lab('그해의 결정들')+'<div style="margin-bottom:18px">'+cr+'</div>'+(PO?'</div><div class="p-bt">':'')+
+   '<button id="nx" class="pri" style="width:100%;padding:15px;font-size:15px">'+(fin?'임기 만료':(y+1)+'년차로')+'</button></div>'+(PO?'</div>':'');
+  CAR.yrs.push(yearSnap(y,earned,1));bindTips();pMore();
   const ny=y+1,varN=!fin&&CP.id==='kr'&&CAR.term===1&&ny===3&&CAR.endemic!==CAR.term;
   chron=[];yd=0;yTally=[0,0,0,0];YS=Object.assign({},S);
   // 해가 바뀔 때는 금장 셔터로 넘어간다
