@@ -39,3 +39,7 @@
 .sl-med span.on{color:#1d150a;font-weight:800;background:linear-gradient(180deg,#ffe08a,#d9a441)}
 .sl-card button{width:100%;padding:14px;font-size:15px;margin-top:6px}
 .sl-card button:not(.pri){color:#f3ead7;background:transparent;border-color:rgba(255,255,255,.22)}
+.sl-ctl{gap:8px}.sl-ctl .sl-br{width:min(18vw,92px);margin-left:auto;display:flex;align-items:center;justify-content:center;font-size:14px}
+.sl-br span{display:flex;flex-direction:column;align-items:center;gap:1px}.sl-br small{font-size:10px;font-weight:600;opacity:.65}
+.sl-ctl .sl-br.on{color:#fff;background:linear-gradient(180deg,#e0706a,#b3261e);border-color:#b3261e}
+.sl-ctl .sl-bo{margin-right:auto}

@@ -2,6 +2,7 @@
    메인 화면 로고의 나침반을 다섯 바퀴 돌리면 열리고, 새 게임의 무대 고르기 끝에 생긴다.
    폭풍 속 해협을 배가 멈추지 않고 달린다(점점 빨라진다). 백신이 상하기 전에 섬마을 관문 셋을 지나 모항 결승선에 닿아야 한다.
    · ◀ ▶(A D · ← →)를 누르고 있는 동안 뱃머리가 그쪽으로 45° 꺾이고, 떼면 다시 곧장 간다.
+   · 감속(S · ↓)을 누르고 있으면 돛을 접어 속도가 거의 절반(58%)으로 줄고, 그 사이 ◀ ▶는 거의 옆(80°)으로 확 꺾인다(급회피).
    · 가운데 돛 단추(스페이스 · ↑)로 모아 둔 순풍을 터뜨려 가속한다.
    · 관문(초록·흰 부표 사이, 흰 바탕 초록 십자 표지)을 지나면 백신을 내리고 남은 시간 +14초. 놓치면 그 마을은 실패(기록에 오르지 못한다).
    · 암초를 아슬아슬하게 스치면 +0.5초와 순풍이 붙고, 연달아 스칠수록 더 붙는다. 부딪히면 느려지고 선체가 상한다(셋).
@@ -24,12 +25,12 @@ function sailOpen(){if(document.getElementById('sl'))return;try{if(CINE)cineClos
     '<span class="sl-tl" id="slTl"><small>백신이 상하기까지</small><b id="slT">0:25.0</b></span><span class="sl-h sl-hr"><small>속도</small><b id="slSp">0</b><small>노트</small></span>'+
     '<div class="sl-pg"><i id="slPg"></i>'+SR.LEGS.slice(0,3).map((_,k)=>'<em style="left:'+(SR.LEGS.slice(0,k+1).reduce((a,b)=>a+b,0)/SR_TOTAL*100)+'%" id="slG'+k+'"></em>').join('')+'</div></div>'+
     '<div class="sl-tip" id="slTip"></div><div class="sl-cd" id="slCd"></div>'+
-    '<div class="sl-ctl"><button type="button" data-a="l" aria-label="왼쪽">◀</button><button type="button" data-a="b" class="sl-bo" id="slBo"><i id="slBm"></i><span>순풍 돛<small>스페이스</small></span></button><button type="button" data-a="r" aria-label="오른쪽">▶</button></div>'+
+    '<div class="sl-ctl"><button type="button" data-a="l" aria-label="왼쪽">◀</button><button type="button" data-a="s" class="sl-br" aria-label="감속"><span>감속<small>S</small></span></button><button type="button" data-a="b" class="sl-bo" id="slBo"><i id="slBm"></i><span>순풍 돛<small>스페이스</small></span></button><button type="button" data-a="r" aria-label="오른쪽">▶</button></div>'+
     '<div class="sl-ov" id="slOv"></div>';
   document.body.appendChild(w);document.body.style.overflow='hidden';
   let g;const $=id=>document.getElementById(id),cv=$('slC'),D=Math.min(2,window.devicePixelRatio||1),FF=getComputedStyle(document.body).fontFamily;g=cv.getContext('2d');   // 그리는 동안에는 픽셀 캔버스로 바꿔 끼운다(draw)
   let VW=0,VH=0,sc=1;const fit=()=>{VW=w.clientWidth;VH=w.clientHeight;sc=Math.max(.55,Math.min(1.25,VW/560,VH/640));cv.width=VW*D;cv.height=VH*D;cv.style.width=VW+'px';cv.style.height=VH+'px';g.setTransform(D,0,0,D,0,0);};fit();
-  let TR,S,OB,gates,st='brief',t=0,tl=0,cd=0,inp={l:0,r:0,b:0},fx=[],pops=[],wake=[],camX=0,shake=0,flash=0,nextBolt=0,genD=0,combo=0,tipT=0,live=true,T=0;   // T: 화면 장식용 시계(멈춤 없이 흐른다)
+  let TR,S,OB,gates,st='brief',t=0,tl=0,cd=0,inp={l:0,r:0,b:0,s:0},fx=[],pops=[],wake=[],camX=0,shake=0,flash=0,nextBolt=0,genD=0,combo=0,tipT=0,live=true,T=0;   // T: 화면 장식용 시계(멈춤 없이 흐른다)
   const reset=()=>{TR=srTrack(Math.max(1,Math.min(2.6,VW*.86/(430*sc))));S={x:TR.cx(0),d:0,vx:0,hd:0,ang:0,v:0,hp:3,inv:0,slow:1,boost:30,dl:0,boosting:0};OB=[];fx=[];pops=[];wake=[];t=0;tl=SR.T0;combo=0;genD=500;lastW=null;camX=S.x;shake=0;flash=0;nextBolt=4+Math.random()*4;
     let acc=0;const names=SR_NAMES.slice().sort(()=>Math.random()-.5);gates=SR.LEGS.map((L,k)=>{acc+=L;return {d:acc,fin:k===3,x:0,hw:k===3?0:85,name:k===3?'모항':names[k],done:0,miss:0};});
     gates.forEach(G=>{if(!G.fin)G.x=TR.cx(G.d)+(Math.random()-.5)*2*(TR.hw(G.d)-110);});hud();};
@@ -42,7 +43,7 @@ function sailOpen(){if(document.getElementById('sl'))return;try{if(CINE)cineClos
   const ov=h=>{$('slOv').innerHTML=h;$('slOv').style.display=h?'flex':'none';};
   const M0=()=>{let M=MEM.sail;if(!M||M.v!==2)M=MEM.sail={v:2,best:0,runs:0,gold:0};return M;};
   const brief=()=>{st='brief';const M=M0();ov('<div class="sl-card"><span class="sl-k">비밀 모드</span><h2>대항해 · 폭풍 해협</h2><p class="sl-s">섬마을 세 곳에 백신을 전하라. 폭풍 속 해협을 멈추지 않고 달려, 백신이 상하기 전에 모항 결승선에 닿아야 한다.</p>'+
-    '<ul><li><b>배는 멈추지 않는다.</b> ◀ ▶를 <b>누르고 있는 동안</b> 뱃머리가 그쪽으로 45° 꺾이고, 떼면 다시 곧장 간다.</li><li>가운데 <b>순풍 돛</b>(스페이스 · ↑)을 누르고 있으면 모은 바람으로 가속한다.</li><li><b>초록 부표 사이 보건소 관문</b>을 지나면 백신을 내리고 시간 +'+SR.TB+'초. 놓치면 그 마을은 실패.</li>'+
+    '<ul><li><b>배는 멈추지 않는다.</b> ◀ ▶를 <b>누르고 있는 동안</b> 뱃머리가 그쪽으로 45° 꺾이고, 떼면 다시 곧장 간다.</li><li><b>감속</b>(S · ↓)을 누르고 있으면 속도가 거의 절반으로 줄고, 그 사이 ◀ ▶는 거의 옆으로 <b>확 꺾인다</b>.</li><li>가운데 <b>순풍 돛</b>(스페이스 · ↑)을 누르고 있으면 모은 바람으로 가속한다.</li><li><b>초록 부표 사이 보건소 관문</b>을 지나면 백신을 내리고 시간 +'+SR.TB+'초. 놓치면 그 마을은 실패.</li>'+
     '<li>암초를 <b>아슬아슬하게 스치면</b> +0.5초와 순풍. 부딪히면 느려지고 선체가 상한다(셋).</li><li>파도 벽은 틈으로, 번개 표시는 빠져나가고, 소용돌이는 비켜 가라.</li></ul>'+
     '<div class="sl-b"><span>기준 <b>'+srTime(SR_PAR)+'</b></span>'+(M.best?'<span>최고 <b>'+srTime(M.best)+'</b></span>':'')+'</div><button type="button" class="pri" id="slGo">출항</button></div>');
     $('slGo').onclick=()=>{try{aInit();SFX.click();}catch(e){}ov('');st='cd';cd=3;[3,2,1].forEach((n,k)=>{try{SFX.beep(n,k*.8);}catch(e){}});};};
@@ -60,12 +61,13 @@ function sailOpen(){if(document.getElementById('sl'))return;try{if(CINE)cineClos
   $('slX').onclick=close;
   // 키: 누를 때마다 45°씩(누르고 있어도 한 번). 순풍 돛만 누르고 있는 동안 켜진다
   // 뱃머리: ◀ 또는 ▶를 누르고 있는 동안만 그쪽으로 45°, 떼면 다시 곧장(둘 다 누르면 곧장)
-  const steer=()=>{const n=(inp.r?1:0)-(inp.l?1:0);if(n===S.hd)return;S.hd=n;if(st==='race'||st==='cd')try{clk(n===0?700:1000,.5);}catch(e){}};
-  w.querySelectorAll('.sl-ctl button').forEach(b=>{const a=b.dataset.a,set=v=>e=>{e.preventDefault();inp[a]=v;if(a!=='b')steer();b.classList.toggle('on',!!v);};
+  // 감속(S)을 누르고 있으면 같은 키로 한 칸 더(±2 = 80°) 꺾인다
+  const steer=()=>{const n=((inp.r?1:0)-(inp.l?1:0))*(inp.s?2:1);if(n===S.hd)return;S.hd=n;if(st==='race'||st==='cd')try{clk(n===0?700:Math.abs(n)>1?1300:1000,.5);}catch(e){}};
+  w.querySelectorAll('.sl-ctl button').forEach(b=>{const a=b.dataset.a,set=v=>e=>{e.preventDefault();inp[a]=v;if(a!=='b')steer();if(a==='s'&&v&&st==='race')try{noise(.25,.06,0,500);}catch(x){}b.classList.toggle('on',!!v);};
     b.addEventListener('pointerdown',set(1));['pointerup','pointerleave','pointercancel'].forEach(n=>b.addEventListener(n,set(0)));b.addEventListener('contextmenu',e=>e.preventDefault());});
-  const km={ArrowLeft:'l',a:'l',A:'l',ArrowRight:'r',d:'r',D:'r',' ':'b',ArrowUp:'b',w:'b',W:'b'};
+  const km={ArrowLeft:'l',a:'l',A:'l',ArrowRight:'r',d:'r',D:'r',' ':'b',ArrowUp:'b',w:'b',W:'b',ArrowDown:'s',s:'s',S:'s'};
   const kd=e=>{if(e.key==='Escape'){close();return;}if(st==='brief'&&(e.key==='Enter'||e.key===' ')&&$('slGo')){e.preventDefault();$('slGo').click();return;}const a=km[e.key];if(!a)return;e.preventDefault();
-      inp[a]=1;if(a!=='b')steer();},
+      if(e.repeat&&inp[a])return;inp[a]=1;if(a!=='b')steer();if(a==='s'&&st==='race')try{noise(.25,.06,0,500);}catch(x){}},
     ku=e=>{const a=km[e.key];if(!a)return;inp[a]=0;if(a!=='b')steer();};
   document.addEventListener('keydown',kd);document.addEventListener('keyup',ku);addEventListener('resize',fit);
   const hit=why=>{if(S.inv>0||st!=='race')return;S.hp--;S.inv=1.3;S.slow=.42;combo=0;shake=.45;try{thud(80,.35,0,.35);noise(.3,.18,0,700);}catch(e){}vib([70,40,70]);tip(why,1.6);
@@ -112,8 +114,8 @@ function sailOpen(){if(document.getElementById('sl'))return;try{if(CINE)cineClos
     let lane=0;for(const o of OB)if(o.t==='lane'&&S.d>o.d&&S.d<o.d+o.len&&Math.abs(S.x-o.x)<36)lane=1;
     S.slow=Math.min(1,S.slow+dt*.55);if(S.inv>0)S.inv-=dt;
     // 뱃머리는 목표 각도로 재빨리 돈다. 속도는 뱃머리 방향으로 나가고, 꺾은 만큼 줄어든다
-    S.ang+=(S.hd*Math.PI/4-S.ang)*Math.min(1,dt*16);
-    const tv=(SR.V0+(SR.V1-SR.V0)*k)*(S.boosting?SR.BOOST:1)*(lane?1.28:1)*S.slow*SR.HV[Math.abs(S.hd)];S.v+=(tv-S.v)*Math.min(1,dt*3);S.vx=S.v*Math.sin(S.ang);
+    const ta=S.hd===0?0:Math.sign(S.hd)*(Math.abs(S.hd)>1?80:45)*Math.PI/180;S.ang+=(ta-S.ang)*Math.min(1,dt*(inp.s?24:16));
+    const tv=(SR.V0+(SR.V1-SR.V0)*k)*(S.boosting?SR.BOOST:1)*(lane?1.28:1)*S.slow*(inp.s?.58:SR.HV[Math.min(1,Math.abs(S.hd))]);S.v+=(tv-S.v)*Math.min(1,dt*(inp.s?6:3));S.vx=S.v*Math.sin(S.ang);
     // 소용돌이: 가운데로 끌어당기고 느리게 한다. 한가운데에 빠지면 선체가 상한다
     for(const o of OB)if(o.t==='whirl'){const dx=o.x-S.x,dd=o.d-S.d,dist=Math.hypot(dx,dd);if(dist<o.r){S.x+=dx*1.8*dt;S.v*=1-dt*.9;if(dist<22&&!o.got){o.got=1;hit('소용돌이에 휘말렸다!');}}}
     S.x+=S.vx*dt;S.d+=S.v*Math.cos(S.ang)*dt;
@@ -216,7 +218,7 @@ function sailOpen(){if(document.getElementById('sl'))return;try{if(CINE)cineClos
     g.fillStyle='#b98a55';g.beginPath();g.moveTo(19,0);g.quadraticCurveTo(8,-7,-15,-6);g.lineTo(-16,6);g.quadraticCurveTo(8,7,19,0);g.fill();
     g.fillStyle='#8a6438';for(let k=-12;k<16;k+=5)g.fillRect(k,-6,1.5,12);
     g.fillStyle='#e3dccb';g.fillRect(-13,-4,8,8);g.fillStyle='#b3261e';g.fillRect(-11,-1,4,2);g.fillRect(-10,-2,2,4);
-    const bl=S.boosting?1.5:1;g.fillStyle='#3b2416';g.beginPath();g.moveTo(7,-18);g.quadraticCurveTo(-5-6*bl,0,7,18);g.lineTo(3,0);g.closePath();g.fill();
+    const bl=S.boosting?1.5:inp.s?.35:1;g.fillStyle='#3b2416';g.beginPath();g.moveTo(7,-18);g.quadraticCurveTo(-5-6*bl,0,7,18);g.lineTo(3,0);g.closePath();g.fill();
     g.fillStyle=S.boosting?'#fff8e0':'#f2ecdc';g.beginPath();g.moveTo(6,-17);g.quadraticCurveTo(-4-6*bl,0,6,17);g.lineTo(2,0);g.closePath();g.fill();
     g.fillStyle='rgba(0,0,0,.12)';g.beginPath();g.moveTo(6,-17);g.quadraticCurveTo(-1-3*bl,0,6,17);g.lineTo(2,0);g.closePath();g.fill();
     g.fillStyle='#3b2c1a';g.fillRect(4,-18,2.5,36);g.fillStyle='#b3261e';g.fillRect(4,-21,6,3);
