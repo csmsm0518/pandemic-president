@@ -184,10 +184,11 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
 // 다섯 판 모두 같은 그림체: 큰 색면으로 된 깃발 그림에 같은 천 주름(일렁인다) · 같은 직물 결 · 같은 빛(CSS)을 입힌다. 대항해는 그 위에서 물결이 흐르고 배가 출렁인다
 const CP_ART=(()=>{const sv=(id,b,w)=>'<svg viewBox="0 0 '+(w||300)+' 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'+b+'</svg>';
   // 천 주름: 비스듬한 어두운 띠와 밝은 띠를 겹쳐 놓고 조금씩 흔든다
-  const fold=id=>'<defs><linearGradient id="'+id+'d" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset=".5" stop-color="#000" stop-opacity=".28"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>'+
+  // 그라데이션 id는 cpf로 시작하게 한다(짧은 id는 게임 화면의 id와 부딪힌다. 예: 대항해 's'+'l' = #sl)
+  const fold=i0=>{const id='cpf'+i0;return '<defs><linearGradient id="'+id+'d" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset=".5" stop-color="#000" stop-opacity=".28"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>'+
     '<linearGradient id="'+id+'l" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".14"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>'+
     '<g class="cp-fold"><rect x="-60" y="-120" width="90" height="900" fill="url(#'+id+'d)" transform="rotate(-28 150 300) translate(40 0)"/><rect x="-60" y="-120" width="60" height="900" fill="url(#'+id+'l)" transform="rotate(-28 150 300) translate(130 0)"/>'+
-    '<rect x="-60" y="-120" width="120" height="900" fill="url(#'+id+'d)" transform="rotate(-24 150 300) translate(230 0)"/><rect x="-60" y="-120" width="70" height="900" fill="url(#'+id+'l)" transform="rotate(-24 150 300) translate(330 0)"/></g>';
+    '<rect x="-60" y="-120" width="120" height="900" fill="url(#'+id+'d)" transform="rotate(-24 150 300) translate(230 0)"/><rect x="-60" y="-120" width="70" height="900" fill="url(#'+id+'l)" transform="rotate(-24 150 300) translate(330 0)"/></g>';};
   // 태극기 천: 위 빨강 · 아래 파랑이 굽이치고, 네 귀퉁이에 같은 빛깔로 어둡게 괘를 놓는다
   const bars=(x,y,v,p,c)=>p.map((b,i)=>{const o=i*17;return v?(b?'<rect x="'+(x+o)+'" y="'+y+'" width="11" height="22" fill="'+c+'"/><rect x="'+(x+o)+'" y="'+(y+30)+'" width="11" height="22" fill="'+c+'"/>':'<rect x="'+(x+o)+'" y="'+y+'" width="11" height="52" fill="'+c+'"/>')
     :(b?'<rect x="'+x+'" y="'+(y+o)+'" width="24" height="11" fill="'+c+'"/><rect x="'+(x+32)+'" y="'+(y+o)+'" width="24" height="11" fill="'+c+'"/>':'<rect x="'+x+'" y="'+(y+o)+'" width="56" height="11" fill="'+c+'"/>');}).join('');
