@@ -930,6 +930,7 @@ html:has(.cine:not(.out)),html:has(.cine:not(.out)) body,html:has(.lbfs),html:ha
 .gx-cp[data-c="kr"]{--cp-bg:radial-gradient(120% 70% at 50% 18%,#2b3c5e 0%,#141b2c 55%,#090c13 100%);--cp-bar:linear-gradient(90deg,#c9a24a,#f1d589,#c9a24a)}
 .gx-cp[data-c="joseon"]{--cp-bg:radial-gradient(120% 70% at 50% 18%,#225249 0%,#10221e 55%,#070d0b 100%);--cp-bar:repeating-linear-gradient(90deg,#2c6e63 0 18px,#a8321f 18px 28px,#d9a441 28px 34px,#2a6e4b 34px 46px)}
 .gx-cp[data-c="usa"]{--cp-bg:radial-gradient(circle,rgba(255,255,255,.07) 1.2px,transparent 1.6px) 0 0/26px 26px,radial-gradient(120% 70% at 50% 18%,#3a2430 0%,#151a2e 55%,#080a12 100%);--cp-bar:linear-gradient(90deg,#1f3a5f 0 30%,#b22234 30% 40%,#f8f7f2 40% 50%,#b22234 50% 60%,#f8f7f2 60% 70%,#b22234 70%)}
+.gx-cp[data-c="sail"]{--cp-bg:repeating-linear-gradient(170deg,rgba(143,199,255,.06) 0 3px,transparent 3px 22px),radial-gradient(120% 70% at 50% 18%,#1d4a6b 0%,#0c2236 55%,#050c14 100%);--cp-bar:repeating-linear-gradient(90deg,#f7f3ea 0 12px,#b3261e 12px 24px)}
 .gx-cp[data-c="zombie"]{--cp-bg:repeating-linear-gradient(135deg,rgba(217,164,65,.05) 0 14px,transparent 14px 28px),radial-gradient(120% 70% at 50% 18%,#34402a 0%,#141a10 55%,#070906 100%);--cp-bar:repeating-linear-gradient(135deg,#1c231b 0 10px,#d9a441 10px 20px)}
 /* 세로 모드를 골랐을 때 */
   html[data-ori="p"] .gx-q{top:58px}

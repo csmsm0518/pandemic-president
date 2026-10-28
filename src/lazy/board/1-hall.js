@@ -98,10 +98,10 @@ function hofRender(){const v=hofView(),body=document.getElementById('hofBody');h
     hofCard({i:2,t:'최다 연임',u:'임기 수',list:C.terms,it:r=>P(r,r.terms+'<small>선</small>')})+
     hofCard({i:3,t:'학교 평균 점수',u:'한 사람당 최고 기록',list:C.school,empty:'학교를 적은 기록이 아직 없어요',it:x=>({n:E(x.school),s:x.n+'명 · 최고 '+E(x.best&&x.best.nick||''),v:num(x.avg)+'<small>점</small>',a:'<span class="hc-ini sc">'+E(String(x.school).slice(0,1))+'</span>',me:false})});
   // 오른쪽 끝 두 칸은 비밀 게임 순위(난이도와 상관없이 하나). 서버가 예전 버전이라 arcade가 없으면 빈 칸 안내만 보인다
-  const A=(HOF.d&&HOF.d.arcade)||{},ini=r=>'<span class="hc-ini">'+E(String(r.nick||'?').slice(0,1))+'</span>',mmss=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+  const A=(HOF.d&&HOF.d.arcade)||{},ini=r=>'<span class="hc-ini">'+E(String(r.nick||'?').slice(0,1))+'</span>',mmss=s=>Math.floor(s/60)+':'+(s%60).toFixed(1).padStart(4,'0');
   const right=hofCard({i:4,t:'최다 업적',u:'한 커리어의 업적 수',list:C.tro,it:r=>P(r,r.tro+'<small>개</small>')})+
     hofCard({i:5,t:'방역선 최고 점수',u:'비밀 무대 · 좀비 서바이벌',list:A.zg,empty:'아직 해가 뜬 기록이 없어요',it:r=>({n:E(r.nick),s:[r.school,r.detail].filter(Boolean).map(E).join(' · ')||'&nbsp;',v:num(r.score)+'<small>점</small>',a:ini(r),me:false})})+
-    hofCard({i:6,t:'대항해 최단 기록',u:'비밀 모드 · 섬마을 셋 배송',list:A.sail,empty:'아직 돌아온 배가 없어요',it:r=>({n:E(r.nick),s:[r.school,r.detail].filter(Boolean).map(E).join(' · ')||'&nbsp;',v:mmss(r.sec),a:ini(r),me:false})});
+    hofCard({i:6,t:'대항해 최단 기록',u:'비밀 모드 · 폭풍 해협 질주',list:A.sail,empty:'아직 돌아온 배가 없어요',it:r=>({n:E(r.nick),s:[r.school,r.detail].filter(Boolean).map(E).join(' · ')||'&nbsp;',v:mmss(r.sec),a:ini(r),me:false})});
   // 지지율·무대별 최고는 가운데 큰 순위 아래 두 칸으로
   const sub=hofCard({i:7,t:'최고 지지율',u:'물러날 때 지지율',list:C.appr,it:r=>P(r,Math.round(r.appr)+'<small>%</small>')})+
     hofCard({i:8,t:'무대별 최고',u:'무대마다 1위',list:C.camp,it:r=>P(r,num(r.score)+'<small>점</small>',E(hofCampN(r.camp))+(r.school?' · '+E(r.school):''))});

@@ -114,7 +114,7 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp))camp='kr';document.documentElement.dataset.camp='kr';
   R.innerHTML='<div style="min-height:70vh"></div>';
   const msg=HUB_MSG;HUB_MSG='';
-  const sv=svMenuTxt(),M=[].concat([['mmNew','새 게임','한 번의 인생을 시작한다','new'],['mmLoad','불러오기',sv||'저장된 게임이 없다','guide']],[['mmBoard','명예의 전당','모두의 최고 기록','board'],['mmDex','도감','만난 지도자와 임기 평가','dex'],['mmGuide','가이드북','처음이라면 여기부터','guide']],eggOn('sail')?[['mmSail','대항해','비밀 모드 · 섬마을로 백신을 싣고','sail']]:[]);
+  const sv=svMenuTxt(),M=[].concat([['mmNew','새 게임','한 번의 인생을 시작한다','new'],['mmLoad','불러오기',sv||'저장된 게임이 없다','guide']],[['mmBoard','명예의 전당','모두의 최고 기록','board'],['mmDex','도감','만난 지도자와 임기 평가','dex'],['mmGuide','가이드북','처음이라면 여기부터','guide']]);
   // 기록 카드: 닉네임, 최고 기록, 도감 진행도
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
   const st=(l,v,u)=>'<div><span>'+l+'</span><b>'+v+'</b>'+(u&&v!=='—'?'<small>'+u+'</small>':'')+'</div>';
@@ -123,7 +123,7 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
     '<div class="gx-pc-g">'+st('최고 커리어 점수',MEM.best100?MEM.best100.toLocaleString('ko-KR'):'—','점')+st('최장 재임',MEM.longest||'—','년')+st('지나온 인생',MEM.careers||0,'번')+'</div>'+
     pb('지도자 도감',Object.keys(MEM.leaders||{}).length,LEADK.length)+pb('임기 평가 도감',Object.keys(MEM.ends||{}).length,ENDC.length)+
     (MEM.zg&&MEM.zg.runs?'<div class="gx-pc-z"><span>방역선 최고</span><b>'+MEM.zg.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+MEM.zg.wins+'번</span></div>':'')+
-    (MEM.sail&&MEM.sail.best?'<div class="gx-pc-z"><span>대항해 최고</span><b>'+Math.floor(MEM.sail.best/60)+':'+String(Math.floor(MEM.sail.best%60)).padStart(2,'0')+'</b><span>금메달 '+(MEM.sail.gold||0)+'번</span></div>':'')+'</aside>';
+    (MEM.sail&&MEM.sail.v===2&&MEM.sail.best?'<div class="gx-pc-z"><span>대항해 최고</span><b>'+Math.floor(MEM.sail.best/60)+':'+(MEM.sail.best%60).toFixed(1).padStart(4,'0')+'</b><span>금메달 '+(MEM.sail.gold||0)+'번</span></div>':'')+'</aside>';
   let sel=0;
   cine([{t:'메인 메뉴',h:'<div class="gx gx-title"><canvas class="gx-bg" aria-hidden="true"></canvas><div class="gx-seal" aria-hidden="true">'+emblemSvg('embgS')+'</div>'+
     '<div class="gx-tl"><div class="emb go gx-logo">'+emblemSvg()+'<div><h1 class="emb-t"><span>팬데믹</span> <span>대통령</span></h1><p class="emb-s">한 번의 인생, 한 나라의 운명</p></div></div>'+
@@ -146,12 +146,11 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   $('mmGuide').onclick=()=>{gxSfx('click');cineClose();guide(home);};
   $('mmEdit').onclick=()=>{gxSfx('click');cineClose();intro();};
   $('mmView').onclick=()=>{gxSfx('click');viewPage(home);};
-  if($('mmSail'))$('mmSail').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');sailOpen();};
-  // 이스터에그: 로고의 나침반을 다섯 바퀴 돌리면 비밀 모드 「대항해」가 메뉴에 생긴다
+  // 이스터에그: 로고의 나침반을 다섯 바퀴 돌리면 비밀 모드 「대항해」가 새 게임의 무대 고르기에 생긴다
   compassSpin(document.querySelector('.cine .gx-logo svg'),()=>{
-    if(eggOn('sail')){eggToast('⚓ 대항해는 이미 열려 있어요. 메뉴에서 고르세요.');return;}
+    if(eggOn('sail')){eggToast('⚓ 대항해는 이미 열려 있어요. 새 게임에서 고르세요.');return;}
     eggSet('sail');try{SFX.unlock();}catch(e){}vib([40,30,40,30,160]);
-    eggToast('⚓ <b>나침반 바늘이 바다를 가리킨다…</b><br>비밀 모드 「대항해」가 열렸어요.');setTimeout(()=>{if(document.querySelector('.cine .gx-logo'))home();},1600);});
+    eggToast('⚓ <b>나침반 바늘이 바다를 가리킨다…</b><br>비밀 모드 「대항해」가 열렸어요. 새 게임에서 고를 수 있어요.');});
   // 이스터에그: 제목을 3초 안에 7번 누르면(터치·클릭 모두) 좀비 무대가 열린다
   const tt=document.querySelector('.cine .emb-t');tt.id='ttl';tt.style.cursor='default';tt.style.userSelect='none';
   tt.onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];
@@ -160,10 +159,12 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   if(SEC_NEW.length){const nm=SEC_NEW.map(id=>{for(const c in CAMPS){const q=CAMPS[c].bg.find(b=>b.sec===id);if(q)return q.n;}return id;});SEC_NEW=[];SFX.unlock();eggToast('🔓 비밀 인물 해금: <b>'+nm.join(', ')+'</b>');}
 }
 // 1단계: 무대. 비스듬한 깃발 판 중 하나를 고르면 그 판이 넓게 펼쳐진다. 고른 판을 한 번 더 누르면(또는 Enter) 지도자 고르기로.
-const CP_WM={kr:'大韓民國',joseon:'朝鮮',usa:'美合衆國',zombie:'生存'};
-function stepCamp(){const ids=Object.keys(CAMPS).filter(campOn);let k=Math.max(0,ids.indexOf(camp));
+const CP_WM={kr:'大韓民國',joseon:'朝鮮',usa:'美合衆國',zombie:'生存',sail:'航海'};
+// 비밀 모드 「대항해」: 나라가 아니라 따로 노는 레이스라 CAMPS에 넣지 않고, 열렸으면 무대 고르기 맨 끝에 판 하나로 붙인다
+const SAIL_CP={tag:'비밀 모드',n:'대항해',sub:'폭풍을 뚫고 섬마을로 · 시간과의 레이스',intro:'백신이 상하기 전에 폭풍 해협을 뚫고 섬마을 세 곳을 지나 달려라. 암초를 스치면 시간이 붙고, 부딪히면 배가 상한다.'};
+function stepCamp(){const ids=Object.keys(CAMPS).filter(campOn).concat(eggOn('sail')?['sail']:[]);let k=Math.max(0,ids.indexOf(camp));
   cine([{t:'무대 선택',h:'<div class="gx gx-camp">'+gxTop(0)+'<h2 class="gx-q">어느 나라를 이끌 것인가</h2><div class="gx-cpw">'+
-    ids.map((id,i)=>{const C=CAMPS[id];return '<button class="gx-cp" data-c="'+id+'" style="--i:'+i+'"><span class="gx-cp-wm" aria-hidden="true">'+(CP_WM[id]||'')+'</span>'+
+    ids.map((id,i)=>{const C=CAMPS[id]||SAIL_CP;return '<button class="gx-cp" data-c="'+id+'" style="--i:'+i+'"><span class="gx-cp-wm" aria-hidden="true">'+(CP_WM[id]||'')+'</span>'+
       '<span class="gx-cp-tx"><span class="gx-cp-tag">'+C.tag+'</span><b>'+C.n+'</b><span class="gx-cp-sub">'+C.sub+'</span><span class="gx-cp-in">'+C.intro+'</span>'+
       '<span class="gx-cp-go">이 무대로 ▶ <kbd class="gx-keys">Enter</kbd></span></span></button>';}).join('')+'</div></div>'}],
     {nav:false,cls:'gm',back:home,key:e=>{const n=ids.length;
@@ -172,7 +173,7 @@ function stepCamp(){const ids=Object.keys(CAMPS).filter(campOn);let k=Math.max(0
       if(gxEnter(e)){go();return true;}}});
   const P=[...document.querySelectorAll('.gx-cp')],hov=matchMedia('(hover:hover)').matches;
   const pick=(i,snd)=>{if(snd&&i!==k)gxSfx('tick',i);k=i;P.forEach((p,j)=>p.classList.toggle('on',j===i));};
-  const go=()=>{const id=ids[k];gxSfx('click');if(camp!==id){camp=id;bg=-1;}stepLeader();};
+  const go=()=>{const id=ids[k];gxSfx('click');if(id==='sail')return sailOpen();if(camp!==id){camp=id;bg=-1;}stepLeader();};
   P.forEach((p,i)=>{if(hov)p.onmouseenter=()=>pick(i,1);p.onclick=()=>{if(i===k)go();else pick(i,1);};});
   pick(k);}
 // 지도자 능력치: 기본 지표에 주는 보정을 가운데 0선 기준 막대로
