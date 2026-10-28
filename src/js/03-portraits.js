@@ -2,7 +2,7 @@
 // 신문 삽화풍 초상. 실제 얼굴을 닮게 그리지 않고, 시대와 신분은 옷차림·머리·소품으로만 드러낸다.
 // c 옷, cc 옷 색, t 넥타이 색, h 머리, hc 머리 색, f 수염(+로 겹침), hw 모자, g 안경, w 넓은 얼굴, sk 피부
 const PFS={
- '박정희':'c=mil,cc=#5b6146,h=side,a=sung','조성민':'c=suit,cc=#1b1d20,t=#c9a227,h=side,hc=#1f1b16,a=sung+smile','김대중':'c=suit,cc=#2b3a55,t=#a8321f,h=side,hc=#9a948a,w,a=smile','노무현':'c=shirt,cc=#e9e2d2,h=short,hw=straw,a=smile',
+ '박정희':'c=mil,cc=#5b6146,h=side,a=sung','조성민':'c=stripe,h=bowl,hc=#1a1714,w,a=smile','김대중':'c=suit,cc=#2b3a55,t=#a8321f,h=side,hc=#9a948a,w,a=smile','노무현':'c=shirt,cc=#e9e2d2,h=short,hw=straw,a=smile',
  '정주영':'c=work,cc=#6f7a6a,h=side,hc=#8d877c,w','안철수':'c=doctor,t=#3d5a80,h=side,g',
  '태조 이성계':'c=gon,cc=#2c5a7a,hw=ikseon,f=mus+full,hc=#6a645b','세종':'c=gon,hw=ikseon,f=mus+jbeard','세조':'c=gon,cc=#7d241a,hw=ikseon,f=full',
  '광해군':'c=gon,hw=ikseon,f=mus','정조':'c=gon,cc=#9a2d22,hw=ikseon,f=mus+goatee',
@@ -58,6 +58,8 @@ const PF_BODY={
  coat18:(o)=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z',o.cc,1.4)+pfFill('M28.5 45C29 53 35 53 35.5 45L33.5 60H30.5Z',PF_W,1)+pfLine('M24 47L28 64M40 47L36 64',1),
  gon:(o)=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z',o.cc||'#a8321f',1.4)+'<path d="M26 46L37 60M38 46L31 54" stroke="'+PF_W+'" stroke-width="2.6" fill="none"/>'+pfLine('M26 46L37 60M38 46L31 54',.6)+'<circle cx="32" cy="60" r="5.5" fill="'+PF_G+'" stroke="'+PF_I+'" stroke-width="1"/>'+pfLine('M29.5 60Q31 57.5 33 59.5T35 60',.9),
  toga:(o)=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z','#ece4d2',1.4)+'<path d="M15 53C25 49 35 53 43 64" stroke="'+o.cc+'" stroke-width="6" fill="none"/>'+pfLine('M15 53C25 49 35 53 43 64',.7),
+ stripe:()=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z',PF_W,1.4)+'<g clip-path="url(#pfbd)" fill="'+PF_I+'"><rect x="0" y="50" width="64" height="3.4"/><rect x="0" y="56.6" width="64" height="3.4"/><rect x="0" y="63.2" width="64" height="3.4"/></g>'+
+  pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z','none',1.4)+'<circle cx="40.5" cy="54.8" r="1.9" fill="'+PF_G+'" stroke="'+PF_I+'" stroke-width=".7"/>',
  robe:(o)=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z',o.cc,1.4)+pfFill('M27 46L32 55L37 46Z','#e6dcc6',1),
  shirt:(o)=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z',o.cc,1.4)+pfFill('M26.5 46L32 52L37.5 46L36 50L32 55L28 50Z','#f3eee2',1)+pfLine('M32 55V64',.9)+'<circle cx="32" cy="58.5" r=".9" fill="'+PF_I+'"/><circle cx="32" cy="62" r=".9" fill="'+PF_I+'"/>',
  work:(o)=>pfFill('M7 64C9 52 19 46 32 46S55 52 57 64Z',o.cc,1.4)+pfFill('M25 44L32 50L39 44L41 49L32 54L23 49Z',o.cc,1.1)+pfLine('M32 54V64',1.4)+pfFill('M38 56H46V60H38Z',o.cc,.9),
@@ -71,6 +73,7 @@ const PF_HAIR={
  curly:hc=>[[21,26],[23,21],[27,17.5],[32,16.5],[37,17.5],[41,21],[43,26]].map(p=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="'+hc+'" stroke="'+PF_I+'" stroke-width="1"/>').join(''),
  long:hc=>pfFill('M20.5 30C19 17 26 14 32 14S45 17 43.5 30C41 22 36 20 32 21S23 22 20.5 30Z',hc),
  wigl:()=>[[20,22],[25,16.5],[32,15],[39,16.5],[44,22],[19,29],[45,29]].map(p=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4.6" fill="#3a2b20" stroke="'+PF_I+'" stroke-width="1"/>').join(''),
+ bowl:hc=>pfFill('M19.2 31C17.5 18 24 11.5 32 11.5C40 11.5 46.5 18 44.8 31C44 28 43 26.4 41.6 25.4L39.2 26L37 24.5L34.6 25.6L32 24.3L29.4 25.6L27 24.5L24.8 26L22.4 25.4C21 26.4 20 28 19.2 31Z',hc)+pfLine('M27 16Q30 19.5 29.6 24M35 15.5Q37 19.5 36.6 24',.6),
  fore:hc=>pfFill('M20.5 28C20 18 26 15 32 15S44 18 43.5 28C41 23 37 21.5 33 22L31 26.5L29 22.5C25 23 22 25 20.5 28Z',hc),
  wigw:()=>pfFill('M20.5 28C20 17 26 15 32 15S44 17 43.5 28C40 21 24 21 20.5 28Z',PF_W)+[[19.5,29],[19.5,34.5],[44.5,29],[44.5,34.5]].map(p=>'<ellipse cx="'+p[0]+'" cy="'+p[1]+'" rx="3.4" ry="2.4" fill="'+PF_W+'" stroke="'+PF_I+'" stroke-width="1"/>').join('')};
 const PF_FACE={
@@ -110,6 +113,7 @@ function portrait(name,px,ring,bust){const s=PFS[name];if(!s)return '';const o={
   if(PF_BACK[o.h])g+=PF_BACK[o.h](hc);
   g+=(PF_BODY[o.c]||PF_BODY.suit)(o);
   g+=pfFill('M28 39.5V47.5H36V39.5Z',sk,1.1);
+  if(o.c==='stripe')g+=pfFill('M25.6 45.9Q32 51.4 38.4 45.9L36.9 45.7Q32 49.4 27.1 45.7Z',PF_W,1);   // 둥근 목둘레
   g+='<ellipse cx="'+(32-rx)+'" cy="31" rx="2.2" ry="3.2" fill="'+sk+'" stroke="'+PF_I+'" stroke-width="1.1"/><ellipse cx="'+(32+rx)+'" cy="31" rx="2.2" ry="3.2" fill="'+sk+'" stroke="'+PF_I+'" stroke-width="1.1"/>';
   g+='<ellipse cx="32" cy="30" rx="'+rx+'" ry="13" fill="'+sk+'" stroke="'+PF_I+'" stroke-width="1.4"/>';
   g+='<circle cx="27.6" cy="30.2" r="1.15" fill="'+PF_I+'"/><circle cx="36.4" cy="30.2" r="1.15" fill="'+PF_I+'"/>'+pfLine('M25.2 27H29.6M34.4 27H38.8',1.1)+pfLine('M32.3 31.2V34.8H30.8',1);
@@ -122,7 +126,7 @@ function portrait(name,px,ring,bust){const s=PFS[name];if(!s)return '';const o={
   if(o.hw&&PF_HAT[o.hw])g+=PF_HAT[o.hw]();
   if(bust)return '<svg class="pf pfb" viewBox="-4 -8 72 72" width="'+px+'" height="'+px+'" aria-hidden="true">'+g+'</svg>';
   return '<svg class="pf" viewBox="0 0 64 64" width="'+px+'" height="'+px+'" aria-hidden="true" style="'+(ring?'box-shadow:0 0 0 2px '+ring+';':'')+'"><g clip-path="url(#pfclip)">'+g+'</g><circle cx="32" cy="32" r="31.4" fill="none" stroke="'+PF_I+'" stroke-opacity=".35" stroke-width="1.2"/></svg>';}
-document.body.insertAdjacentHTML('beforeend','<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><clipPath id="pfclip"><circle cx="32" cy="32" r="32"/></clipPath><pattern id="pfht" width="3.2" height="3.2" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="1.6" cy="1.6" r=".55" fill="#1d1b18" fill-opacity=".16"/></pattern></defs></svg>');
+document.body.insertAdjacentHTML('beforeend','<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><clipPath id="pfclip"><circle cx="32" cy="32" r="32"/></clipPath><clipPath id="pfbd"><path d="M7 64C9 52 19 46 32 46S55 52 57 64Z"/></clipPath><pattern id="pfht" width="3.2" height="3.2" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="1.6" cy="1.6" r=".55" fill="#1d1b18" fill-opacity=".16"/></pattern></defs></svg>');
 // 참모 초상용 부품: 조선 관복(사모·단령), 갑옷, 옛 중국 관, 여성 머리 등
 const PF_BD='M7 64C9 52 19 46 32 46S55 52 57 64Z';
 Object.assign(PF_BODY,{
