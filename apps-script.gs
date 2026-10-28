@@ -1,4 +1,4 @@
-// 팬데믹 대통령 - 연구용 기록 + 자동 분석 스크립트 (v14: 기록 버전 11로 잘못 적힌 새 체계 판도 순위에, 불가능한 대항해 기록 제외)
+// 팬데믹 대통령 - 연구용 기록 + 자동 분석 스크립트 (v15: 보안 — 크기·빈도 제한, 값 다듬기, 숨김 칸, 욕설 가리기, 중복 기록 정리 · 비밀 게임 「별똥별」)
 //
 // [기록 시트] 게임이 끝날 때마다 자동으로 쌓인다
 //   "요약"       : 인생(커리어) 1개 = 1줄. 난이도·배경·결정 빈도·시대 조건, 임기 수, 퇴장 방식, 개헌, 닮은 지도자,
@@ -22,10 +22,12 @@
 //
 // 열은 항상 예전 버전 뒤에 이어 붙이므로, 이미 쌓인 기록과 줄이 어긋나지 않는다. 머리글(1행)은 자동으로 새 버전으로 바뀐다.
 
-const SCRIPT_VER = 'v14';
+const SCRIPT_VER = 'v15';
 // [비밀 게임 기록] v13: 좀비 서바이벌 「방역선」과 비밀 모드 「대항해」의 점수가 "비밀 게임 기록" 탭에 쌓이고, 명예의 전당 오른쪽 두 칸에 순위가 나온다.
-const ARCADE = [['판ID', 'id'], ['게임', 'game'], ['닉네임', 'nickname'], ['학교', 'school'], ['점수', 'score'], ['시간(초)', 'sec'], ['성공', 'win'], ['세부', 'detail'], ['게임 버전', 'gv']];
-const ARCADE_GAMES = {zg: '방역선', sail: '대항해'};
+const ARCADE = [['판ID', 'id'], ['게임', 'game'], ['닉네임', 'nickname'], ['학교', 'school'], ['점수', 'score'], ['시간(초)', 'sec'], ['성공', 'win'], ['세부', 'detail'], ['게임 버전', 'gv'],
+  // ----- v15: 숨김(관리자가 아무 글자나 적으면 그 줄은 순위에서 빠진다. 서버가 말이 안 되는 기록을 받으면 스스로 사유를 적는다) -----
+  ['숨김', 'hidden'], ['학교(적은 그대로)', 'schoolRaw'], ['플레이어ID', 'pid']];
+const ARCADE_GAMES = {zg: '방역선', sail: '대항해', star: '별똥별'};
 
 const SUMMARY = [
   ['판ID', 'id'], ['시작 시각', 'startedAt'], ['닉네임', 'nickname'],
@@ -72,10 +74,16 @@ const SUMMARY = [
   // ----- v8.1: 특별 국정 과제 판, 경기 -----
   ['특별 과제 판 기록(해마다 고른 것·가능했던 것)', 'boardPicks'], ['백신 슬래시 등급', 'slashGrades'], ['엔데믹 선언', 'endemic'],
   // ----- v9: 게임 v3.1 -----
-  ['계엄 시도', 'coup'], ['영구집권(계엄)', 'dict']
+  ['계엄 시도', 'coup'], ['영구집권(계엄)', 'dict'],
+  // ----- v10 (스크립트 v15): 숨김 — 관리자가 아무 글자나 적으면 그 판은 명예의 전당에서 빠진다. 말이 안 되는 점수는 서버가 사유를 적는다 -----
+  ['숨김', 'hidden'],
+  // ----- 학교: '학교' 칸에는 같은 학교끼리 합친 이름(예: 경기과고 → 경기과학고), 이 칸에는 학생이 적은 그대로 -----
+  ['학교(적은 그대로)', 'schoolRaw'],
+  // ----- 플레이어ID: 기기마다 만든 무작위 표시. 같은 사람의 여러 판을 한 사람으로 묶는 데만 쓴다(공개 순위에는 나가지 않는다) -----
+  ['플레이어ID', 'pid']
 ];
 // 상품 연락용 참가자 정보. 분석 시트와 따로 둔다.
-const PRIVATE = [['판ID', 'id'], ['시작 시각', 'startedAt'], ['닉네임', 'nickname'], ['학교', 'school'], ['이름', 'realName'], ['전화번호', 'phone'], ['개인정보 동의', 'consent'], ['게임 버전', 'gv']];
+const PRIVATE = [['판ID', 'id'], ['시작 시각', 'startedAt'], ['닉네임', 'nickname'], ['학교', 'school'], ['이름', 'realName'], ['전화번호', 'phone'], ['개인정보 동의', 'consent'], ['게임 버전', 'gv'], ['학교(적은 그대로)', 'schoolRaw']];
 
 const DETAIL = [
   ['판ID', 'id'], ['닉네임', 'nickname'], ['순서', 'seq'], ['임기 내 턴', 'turn'], ['연차', 'year'],
@@ -152,9 +160,83 @@ function sheetWithHeader_(ss, name, cols) {
 // 수식 실행 방지: = + - @ 로 시작하는 글자는 글자로 저장 (숫자는 그대로)
 function safe_(v) {
   if (v === undefined || v === null) return '';
-  if (typeof v === 'number') return v;
+  if (typeof v === 'number') return isFinite(v) ? v : '';
   v = String(v);
+  if (v.length > MAX_CELL) v = v.slice(0, MAX_CELL);
+  // 수식으로 읽히지 않게(=, +, -, @로 시작하면 앞에 따옴표)
   return /^[=+\-@]/.test(v) ? "'" + v : v;
+}
+
+// ===================== 보안 =====================
+// 이 주소는 게임 코드에 들어 있어 누구나 볼 수 있다. 그래서 받기 전에 크기와 빈도를 보고, 받은 값은 길이와 범위를 다듬는다.
+// 순위에는 '숨김' 칸이 빈 줄만 오른다. 닉네임·학교에 욕이 섞이면 명예의 전당에는 '익명' · 빈칸으로 보인다(시트의 원래 값은 그대로).
+const MAX_BODY = 400000;     // 한 요청의 최대 글자 수(정상 기록은 한 조각 6만 자 안팎)
+const RATE_ALL = 300;        // 1분 동안 받는 요청 수(전체). 넘으면 그동안은 받지 않는다(한꺼번에 쏟아붓는 요청 막기)
+const RATE_ARCADE = 40;      // 같은 닉네임의 비밀 게임 기록은 10분에 이만큼까지(본게임 커리어 기록 · '익명'에는 걸지 않는다)
+const MAX_CELL = 3000;       // 한 칸의 최대 글자 수
+const SCORE_MAX = 60000;     // 커리어 점수의 절댓값이 이보다 크면 조작으로 보고 순위에서 뺀다
+const ZG_MAX = 120000;       // 방역선 점수 상한(10분을 다 버텨도 4만 점 안팎)
+const STAR_MAX = 200000;     // 별똥별 점수 상한
+function out_(s) { return ContentService.createTextOutput(s); }
+// 시간 칸(sec초)마다 key로 들어온 수를 센다. CacheService라 아주 정확하지는 않지만 쏟아붓는 요청은 충분히 막는다
+function rateOk_(key, max, sec) {
+  try {
+    const c = CacheService.getScriptCache();
+    const k = 'rl_' + String(key).slice(0, 60) + '_' + Math.floor(Date.now() / 1000 / sec);
+    const n = Number(c.get(k) || 0) + 1;
+    c.put(k, String(n), sec + 5);
+    return n <= max;
+  } catch (e) { return true; }
+}
+// 같은 조각이 두 번 오면(게임의 다시 보내기) 한 번만 쓴다. 6시간 동안 기억한다
+function seen_(k) {
+  if (!k) return false;
+  try {
+    const c = CacheService.getScriptCache(), key = 'rx_' + String(k).slice(0, 120);
+    if (c.get(key)) return true;
+    c.put(key, '1', 21600);
+  } catch (e) {}
+  return false;
+}
+const numOk_ = (v, lo, hi) => { const n = Number(v); return v !== '' && v !== null && isFinite(n) && n >= lo && n <= hi; };
+// 욕설: 띄어쓰기·기호·숫자를 끼워 넣어도 걸리게 지운 뒤 본다. 걸리면 공개 화면에는 이름을 감춘다
+const BAD_ = /(시발|씨발|씨빨|시빨|씨바|씨팔|시팔|씹|ㅅㅂ|ㅆㅂ|tlqkf|병신|븅신|빙신|ㅂㅅ|qudtls|좆|좃|존나|졸라|개새|개색|개세끼|새끼|섀끼|ㅅㄲ|지랄|ㅈㄹ|미친놈|미친년|또라이|엠창|느금|니애미|니에미|느그애미|애미|애비|창녀|걸레|등신|찐따|꺼져|닥쳐|섹스|야동|fuck|fuk|shit|bitch|asshole|pussy|porn|nigg|ㅗ)/i;
+const BAD2_ = /(?<![남여])자지|(?<![맛])보지/;
+function clean_(s) {
+  s = String(s || '');
+  const n = s.toLowerCase().replace(/[\s\u200b-\u200d\ufeff0-9._\-~!@#$%^&*()+=\[\]{}|\\:;"'<>,?\/`·…ㆍ]/g, '');
+  return BAD_.test(n) || BAD2_.test(n) ? '' : s;
+}
+const pubNick_ = v => clean_(String(v || '익명').replace(/^'/, '').slice(0, 20)) || '익명';
+
+
+// 판ID가 같고 '중도 이탈'로만 들어온 판이면 그 판의 줄을 모든 기록 탭에서 지운다(새로 온 끝난 기록이 대신한다)
+function dropAbandoned_(ss, id) {
+  if (!id || id === 'test') return;
+  const sum = ss.getSheetByName('요약');
+  if (!sum || sum.getLastRow() < 2) return;
+  const head = sum.getRange(1, 1, 1, sum.getLastColumn()).getValues()[0];
+  const ci = head.indexOf('판ID') + 1, ce = head.indexOf('퇴장 방식') + 1;
+  if (!ci || !ce) return;
+  const hits = sum.getRange(2, ci, sum.getLastRow() - 1, 1).createTextFinder(id).matchEntireCell(true).findAll();
+  if (!hits.length) return;
+  // 그 판의 요약 줄이 모두 '중도 이탈'일 때만 지운다(끝난 기록이 이미 있으면 건드리지 않는다)
+  if (!hits.every(h => String(sum.getRange(h.getRow(), ce).getValue()) === '중도 이탈')) return;
+  ['요약', '선택 상세', '임기별 결과', '연간 결산', '참가자(비공개)'].forEach(n => {
+    const sh = ss.getSheetByName(n);
+    if (!sh || sh.getLastRow() < 2) return;
+    const h0 = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0], c = h0.indexOf('판ID') + 1;
+    if (!c) return;
+    const rows = sh.getRange(2, c, sh.getLastRow() - 1, 1).createTextFinder(id).matchEntireCell(true).findAll().map(r => r.getRow()).sort((a, b) => b - a);
+    // 붙어 있는 줄은 한 번에 지운다(아래에서 위로)
+    let i = 0;
+    while (i < rows.length) {
+      let j = i;
+      while (j + 1 < rows.length && rows[j + 1] === rows[j] - 1) j++;
+      sh.deleteRows(rows[j], j - i + 1);
+      i = j + 1;
+    }
+  });
 }
 
 function appendRows_(ss, name, cols, list, now) {
@@ -165,26 +247,58 @@ function appendRows_(ss, name, cols, list, now) {
 }
 
 function doPost(e) {
+  // 잠금을 잡기 전에 거른다: 너무 큰 요청 · 너무 잦은 요청 · JSON이 아닌 것
+  const raw = e && e.postData ? String(e.postData.contents || '') : '';
+  if (!raw || raw.length > MAX_BODY) return out_('too big');
+  if (!rateOk_('all', RATE_ALL, 60)) return out_('busy');
+  let d;
+  try { d = JSON.parse(raw); } catch (err) { return out_('bad json'); }
+  if (!d || typeof d !== 'object' || Array.isArray(d)) return out_('bad');
+  // 같은 닉네임 제한은 비밀 게임 기록에만, 그리고 닉네임을 적은 사람에게만 건다('익명'은 여러 사람이 함께 쓰므로 빼고, 전체 제한만 받는다)
+  if (d.kind === 'arcade') {
+    const nk = String((d.rec && d.rec.nickname) || '').trim().slice(0, 20);
+    if (nk && nk !== '익명' && !rateOk_('a_' + nk, RATE_ARCADE, 600)) return out_('busy');
+  }
+  // 같은 조각을 다시 보낸 것이면(게임의 다시 보내기) 한 번만 쓴다
+  if (d.k && seen_(d.k)) return out_('dup');
   const lock = LockService.getScriptLock();
   lock.waitLock(30000);
   try {
-    const d = JSON.parse(e.postData.contents);
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const now = new Date();
     // 비밀 게임 점수: 한 판 = 한 줄. 닉네임·학교·점수만 받는다(이름·전화번호는 오지 않는다)
     if (d.kind === 'arcade') {
       const a = d.rec || {};
-      if (!ARCADE_GAMES[a.game]) return ContentService.createTextOutput('bad game');
-      appendRows_(ss, '비밀 게임 기록', ARCADE, [{id: String(a.id || '').slice(0, 40), game: a.game, nickname: String(a.nickname || '익명').slice(0, 20), school: String(a.school || '').slice(0, 30),
-        score: Number(a.score) || 0, sec: Math.round((Number(a.sec) || 0) * 10) / 10, win: a.win ? '예' : '', detail: String(a.detail || '').slice(0, 80), gv: String(a.gv || '').slice(0, 20)}], now);
-      return ContentService.createTextOutput('ok');
+      if (!ARCADE_GAMES[a.game]) return out_('bad game');
+      const sr = String(a.school || '').slice(0, 30);
+      const rec = {id: String(a.id || '').slice(0, 40), game: a.game, nickname: String(a.nickname || '익명').slice(0, 20), school: schoolName_(sr), schoolRaw: sr,
+        score: Number(a.score) || 0, sec: Math.round((Number(a.sec) || 0) * 10) / 10, win: a.win ? '예' : '', detail: String(a.detail || '').slice(0, 80), gv: String(a.gv || '').slice(0, 20),
+        pid: String(a.pid || '').replace(/[^0-9a-z]/gi, '').slice(0, 24)};
+      // 말이 안 되는 기록은 저장은 하되 순위에서 빠지게 사유를 적어 둔다
+      rec.hidden = !isFinite(rec.score) || !isFinite(rec.sec) || rec.sec < 0 ? '자동: 숫자 아님'
+        : a.game === 'zg' && (rec.score < 0 || rec.score > ZG_MAX || rec.sec > 700) ? '자동: 점수 이상'
+        : a.game === 'sail' && (rec.sec < SAIL_MIN_SEC || rec.sec > 1200) ? '자동: 시간 이상'
+        : a.game === 'star' && (rec.score < 0 || rec.score > STAR_MAX || rec.sec > 3600) ? '자동: 점수 이상' : '';
+      appendRows_(ss, '비밀 게임 기록', ARCADE, [rec], now);
+      return out_('ok');
     }
-    const run = d.run || {};
+    const run = d.run && typeof d.run === 'object' && !Array.isArray(d.run) ? d.run : {};
     run.nickname = String(run.nickname || '익명').slice(0, 20);
+    run.pid = String(run.pid || '').replace(/[^0-9a-z]/gi, '').slice(0, 24);
+    run.schoolRaw = String(run.school || '').slice(0, 30);
+    run.school = schoolName_(run.schoolRaw);
+    if (run.realName !== undefined) run.realName = String(run.realName || '').slice(0, 20);
+    if (run.phone !== undefined) run.phone = String(run.phone || '').replace(/[^0-9\-]/g, '').slice(0, 13);
+    // 말이 안 되는 커리어 점수 · 임기 수는 순위에서 빠지게 사유를 적는다(기록은 연구용으로 남긴다)
+    run.hidden = '';
+    if (run.careerScore !== '' && run.careerScore !== undefined && run.careerScore !== null && !numOk_(run.careerScore, -SCORE_MAX, SCORE_MAX)) run.hidden = '자동: 점수 이상';
+    if (run.terms !== undefined && run.terms !== '' && !numOk_(run.terms, 0, 12)) run.hidden = '자동: 임기 수 이상';
+    const cap = (L, n) => (Array.isArray(L) ? L.slice(0, n) : []).filter(o => o && typeof o === 'object' && !Array.isArray(o));
+    d.choices = cap(d.choices, 800); d.terms = cap(d.terms, 14); d.years = cap(d.years, 80);
     run.v = d.v || '';
     run.gv = run.gv || d.gv || '';
     // 이름·전화번호는 분석 기록에서 떼어 내 참가자 탭에만 둔다
-    const who = {id: run.id, startedAt: run.startedAt, nickname: run.nickname, school: run.school, realName: run.realName, phone: run.phone, consent: run.consent, gv: run.gv};
+    const who = {id: run.id, startedAt: run.startedAt, nickname: run.nickname, school: run.school, schoolRaw: run.schoolRaw, realName: run.realName, phone: run.phone, consent: run.consent, gv: run.gv};
     delete run.realName; delete run.phone;
     const ctx = {id: run.id, nickname: run.nickname, difficulty: run.difficulty, mode: run.mode, perk: run.perk, era: run.era};
     const withCtx = list => (list || []).map(o => Object.assign({}, o, ctx));
@@ -193,6 +307,8 @@ function doPost(e) {
       // 긴 커리어는 선택 기록이 여러 조각으로 나뉘어 온다. 두 번째 조각부터는 선택 상세만 이어 붙인다.
       appendRows_(ss, '선택 상세', DETAIL, withCtx(d.choices), now);
     } else {
+      // 저장 → 창 닫기('중도 이탈'이 먼저 감) → 불러와서 끝낸 판: 먼저 쌓인 중도 이탈 줄을 지우고 끝난 기록으로 대신한다
+      if (run.id && String(run.exitType || '') !== '중도 이탈') dropAbandoned_(ss, String(run.id));
       if (who.realName || who.phone || who.school) appendRows_(ss, '참가자(비공개)', PRIVATE, [who], now);
       appendRows_(ss, '요약', SUMMARY, [run], now);
       appendRows_(ss, '선택 상세', DETAIL, withCtx(d.choices), now);
@@ -253,7 +369,7 @@ function archiveAndReset() {
   } finally {
     lock.releaseLock();
   }
-  try { CacheService.getScriptCache().remove('board_v14_n'); } catch (e) {}   // 명예의 전당 캐시도 바로 비운다
+  try { CacheService.getScriptCache().remove('board_v15_n'); } catch (e) {}   // 명예의 전당 캐시도 바로 비운다
   ui.alert('완료', '백업 사본: ' + copy.getName() + '\n' + copy.getUrl() + '\n\n이 시트는 새 기록부터 다시 쌓입니다.', ui.ButtonSet.OK);
 }
 function refreshAnalysis() {
@@ -625,11 +741,19 @@ function doGet(e) {
   const p = (e && e.parameter) || {};
   const cache = CacheService.getScriptCache();
   let json = null;
-  try { json = cacheGet_(cache, 'board_v14'); } catch (err) {}
+  try { json = cacheGet_(cache, 'board_v15'); } catch (err) {}
   if (!json) {
-    json = JSON.stringify(buildBoard_());
-    try { cachePut_(cache, 'board_v14', json, 15); } catch (err) {}
-    try { if (PropertiesService.getDocumentProperties().getProperty('anaDirty')) maybeAnalyze_(); } catch (err) {}
+    // 캐시가 비는 순간 여러 명이 동시에 시트를 읽지 않게 짧게 잠그고, 그사이 다른 요청이 채웠는지 한 번 더 본다.
+    // 분석 다시 계산은 기록을 받을 때(doPost)만 한다(순위를 보는 사람이 분석을 기다리지 않게)
+    const lock = LockService.getScriptLock();
+    const got = lock.tryLock(2500);
+    try {
+      try { json = cacheGet_(cache, 'board_v15'); } catch (err) {}
+      if (!json) {
+        json = JSON.stringify(buildBoard_());
+        try { cachePut_(cache, 'board_v15', json, 30); } catch (err) {}
+      }
+    } finally { if (got) lock.releaseLock(); }
   }
   const cb = p.callback;
   if (cb && /^[A-Za-z_$][\w$]*$/.test(cb)) {
@@ -652,11 +776,14 @@ function buildBoard_() {
   for (let i = 1; i < v.length; i++) {
     const r = v[i], sc = num(g(r, '커리어 점수')), id = String(g(r, '판ID'));
     if (sc === null || id === 'test') continue;          // 중도 이탈·테스트 줄은 제외
+    if (String(g(r, '숨김') || '').trim()) continue;      // 관리자가 가린 줄 · 서버가 이상하다고 적은 줄
+    if (Math.abs(sc) > SCORE_MAX) continue;
     const t = g(r, '기록 시각');
     if (!boardVerOk_(num(g(r, '기록 버전')) || 0, t)) continue;   // 예전 점수 체계·난이도 이름의 기록은 순위에서 제외
     rows.push({
       id: id,
-      nick: String(g(r, '닉네임') || '익명').replace(/^'/, '').slice(0, 20),
+      nick: pubNick_(g(r, '닉네임')),
+      who: personKey_(g(r, '플레이어ID'), g(r, '닉네임'), g(r, '학교'), id),
       score: sc,
       terms: num(g(r, '임기 수(선)')) || 1,
       years: num(g(r, '총 재임(년)')) || 0,
@@ -702,7 +829,7 @@ function boardOf_(rows, nTop, nList) {
                      leader: r.leader, lid: r.lid, bg: r.bg, diff: r.diff, grades: r.grades, amend: r.amend, tro: r.tro, appr: r.appr, camp: r.camp, t: r.t}, d ? {det: r.det} : {});
   const bestPer = list => {
     const seen = {}, res = [];
-    list.forEach(r => { if (!seen[r.nick]) { seen[r.nick] = 1; res.push(r); } });
+    list.forEach(r => { const k = r.who || r.nick; if (!seen[k]) { seen[k] = 1; res.push(r); } });
     return res;
   };
   const byScore = rows.slice().sort((a, b) => b.score - a.score || (a.t < b.t ? -1 : 1));
@@ -714,7 +841,7 @@ function boardOf_(rows, nTop, nList) {
   });
   return {
     careers: rows.length,
-    players: Object.keys(rows.reduce((m, r) => { m[r.nick] = 1; return m; }, {})).length,
+    players: Object.keys(rows.reduce((m, r) => { m[r.who || r.nick] = 1; return m; }, {})).length,
     order: byScore.map(r => r.id),
     top: bestPer(byScore).slice(0, nTop).map((r, i) => pub(r, i < 3)),
     longest: bestPer(rows.slice().sort((a, b) => b.years - a.years || b.score - a.score)).slice(0, nList).map(r => pub(r)),
@@ -741,36 +868,119 @@ function boardOf_(rows, nTop, nList) {
 }
 
 // 학교 이름: 앞뒤 공백·따옴표를 떼고, 같은 학교를 부르는 여러 이름(외대부고·HAFS 등)은 하나로 묶는다. 비었거나 'X' 같은 값은 빈칸.
+// 학교 이름: 같은 학교를 부르는 여러 이름을 하나로 합친다(시트에 쓸 때와 순위를 낼 때 모두 이것을 쓴다).
+//   · 띄어쓰기 · 기호를 지우고, 지역 이름을 줄인다: 경기도→경기, 서울특별시→서울, 세종특별자치시→세종, 충청남도→충남 …
+//   · 학교 종류를 흔히 쓰는 줄임말로: 과학고등학교·과학고·과고→과학고, 외국어고등학교·외고→외고, 국제고등학교→국제고,
+//     예술고등학교·예고→예고, 체육고등학교→체고, 여자고등학교·여고→여고, 사범대학부설고등학교·사대부고→사대부고, 그 밖의 고등학교→고, 중학교→중, 초등학교→초
+//   예) 경기도과학고등학교 · 경기과고 → 경기과학고 / 세종과고 · 세종과학고 → 세종과학고 / 대원외국어고등학교 → 대원외고
+//   · 외대부고 · 한국외대부고 · 용인한국외국어대학교부설고등학교 · HAFS → 용인외대부고, 영어 약칭 몇 개(KSA · KMLA · GSHS · SSHS)도 한국어 이름으로
+//   비었거나 'X' 같은 값, 욕설이 섞인 값은 빈칸.
+const SCHOOL_AC_ = {hafs: '용인외대부고', ksa: '한국과학영재학교', kmla: '민족사관고', gshs: '경기과학고', sshs: '서울과학고', dshs: '대구과학고', kshs: '경남과학고'};
+// 관리자가 직접 고치는 학교 이름 합치기 표(시트 '학교 이름 합치기'): 왼쪽 칸에 적힌 이름은 오른쪽 칸 이름으로 합친다.
+// 오타(예: 경가외국어고 → 경기외고)처럼 규칙으로 알 수 없는 것을 여기에 적는다. 새 기록에는 5분 안에, 순위에는 다음 갱신 때 반영된다.
+// 이 탭은 '기록 백업 후 새로 시작'으로도 지워지지 않는다.
+const ALIAS_SHEET = '학교 이름 합치기';
+const ALIAS_SEED = [['경가외국어고등학교', '경기외고']];
+let ALIAS_ = null;
+function schoolAlias_() {
+  if (ALIAS_) return ALIAS_;
+  ALIAS_ = {};
+  try {
+    const c = CacheService.getScriptCache(), hit = c.get('alias_v1');
+    if (hit) { ALIAS_ = JSON.parse(hit); return ALIAS_; }
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sh = ss.getSheetByName(ALIAS_SHEET);
+    if (!sh) {
+      sh = ss.insertSheet(ALIAS_SHEET);
+      sh.appendRow(['이렇게 적힌 학교(합치기 전)', '이 이름으로 합친다', '메모']);
+      sh.setFrozenRows(1);
+      ALIAS_SEED.forEach(r => sh.appendRow([r[0], r[1], '처음부터 넣어 둔 예']));
+    }
+    // 오른쪽 칸에 적은 이름이 그대로 쓰인다(그 이름을 규칙으로 다듬은 꼴도 같은 이름으로 모은다)
+    sh.getDataRange().getValues().slice(1).forEach(r => {
+      const from = schoolBase_(r[0]), to = clean_(String(r[1] || '').replace(/^'/, '').trim()).slice(0, 20);
+      if (!from || !to) return;
+      if (from !== to) ALIAS_[from] = to;
+      const tb = schoolBase_(to);
+      if (tb && tb !== to) ALIAS_[tb] = to;
+    });
+    c.put('alias_v1', JSON.stringify(ALIAS_), 300);
+  } catch (e) {}
+  return ALIAS_;
+}
 function schoolName_(v) {
-  let s = String(v || '').replace(/^'/, '').replace(/\s+/g, ' ').trim().slice(0, 20);
-  if (/외대부고|외대\s*부고|hafs|한국외국어대학교\s*부설/i.test(s)) return '용인외대부고';
-  if (s.length < 2 || /^[xX.\-]+$/.test(s)) return '';
-  return s;
+  const s = schoolBase_(v);
+  if (!s) return '';
+  const A = schoolAlias_();
+  return A[s] || s;
+}
+// 규칙으로 하는 학교 이름 다듬기(합치기 표는 보지 않는다)
+function schoolBase_(v) {
+  let s = clean_(String(v || '').replace(/^'/, '').trim());
+  if (!s) return '';
+  s = s.replace(/[\s\u200b-\u200d\ufeff·.,\-_~()\[\]{}'"`!?/\\|:;<>@#$%^&*+=]/g, '').slice(0, 30);
+  if (/외대부고|외대부속고|외대부설고|외국어대학교부설|외국어대부설|외대부고등학교|^hafs$/i.test(s)) return '용인외대부고';
+  const ac = SCHOOL_AC_[s.toLowerCase()];
+  if (ac) return ac;
+  if (s.length < 2 || /^[xX]+$/.test(s)) return '';
+  // 지역 이름의 흔한 오타(맨 앞만): 경가 → 경기
+  s = s.replace(/^경가(?=.)/, '경기');
+  // 지역 이름 줄이기(맨 앞에 올 때만)
+  s = s.replace(/^(서울|부산|대구|인천|광주|대전|울산)(특별시|광역시|시)/, '$1').replace(/^세종(특별자치시|시)/, '세종')
+    .replace(/^경기도/, '경기').replace(/^강원(특별자치)?도/, '강원').replace(/^충청북도/, '충북').replace(/^충청남도/, '충남')
+    .replace(/^전라북도|^전북특별자치도/, '전북').replace(/^전라남도/, '전남').replace(/^경상북도/, '경북').replace(/^경상남도/, '경남').replace(/^제주(특별자치)?도/, '제주');
+  // 학교 종류(긴 것부터). '대학교'가 이름 안에 있으면 '대'로(서울대학교사범대학부설고 → 서울대사범대학부설고 → 서울사대부고)
+  s = s.replace(/대학교(?=.)/g, '대')
+    .replace(/(사범대학?부설|사대부설|사대부속|사범대부속)(고등학교|고)$/, '사대부고').replace(/대사대부고$/, '사대부고')
+    .replace(/(사범대학?부설|사대부설|사대부속)(중학교|중)$/, '사대부중').replace(/대사대부중$/, '사대부중')
+    .replace(/과학고등학교$|과학고$|과고$/, '과학고')
+    .replace(/외국어고등학교$|외국어고$|외고$/, '외고')
+    .replace(/국제고등학교$/, '국제고')
+    .replace(/예술고등학교$|예술고$/, '예고')
+    .replace(/체육고등학교$|체육고$/, '체고')
+    .replace(/여자고등학교$|여자고$/, '여고').replace(/여자중학교$|여자중$/, '여중')
+    .replace(/고등학교$/, '고').replace(/중학교$/, '중').replace(/초등학교$/, '초');
+  return s.length >= 2 ? s.slice(0, 20) : '';
 }
 // 학교별 평균 커리어 점수(사람마다 가장 좋은 기록 하나로 센다). 참가자 수와 학교 최고 기록도 함께 낸다.
+// 한 사람을 가리키는 열쇠: 플레이어ID(기기) + 닉네임. 플레이어ID가 없는 예전 기록은 학교 + 닉네임이고, 그중 '익명'은 판마다 다른 사람으로 본다
+// (예전에는 같은 학교의 익명 학생들이 모두 한 사람으로 뭉쳐, 학교 인원이 줄고 평균이 그중 가장 좋은 판 하나로 계산됐다)
+function personKey_(pid, nick, school, id) {
+  pid = String(pid || '').trim();
+  const nk = String(nick || '').replace(/^'/, '').trim(), anon = !nk || nk === '익명';
+  if (pid) return 'p:' + pid + (anon ? '' : '|' + nk);
+  return anon ? 'r:' + id : 'n:' + schoolName_(school) + '|' + nk;
+}
+// 학교 평균 점수: 사람마다 가장 좋은 기록 하나로 학교 평균을 낸다. 순위는 인원이 적은 학교가 한 판의 운으로 맨 위에 서지 않게,
+// 평균을 전체 평균 쪽으로 조금 당긴 값(베이지안 평균: 가상의 '보통 학생' SCHOOL_M명을 더한 셈)으로 매긴다. 화면에는 실제 평균과 인원을 보여 준다
+const SCHOOL_M = 3;
 function schoolRank_(rows) {
   const best = {};
-  rows.forEach(r => { if (!r.school) return; const k = r.school + '|' + r.nick; if (!best[k] || best[k].score < r.score) best[k] = r; });
-  const by = {};
-  Object.keys(best).forEach(k => { const r = best[k]; (by[r.school] = by[r.school] || []).push(r); });
+  rows.forEach(r => { if (!r.school) return; const k = r.school + '|' + r.who; if (!best[k] || best[k].score < r.score) best[k] = r; });
+  const by = {}, all = Object.keys(best).map(k => best[k]);
+  all.forEach(r => { (by[r.school] = by[r.school] || []).push(r); });
+  const C = all.length ? all.reduce((t, r) => t + r.score, 0) / all.length : 0;
   return Object.keys(by).map(s => {
-    const L = by[s].sort((a, b) => b.score - a.score);
-    return {school: s, avg: Math.round(L.reduce((t, r) => t + r.score, 0) / L.length), n: L.length, best: {nick: L[0].nick, score: L[0].score, leader: L[0].leader}};
-  }).sort((a, b) => b.avg - a.avg || b.n - a.n);
+    const L = by[s].sort((a, b) => b.score - a.score), sum = L.reduce((t, r) => t + r.score, 0);
+    return {school: s, avg: Math.round(sum / L.length), n: L.length, adj: Math.round((sum + SCHOOL_M * C) / (L.length + SCHOOL_M)), best: {nick: L[0].nick, score: L[0].score, leader: L[0].leader}};
+  }).sort((a, b) => b.adj - a.adj || b.n - a.n || b.avg - a.avg);
 }
 // 비밀 게임 순위: 방역선은 점수가 높은 순, 대항해는 귀항한 판만 시간이 짧은 순. 한 사람은 가장 좋은 기록 하나만, 5명씩
 function arcadeBoard_() {
-  const out = {zg: [], sail: []};
+  const out = {zg: [], sail: [], star: []};
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('비밀 게임 기록');
   if (!sh || sh.getLastRow() < 2) return out;
   const v = sh.getDataRange().getValues(), ix = {};
   v[0].forEach((n, i) => { ix[n] = i; });
   const g = (r, n) => (ix[n] === undefined ? '' : r[ix[n]]);
-  const rows = v.slice(1).filter(r => String(g(r, '판ID')) !== 'test').map(r => ({game: String(g(r, '게임')), nick: String(g(r, '닉네임') || '익명').replace(/^'/, '').slice(0, 20),
-    school: schoolName_(g(r, '학교')), score: Number(g(r, '점수')) || 0, sec: Number(g(r, '시간(초)')) || 0, win: String(g(r, '성공')) === '예', detail: String(g(r, '세부') || '')}));
-  const best = (L, better) => { const m = {}; L.forEach(r => { if (!m[r.nick] || better(r, m[r.nick])) m[r.nick] = r; }); return Object.keys(m).map(k => m[k]); };
-  out.zg = best(rows.filter(r => r.game === 'zg'), (a, b) => a.score > b.score).sort((a, b) => b.score - a.score).slice(0, 5);
+  // 테스트 줄 · 숨김 칸에 무엇이든 적힌 줄은 뺀다
+  const rows = v.slice(1).filter(r => String(g(r, '판ID')) !== 'test' && !String(g(r, '숨김') || '').trim()).map(r => ({game: String(g(r, '게임')), nick: pubNick_(g(r, '닉네임')),
+    who: personKey_(g(r, '플레이어ID'), g(r, '닉네임'), g(r, '학교'), String(g(r, '판ID'))),
+    school: schoolName_(g(r, '학교')), score: Number(g(r, '점수')) || 0, sec: Number(g(r, '시간(초)')) || 0, win: String(g(r, '성공')) === '예', detail: String(g(r, '세부') || '').slice(0, 80)}));
+  const best = (L, better) => { const m = {}; L.forEach(r => { if (!m[r.who] || better(r, m[r.who])) m[r.who] = r; }); return Object.keys(m).map(k => { const r = m[k]; delete r.who; return r; }); };
+  out.zg = best(rows.filter(r => r.game === 'zg' && r.score <= ZG_MAX), (a, b) => a.score > b.score).sort((a, b) => b.score - a.score).slice(0, 5);
   out.sail = best(rows.filter(r => r.game === 'sail' && r.win && r.sec >= SAIL_MIN_SEC), (a, b) => a.sec < b.sec).sort((a, b) => a.sec - b.sec).slice(0, 5);
+  out.star = best(rows.filter(r => r.game === 'star' && r.score <= STAR_MAX), (a, b) => a.score > b.score).sort((a, b) => b.score - a.score).slice(0, 5);
   return out;
 }
 // 무대마다 가장 높은 커리어 하나
