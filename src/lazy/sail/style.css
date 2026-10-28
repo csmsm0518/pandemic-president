@@ -1,0 +1,27 @@
+/* ---------- 대항해: 화면 가득 바다. 위 계기 띠, 아래 좌우 키, 가운데 안내 카드(게임의 금장 결) ---------- */
+.sl{position:fixed;inset:0;z-index:120;overflow:hidden;background:#0b3a5c;touch-action:none;user-select:none;-webkit-user-select:none}
+.sl canvas{display:block}
+.sl-hud{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:6px 18px;flex-wrap:wrap;padding:max(10px,env(safe-area-inset-top)) 14px 10px;
+  background:linear-gradient(180deg,rgba(5,20,35,.82),rgba(5,20,35,0));color:#cfe6ff;font-variant-numeric:tabular-nums}
+.sl-x{width:36px;height:36px;padding:0;border-radius:50%;font-size:15px;color:#f3ead7;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22)}
+.sl-h{display:flex;align-items:baseline;gap:5px}.sl-h small{font-size:11px;color:#8fb3d1}.sl-h b{font:800 17px var(--font-ui);color:#fff}
+#slHp{display:inline-flex;gap:3px}#slHp i{width:12px;height:12px;border-radius:3px;background:rgba(255,255,255,.15)}#slHp i.on{background:linear-gradient(180deg,#ffe08a,#d9a441)}
+.sl-tip{position:absolute;left:50%;top:64px;max-width:calc(100% - 32px);padding:7px 14px;transform:translate(-50%,-6px);border-radius:999px;font-size:13px;font-weight:700;color:#1d150a;background:#ffe08a;box-shadow:0 6px 18px rgba(0,0,0,.3);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sl-tip.on{opacity:1;transform:translate(-50%,0)}
+@media (max-width:560px){.sl-hud{gap:4px 12px}.sl-h b{font-size:15px}.sl-tip{top:calc(max(10px,env(safe-area-inset-top)) + 84px);font-size:12px}}
+.sl-ctl{position:absolute;left:0;right:0;bottom:max(14px,env(safe-area-inset-bottom));display:flex;justify-content:space-between;padding:0 14px;pointer-events:none}
+.sl-ctl button{width:min(28vw,120px);height:72px;pointer-events:auto;border-radius:16px;font-size:24px;font-weight:800;color:#f3ead7;background:rgba(5,20,35,.5);border:1.5px solid rgba(241,213,137,.4);touch-action:none;-webkit-touch-callout:none}
+.sl-ctl button.on{color:#1d150a;background:linear-gradient(180deg,#ffe08a,#d9a441);border-color:#b88a2c}
+.sl-ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(5,20,35,.55)}
+.sl-card{width:min(440px,100%);max-height:calc(100% - 32px);overflow-y:auto;padding:22px 20px;border-radius:16px;text-align:center;color:#f3ead7;background:linear-gradient(180deg,#1a1712,#0f0d0a);border:1px solid rgba(201,162,74,.45);box-shadow:inset 0 0 0 4px #0f0d0a,inset 0 0 0 5px rgba(201,162,74,.25),0 20px 50px rgba(0,0,0,.5)}
+.sl-k{font-size:11.5px;font-weight:800;letter-spacing:.2em;color:#c9a24a}
+.sl-card h2{margin:6px 0 8px;font:800 30px/1.2 var(--font-voice);color:#fff4d6}
+.sl-s{margin:0 0 12px;font-size:14px;line-height:1.65;color:#d8c9a6}
+.sl-card ul{margin:0 0 14px;padding:0;list-style:none;text-align:left;font-size:12.5px;line-height:1.6;color:#c9bfa6}
+.sl-card li{position:relative;padding-left:14px;margin-bottom:5px}.sl-card li::before{content:"";position:absolute;left:2px;top:.6em;width:5px;height:5px;transform:rotate(45deg);background:#c9a24a}
+.sl-card li b{color:#ffe08a}
+.sl-b{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin-bottom:14px;font-size:12.5px;color:#a89b7e}.sl-b b{margin-left:4px;font-size:16px;color:#fff;font-variant-numeric:tabular-nums}
+.sl-med{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px}.sl-med span{padding:6px;border-radius:8px;font-size:11.5px;color:#8c826c;background:rgba(255,255,255,.04)}
+.sl-med span.on{color:#1d150a;font-weight:800;background:linear-gradient(180deg,#ffe08a,#d9a441)}
+.sl-card button{width:100%;padding:14px;font-size:15px;margin-top:6px}
+.sl-card button:not(.pri){color:#f3ead7;background:transparent;border-color:rgba(255,255,255,.22)}

@@ -13,7 +13,8 @@ const GX_STEP=['무대','지도자','준비'];
 const GX_IC={new:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z"/></svg>',
   board:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></svg>',
   dex:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/></svg>',
-  guide:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>'};
+  guide:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>',
+  sail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3v13M12 4l7 10h-7M12 6L6 14h6M3 17h18l-2.5 4h-13z"/></svg>'};
 function gxTop(n,right){return '<div class="gx-top"><ol class="gx-steps">'+GX_STEP.map((t,i)=>'<li class="'+(i<n?'done':i===n?'on':'')+'"><i>'+(i+1)+'</i>'+t+'</li>').join('')+'</ol>'+(right?'<span class="gx-tag">'+right+'</span>':'')+'</div>';}
 // 타이틀 배경: 화면 가득 깔린 점들 사이로 감염이 번지고, 지나간 자리는 잠시 어두워졌다가 다시 살아난다
 function gxLattice(cv){const ctx=cv.getContext&&cv.getContext('2d');if(!ctx)return;

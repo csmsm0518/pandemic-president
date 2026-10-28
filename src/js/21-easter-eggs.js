@@ -19,3 +19,18 @@ function eggToast(h){const o=document.getElementById('eggT');if(o)o.remove();
   const d=document.createElement('div');d.id='eggT';d.className='egg-toast';d.setAttribute('role','status');d.innerHTML=h;document.body.appendChild(d);
   setTimeout(()=>{d.classList.add('out');setTimeout(()=>d.remove(),400);},3800);}
 
+// 이스터에그: 메인 화면 로고의 나침반(금빛 방위표)을 손가락·마우스로 돌린다. 놓으면 관성으로 조금 더 돈다.
+// 한 화면에서 모두 다섯 바퀴(1800°)를 돌리면 done()을 부른다(비밀 모드 「대항해」가 열린다).
+const SAIL_TURNS=5;
+function compassSpin(el,done){if(!el)return;let a=0,v=0,sum=0,tick=0,drag=null,raf=0,fired=false;
+  el.style.touchAction='none';el.style.cursor='grab';el.style.transformOrigin='50% 50%';
+  const ang=e=>{const r=el.getBoundingClientRect();return Math.atan2(e.clientY-(r.top+r.height/2),e.clientX-(r.left+r.width/2))*180/Math.PI;};
+  const turn=d=>{a+=d;sum+=Math.abs(d);el.style.transform='rotate('+a.toFixed(1)+'deg)';
+    if((tick+=Math.abs(d))>=30){tick=0;gxSfx('tick',Math.floor(sum/30)%5);}
+    if(!fired&&sum>=SAIL_TURNS*360){fired=true;done();}};
+  const spin=()=>{if(!el.isConnected||drag)return;v*=.965;if(Math.abs(v)<.15){v=0;return;}turn(v);raf=requestAnimationFrame(spin);};
+  el.addEventListener('pointerdown',e=>{e.preventDefault();cancelAnimationFrame(raf);try{el.setPointerCapture(e.pointerId);}catch(x){}drag={p:ang(e),t:performance.now()};el.style.cursor='grabbing';});
+  el.addEventListener('pointermove',e=>{if(!drag)return;const p=ang(e),now=performance.now();let d=p-drag.p;if(d>180)d-=360;if(d<-180)d+=360;
+    v=v*.5+d/Math.max(1,now-drag.t)*16*.5;drag={p:p,t:now};turn(d);});
+  const up=()=>{if(!drag)return;drag=null;el.style.cursor='grab';v=Math.max(-40,Math.min(40,v));raf=requestAnimationFrame(spin);};
+  el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);}

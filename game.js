@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"fa1dc1ab5c","h":"bbff77d8d79a9539"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"b0fc23ca22","h":"30c6ccf18792f5c6"},"guide":{"v":"6e340774ec","h":"f9cc624808514a7e"},"slash":{"v":"91b6243685","h":"9a753ed1fed964a5"},"sports":{"v":"b0afee4c6b","h":"002ce537ad523cf9"}};
+const LZ_M={"board":{"v":"fa1dc1ab5c","h":"bbff77d8d79a9539"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"b0fc23ca22","h":"30c6ccf18792f5c6"},"guide":{"v":"6e340774ec","h":"f9cc624808514a7e"},"sail":{"v":"33e797d643","h":"7cc32f4d21c86591"},"slash":{"v":"91b6243685","h":"9a753ed1fed964a5"},"sports":{"v":"b0afee4c6b","h":"002ce537ad523cf9"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
 function mgWar(){return lzCall('games','mgWar',arguments);}
 function simWar(){return lzCall('games','simWar',arguments);}
@@ -8,6 +8,7 @@ function mgMoon(){return lzCall('games','mgMoon',arguments);}
 function simMoon(){return lzCall('games','simMoon',arguments);}
 function debateRun(){return lzCall('games','debateRun',arguments);}
 function guide(){return lzCall('guide','guide',arguments);}
+function sailOpen(){return lzCall('sail','sailOpen',arguments);}
 function mini(){return lzCall('slash','mini',arguments);}
 function mgTkd(){return lzCall('sports','mgTkd',arguments);}
 function simTkd(){return lzCall('sports','simTkd',arguments);}
@@ -3775,6 +3776,21 @@ function eggToast(h){const o=document.getElementById('eggT');if(o)o.remove();
   const d=document.createElement('div');d.id='eggT';d.className='egg-toast';d.setAttribute('role','status');d.innerHTML=h;document.body.appendChild(d);
   setTimeout(()=>{d.classList.add('out');setTimeout(()=>d.remove(),400);},3800);}
 
+// 이스터에그: 메인 화면 로고의 나침반(금빛 방위표)을 손가락·마우스로 돌린다. 놓으면 관성으로 조금 더 돈다.
+// 한 화면에서 모두 다섯 바퀴(1800°)를 돌리면 done()을 부른다(비밀 모드 「대항해」가 열린다).
+const SAIL_TURNS=5;
+function compassSpin(el,done){if(!el)return;let a=0,v=0,sum=0,tick=0,drag=null,raf=0,fired=false;
+  el.style.touchAction='none';el.style.cursor='grab';el.style.transformOrigin='50% 50%';
+  const ang=e=>{const r=el.getBoundingClientRect();return Math.atan2(e.clientY-(r.top+r.height/2),e.clientX-(r.left+r.width/2))*180/Math.PI;};
+  const turn=d=>{a+=d;sum+=Math.abs(d);el.style.transform='rotate('+a.toFixed(1)+'deg)';
+    if((tick+=Math.abs(d))>=30){tick=0;gxSfx('tick',Math.floor(sum/30)%5);}
+    if(!fired&&sum>=SAIL_TURNS*360){fired=true;done();}};
+  const spin=()=>{if(!el.isConnected||drag)return;v*=.965;if(Math.abs(v)<.15){v=0;return;}turn(v);raf=requestAnimationFrame(spin);};
+  el.addEventListener('pointerdown',e=>{e.preventDefault();cancelAnimationFrame(raf);try{el.setPointerCapture(e.pointerId);}catch(x){}drag={p:ang(e),t:performance.now()};el.style.cursor='grabbing';});
+  el.addEventListener('pointermove',e=>{if(!drag)return;const p=ang(e),now=performance.now();let d=p-drag.p;if(d>180)d-=360;if(d<-180)d+=360;
+    v=v*.5+d/Math.max(1,now-drag.t)*16*.5;drag={p:p,t:now};turn(d);});
+  const up=()=>{if(!drag)return;drag=null;el.style.cursor='grab';v=Math.max(-40,Math.min(40,v));raf=requestAnimationFrame(spin);};
+  el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);}
 /* ---------- 금장 연출 ---------- */
 // 라이트 모드도 '동작 줄이기'와 같이 본다: 셔터·인용구·턴 카드 같은 전환 연출을 건너뛴다
 const reduceFx=()=>{if(document.documentElement.dataset.lite)return true;try{return matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}};
@@ -3968,7 +3984,8 @@ const GX_STEP=['무대','지도자','준비'];
 const GX_IC={new:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z"/></svg>',
   board:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></svg>',
   dex:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/></svg>',
-  guide:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>'};
+  guide:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>',
+  sail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3v13M12 4l7 10h-7M12 6L6 14h6M3 17h18l-2.5 4h-13z"/></svg>'};
 function gxTop(n,right){return '<div class="gx-top"><ol class="gx-steps">'+GX_STEP.map((t,i)=>'<li class="'+(i<n?'done':i===n?'on':'')+'"><i>'+(i+1)+'</i>'+t+'</li>').join('')+'</ol>'+(right?'<span class="gx-tag">'+right+'</span>':'')+'</div>';}
 // 타이틀 배경: 화면 가득 깔린 점들 사이로 감염이 번지고, 지나간 자리는 잠시 어두워졌다가 다시 살아난다
 function gxLattice(cv){const ctx=cv.getContext&&cv.getContext('2d');if(!ctx)return;
@@ -4121,7 +4138,7 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp))camp='kr';document.documentElement.dataset.camp='kr';
   R.innerHTML='<div style="min-height:70vh"></div>';
   const msg=HUB_MSG;HUB_MSG='';
-  const sv=svMenuTxt(),M=[].concat([['mmNew','새 게임','한 번의 인생을 시작한다','new'],['mmLoad','불러오기',sv||'저장된 게임이 없다','guide']],[['mmBoard','명예의 전당','모두의 최고 기록','board'],['mmDex','도감','만난 지도자와 임기 평가','dex'],['mmGuide','가이드북','처음이라면 여기부터','guide']]);
+  const sv=svMenuTxt(),M=[].concat([['mmNew','새 게임','한 번의 인생을 시작한다','new'],['mmLoad','불러오기',sv||'저장된 게임이 없다','guide']],[['mmBoard','명예의 전당','모두의 최고 기록','board'],['mmDex','도감','만난 지도자와 임기 평가','dex'],['mmGuide','가이드북','처음이라면 여기부터','guide']],eggOn('sail')?[['mmSail','대항해','비밀 모드 · 섬마을로 백신을 싣고','sail']]:[]);
   // 기록 카드: 닉네임, 최고 기록, 도감 진행도
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
   const st=(l,v,u)=>'<div><span>'+l+'</span><b>'+v+'</b>'+(u&&v!=='—'?'<small>'+u+'</small>':'')+'</div>';
@@ -4129,13 +4146,14 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   const pc='<aside class="gx-pc" aria-label="내 기록"><div class="gx-pc-h"><span>기록 보관소</span><b>'+esc(NICK||'익명')+'</b></div>'+
     '<div class="gx-pc-g">'+st('최고 커리어 점수',MEM.best100?MEM.best100.toLocaleString('ko-KR'):'—','점')+st('최장 재임',MEM.longest||'—','년')+st('지나온 인생',MEM.careers||0,'번')+'</div>'+
     pb('지도자 도감',Object.keys(MEM.leaders||{}).length,LEADK.length)+pb('임기 평가 도감',Object.keys(MEM.ends||{}).length,ENDC.length)+
-    (MEM.zg&&MEM.zg.runs?'<div class="gx-pc-z"><span>방역선 최고</span><b>'+MEM.zg.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+MEM.zg.wins+'번</span></div>':'')+'</aside>';
+    (MEM.zg&&MEM.zg.runs?'<div class="gx-pc-z"><span>방역선 최고</span><b>'+MEM.zg.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+MEM.zg.wins+'번</span></div>':'')+
+    (MEM.sail&&MEM.sail.best?'<div class="gx-pc-z"><span>대항해 최고</span><b>'+Math.floor(MEM.sail.best/60)+':'+String(Math.floor(MEM.sail.best%60)).padStart(2,'0')+'</b><span>금메달 '+(MEM.sail.gold||0)+'번</span></div>':'')+'</aside>';
   let sel=0;
   cine([{t:'메인 메뉴',h:'<div class="gx gx-title"><canvas class="gx-bg" aria-hidden="true"></canvas><div class="gx-seal" aria-hidden="true">'+emblemSvg('embgS')+'</div>'+
     '<div class="gx-tl"><div class="emb go gx-logo">'+emblemSvg()+'<div><h1 class="emb-t"><span>팬데믹</span> <span>대통령</span></h1><p class="emb-s">한 번의 인생, 한 나라의 운명</p></div></div>'+
     (msg?'<div class="gx-msg">'+msg+'</div>':'')+
     '<div class="gx-row2"><nav class="gx-menu" aria-label="메인 메뉴">'+M.map((m,i)=>'<button class="gx-mi" id="'+m[0]+'" style="--i:'+i+'"><span class="gx-ic" aria-hidden="true">'+GX_IC[m[3]]+'</span><span class="gx-mt"><b>'+m[1]+'</b><small>'+m[2]+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>').join('')+
-    '<button class="gx-mi sub" id="mmView" style="--i:4">화면 설정 · 세로/가로 · 라이트</button><button class="gx-mi sub" id="mmEdit" style="--i:5">인적사항 바꾸기</button></nav>'+pc+'</div></div>'+
+    '<button class="gx-mi sub" id="mmView" style="--i:'+(M.length-1)+'">화면 설정 · 세로/가로 · 라이트</button><button class="gx-mi sub" id="mmEdit" style="--i:'+M.length+'">인적사항 바꾸기</button></nav>'+pc+'</div></div>'+
     '<div class="gx-foot"><span class="gx-keys"><kbd>↑</kbd><kbd>↓</kbd> 고르기 &nbsp;<kbd>Enter</kbd> 결정</span><span>'+GAME_VER+'</span></div></div>'}],
     {nav:false,cls:'gm',top:'<button id="snd" class="cine-x cine-snd" aria-label="소리 설정">'+sndIco()+'</button>',
      key:e=>{const n=MI.length;if(e.key==='ArrowDown'){mark((sel+1)%n,1);return true;}if(e.key==='ArrowUp'){mark((sel-1+n)%n,1);return true;}
@@ -4152,6 +4170,12 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   $('mmGuide').onclick=()=>{gxSfx('click');cineClose();guide(home);};
   $('mmEdit').onclick=()=>{gxSfx('click');cineClose();intro();};
   $('mmView').onclick=()=>{gxSfx('click');viewPage(home);};
+  if($('mmSail'))$('mmSail').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');sailOpen();};
+  // 이스터에그: 로고의 나침반을 다섯 바퀴 돌리면 비밀 모드 「대항해」가 메뉴에 생긴다
+  compassSpin(document.querySelector('.cine .gx-logo svg'),()=>{
+    if(eggOn('sail')){eggToast('⚓ 대항해는 이미 열려 있어요. 메뉴에서 고르세요.');return;}
+    eggSet('sail');try{SFX.unlock();}catch(e){}vib([40,30,40,30,160]);
+    eggToast('⚓ <b>나침반 바늘이 바다를 가리킨다…</b><br>비밀 모드 「대항해」가 열렸어요.');setTimeout(()=>{if(document.querySelector('.cine .gx-logo'))home();},1600);});
   // 이스터에그: 제목을 3초 안에 7번 누르면(터치·클릭 모두) 좀비 무대가 열린다
   const tt=document.querySelector('.cine .emb-t');tt.id='ttl';tt.style.cursor='default';tt.style.userSelect='none';
   tt.onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];
