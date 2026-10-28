@@ -215,3 +215,32 @@
 @keyframes lbxTw{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:.9;transform:scale(1)}}
 @keyframes lbxRise{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
 @keyframes lbSk{from{background-position:100% 0}to{background-position:0 0}}
+/* ---------- 한 화면 배치: 커리어 점수(M)만 1위를 크게, 나머지 여덟 부문은 작은 순위표(1~5위). 줄 높이는 화면 높이에 맞춰 줄었다 늘었다 한다 ---------- */
+#hof .hof-in{display:flex;flex-direction:column;min-height:100vh;padding-top:max(38px,calc(env(safe-area-inset-top) + 32px));padding-bottom:16px}
+#hof .hof-dif{margin:8px 0 6px}#hof .hof-tiles{margin:0 0 10px}
+#hof .hof-g{--rh:clamp(26px,3.8vh,40px);grid-template-columns:repeat(2,minmax(0,1fr)) minmax(0,1.7fr) repeat(2,minmax(0,1fr));grid-template-areas:"a b M e f" "c d M g h";gap:12px;align-items:stretch}
+#hof .hc{display:flex;flex-direction:column}
+#hof .hc-h{padding:10px 12px 6px}#hof .hc-h b{font-size:14px;white-space:nowrap}#hof .hc-h span{overflow:hidden;text-overflow:ellipsis}
+#hof .hc.cp .hc-r{grid-template-columns:16px 24px minmax(0,1fr) auto;gap:8px;height:var(--rh);padding:0 12px}
+#hof .hc.cp .hc-r .a{width:24px;height:24px}#hof .hc.cp .hc-r .k{font-size:13px}
+#hof .hc.cp .hc-r .t b{font-size:12.5px;line-height:1.25}#hof .hc.cp .hc-r .t small{font-size:10.5px;line-height:1.25}
+#hof .hof-main .hc-r .t b{line-height:1.25}#hof .hof-main .hc-r .t small{line-height:1.25}#hof .hc.cp .hc-r .v{font-size:13.5px}
+#hof .hc-r.r1 .k{color:#f1d589}#hof .hc-r.r2 .k{color:#d9dee6}#hof .hc-r.r3 .k{color:#d79a63}
+#hof .hc.cp .hc-r.r1{background:linear-gradient(90deg,rgba(241,213,137,.1),transparent 80%)}
+#hof .hc.cp .hc-empty{padding:16px 12px;font-size:12px}
+#hof .hc-ini{font-size:12px}
+/* 커리어 점수: 1위는 가로 띠(왼쪽 메달 · 초상 · 이름 · 점수), 2~10위는 순위표 */
+#hof .hof-main .hc-hero{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:2px 14px;text-align:left;padding:10px 18px 12px 58px}
+#hof .hof-main .hc-av{grid-row:1/3}#hof .hof-main .hc-hx{align-self:end;min-width:0}
+#hof .hof-main .hc-md{left:14px;top:50%;margin-top:-19px}
+#hof .hof-main .hc-av{width:clamp(60px,8.5vh,92px);height:clamp(60px,8.5vh,92px);margin:0}#hof .hof-main .hc-av .hc-ini{font-size:26px}
+#hof .hof-main .hc-n{font-size:19px}#hof .hof-main .hc-v{grid-column:2;align-self:start;margin:0;font-size:clamp(26px,3.8vh,38px)}
+#hof .hof-main .hc-r{height:var(--rh);padding:0 18px;grid-template-columns:22px 30px minmax(0,1fr) auto}
+#hof .hof-main .hc-r .a{width:30px;height:30px}#hof .hof-main .hc-r .k,#hof .hof-main .hc-r .v{font-size:15px}
+#hof .hc-me{margin:6px 14px 0;padding:6px 10px}#hof .hc-more{margin-top:auto;padding:7px}
+#hof .hc-sk{min-height:150px}#hof .hc-sk.big{min-height:380px}
+/* 중간 너비: 커리어 점수가 왼쪽 두 칸, 나머지는 네 칸씩 / 좁은 화면은 두 칸 · 한 칸으로 내려가며 넘치면 스크롤 */
+@media (max-width:1180px){#hof .hc.cp .hc-r{gap:6px;padding:0 9px}#hof .hc-h{padding:9px 10px 5px}#hof .hc-h span{font-size:10px}}
+@media (max-width:980px){#hof .hc.cp .hc-r .t small{display:none}#hof .hof-main .hc-r{height:calc(var(--rh) + 9px)}#hof .hof-g{--rh:clamp(22px,3vh,30px);grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"M M a b" "M M c d" "e f g h"}}
+@media (max-width:760px){#hof .hof-g{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"M M" "a b" "c d" "e f" "g h"}}
+@media (max-width:440px){#hof .hof-g{grid-template-columns:minmax(0,1fr);grid-template-areas:"M" "a" "b" "c" "d" "e" "f" "g" "h"}}

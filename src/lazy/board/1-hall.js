@@ -62,7 +62,7 @@ function hofLoad(){if(HOF.busy||!document.getElementById('hof'))return;HOF.busy=
 function hofLive(){const el=document.getElementById('hofLive');if(!el)return;
   if(HOF.err)el.innerHTML='<i class="off"></i>'+(HOF.d?'다시 연결하는 중':'연결이 안 돼요');
   else{const u=HOF.d&&HOF.d.updated?new Date(HOF.d.updated):new Date();el.innerHTML='<i></i>LIVE · '+u.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});}}
-function hofSkel(){return '<div class="hof-side"><div class="hc hc-sk"></div><div class="hc hc-sk"></div></div><div class="hc hof-main hc-sk big"></div><div class="hof-side"><div class="hc hc-sk"></div><div class="hc hc-sk"></div></div>';}
+function hofSkel(){return '<div class="hc hof-main hc-sk big" style="grid-area:M"></div>'+'abcdefgh'.split('').map(a=>'<div class="hc hc-sk" style="grid-area:'+a+'"></div>').join('');}
 // 지금 난이도의 묶음. 예전 스크립트라 부문별 순위(cards)가 없으면 받은 목록으로 만든다.
 function hofView(){const d=HOF.d;if(!d)return null;const f=a=>(a||[]).filter(r=>r.diff===HOF.diff);
   const v=HOF.diff==='전체'?d:d.byDiff?(d.byDiff[HOF.diff]||{careers:0,players:0,top:[],longest:[],recent:[],order:[],stats:{}}):Object.assign({},d,{top:f(d.top),longest:f(d.longest),recent:f(d.recent),cards:null});
@@ -72,13 +72,15 @@ function hofView(){const d=HOF.d;if(!d)return null;const f=a=>(a||[]).filter(r=>
 const hofCampN=c=>{const k=Object.keys(CAMPS).find(k=>CAMPS[k].id===c||CAMPS[k].n===c);return k?CAMPS[k].n:(c||'');};
 const hofAv=(name,px)=>portrait(name,px)||'<span class="hc-ini">'+lbEsc(String(name||'?').slice(0,1))+'</span>';
 // 부문 카드 하나. it(r)은 {n 이름, s 둘째 줄, v 기록, a 초상 자리 HTML, me 내 기록인지}
+// 커리어 점수(main)만 1위를 크게 띄우고, 나머지 부문은 작은 순위표(1~5위)로만 보여 준다. ga는 화면 격자의 자리 이름
 function hofCard(o){const L=o.list||[],main=!!o.main;
-  let h='<section class="hc'+(main?' hof-main':'')+'" style="--i:'+(o.i||0)+'"><div class="hc-h"><b>'+o.t+'</b><span>'+(o.u||'')+'</span></div>';
+  let h='<section class="hc'+(main?' hof-main':' cp')+'" style="--i:'+(o.i||0)+(o.ga?';grid-area:'+o.ga:'')+'"><div class="hc-h"><b>'+o.t+'</b><span>'+(o.u||'')+'</span></div>';
   if(o.me)h+=o.me;
   if(!L.length)return h+'<div class="hc-empty">'+(o.empty||'아직 기록이 없어요')+'</div></section>';
-  const f=L.map(o.it),one=f[0];
-  h+='<div class="hc-hero'+(one.me?' me':'')+'"><span class="hc-md" aria-label="1위">1</span><div class="hc-av">'+one.a+'</div><div class="hc-n">'+one.n+'</div><div class="hc-s">'+one.s+'</div><div class="hc-v">'+one.v+'</div></div>';
-  f.slice(1,o.n||(main?10:4)).forEach((x,i)=>{h+='<div class="hc-r'+(x.me?' me':'')+'"><span class="k">'+(i+2)+'</span><span class="a">'+x.a+'</span><span class="t"><b>'+x.n+'</b><small>'+x.s+'</small></span><span class="v">'+x.v+'</span></div>';});
+  const f=L.map(o.it),one=f[0],row=(x,k)=>'<div class="hc-r'+(x.me?' me':'')+(k<=3?' r'+k:'')+'"><span class="k">'+k+'</span><span class="a">'+x.a+'</span><span class="t"><b>'+x.n+'</b><small>'+x.s+'</small></span><span class="v">'+x.v+'</span></div>';
+  if(main){h+='<div class="hc-hero'+(one.me?' me':'')+'"><span class="hc-md" aria-label="1위">1</span><div class="hc-av">'+one.a+'</div><div class="hc-hx"><div class="hc-n">'+one.n+'</div><div class="hc-s">'+one.s+'</div></div><div class="hc-v">'+one.v+'</div></div>';
+    f.slice(1,o.n||10).forEach((x,i)=>{h+=row(x,i+2);});}
+  else f.slice(0,o.n||5).forEach((x,i)=>{h+=row(x,i+1);});
   if(o.more)h+='<a class="hc-more" href="'+o.more+'" target="_blank" rel="noopener">더보기</a>';
   return h+'</section>';}
 function hofRender(){const v=hofView(),body=document.getElementById('hofBody');hofLive();if(!v||!body)return;
@@ -92,18 +94,19 @@ function hofRender(){const v=hofView(),body=document.getElementById('hofBody');h
   let me='';if(HOF.id){const rk=(v.order||[]).indexOf(HOF.id)+1,top=(v.top||[])[0],mine=[].concat(v.top||[],v.recent||[]).find(r=>r.id===HOF.id);
     me='<div class="hc-me">'+(rk?'<span>'+E(HOF.nick||'내')+' · 이번 커리어</span><b>'+rk+'위</b><span>'+(rk===1?'지금 1위':top&&mine?'1위까지 '+num(top.score-mine.score)+'점':'')+'</span>':'<span>방금 끝낸 커리어를 반영하는 중이에요</span>')+'</div>';}
   const dq=encodeURIComponent(HOF.diff);
-  main=true;const mainCard=hofCard({main:true,i:0,t:'커리어 점수',u:(HOF.diff==='전체'?'전체':HOF.diff)+' · 상위 10',list:v.top,me:me,n:10,more:'leaderboard.html?diff='+dq,empty:'아직 기록이 없어요. 첫 번째 대통령이 되어 보세요.',it:r=>P(r,num(r.score)+'<small>점</small>')});
+  main=true;const mainCard=hofCard({main:true,i:0,ga:'M',t:'커리어 점수',u:(HOF.diff==='전체'?'전체':HOF.diff)+' · 상위 10',list:v.top,me:me,n:10,more:'leaderboard.html?diff='+dq,empty:'아직 기록이 없어요. 첫 번째 대통령이 되어 보세요.',it:r=>P(r,num(r.score)+'<small>점</small>')});
   main=false;
-  const left=hofCard({i:1,t:'최장 집권',u:'재임 기간',list:v.longest,it:r=>P(r,r.years+'<small>년</small>')})+
-    hofCard({i:2,t:'최다 연임',u:'임기 수',list:C.terms,it:r=>P(r,r.terms+'<small>선</small>')})+
-    hofCard({i:3,t:'학교 평균 점수',u:'한 사람당 최고 기록',list:C.school,empty:'학교를 적은 기록이 아직 없어요',it:x=>({n:E(x.school),s:x.n+'명 · 최고 '+E(x.best&&x.best.nick||''),v:num(x.avg)+'<small>점</small>',a:'<span class="hc-ini sc">'+E(String(x.school).slice(0,1))+'</span>',me:false})});
+  // 화면 격자: 넓으면 [최장 집권 · 최다 연임 | 커리어 점수 | 최고 지지율 · 방역선] / [학교 · 최다 업적 | 〃 | 무대별 · 대항해] — 오른쪽 끝 칸이 비밀 게임 둘
+  const left=hofCard({i:1,ga:'a',t:'최장 집권',u:'재임 기간',list:v.longest,it:r=>P(r,r.years+'<small>년</small>')})+
+    hofCard({i:2,ga:'b',t:'최다 연임',u:'임기 수',list:C.terms,it:r=>P(r,r.terms+'<small>선</small>')})+
+    hofCard({i:3,ga:'c',t:'학교 평균 점수',u:'한 사람당 최고 기록',list:C.school,empty:'학교를 적은 기록이 아직 없어요',it:x=>({n:E(x.school),s:x.n+'명 · 최고 '+E(x.best&&x.best.nick||''),v:num(x.avg)+'<small>점</small>',a:'<span class="hc-ini sc">'+E(String(x.school).slice(0,1))+'</span>',me:false})});
   // 오른쪽 끝 두 칸은 비밀 게임 순위(난이도와 상관없이 하나). 서버가 예전 버전이라 arcade가 없으면 빈 칸 안내만 보인다
   const A=(HOF.d&&HOF.d.arcade)||{},ini=r=>'<span class="hc-ini">'+E(String(r.nick||'?').slice(0,1))+'</span>',mmss=s=>Math.floor(s/60)+':'+(s%60).toFixed(1).padStart(4,'0');
-  const right=hofCard({i:4,t:'최다 업적',u:'한 커리어의 업적 수',list:C.tro,it:r=>P(r,r.tro+'<small>개</small>')})+
-    hofCard({i:5,t:'방역선 최고 점수',u:'비밀 무대 · 좀비 서바이벌',list:A.zg,empty:'아직 해가 뜬 기록이 없어요',it:r=>({n:E(r.nick),s:[r.school,r.detail].filter(Boolean).map(E).join(' · ')||'&nbsp;',v:num(r.score)+'<small>점</small>',a:ini(r),me:false})})+
-    hofCard({i:6,t:'대항해 최단 기록',u:'비밀 모드 · 폭풍 해협 질주',list:A.sail,empty:'아직 돌아온 배가 없어요',it:r=>({n:E(r.nick),s:[r.school,r.detail].filter(Boolean).map(E).join(' · ')||'&nbsp;',v:mmss(r.sec),a:ini(r),me:false})});
+  const right=hofCard({i:4,ga:'d',t:'최다 업적',u:'한 커리어의 업적 수',list:C.tro,it:r=>P(r,r.tro+'<small>개</small>')})+
+    hofCard({i:6,ga:'f',t:'방역선 최고 점수',u:'비밀 무대 · 좀비 서바이벌',list:A.zg,empty:'아직 해가 뜬 기록이 없어요',it:r=>({n:E(r.nick),s:[r.school,r.detail].filter(Boolean).map(E).join(' · ')||'&nbsp;',v:num(r.score)+'<small>점</small>',a:ini(r),me:false})})+
+    hofCard({i:8,ga:'h',t:'대항해 최단 기록',u:'비밀 모드 · 폭풍 해협 질주',list:A.sail,empty:'아직 돌아온 배가 없어요',it:r=>({n:E(r.nick),s:[r.school,r.detail].filter(Boolean).map(E).join(' · ')||'&nbsp;',v:mmss(r.sec),a:ini(r),me:false})});
   // 지지율·무대별 최고는 가운데 큰 순위 아래 두 칸으로
-  const sub=hofCard({i:7,t:'최고 지지율',u:'물러날 때 지지율',list:C.appr,it:r=>P(r,Math.round(r.appr)+'<small>%</small>')})+
-    hofCard({i:8,t:'무대별 최고',u:'무대마다 1위',list:C.camp,it:r=>P(r,num(r.score)+'<small>점</small>',E(hofCampN(r.camp))+(r.school?' · '+E(r.school):''))});
+  const sub=hofCard({i:5,ga:'e',t:'최고 지지율',u:'물러날 때 지지율',list:C.appr,it:r=>P(r,Math.round(r.appr)+'<small>%</small>')})+
+    hofCard({i:7,ga:'g',t:'무대별 최고',u:'무대마다 1위',list:C.camp,it:r=>P(r,num(r.score)+'<small>점</small>',E(hofCampN(r.camp))+(r.school?' · '+E(r.school):''))});
   body.classList.toggle('still',!first);
-  body.innerHTML='<div class="hof-side">'+left+'</div><div class="hof-mid">'+mainCard+'<div class="hof-sub">'+sub+'</div></div><div class="hof-side">'+right+'</div>';}
+  body.innerHTML=mainCard+left+right+sub;}
