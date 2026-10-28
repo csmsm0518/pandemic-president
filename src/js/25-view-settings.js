@@ -87,7 +87,6 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   lab('지도자 도감 '+lg+' / '+LEADK.length)+'<div style="margin-bottom:22px">'+ldex+'</div>'+
   lab('임기 평가 도감 '+got+' / '+ENDC.length)+'<div style="margin-bottom:22px">'+dex+'</div>'+
   '<button id="edBtn" style="width:100%;font-size:13px;margin-bottom:8px">인적사항 바꾸기</button>'+
-  '<button id="rsBtn" style="width:100%;font-size:12.5px;margin-bottom:8px;color:var(--text-muted)">이 기기 기록 초기화</button>'+
   '<div style="text-align:center;font-size:11px;color:var(--text-muted);margin:6px 0 10px">팬데믹 대통령 '+GAME_VER+' · 라이트</div></div>';
   const $=id=>document.getElementById(id);
   $('bgSel').onchange=e=>{SFX.click();const v=e.target.value;
@@ -103,7 +102,6 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   if($('ldBtn'))$('ldBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();svPicker();};   // 라이트 모드 메인 화면은 작은 창으로 연다
   $('gbBtn').onclick=()=>{SFX.click();guide(home);};
   $('edBtn').onclick=()=>{SFX.click();intro();};
-  $('rsBtn').onclick=()=>{SFX.click();resetAsk();};
   vwBind(R,k=>{if(k==='lite')home();});
   // 이스터에그: 제목을 3초 안에 7번 누르면 좀비 무대가 열린다
   $('ttl').onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];
@@ -149,7 +147,7 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
     '<div class="gx-tl"><div class="emb go gx-logo">'+emblemSvg()+'<div><h1 class="emb-t"><span>팬데믹</span> <span>대통령</span></h1><p class="emb-s">한 번의 인생, 한 나라의 운명</p></div></div>'+
     (msg?'<div class="gx-msg">'+msg+'</div>':'')+
     '<div class="gx-row2"><nav class="gx-menu" aria-label="메인 메뉴">'+M.map((m,i)=>'<button class="gx-mi" id="'+m[0]+'" style="--i:'+i+'"><span class="gx-ic" aria-hidden="true">'+GX_IC[m[3]]+'</span><span class="gx-mt"><b>'+m[1]+'</b><small>'+m[2]+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>').join('')+
-    '<button class="gx-mi sub" id="mmView" style="--i:'+(M.length-1)+'">화면 설정 · 세로/가로 · 라이트</button><button class="gx-mi sub" id="mmEdit" style="--i:'+M.length+'">인적사항 바꾸기</button><button class="gx-mi sub dim" id="mmReset" style="--i:'+(M.length+1)+'">이 기기 기록 초기화</button></nav>'+pc+'</div></div>'+
+    '<button class="gx-mi sub" id="mmView" style="--i:'+(M.length-1)+'">화면 설정 · 세로/가로 · 라이트</button><button class="gx-mi sub" id="mmEdit" style="--i:'+M.length+'">인적사항 바꾸기</button></nav>'+pc+'</div></div>'+
     '<div class="gx-foot"><span class="gx-keys"><kbd>↑</kbd><kbd>↓</kbd> 고르기 &nbsp;<kbd>Enter</kbd> 결정</span><span>'+GAME_VER+'</span></div></div>'}],
     {nav:false,cls:'gm',top:'<button id="snd" class="cine-x cine-snd" aria-label="소리 설정">'+sndIco()+'</button>',
      key:e=>{const n=MI.length;if(e.key==='ArrowDown'){mark((sel+1)%n,1);return true;}if(e.key==='ArrowUp'){mark((sel-1+n)%n,1);return true;}
@@ -166,7 +164,6 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   $('mmGuide').onclick=()=>{gxSfx('click');cineClose();guide(home);};
   $('mmEdit').onclick=()=>{gxSfx('click');cineClose();intro();};
   $('mmView').onclick=()=>{gxSfx('click');viewPage(home);};
-  $('mmReset').onclick=()=>{gxSfx('click');resetAsk();};
   // 이스터에그: 로고의 나침반을 다섯 바퀴 돌리면 비밀 모드 「대항해」가 새 게임의 무대 고르기에 생긴다
   compassSpin(document.querySelector('.cine .gx-logo svg'),()=>{
     if(eggOn('sail')){eggToast('⚓ 대항해는 이미 열려 있어요. 새 게임에서 고르세요.');return;}

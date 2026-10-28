@@ -91,6 +91,7 @@ mload();applyView();sndApply();
 const INTRO=R.innerHTML;
 function pfPhone(v){const d=String(v||'').replace(/\D/g,'');if(!d)return '';if(!/^01[016789]\d{7,8}$/.test(d))return null;return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4);}
 function bindIntro(){const $=id=>document.getElementById(id),err=$('pfErr');
+  if($('pfReset'))$('pfReset').onclick=()=>{try{SFX.click();}catch(e){}resetAsk();};   // 첫 화면 맨 아래: 이 기기 기록 초기화
   if(IN_ART)document.querySelectorAll('.pf-pii').forEach(e=>{e.style.display='none';});
   const ph=$('pfPhone');if(ph)ph.oninput=()=>{const d=ph.value.replace(/\D/g,'').slice(0,11);ph.value=d.length>7?d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4):d.length>3?d.slice(0,3)+'-'+d.slice(3):d;};
   $('go').onclick=()=>{

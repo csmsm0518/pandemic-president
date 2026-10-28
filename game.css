@@ -1293,7 +1293,7 @@ body:has(.vset) .rotq{display:none!important}
   .vset{padding:12px 16px}.vset-h{font-size:28px;margin:2px 0 4px}.vset-p{margin-bottom:12px;font-size:13px}
   .vset-g{margin-bottom:10px}.vset-c{flex-direction:row;justify-content:center;gap:10px;padding:10px}.vset-c svg{width:30px;height:30px}.vset-c span{display:none}
   .vset-go{padding:12px}}
-/* 이 기기 기록 초기화: 메인 메뉴 맨 아래 흐린 줄과 확인 창 */
+/* 이 기기 기록 초기화: 첫 화면 맨 아래 밑줄 단추와 확인 창 */
 .gx-mi.sub.dim{opacity:.6}.gx-mi.sub.dim:hover,.gx-mi.sub.dim.on{opacity:1}
 .rs-ask{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(8,7,5,.72);animation:fdIn .2s ease-out}
 .rs-card{width:min(420px,100%);padding:22px 20px 18px;border-radius:16px;color:#eadfc6;background:linear-gradient(180deg,#1d1912,#100e0a);border:1px solid rgba(224,96,79,.45);box-shadow:0 24px 60px rgba(0,0,0,.6)}
@@ -1305,6 +1305,7 @@ body:has(.vset) .rotq{display:none!important}
 .rs-b{display:grid;grid-template-columns:1fr 1.4fr;gap:8px;margin-top:12px}
 .rs-b button{padding:12px;font-size:14px;font-weight:700;border-radius:10px;color:#eadfc6;background:transparent;border:1px solid rgba(255,255,255,.22)}
 .rs-b .rs-yes{color:#fff;background:#b3261e;border-color:#b3261e}
+.pf-rs{padding:0;border:0;background:none;font:inherit;font-weight:700;color:var(--text-muted);text-decoration:underline;text-underline-offset:2px;cursor:pointer}.pf-rs:hover{color:#b3261e}
 /* ---------- 세로 화면: 사건·결과 화면을 휴대폰 한 화면에 맞춘다 ----------
    위 상태 바(고정) · 가운데 사건(남는 공간, 넘치면 그 안에서만 스크롤) · 아래 선택지(엄지 자리에 고정).
    dvh는 주소창이 나타나고 사라져도 실제 보이는 높이를 따른다. */
