@@ -561,13 +561,24 @@ a.hm-card:focus-visible{outline:2px solid #2f4a6b;outline-offset:2px}
 .pk-ball{position:absolute;bottom:-30px;left:50%;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:#fff;border:2px solid #1d1b18;transition:left .3s ease-out,bottom .3s ease-out}
 .pk-ball.go{bottom:45%}
 .pk-msg{text-align:center;font-weight:700;font-size:14px;min-height:22px;margin:38px 0 10px}
-.sw-pool{display:flex;flex-direction:column;gap:4px;padding:8px;border-radius:10px;background:#2f5f99}
-.sw-lane{position:relative;height:30px;border-bottom:2px dashed rgba(255,255,255,.35);font-size:11px;color:#e8f0ff}
-.sw-lane span{position:absolute;left:2px;top:7px;opacity:.7}
-.sw-lane i{position:absolute;top:5px;left:0;width:20px;height:20px;border-radius:50%;background:#f7f3ea;border:2px solid #1d1b18}
-.sw-lane:first-child i{background:#e3a72f}
-.sw-ft{position:absolute;left:58px;top:7px;font-size:11px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums}
+/* 수영장: 왼쪽 출발대(나라 이름), 물결이 일렁이는 레인, 레인 사이 빨강·하양·파랑 부표 줄, 오른쪽 끝 터치패드 */
+.sw-pool{position:relative;display:flex;flex-direction:column;padding:6px 14px 6px 66px;border-radius:12px;overflow:hidden;
+  background:radial-gradient(40px 14px at 20% 30%,rgba(255,255,255,.14),transparent 70%),radial-gradient(60px 18px at 70% 70%,rgba(255,255,255,.1),transparent 70%),radial-gradient(50px 16px at 45% 10%,rgba(255,255,255,.12),transparent 70%),linear-gradient(180deg,#2c86c4,#195a90);
+  background-size:180px 60px,240px 80px,200px 70px,100% 100%;animation:swCa 6s linear infinite;box-shadow:inset 0 0 0 2px rgba(255,255,255,.25),inset 0 10px 18px -10px rgba(0,0,0,.4)}
+.sw-pool::before{content:"";position:absolute;left:0;top:0;bottom:0;width:58px;background:linear-gradient(90deg,#0f3352,#174a74);box-shadow:2px 0 0 rgba(255,255,255,.35)}
+.sw-pool::after{content:"";position:absolute;right:0;top:0;bottom:0;width:8px;background:repeating-linear-gradient(180deg,#f7f3ea 0 6px,#1d1b18 6px 12px)}
+@keyframes swCa{to{background-position:180px 0,-240px 0,200px 0,0 0}}
+.sw-lane{position:relative;height:34px;font-size:11px;color:#e8f0ff}
+.sw-lane::after{content:"";position:absolute;left:-8px;right:-14px;bottom:-2px;height:4px;border-radius:2px;background:repeating-linear-gradient(90deg,#e04848 0 9px,#f7f3ea 9px 18px,#2f6fd0 18px 27px);opacity:.9;z-index:1}
+.sw-lane:last-child::after{display:none}
+.sw-lane span{position:absolute;left:-62px;width:54px;top:10px;text-align:right;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:2}
+.sw-lane:first-child span{color:#ffe08a}
+.sw-lane i{position:absolute;top:7px;left:0;width:22px;height:20px;border-radius:50% 50% 46% 46%;background:#f7f3ea;border:2px solid #10263c;z-index:2;
+  box-shadow:-9px 0 0 -4px rgba(255,255,255,.65),-17px 0 0 -6px rgba(255,255,255,.4),-24px 0 0 -7px rgba(255,255,255,.22)}
+.sw-lane:first-child i{background:#e3a72f;box-shadow:0 0 0 3px rgba(255,224,138,.35),-9px 0 0 -4px rgba(255,255,255,.65),-17px 0 0 -6px rgba(255,255,255,.4),-24px 0 0 -7px rgba(255,255,255,.22)}
+.sw-ft{position:absolute;right:14px;top:9px;font-size:11px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;z-index:2;text-shadow:0 1px 2px rgba(0,0,0,.5)}
 .sw-ft.p1{color:#f1d589}
+@media (prefers-reduced-motion:reduce){.sw-pool{animation:none}}
 /* 승부차기 */
 .pq .pk-msg{margin:12px 0 10px}
 .pq-sb{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-bottom:10px;font-size:12px;color:var(--text-muted)}
@@ -575,7 +586,27 @@ a.hm-card:focus-visible{outline:2px solid #2f4a6b;outline-offset:2px}
 .pq-sb b{display:flex;flex-wrap:wrap;gap:4px}
 .pq-sb b i{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--border-strong)}
 .pq-sb b i.g{background:#2e7d55;border-color:#2e7d55}.pq-sb b i.x{background:#b3261e;border-color:#b3261e}
-.pq-sb em{font-style:normal;font-weight:800;font-size:13px;color:var(--text-primary);white-space:nowrap}
+.pq-sb{padding:8px 12px;border-radius:10px;color:#9fb0c8;background:linear-gradient(180deg,#1d2a44,#0f1626);box-shadow:inset 0 1px 0 rgba(255,255,255,.07)}
+.pq-sb>div>span{font-weight:700;color:#c9d3e2}
+.pq-sb b i{border-color:rgba(255,255,255,.3)}.pq-sb b i.g{background:#3fc38f;border-color:#3fc38f}.pq-sb b i.x{background:#e0504a;border-color:#e0504a}
+.pq-sb .c{display:flex;flex-direction:column;align-items:center;gap:1px}
+.pq-sb strong{font:800 22px/1 var(--font-voice);color:#fff;font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.pq-sb em{font-style:normal;font-weight:700;font-size:11px;color:#ffe08a;white-space:nowrap}
+/* 골대 뒤 관중석과 광고판: 그물 너머로 비친다 */
+.pq-cr{position:absolute;left:0;right:0;top:0;height:108px;background:
+  radial-gradient(circle,#f1d589 1.4px,transparent 1.9px) 2px 1px/11px 9px,radial-gradient(circle,#e0504a 1.4px,transparent 1.9px) 7px 5px/11px 9px,
+  radial-gradient(circle,#e8edf6 1.3px,transparent 1.8px) 4px 6px/13px 9px,linear-gradient(180deg,#141b2b,#2a3550 70%,#1e2738)}
+.pq-cr::after{content:"";position:absolute;inset:0;background:radial-gradient(4px 4px at 13% 30%,#fff,transparent),radial-gradient(4px 4px at 61% 18%,#fff,transparent),radial-gradient(4px 4px at 84% 52%,#fff,transparent),radial-gradient(4px 4px at 37% 64%,#fff,transparent);animation:pqFl 1.7s steps(1) infinite}
+@keyframes pqFl{0%{opacity:1}12%{opacity:0}47%{opacity:.8;transform:translateX(9%)}58%{opacity:0}80%{opacity:1;transform:translate(-14%,6px)}90%{opacity:0}}
+.pq-ad{position:absolute;left:0;right:0;top:108px;height:20px;overflow:hidden;display:flex;align-items:center;background:linear-gradient(180deg,#0b2f5c,#0a2447);box-shadow:inset 0 -2px 0 rgba(0,0,0,.3)}
+.pq-ad span{white-space:nowrap;font:800 10.5px var(--font-ui);letter-spacing:.12em;color:#ffe08a;animation:pqAd 14s linear infinite}
+@keyframes pqAd{to{transform:translateX(-50%)}}
+.pq-net.hit{animation:pqNet .6s ease-out}
+@keyframes pqNet{25%{transform:scale(1.04,1.06);background-color:rgba(255,255,255,.18)}60%{transform:scale(.99)}}
+.pq-fx{position:absolute;left:50%;top:44%;z-index:5;font:800 44px/1 var(--font-voice);white-space:nowrap;opacity:0;pointer-events:none;transform:translate(-50%,-50%);text-shadow:0 3px 0 rgba(0,0,0,.35),0 0 18px rgba(0,0,0,.4)}
+.pq-fx.g{color:#ffe08a}.pq-fx.s{color:#9fd8ff}.pq-fx.x{color:#f7f3ea;font-size:34px}
+.pq-fx.on{animation:pqFx 1.2s cubic-bezier(.2,1.3,.4,1) forwards}
+@keyframes pqFx{0%{opacity:0;transform:translate(-50%,-50%) scale(2.2) rotate(-8deg)}22%{opacity:1;transform:translate(-50%,-50%) scale(.94) rotate(-4deg)}32%{transform:translate(-50%,-50%) scale(1) rotate(-4deg)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-60%) rotate(-4deg)}}
 .pq-fd{position:relative;height:226px;max-width:520px;margin:0 auto;overflow:hidden;border-radius:10px;background:repeating-linear-gradient(180deg,#3f8c51 0 24px,#37804a 24px 48px)}
 .pq-fd::after{content:"";position:absolute;left:3%;right:3%;top:146px;bottom:-2px;border:2px solid rgba(255,255,255,.5);border-bottom:0;pointer-events:none}
 .pq-gl{position:absolute;left:10%;width:80%;top:16px;height:130px;border:5px solid #f7f3ea;border-bottom:0;box-sizing:border-box;box-shadow:0 0 0 1px rgba(0,0,0,.25);z-index:1}
@@ -592,7 +623,7 @@ a.hm-card:focus-visible{outline:2px solid #2f4a6b;outline-offset:2px}
 .pq-fd.keep .pq-kk{display:block}
 .pq-tell{position:absolute;left:50%;top:-30px;width:4px;height:24px;background:#fff;border-radius:2px;opacity:0;transform-origin:50% 100%;transition:opacity .25s;box-shadow:0 0 6px rgba(0,0,0,.4)}
 .pq-tell::before{content:"";position:absolute;left:-6px;top:-9px;border:8px solid transparent;border-top:0;border-bottom:10px solid #fff}
-.pq-ball{position:absolute;z-index:4;left:50%;top:206px;width:18px;height:18px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff 45%,#d8d2c4);border:2px solid #1d1b18;transition:left .42s cubic-bezier(.3,.7,.4,1),top .42s cubic-bezier(.3,.7,.4,1),transform .42s}
+.pq-ball{position:absolute;z-index:4;left:50%;top:206px;width:18px;height:18px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 50% 50%,#1d1b18 0 20%,transparent 22%),radial-gradient(circle at 50% 0,#1d1b18 0 16%,transparent 18%),radial-gradient(circle at 6% 66%,#1d1b18 0 16%,transparent 18%),radial-gradient(circle at 94% 66%,#1d1b18 0 16%,transparent 18%),radial-gradient(circle at 35% 35%,#fff 45%,#d8d2c4);border:2px solid #1d1b18;transition:left .42s cubic-bezier(.3,.7,.4,1),top .42s cubic-bezier(.3,.7,.4,1),transform .42s}
 .pq-ctl{max-width:520px;margin:10px auto 0}
 .pq-pow{position:relative;height:20px;margin:8px 0 22px;border-radius:10px;background:linear-gradient(90deg,#cfd8c6,#d9a441 78%,#b3261e)}
 .pq-sw{position:absolute;top:-3px;bottom:-3px;background:rgba(46,125,85,.8);border:2px solid #fff;border-radius:4px}
@@ -841,6 +872,8 @@ html[data-ori="p"] .gx-menu .gx-lp-in{padding:4px 12px 12px 18px;background:rgba
 html[data-ori="p"] .gx-menu .gx-lp-h{display:none}
 html[data-ori="p"] .gx-menu .gx-lp-r:last-of-type{border-bottom:0}
 .gx-mi.open{color:#fff4d6}
+.gx-pc-z{display:flex;align-items:baseline;gap:8px;white-space:nowrap;margin-top:10px;padding-top:9px;border-top:1px solid rgba(201,162,74,.16);font-size:11.5px;color:#a39678}
+.gx-pc-z b{font:800 16px var(--font-voice);color:#9fd68b}.gx-pc-z b small{font-size:11px;margin-left:2px;color:#a39678}.gx-pc-z span:last-child{margin-left:auto}
 .gx-mi.open .gx-ar2{opacity:1;transform:none}
 html[data-ori="p"] .gx-mi.open .gx-ar2{transform:rotate(90deg)}
 .gs-pin{grid-column:1/-1;display:inline-flex;align-items:center;justify-content:center;gap:6px;color:#8f6a12!important}
@@ -936,6 +969,8 @@ html[data-ori="p"] .gx-mi.open .gx-ar2{transform:rotate(90deg)}
 .npl{position:fixed;top:0;left:50%;z-index:96;display:flex;align-items:center;gap:8px;width:min(400px,calc(100vw - 32px));height:28px;box-sizing:border-box;padding:0 4px 0 12px;border-radius:0 0 12px 12px;border:1px solid rgba(201,162,74,.38);border-top:0;
   background:rgba(20,17,12,.94);color:#f1e6c8;font-size:11.5px;box-shadow:0 6px 14px -8px rgba(0,0,0,.6);pointer-events:none;opacity:0;transform:translate(-50%,-100%);transition:opacity .4s,transform .45s cubic-bezier(.16,1,.3,1)}
 .npl.on{opacity:1;transform:translate(-50%,0)}
+/* 음악 띠가 떠 있으면 게임 화면 맨 위를 띠 높이만큼 비워 '지금 급한 문제' 줄이 가려지지 않게 한다 */
+html:has(.npl.on) #app{padding-top:max(34px,calc(env(safe-area-inset-top) + 30px))!important}
 .npl-b{pointer-events:auto;flex-shrink:0;width:24px;height:22px;padding:0;display:flex;align-items:center;justify-content:center;border:0;border-radius:6px;background:rgba(241,213,137,.14);color:#f1d589;cursor:pointer}
 .npl-b:hover{background:rgba(241,213,137,.26)}
 .npl-b svg{width:12px;height:12px}
@@ -1026,6 +1061,10 @@ html[data-ori="p"] .gx-mi.open .gx-ar2{transform:rotate(90deg)}
 /* ---------- 전체 화면 연출(시네마) ---------- */
 .cine{position:fixed;inset:0;z-index:75;overflow:hidden;color:var(--dk-text);background:radial-gradient(ellipse at 50% 38%,#3a2e1c 0%,#1b1610 55%,#0b0907 100%);animation:dkFade .45s both}
 .cine.out{opacity:0;transition:opacity .45s ease;pointer-events:none}
+/* 어두운 전체 화면(메인 메뉴·장면·명예의 전당)이 떠 있는 동안은 뒤 바탕도 어둡게 둔다.
+   그래야 어두운 화면끼리 바뀔 때 새 화면이 서서히 나타나는 사이로 밝은 종이 바탕이 하얗게 번쩍이지 않는다.
+   사라지는 중인 장면(.out)은 빼서, 게임 화면으로 나갈 때는 밝은 바탕 위로 자연스럽게 걷힌다. */
+html:has(.cine:not(.out)),html:has(.cine:not(.out)) body,html:has(.lbfs),html:has(.lbfs) body,html:has(.lbe),html:has(.lbe) body{background:#0b0907!important;background-image:none!important}
 .cine::before{content:"";position:absolute;inset:10px;z-index:2;pointer-events:none;border:1px solid rgba(201,162,74,.45);box-shadow:inset 0 0 0 4px rgba(11,9,7,.55),inset 0 0 0 5px rgba(201,162,74,.18)}
 .cine-tr{display:flex;height:100%;transition:transform .6s cubic-bezier(.65,0,.35,1)}
 .cs{position:relative;flex:0 0 100%;min-width:0;height:100%;overflow-x:hidden;overflow-y:auto;display:flex}
@@ -1106,6 +1145,7 @@ html[data-ori="p"] .gx-mi.open .gx-ar2{transform:rotate(90deg)}
 @keyframes gxPulse{0%,100%{opacity:.55}50%{opacity:1}}
 /* 단계 표시줄 */
 .gx-top{position:absolute;z-index:4;left:0;right:0;top:0;height:60px;display:flex;align-items:center;justify-content:center;pointer-events:none;background:linear-gradient(180deg,rgba(9,8,6,.9),rgba(9,8,6,0))}
+.gx-top{align-items:flex-end;padding-bottom:6px;box-sizing:border-box}   /* 위쪽 가운데에 걸린 음악 띠와 겹치지 않게 단계 표시를 아래로 붙인다 */
 .gx-steps{display:flex;align-items:center;margin:0;padding:0;list-style:none;font-size:12.5px;font-weight:700;letter-spacing:.06em;color:#6f6553}
 .gx-steps li{display:flex;align-items:center;gap:7px}
 .gx-steps li+li::before{content:"";width:clamp(14px,3vw,34px);height:1px;margin:0 10px 0 4px;background:currentColor;opacity:.5}
@@ -1489,29 +1529,118 @@ html[data-ori="p"] .gx-mi.open .gx-ar2{transform:rotate(90deg)}
 .mg-sl>div{padding:8px 11px;background:var(--surface-1);border-radius:6px;animation:gxUp .4s cubic-bezier(.2,.8,.2,1) both}
 .mg-sl .k{display:inline-block;min-width:58px;margin-right:6px;font-size:12px;font-weight:700;color:var(--text-muted)}
 .mg-sl b.me{color:#8f6a12}.mg-sl b.g{color:#2e7d55}.mg-sl b.x{color:#b3261e}
+/* 태권도: 위 점수판(청·홍), 가운데 매트 위 두 선수와 상대의 발차기 신호 원, 아래 세 단추 */
+.tk-sb{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-bottom:10px}
+.tk-p{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;color:#fff;font-weight:700;font-size:13px}
+.tk-p.me{background:linear-gradient(90deg,#1f4a85,#2f5f99)}.tk-p.op{background:linear-gradient(90deg,#c0392b,#962d22);justify-content:flex-end}
+.tk-p b{font:800 30px/1 var(--font-voice);font-variant-numeric:tabular-nums}.tk-p b.pop{animation:stamp .45s cubic-bezier(.2,1.4,.4,1)}
+.tk-mid{text-align:center;line-height:1.2}.tk-mid b{display:block;font-size:12px;color:var(--text-secondary)}.tk-mid i{font:800 22px var(--font-voice);font-style:normal;font-variant-numeric:tabular-nums}
+.tk-mat{position:relative;height:214px;border-radius:12px;overflow:hidden;background:radial-gradient(60% 70% at 50% 60%,#f2c14e 0 38%,#3b7fc4 38.5% 100%);box-shadow:inset 0 0 0 3px rgba(255,255,255,.35),inset 0 -30px 40px -20px rgba(0,0,0,.35)}
+.tk-mat::after{content:"";position:absolute;left:12%;right:12%;bottom:8px;height:3px;border-radius:2px;background:rgba(255,255,255,.55)}
+.tk-f{position:absolute;bottom:12px;width:94px;height:142px;z-index:1;transition:transform .12s}
+.tk-f.me{left:16%}.tk-f.op{right:16%;transform:scaleX(-1)}
+.tk-f svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 6px 4px rgba(0,0,0,.3))}
+.tk-f .tk-lg2{transform-origin:36px 54px;transition:transform .12s}
+.tk-f.kb .tk-lg2{animation:tkKb .32s ease-out}.tk-f.kh .tk-lg2{animation:tkKh .38s ease-out}
+.tk-f.me.hit{animation:tkHitL .3s}.tk-f.op.hit{animation:tkHitR .3s}
+.tk-f.blk .tk-arm{animation:tkBlk .3s}
+@keyframes tkKb{40%{transform:rotate(-82deg)}100%{transform:none}}
+@keyframes tkKh{45%{transform:rotate(-128deg)}100%{transform:none}}
+@keyframes tkHitL{30%{transform:translateX(-10px) rotate(-6deg)}100%{transform:none}}
+@keyframes tkHitR{30%{transform:scaleX(-1) translateX(-10px) rotate(-6deg)}100%{transform:scaleX(-1)}}
+@keyframes tkBlk{40%{transform:translateY(-6px)}}
+.tk-cue{position:absolute;left:50%;top:40%;width:84px;height:84px;transform:translate(-50%,-50%) scale(.6);opacity:0;transition:opacity .15s,transform .15s;z-index:2}
+.tk-cue.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.tk-cue svg{width:100%;height:100%}
+.tk-cue .tk-g{fill:rgba(255,255,255,.2);stroke:#fff;stroke-width:3}
+.tk-cue .tk-ring{fill:none;stroke:#fff;stroke-width:4}
+.tk-cue.h .tk-ring{stroke:#ffd166}.tk-cue.g .tk-g{fill:rgba(63,195,143,.55);stroke:#3fc38f}.tk-cue.g .tk-ring{stroke:#3fc38f}
+.tk-cue b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 14px var(--font-voice);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.tk .pk-msg{margin:12px 0 10px}
+.tk-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.tk-btns button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:16px 4px;font-size:16px;font-weight:800;touch-action:manipulation}
+.tk-btns button small{font-size:10.5px;font-weight:600;opacity:.6}
+#tkB{color:#1f6b4e;border-color:rgba(46,125,85,.45);background:rgba(46,125,85,.08)}
+/* 시상식: 2위·1위·3위 단상. 우리 자리는 금빛으로 비추고 국기 대신 나라 이름이 올라간다 */
+.oc-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}.oc-h b{font:800 18px var(--font-voice)}
+.oc-rings{display:inline-flex}.oc-rings i{width:14px;height:14px;margin-right:-4px;border-radius:50%;border:2.4px solid}
+.oc-rings i:nth-child(1){border-color:#0081c8}.oc-rings i:nth-child(2){border-color:#1d1b18}.oc-rings i:nth-child(3){border-color:#ee334e}.oc-rings i:nth-child(4){border-color:#fcb131}.oc-rings i:nth-child(5){border-color:#00a651}
+.oc-pod{display:grid;grid-template-columns:1fr 1.1fr 1fr;align-items:end;gap:6px;padding:16px 6px 0;border-radius:12px;background:radial-gradient(70% 90% at 50% 100%,rgba(241,213,137,.28),transparent 70%),linear-gradient(180deg,#1d2a44,#0f1626)}
+.oc-s{display:flex;flex-direction:column;align-items:center;animation:ocUp .7s var(--d) cubic-bezier(.2,.9,.2,1) both}
+.oc-who{display:flex;flex-direction:column;align-items:center;gap:3px;margin-bottom:6px;color:#e8edf6;text-align:center}
+.oc-who i{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font:800 12px var(--font-ui);font-style:normal;color:#2a1c06;box-shadow:0 2px 0 rgba(0,0,0,.35),inset 0 -2px 3px rgba(0,0,0,.2)}
+.oc-who b{font-size:13px}.oc-who small{font-size:10.5px;color:#9fb0c8}
+.oc-b{width:100%;display:flex;justify-content:center;padding-top:8px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,#e9e3d3,#c8bfa8);color:#5b4a2a;font:800 22px var(--font-voice)}
+.oc-s.s0 .oc-b{height:86px}.oc-s.s1 .oc-b{height:60px}.oc-s.s2 .oc-b{height:44px}
+.oc-s.me .oc-b{background:linear-gradient(180deg,#fff3c4,#d9b24f);box-shadow:0 0 24px rgba(241,213,137,.55)}
+.oc-s.me .oc-who b{color:#ffe08a}
+@keyframes ocUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.oc-msg{margin-top:12px;text-align:center;font-size:14px;color:var(--text-secondary)}.oc-msg b{color:var(--text-primary);font-family:var(--font-voice)}
+.oc-tally,.spx-med{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;font-size:12px;font-weight:700;color:var(--text-muted)}
+.oc-tally span,.spx-med span{margin-right:4px}
+.oc-tally i,.spx-med i{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;font-size:10px;font-style:normal;color:#2a1c06}
+.oc-tally b,.spx-med b{margin-right:6px;font:800 15px var(--font-voice);color:var(--text-primary)}
+.m0{background:#e9c46a}.m1{background:#c9d1d9}.m2{background:#d08a54}
+.map-med{position:absolute;right:8px;top:7px;display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;background:rgba(10,14,20,.66);border:1px solid rgba(255,255,255,.09)}
+.map-med i{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;font-size:9px;font-style:normal;font-weight:800;color:#2a1c06}.map-med b{margin-right:4px;font-size:12px;color:#fff}
+.spx-med{justify-content:flex-start;margin-top:2px;color:rgba(255,255,255,.75)}.spx-med b{color:#fff}
+/* 올림픽 특집 머리: 오륜 색 띠 */
+.spx.oly::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:linear-gradient(90deg,#0081c8 0 20%,#1d1b18 20% 40%,#ee334e 40% 60%,#fcb131 60% 80%,#00a651 80%)}
+/* 방역 특집 머리: 작은 상황판(위기·의료·지지) */
+.spx-dash{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:4px;font-size:11.5px;font-weight:700;color:rgba(255,255,255,.75)}
+.spx-dash span{display:inline-flex;align-items:center;gap:6px}
+.spx-dash em{position:relative;display:inline-block;width:54px;height:5px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden}
+.spx-dash em i{position:absolute;left:0;top:0;bottom:0;border-radius:3px}
+.spx-dash b{color:#fff;font-variant-numeric:tabular-nums}
 .mg-res{margin-top:14px;text-align:center;font:800 21px var(--font-voice);animation:stamp .55s cubic-bezier(.2,1.4,.4,1) both}
 
 /* ---------- 양궁 ---------- */
-.ar-sb{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 10px;align-items:center;margin-bottom:10px;font-size:12px}
-.ar-sb .n{white-space:nowrap;color:var(--text-secondary)}.ar-sb .n.me{font-weight:800;color:var(--text-primary)}
+/* 전광판: 시상식과 같은 밤색 남색 판. 칸은 맞힌 과녁 색 */
+.ar-sb{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 10px;align-items:center;max-width:520px;margin:0 auto 10px;padding:9px 12px;border-radius:10px;font-size:12px;color:#c9d3e2;background:linear-gradient(180deg,#1d2a44,#0f1626);box-shadow:inset 0 1px 0 rgba(255,255,255,.07)}
+.ar-sb .n{display:flex;align-items:center;gap:6px;white-space:nowrap;color:#9fb0c8}.ar-sb .n.me{font-weight:800;color:#ffe08a}
+.ar-sb .n em{width:14px;font-style:normal;font-weight:800;font-size:11px;text-align:center;color:#6f809c}.ar-sb .n.me em{color:#ffe08a}
 .ar-sb .a{display:flex;gap:3px}
-.ar-sb .a i{display:flex;align-items:center;justify-content:center;width:20px;height:20px;font-style:normal;font-size:11px;font-weight:700;background:var(--surface-1);border-radius:3px;font-variant-numeric:tabular-nums}
-.ar-sb .a i.x{background:#f2c94c;color:#1d150a}
-.ar-sb b{text-align:right;font-variant-numeric:tabular-nums}
-.ar-rng{position:relative;max-width:520px;margin:0 auto;padding:30px 0 12px;overflow:hidden;border-radius:10px;background:linear-gradient(180deg,#8fbfe2 0%,#cfe3f0 52%,#86b46f 52%,#5f9150 100%)}
+.ar-sb .a i{display:flex;align-items:center;justify-content:center;width:20px;height:20px;font-style:normal;font-size:11px;font-weight:800;color:#e8edf6;background:rgba(255,255,255,.07);border-radius:3px;font-variant-numeric:tabular-nums}
+.ar-sb .a i.s9{background:#f2c94c;color:#1d150a}.ar-sb .a i.s7{background:#e0504a;color:#fff}.ar-sb .a i.s5{background:#3d8fd6;color:#fff}
+.ar-sb .a i.s3{background:#2a2a2a;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}.ar-sb .a i.s1{background:#f7f3ea;color:#1d1b18}.ar-sb .a i.s0{color:#ff8a8a;background:rgba(224,80,74,.14)}
+.ar-sb .a i.x{box-shadow:0 0 0 1.5px #fff3c4,0 0 10px rgba(242,201,76,.6)}
+.ar-sb .a i.cur{box-shadow:inset 0 0 0 1.5px rgba(255,224,138,.7);animation:pls 1s infinite}
+.ar-sb b{text-align:right;font:800 14px var(--font-voice);color:#fff;font-variant-numeric:tabular-nums}.ar-sb b.me{color:#ffe08a}
+/* 사로: 하늘 → 먼 숲 → 잔디. 과녁은 짚단 위에 붙어 다리 둘로 선다 */
+.ar-rng{position:relative;max-width:520px;margin:0 auto;padding:38px 0 12px;overflow:hidden;border-radius:10px;
+  background:linear-gradient(180deg,#7fb3dc 0%,#cfe3f0 44%,#a8c98f 44%,#7fae69 64%,#5f9150 100%)}
+.ar-rng::before{content:"";position:absolute;left:-4%;right:-4%;top:calc(44% - 22px);height:24px;opacity:.85;
+  background:radial-gradient(ellipse 22px 16px at 50% 100%,#4f7a45 96%,transparent) 0 0/34px 24px repeat-x,radial-gradient(ellipse 16px 12px at 50% 100%,#3f6638 96%,transparent) 17px 6px/34px 18px repeat-x}
+.ar-rng::after{content:"";position:absolute;left:0;right:0;bottom:0;height:46%;pointer-events:none;background:repeating-linear-gradient(90deg,transparent 0 calc(25% - 1px),rgba(255,255,255,.22) calc(25% - 1px) 25%);-webkit-mask:linear-gradient(180deg,transparent,#000);mask:linear-gradient(180deg,transparent,#000)}
+.ar-tgt::before{content:"";position:absolute;inset:-4%;z-index:-1;border-radius:6px;background:repeating-linear-gradient(115deg,#d9c48f 0 3px,#c8b278 3px 6px);box-shadow:0 10px 16px rgba(0,0,0,.28),inset 0 0 0 2px rgba(90,70,30,.35)}
+.ar-tgt::after{content:"";position:absolute;left:14%;right:14%;top:100%;height:30px;z-index:-2;background:linear-gradient(90deg,#7a5a32 0 7px,transparent 7px calc(100% - 7px),#7a5a32 calc(100% - 7px)) no-repeat}
+.ar-tgt.thk{animation:arThk .32s ease-out}
+@keyframes arThk{20%{transform:translate(1.5px,-1px) rotate(.6deg)}45%{transform:translate(-1px,1px) rotate(-.4deg)}70%{transform:translate(.5px,0)}}
+.ar-hr{position:absolute;right:10px;top:8px;z-index:2;display:flex;align-items:baseline;gap:4px;padding:4px 9px;font-size:11px;color:#5a4a3a;background:rgba(255,255,255,.8);border-radius:6px;transition:background .3s,color .3s}
+.ar-hr i{font-style:normal;color:#e0504a;display:inline-block;animation:arBeat .83s ease-in-out infinite}
+.ar-hr b{font:800 14px var(--font-ui);color:#1d1b18;font-variant-numeric:tabular-nums}
+.ar-hr.hi{background:#b3261e;color:#ffd9d4}.ar-hr.hi b,.ar-hr.hi i{color:#fff}
+@keyframes arBeat{0%,40%,100%{transform:scale(1)}15%{transform:scale(1.35)}}
+.ar-pop{position:absolute;z-index:3;margin:-30px 0 0 6px;font:800 18px var(--font-voice);font-style:normal;color:#fff;text-shadow:0 1px 0 #1d1b18,0 0 6px rgba(0,0,0,.55);pointer-events:none;animation:arPop 1.1s ease-out forwards}
+.ar-pop.g{color:#ffe08a;font-size:22px}
+@keyframes arPop{0%{opacity:0;transform:translateY(8px) scale(.6)}18%{opacity:1;transform:none}70%{opacity:1}100%{opacity:0;transform:translateY(-14px)}}
 .ar-wind{position:absolute;left:10px;top:8px;display:flex;align-items:center;gap:6px;padding:4px 9px;font-size:12px;background:rgba(255,255,255,.8);border-radius:6px}
 .ar-wind b{font-variant-numeric:tabular-nums}
-.ar-flag{display:inline-block;width:20px;height:12px;background:#b3261e;clip-path:polygon(0 0,100% 50%,0 100%);transform-origin:0 50%;transition:transform .4s}
-.ar-tgt{position:relative;width:min(240px,68vw);aspect-ratio:1;margin:0 auto;touch-action:none;cursor:crosshair}
+.ar-flag{display:inline-block;width:20px;height:12px;background:#b3261e;clip-path:polygon(0 0,100% 50%,0 100%);transform-origin:0 50%;transition:transform .4s;animation:arFlap .45s ease-in-out infinite alternate}
+@keyframes arFlap{to{clip-path:polygon(0 8%,100% 38%,0 92%)}}
+.ar-tgt{position:relative;z-index:1;width:min(240px,68vw);aspect-ratio:1;margin:0 auto;touch-action:none;cursor:crosshair}
 .ar-tgt svg{display:block;width:100%;height:100%;filter:drop-shadow(0 8px 12px rgba(0,0,0,.3))}
 .ar-ret{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1px #1d1b18;pointer-events:none}
 .ar-ret::before,.ar-ret::after{content:"";position:absolute;background:#fff;box-shadow:0 0 0 .5px #1d1b18}
 .ar-ret::before{left:50%;top:-7px;bottom:-7px;width:2px;margin-left:-1px}.ar-ret::after{top:50%;left:-7px;right:-7px;height:2px;margin-top:-1px}
 .ar-aim{position:absolute;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:rgba(255,255,255,.75);box-shadow:0 0 0 1px rgba(0,0,0,.4);pointer-events:none}
-.ar-holes i{position:absolute;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:#1d1b18;box-shadow:0 0 0 1.5px #fff;animation:arHit .35s cubic-bezier(.2,1.4,.4,1) both}
-.ar-holes i.new{background:#b3261e;width:9px;height:9px;margin:-4.5px 0 0 -4.5px}
-@keyframes arHit{from{transform:scale(3);opacity:0}to{transform:none;opacity:1}}
-.ar-tip{margin-top:8px;text-align:center;font-size:11.5px;color:#1d3a22}
+/* 꽂힌 화살: 쏜 사람 쪽에서 보이는 오늬와 깃 세 장 */
+.ar-holes i{position:absolute;z-index:1;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#1d1b18;box-shadow:0 0 0 1.5px #f7f3ea,1px 2px 3px rgba(0,0,0,.45);animation:arHit .3s cubic-bezier(.2,1.2,.4,1) both}
+.ar-holes i::before,.ar-holes i::after{content:"";position:absolute;left:50%;top:50%;width:2.5px;height:11px;margin-left:-1.25px;border-radius:1px;background:#f7f3ea;transform-origin:50% 0;transform:rotate(60deg)}
+.ar-holes i::after{transform:rotate(180deg)}
+.ar-holes i.new{z-index:2;background:#b3261e}.ar-holes i.new::before,.ar-holes i.new::after{background:#ffe08a}
+@keyframes arHit{from{transform:scale(3.2);opacity:0;filter:blur(2px)}to{transform:none;opacity:1;filter:none}}
+.ar-tip{position:relative;z-index:1;margin-top:34px;text-align:center;font-size:11.5px;color:#1d3a22}
 
 /* ---------- 화면 설정: 세로/가로 모드 · 라이트 모드 ---------- */
 .vw{margin:4px 0 16px;padding:14px;background:var(--surface-1);border:1px solid var(--border);border-radius:12px}
@@ -4441,7 +4570,7 @@ const FAKE={
  joseon:['[풍문] 경복궁 연못에 용이 나타났다는 소문… 관상감 "잉어였다"','[풍문] 전하의 수라상에서 사라진 약과, 범인은 쥐로 밝혀져','[풍문] 시전 상인 "도깨비가 외상값 갚고 갔다"'],
  usa:['[BREAKING] 백악관 잔디밭에 UFO 착륙… 조사 결과 대형 원반 피자','[BREAKING] 자유의 여신상, 횃불 오른손에서 왼손으로 바꿔 들어','[BREAKING] 대통령 반려견, 기자회견 중 연설문 먹어'],
  zombie:['[생존 무전] 좀비 한 마리, 편의점 앞에서 줄 서 있다가 목격돼','[생존 무전] "좀비도 월요일은 싫어한다" 연구 결과','[생존 무전] 감염자 무리, 옛 노래방 앞에서 반주에 맞춰 신음']};
-CAMPS.zombie={id:'zombie',n:'좀비 아포칼립스',tag:'비밀',sub:'생존 지도자 · 감염, 굶주림, 그리고 사람',role:'지도자',yrs:4,maxT:3,rule:'free',scen0:'zomb',post:['zhorde','zwinter'],
+CAMPS.zombie={id:'zombie',n:'좀비 아포칼립스',tag:'비밀',sub:'서바이벌 액션 「방역선」 · 해가 뜰 때까지 10분',role:'지도자',yrs:4,maxT:3,rule:'free',scen0:'zomb',post:['zhorde','zwinter'],
   intro:'세상이 끝났다. 남은 사람들이 당신을 지도자로 뽑았다. 4년마다 생존자 총회가 다시 신임을 묻는다. 감염을 막고, 창고를 채우고, <b>사람이 사람으로 남게</b> 하라.',
   lbl:{a:'신망',i:'감염',m:'치료',e:'보급',p:'통제권',c:'암거래',u:'분열',chk:'견제',trn:'정보 공개',saf:'피난처',mil:'방어력'},init:{i:30,m:42,a:55,e:40,p:45,c:15,u:35,chk:55,trn:50,saf:35,mil:40},
   advN:['부관','보급관'],vl:{P:'통제력',M:'방어력',X:'혼란',C:'암거래'},bg:BG_Z,ev:EV_Z,adv:ADV_Z,news:NEWS_Z,rp:RP_Z,dict:DICT_Z};
@@ -4799,11 +4928,99 @@ const MG_SWIM=c=>Object.assign(spEv('수영 50m 결승','우리 선수가 결승
 const MG_PK=c=>Object.assign(spEv('축구 결승 승부차기','연장까지 비겼다. <em>승부차기를 직접 치르거나 선수들에게 맡길 수 있다.</em> 직접 찰 때는 골문에서 노릴 곳을 누르고 힘 게이지를 초록 칸에 멈춰라. 위쪽 구석은 막기 어렵지만 너무 세면 크로스바를 넘긴다. 막을 때는 키커의 시선을 읽고 왼쪽·가운데·오른쪽으로 몸을 날려라.',[
   ['승부차기 완승',{a:6,u:-2},'경기장이 들썩였다. 그날 밤 거리마다 사람들이 쏟아져 나왔다.'],['승부차기 승리',{a:4,u:-1},'마지막 키커가 성공했다.'],
   ['승부차기 석패',{a:-1},'한 골 차였다. 선수들이 그라운드에 주저앉았다.'],['승부차기 완패',{a:-3,u:1},'관중석이 조용해졌다.']]),{mg:'pk'});
+const MG_TKD=c=>Object.assign(spEv('태권도 결승','종주국의 자존심이 걸린 <em>태권도 결승</em>이다. 직접 겨루거나 선수에게 맡길 수 있다. 직접 할 때는 상대가 발을 들 때 원이 초록으로 바뀌는 순간 <b>막기</b>를 누르고, 막아 낸 직후 차면 반격이 꽂힌다. 몸통은 2점, 머리는 3점이다.',[
+  ['태권도 금메달',{a:5,u:-1},'마지막 돌려차기가 머리에 꽂혔다. 선수가 태극기를 두르고 매트를 돌았다.'],['태권도 은메달',{a:2},'종이 한 장 차이였다. 선수는 상대의 손을 들어 주었다.'],
+  ['태권도 동메달',{a:1},'동메달 결정전을 이겼다.'],['태권도 노메달',{a:-2},'경기장이 조용해졌다.']]),{mg:'tkd'});
 const mgSlash=(endN)=>c=>Object.assign(spEv('현장 지휘','현장을 직접 지휘한다. <em>화면을 그어 바이러스를 베어라.</em> 시민은 베면 안 된다. <b>S등급</b>이면 '+endN+'을 선언할 수 있다.',[
   ['현장 지휘 S등급',{i:-12,m:5,a:4},'바이러스가 눈에 띄게 물러났다.',null,{ctx:['endemic',1]}],['현장 지휘 A등급',{i:-7,m:3,a:2},'확산세가 꺾였다.'],
   ['현장 지휘 B등급',{i:-2,a:-1},'기대만큼 빠르지 않았다.'],['현장 지휘 C등급 이하',{i:4,a:-3,m:-2},'현장이 무너졌다.']]),{mg:'slash'});
+/* ---------- 방역 특집: 판마다 다른 현장 ----------
+   준비 → 현장의 고비(무작위) → 현장 지휘(백신 슬래시) → 뒷수습(무작위) → 선언. 무작위로 고른 것은 ctx에 적어 둔다. */
+const PAND_MID={
+ kr:[spEv('잔여 백신 예약 대란','남은 백신을 당일 예약으로 풀자 <em>예약 앱이 3분 만에 마비</em>됐다. "광클 전쟁"이라는 말이 돈다.',[
+    ['예약을 나이순 배정제로 바꾼다',{trn:4,a:2,m:2},'줄 세우기는 지루했지만 공평했다. 앱은 다시 멀쩡해졌다.'],
+    ['서버를 열 배로 늘리고 선착순을 유지한다',{e:-2,a:1},'다음 날은 30분을 버텼다. 젊은 층의 불만은 그대로였다.'],
+    ['동네 병원 전화 예약을 함께 연다',{m:3,saf:2,a:2},'스마트폰이 없는 노인들도 백신을 맞았다.']]),
+  spEv('역학조사 동선 공개','확진자의 <em>동선을 어디까지 공개할지</em> 정해야 한다. 공개된 가게는 손님이 끊기고, 숨기면 불안이 커진다.',[
+    ['시간과 장소만, 사람은 지운다',{trn:4,m:2,a:1},'신상 털기는 줄었다. 가게들은 여전히 울상이었다.'],
+    ['상호까지 모두 공개한다',{m:3,u:3,trn:2,e:-2},'접촉자 검사가 빨라졌다. 공개된 식당 몇 곳이 문을 닫았다.'],
+    ['휴대전화 기지국 정보로 접촉자에게만 알린다',{m:4,p:3,chk:-3},'검사는 빨라졌다. "사생활을 어디까지 내줘야 하나"는 질문도 커졌다.']]),
+  spEv('중환자 병상 부족','수도권 <em>중환자 병상 가동률이 95%</em>를 넘었다. 구급차가 병원을 찾아 도로를 돈다.',[
+    ['민간 병원에 병상 동원 명령을 내린다',{m:5,p:3,e:-2,u:2},'명령 이틀 만에 병상 이백 개가 생겼다. 병원 협회는 소송을 예고했다.'],
+    ['손실을 보상하고 자발적 참여를 늘린다',{m:3,e:-4,a:2},'참여 병원이 하루하루 늘었다. 비용 청구서도 함께 늘었다.'],
+    ['경증 환자를 생활치료센터로 옮긴다',{m:3,saf:2},'연수원과 기숙사가 치료센터가 됐다. 병상에 숨통이 트였다.']]),
+  spEv('간호사 사직 행렬','두 해째 이어진 격무에 <em>간호사 사직서</em>가 쏟아진다. "더는 버틸 수 없다"는 손 편지가 퍼졌다.',[
+    ['위험 수당을 두 배로 올린다',{m:3,e:-3,a:3},'떠나려던 사람 몇이 남았다. 돈만으로는 모자랐다.'],
+    ['간호사 1인당 환자 수를 법으로 정한다',{m:4,saf:3,e:-2,chk:2},'병원들이 반발했다. 법은 통과됐다.'],
+    ['군 의료 인력과 은퇴 간호사를 불러들인다',{m:2,mil:-1,a:2},'흰 머리의 간호사들이 다시 가운을 입었다.']]),
+  spEv('방역 패스 논쟁','식당·카페에 <em>접종 증명(방역 패스)</em>을 요구할지 정해야 한다. 미접종자 단체가 광장에 모였다.',[
+    ['도입한다',{m:4,u:4,chk:-2},'접종률이 한 달 만에 10%p 올랐다. 광장의 목소리도 커졌다.'],
+    ['권고에 그친다',{u:-2,m:1},'가게마다 기준이 달랐다. 손님들은 헷갈렸다.'],
+    ['음성 확인서로도 대신할 수 있게 한다',{m:2,u:-1,trn:2},'절충안이었다. 선별진료소 줄이 길어졌다.']])],
+ joseon:[spEv('피막 설치','도성 밖에 <em>병자를 따로 모아 둘 막(피막)</em>을 세우자는 의견이 나왔다. 가족과 떼어 놓는다며 백성이 울부짖는다.',[
+    ['피막을 세우고 의원을 붙인다',{m:4,u:2,e:-2},'병자들이 막으로 옮겨졌다. 의원이 하루 두 번 돌았다.'],
+    ['집에서 앓되 문에 표식을 하게 한다',{m:2,u:-1},'붉은 천이 걸린 집이 골목마다 늘었다.'],
+    ['절과 서원을 빌려 병자를 돌본다',{m:3,saf:2,trn:1},'스님과 유생들이 함께 죽을 끓였다.']]),
+  spEv('약재 값 폭등','역병이 돌자 <em>약재 상인들이 값을 열 배로 올렸다</em>. 혜민서의 약도 바닥났다.',[
+    ['매점매석한 상인을 잡아들인다',{p:3,a:3,e:-1},'창고에서 약재가 쏟아져 나왔다.'],
+    ['나라 곳간에서 약재를 풀어 싸게 판다',{e:-3,m:3,a:2},'약재 값이 내려갔다. 곳간은 비었다.'],
+    ['청에 사신을 보내 약재를 사 온다',{e:-2,m:2,trn:1},'석 달 뒤 약재를 실은 수레가 압록강을 건넜다.']]),
+  spEv('굿판 금지 상소','역병을 쫓겠다며 <em>마을마다 굿판</em>이 벌어진다. 유생들은 굿을 금하라는 상소를 올렸다.',[
+    ['굿을 금하고 의원의 말을 따르게 한다',{m:2,u:3,p:2},'무당들이 쫓겨났다. 백성들은 불안해했다.'],
+    ['굿은 두되 모여 앉지 못하게 한다',{m:1,u:-2},'굿판이 작아졌다. 소리는 그대로였다.'],
+    ['나라에서 여제(厲祭)를 올려 민심을 달랜다',{a:3,u:-3,e:-1},'임금이 직접 제를 올렸다. 백성들이 조금 안심했다.']]),
+  spEv('과거 시험 연기','역병 속에 <em>과거 시험</em>이 코앞이다. 팔도의 선비가 한양으로 몰려오면 병도 함께 온다.',[
+    ['과거를 미룬다',{m:3,u:2,a:-1},'선비들이 짐을 풀었다. 한 해를 더 기다려야 한다.'],
+    ['도마다 따로 시험을 치른다',{m:2,e:-2,trn:2},'시험장이 여덟 곳으로 나뉘었다. 감독할 관리가 모자랐다.'],
+    ['예정대로 치른다',{e:1,m:-3},'시험은 무사히 끝났다. 귀향길에 병이 따라갔다.']])],
+ usa:[spEv('마스크 의무화 소송','몇몇 주가 <em>연방 마스크 의무화</em>에 소송을 걸었다. 학교마다 학부모들이 둘로 갈렸다.',[
+    ['연방 시설과 대중교통에만 의무화한다',{m:3,u:-1,chk:2},'싸움은 줄었다. 효과도 줄었다.'],
+    ['대법원까지 가서 싸운다',{p:3,u:4,m:2},'판결까지 넉 달이 걸렸다. 그동안 주마다 규칙이 달랐다.'],
+    ['주지사들에게 맡긴다',{u:-3,m:-2,chk:3},'파란 주와 빨간 주의 확진 곡선이 갈라졌다.']]),
+  spEv('병원선 파견','뉴욕 병원들이 <em>포화 상태</em>다. 해군 병원선을 보낼 수 있다.',[
+    ['병원선을 즉시 보낸다',{m:4,mil:-1,a:3},'흰 병원선이 허드슨강에 들어섰다. 사진 한 장이 미국을 위로했다.'],
+    ['야전 병원을 컨벤션센터에 세운다',{m:3,e:-2},'전시장이 병동이 됐다.'],
+    ['환자를 다른 주로 옮긴다',{m:2,u:2},'헬기들이 밤새 주 경계를 넘었다.']]),
+  spEv('백신 음모론 확산','소셜 미디어에 <em>백신 음모론</em>이 퍼진다. 접종률이 멈췄다.',[
+    ['플랫폼에 허위 정보 삭제를 요구한다',{m:3,chk:-3,p:2},'게시물 수백만 건이 지워졌다. "검열"이라는 반발도 거셌다.'],
+    ['접종하면 복권 추첨권을 준다',{m:3,e:-2,a:2},'백만 달러 당첨자가 나오자 접종소 줄이 길어졌다.'],
+    ['지역 목사와 의사들을 앞세워 설득한다',{m:2,u:-3,trn:2},'느렸지만 마음이 움직였다.']]),
+  spEv('재난 지원금','봉쇄가 길어지자 <em>가계마다 현금을 보내자</em>는 법안이 올라왔다.',[
+    ['한 사람당 1,400달러를 보낸다',{a:5,e:3,c:2},'수표마다 대통령 이름이 찍혀 있었다.'],
+    ['소득 하위층에만 보낸다',{saf:4,e:1,u:2},'"우리는 왜 빠졌냐"는 불만이 나왔다.'],
+    ['대신 실업 급여를 늘린다',{saf:3,e:2},'눈에 덜 띄었지만 필요한 곳에 갔다.']])]};
+const PAND_POST={
+ kr:[spEv('백신 나눔','국내 접종률이 80%를 넘었다. <em>남는 백신을 가난한 나라에 보내자</em>는 요청이 온다.',[
+    ['국제 기구를 통해 천만 회분을 보낸다',{a:4,trn:3,e:-2},'아프리카 공항에 태극기가 붙은 상자가 내렸다.'],
+    ['추가 접종용으로 남겨 둔다',{m:3,a:-1},'겨울 대비는 든든했다. 외교 성적표는 아쉬웠다.'],
+    ['백신 생산 기술을 함께 나눈다',{e:3,a:3,c:2},'국내 공장에서 다른 나라 백신까지 만들게 됐다.']]),
+  spEv('공공의료원 설립','이번 위기에서 <em>공공 병원이 모자랐다</em>는 반성이 나왔다. 지방에 공공의료원을 새로 짓자는 법안이 올라왔다.',[
+    ['권역마다 짓는다',{saf:5,e:-4,m:3},'첫 삽을 뜨는 날 의료진들이 박수를 쳤다.'],
+    ['민간 병원과 협약으로 대신한다',{e:-1,m:2,c:2},'건물은 안 지었다. 협약서는 두꺼웠다.'],
+    ['감염병 전문 병원 한 곳만 짓는다',{m:3,e:-2},'다음 팬데믹의 사령탑이 생겼다.']]),
+  spEv('일상 회복 시점','확진자가 줄자 <em>거리두기를 언제 풀지</em> 정해야 한다. 자영업자들은 하루가 급하다.',[
+    ['한 번에 모두 푼다',{e:5,a:3,i:3},'거리마다 사람이 쏟아졌다. 확진자가 다시 조금 늘었다.'],
+    ['세 단계로 나눠 푼다',{e:3,m:2,a:1},'느렸지만 되돌아가지 않았다.'],
+    ['실내 마스크만 남기고 푼다',{e:4,m:1},'식당은 붐볐다. 지하철 안은 여전히 조용했다.']])],
+ joseon:[spEv('진휼','역병이 지나간 고을마다 <em>굶주린 백성</em>이 넘친다.',[
+    ['곳간을 열어 구휼미를 푼다',{a:4,e:-3,saf:3},'죽 끓이는 솥이 고을마다 걸렸다.'],
+    ['부잣집에 쌀을 내게 한다',{a:2,u:2,c:-1},'양반들이 투덜대며 곳간을 열었다.'],
+    ['세금을 한 해 깎아 준다',{e:-2,a:3},'관아의 장부가 가벼워졌다.']]),
+  spEv('의서 편찬','이번 역병에서 효험을 본 <em>처방을 책으로 엮자</em>는 건의가 올라왔다.',[
+    ['의서를 펴내 팔도에 내려보낸다',{m:3,trn:2,e:-1},'고을 의원마다 같은 책을 펼쳤다.'],
+    ['언문으로도 펴내 백성이 읽게 한다',{m:3,a:3,u:-2},'글 모르던 아낙들도 처방을 읽었다.'],
+    ['궁 안에만 둔다',{p:2},'책은 서고에 꽂혔다.']])],
+ usa:[spEv('질병통제 개혁','다음 대유행에 대비해 <em>질병통제센터를 고치자</em>는 목소리가 크다.',[
+    ['예산을 두 배로 늘린다',{m:4,e:-3},'연구소마다 새 장비가 들어왔다.'],
+    ['백신 생산을 국내로 되돌린다',{e:2,m:3,c:1},'중서부에 백신 공장이 섰다.'],
+    ['독립 조사위원회를 꾸린다',{trn:5,chk:3},'두꺼운 보고서가 나왔다. 실수의 목록도 함께였다.']]),
+  spEv('일상 복귀 선언','확진자가 줄었다. <em>"우리는 해냈다"</em>고 말할 때일까.',[
+    ['독립기념일에 맞춰 선언한다',{a:4,e:3,i:2},'불꽃놀이가 밤하늘을 덮었다. 몇 주 뒤 변이 소식이 들렸다.'],
+    ['수치가 더 내려갈 때까지 기다린다',{m:2,a:-1},'신중했다. 지루해하는 사람도 많았다.'],
+    ['주마다 알아서 선언하게 한다',{u:-2,chk:2},'선언은 주마다 달랐다.']])]};
+const pandPick=(L,c,k)=>{const P=L[CP.id]||L.kr;if(c[k]==null)c[k]=Math.floor(Math.random()*P.length);return Object.assign({},P[c[k]%P.length]);};
 function mkPand(id,n,endN,lead,prep,bn){return {id:id,n:n,k:'good',tro:[endN+' 선언','끝나지 않은 위기'],cond:()=>true,bn:bn,steps:[
-  c=>spEv(n+' 준비',lead,prep),mgSlash(endN),
+  c=>spEv(n+' 준비',lead,prep),c=>pandPick(PAND_MID,c,'pm'),mgSlash(endN),c=>pandPick(PAND_POST,c,'pp'),
   c=>spEv(n+' 이후',c.endemic?'<em>S등급.</em> 확산이 잡혔다. 지금 '+endN+'을 선언할 수 있다. 선언에 성공하면 남은 임기 동안 위기가 다시 커지지 않고 해마다 내실이 쌓인다.':'위기는 아직 끝나지 않았다. 장기전을 준비해야 한다.',
    c.endemic?[[endN+'을 선언한다',{a:5,e:3},'선언문이 낭독됐다. 거리에서 박수가 터졌다.',null,{endemic:endN}],['선언은 미루고 감시를 이어 간다',{m:3,trn:2},'신중함을 택했다.']]
     :[['장기 대응 체계를 세운다',{m:3,saf:2,e:-1},'대응은 일상이 됐다.'],['회복으로 무게를 옮긴다',{e:3,i:2},'가게들이 다시 문을 열었다.']])]};}
@@ -4863,7 +5080,86 @@ SP.usa.push({id:'newdeal',n:'뉴딜 대공사',k:'good',tro:['뉴딜의 설계�
     ['댐과 고속도로를 짓는다',{e:5,saf:2,c:2},'공사장마다 사람이 몰렸다.'],['일자리 보장 프로그램을 만든다',{e:3,saf:4,a:2},'실업자들이 공원과 학교를 고쳤다.'],['민간 투자에 세금을 깎아 준다',{e:4,u:2},'공장이 돌았다. 혜택은 고르지 않았다.']]),
    c=>spEv('법원의 제동','대법원이 <em>공공사업법 일부에 위헌</em> 판결을 냈다.',[
     ['대법관 수를 늘려 밀어붙인다',{p:6,chk:-6,e:2},'"법원 장악"이라는 비판이 쏟아졌다.'],['법안을 다듬어 다시 낸다',{chk:3,e:1},'시간은 걸렸지만 통과됐다.'],['라디오로 국민에게 직접 호소한다',{a:4,p:2},'노변담화가 전국에 방송됐다.']])]});
-{const O=SP.kr.find(s=>s.id==='olym');if(O)O.steps=[O.steps[0],MG_ARCH,MG_SWIM,MG_PK,O.steps[O.steps.length-1]];}
+/* ---------- 올림픽 특집: 판마다 다른 대회 ----------
+   개막 → 개막 전야 이야기(무작위) → 종목 셋(양궁·수영·태권도·승부차기 가운데 무작위, 승부차기는 나오면 늘 마지막) → 대회 중 사건(무작위) → 폐막.
+   무작위로 고른 것은 첫 단계에서 ctx에 적어 두어 저장·불러오기 뒤에도 같은 대회가 이어진다.
+   종목이 끝날 때마다 시상대가 서고, 메달은 ctx.med(금·은·동)에 쌓여 특별 이벤트 머리의 메달 집계판과 폐막식에 나온다. */
+const OLY_IDS=['olym','olym_u'];
+const OLY_HOME=()=>CP.id==='usa'?'미국':'대한민국';
+// 개막 전야: 성화·기수·공연. only가 있으면 그 무대에서만 나온다.
+const OLY_PRE=[
+ {only:'kr',e:spEv('남북 공동 입장','개막을 열흘 앞두고 <em>남북 선수단 공동 입장</em> 제안이 왔다. 한반도기를 들고 함께 걸어 들어오자는 것이다.',[
+  ['받아들인다 — 한반도기를 들고 함께 입장한다',{u:-5,a:4,p:2},'두 선수단이 한 깃발 아래 걸어 들어오자 관중석이 일어섰다. 반대 집회도 같은 날 열렸다.'],
+  ['입장은 따로, 응원단만 함께한다',{u:-2,a:2},'남쪽 관중석 한편에 북쪽 응원단이 앉았다. 조용한 화해였다.'],
+  ['정중히 거절한다',{u:3,a:-1,mil:1},'"지금은 때가 아니다." 대회는 예정대로 열렸다.']])},
+ {e:spEv('성화 최종 주자','성화 봉송 <em>최종 주자</em>를 누구로 할지 정해야 한다. 그 한 사람이 대회의 얼굴이 된다.',[
+  ['은퇴한 국민 영웅',{a:4,u:-2},'백발의 영웅이 성화대를 향해 마지막 계단을 올랐다. 해설자가 말을 잇지 못했다.'],
+  ['팬데믹 최전선의 간호사',{a:5,m:2,saf:1},'방호복 대신 흰 운동복을 입은 간호사가 불을 붙였다. 세계 언론이 그 얼굴을 1면에 실었다.'],
+  ['올림픽을 꿈꾸는 열두 살 아이',{a:3,trn:2},'아이가 성화대에 불을 붙이고 펄쩍 뛰었다. "다음 올림픽엔 선수로 오겠다"는 말이 화제가 됐다.']])},
+ {f:null},   // 개막 공연 총감독(아래에서 무대별로 채운다)
+ {e:spEv('선수단 포상금','메달을 따면 줄 <em>포상금과 혜택</em>을 정해야 한다. 선수들은 발표를 기다린다.',[
+  ['금메달 포상금을 두 배로 올린다',{a:3,e:-3},'선수촌 식당이 술렁였다. "금메달 아니면 안 된다"는 말도 함께 돌았다.'],
+  ['메달 색과 상관없이 같은 지원을 한다',{a:2,trn:2,saf:2},'은·동메달 선수들이 처음으로 박수를 받았다. 4위 선수도 연금을 받는다.'],
+  ['포상금 대신 은퇴 선수 일자리를 만든다',{saf:3,e:-1,a:1},'코치·심판 일자리가 생겼다. 발표는 조용했지만 선수들은 오래 기억했다.']])},
+ {only:'usa',e:spEv('보이콧 압박','몇몇 나라가 <em>대회 보이콧</em>을 검토한다는 보도가 나왔다. 개최국 대통령의 한마디가 필요하다.',[
+  ['직접 전화를 돌려 참가를 설득한다',{a:4,p:2},'정상들의 답이 하나씩 왔다. 대부분 온다고 했다.'],
+  ['"오지 않을 나라는 오지 말라"고 말한다',{a:2,u:4,p:3},'국내에서는 박수가 나왔다. 두 나라가 실제로 오지 않았다.'],
+  ['조용히 기다린다',{a:-1},'보이콧은 흐지부지됐다. 대통령이 한 일은 없었다.']])}];
+// 개막 공연 총감독은 무대마다 후보가 다르다
+OLY_PRE[2].f=()=>CP.id==='usa'?spEv('개막 공연 총감독','개막 공연을 맡을 <em>총감독</em>을 골라야 한다.',[
+  ['할리우드 블록버스터 감독',{a:4,e:-3},'경기장 지붕 위로 거대한 우주선이 내려앉았다. 개막식이 영화가 됐다.'],
+  ['브로드웨이 연출가',{a:3,u:-2},'주경기장이 거대한 뮤지컬 무대가 됐다. 미국의 이민사가 노래로 흘렀다.'],
+  ['실리콘밸리 기술 기업',{e:3,a:2,c:2},'드론 만 대가 성조기를 그렸다. 후원사 로고도 함께 떴다.']])
+ :spEv('개막 공연 총감독','개막 공연을 맡을 <em>총감독</em>을 골라야 한다. 세계 수십억 명이 그 세 시간을 본다.',[
+  ['세계적인 영화감독',{a:4,e:-2},'한 편의 영화 같은 개막식이었다. 엔딩 크레디트처럼 선수단이 입장했다.'],
+  ['K팝 기획사 연합',{a:5,e:2,c:2},'떼창이 경기장을 덮었다. 동영상 조회수가 하룻밤에 1억을 넘었다.'],
+  ['국악과 전통 무용 명인들',{a:3,u:-3},'고요한 북소리로 시작해 수천 명의 춤으로 끝났다. 외신은 "가장 우아한 개막식"이라고 썼다.']]);
+// 대회 중 사건: 예전 사건 묶음(SP_TROUBLE)에 새 사건을 더한다
+const OLY_MID=SP_TROUBLE.map(e=>({e:e})).concat([
+ {only:'kr',e:spEv('광장 거리 응원','결승을 앞두고 <em>광화문 광장 거리 응원</em> 신청이 백만 명을 넘었다. 경찰은 안전을 걱정한다.',[
+  ['광장을 열고 대형 화면을 세운다',{a:5,u:-4,saf:-2},'붉은 옷의 물결이 광장을 메웠다. 응원가가 새벽까지 이어졌다.'],
+  ['구역을 나눠 인원을 제한한다',{a:2,saf:3},'광장이 질서 있게 찼다. 들어가지 못한 사람들은 골목에서 소리를 질렀다.'],
+  ['안전을 이유로 불허한다',{a:-4,u:2,saf:2},'광장은 비었다. 사람들은 동네 치킨집에서 응원했다.']])},
+ {e:spEv('도핑 의혹','금메달 후보인 우리 선수의 <em>도핑 검사에서 의심 수치</em>가 나왔다는 보도가 떴다. 재검사 결과는 사흘 뒤다.',[
+  ['결과가 나올 때까지 출전을 멈춘다',{trn:5,a:-2},'선수는 울면서 숙소로 돌아갔다. 사흘 뒤 재검사는 음성이었다.'],
+  ['"우리 선수를 믿는다"고 공개 지지한다',{a:3,trn:-2,u:2},'선수는 예정대로 뛰었다. 세계 언론은 그 발언을 오래 곱씹었다.'],
+  ['독립 조사단을 꾸려 모든 과정을 공개한다',{trn:6,chk:2,e:-1},'조사 과정이 생중계됐다. 결과는 검사 기관의 실수였다.']])},
+ {e:spEv('경기장 정전','결승이 한창인 주경기장에 <em>정전</em>이 일어났다. 수만 명이 어둠 속에 있다.',[
+  ['비상 발전기로 경기를 바로 잇는다',{e:-2,a:2},'불이 12분 만에 다시 켜졌다. 관중들이 휴대폰 불빛으로 기다렸다.'],
+  ['관중을 내보내고 경기를 다음 날로 미룬다',{saf:3,a:-2},'아무도 다치지 않았다. 선수들은 하루를 더 기다렸다.'],
+  ['책임자부터 문책한다',{p:3,a:1,u:2},'전력 공사 사장이 그날 밤 물러났다. 원인은 끝내 하청 업체의 실수였다.']])},
+ {e:spEv('암표 대란','개·폐막식 표가 <em>암표로 열 배</em>에 팔린다. 매크로로 표를 쓸어 간 업자들이 있다.',[
+  ['남은 표를 추첨제로 바꾼다',{trn:4,a:3},'추첨에 붙은 사람들의 인증 사진이 쏟아졌다.'],
+  ['암표 업자를 일제 단속한다',{p:3,a:2},'업자 수십 명이 붙잡혔다. 표값은 그대로였다.'],
+  ['시장에 맡긴다',{e:2,a:-3,c:2},'"올림픽은 부자들의 잔치"라는 기사가 났다.']])},
+ {e:spEv('태풍 북상','대회 닷새째, <em>태풍</em>이 개최 도시로 올라오고 있다. 야외 경기 일정이 줄줄이 걸려 있다.',[
+  ['야외 경기를 모두 미룬다',{saf:4,e:-2,a:-1},'태풍은 비켜 갔다. 일정은 꼬였지만 아무도 다치지 않았다.'],
+  ['경기는 하고 관중만 받지 않는다',{e:-1,a:1},'빈 관중석 앞에서 기록이 쏟아졌다.'],
+  ['예정대로 강행한다',{e:2,saf:-4,a:-2},'비바람 속에서 경기가 열렸다. 다친 선수가 나왔다.']])},
+ {e:spEv('선수의 정치적 발언','시상대에 선 한 선수가 <em>정부를 비판하는 문구</em>를 들어 보였다.',[
+  ['표현의 자유라며 문제 삼지 않는다',{chk:4,trn:3,p:-2},'"그 나라는 선수를 벌하지 않았다." 해외 언론이 높이 평가했다.'],
+  ['국가대표 자격을 정지한다',{p:4,chk:-4,u:4},'선수는 짐을 쌌다. 그 사진이 대회의 상징이 됐다.'],
+  ['선수를 직접 만나 이야기를 듣는다',{a:3,u:-2},'두 사람이 나란히 앉은 사진이 나왔다. 무슨 말이 오갔는지는 알려지지 않았다.']])}]);
+const olyPool=L=>L.map((x,i)=>[x,i]).filter(([x])=>!x.only||x.only===CP.id).map(([,i])=>i);
+const olyGet=(L,i)=>L[i].f?L[i].f():Object.assign({},L[i].e);   // 표의 원본을 건드리지 않게 복사해서 쓴다
+// 종목: 셋을 고르고 승부차기가 있으면 마지막에 둔다
+const OLY_SPORT={arch:c=>MG_ARCH(c),swim:c=>MG_SWIM(c),tkd:c=>MG_TKD(c),pk:c=>MG_PK(c)};
+function olyPlan(c){if(c.plan)return;const A=olyPool(OLY_PRE),B=olyPool(OLY_MID),pick=a=>a[Math.floor(Math.random()*a.length)];
+  const S=['arch','swim','tkd','pk'].sort(()=>Math.random()-.5).slice(0,3).sort((a,b)=>(a==='pk')-(b==='pk'));
+  c.plan=1;c.pre=pick(A);c.mid=pick(B);c.sports=S;c.med=[0,0,0];}
+// 메달 집계 한 줄(폐막 글에 쓴다). 금메달 수로 종합 순위를 어림한다.
+function olyMedalLine(c){const m=c.med||[0,0,0],n=m[0]+m[1]+m[2],rk=m[0]>=3?1:m[0]===2?2+(m[1]?0:1):m[0]===1?4+Math.max(0,2-m[1]):n?9:15;
+  return '<em>금 '+m[0]+' · 은 '+m[1]+' · 동 '+m[2]+'</em>, 종합 '+rk+'위로 대회를 마쳤다. ';}
+function olySteps(open,close){return [
+  c=>{olyPlan(c);return open(c);},
+  c=>{olyPlan(c);return olyGet(OLY_PRE,c.pre);},
+  c=>{olyPlan(c);return OLY_SPORT[c.sports[0]](c);},
+  c=>{olyPlan(c);return olyGet(OLY_MID,c.mid);},
+  c=>{olyPlan(c);return OLY_SPORT[c.sports[1]](c);},
+  c=>{olyPlan(c);return OLY_SPORT[c.sports[2]](c);},
+  c=>{olyPlan(c);const e=close(c);return Object.assign({},e,{d:olyMedalLine(c)+e.d});}];}
+{const O=SP.kr.find(s=>s.id==='olym');if(O){const st=O.steps;O.steps=olySteps(st[0],st[st.length-1]);}
+ const U=SP.usa.find(s=>s.id==='olym_u');if(U){const st=U.steps;U.steps=olySteps(st[0],st[st.length-1]);}}
 // 판의 6칸과 조건. 조건 하나 = [화면 지표, 비교, 기준] 또는 특별한 조건 이름
 const BOARD={kr:['amend','olym','expo','peace','war_k','pand_k'],joseon:['jikgye','envoy','gwageo','compile','war_j','pand_j'],usa:['amend22','moon','war_u','pand_u','olym_u','newdeal']};
 const NEED={amend:[['P','>=',50]],olym:[['E','>=',57],['A','>=',52],['H','>=',55]],expo:[['E','>=',53],['X','<=',30]],peace:[['X','<=',30],['NOWAR']],war_k:[['M','>=',70]],pand_k:[['COV'],['I','>=',20]],
@@ -4907,12 +5203,93 @@ function mgRun(kind,box){if(MG_SPORT[kind])return mgPick(kind,box);
 const MG_SPORT={
   arch:{n:'양궁 개인전 결승',how:'바람을 읽고 흔들리는 조준점을 맞춰 여섯 발을 쏜다',run:(b,d)=>mgArch(b,d),sim:()=>simArch()},
   swim:{n:'수영 50m 결승',how:'왼팔·오른팔을 번갈아 빠르게 눌러 헤엄친다',run:(b,d)=>mgSwim(b,d),sim:()=>simSwim()},
-  pk:{n:'축구 결승 승부차기',how:'우리 차례엔 직접 차고, 상대 차례엔 직접 막는다',run:(b,d)=>mgPK(b,d),sim:()=>simPK()}};
+  pk:{n:'축구 결승 승부차기',how:'우리 차례엔 직접 차고, 상대 차례엔 직접 막는다',run:(b,d)=>mgPK(b,d),sim:()=>simPK()},
+  tkd:{n:'태권도 결승',how:'상대의 발차기를 막고 반격해 점수를 딴다',run:(b,d)=>mgTkd(b,d),sim:()=>simTkd()}};
+
+/* ---------- 태권도 결승 ----------
+   20초씩 세 라운드. 상대는 잠깐 숨을 고르다가 몸통이나 머리를 노리고 발을 든다(둘레의 원이 줄어든다).
+   원이 초록일 때 막기를 누르면 막아 내고, 그 뒤 0.7초 안에 차면 반격으로 꽂힌다. 너무 일찍 막거나 못 막으면 상대 점수.
+   상대가 숨을 고를 때 먼저 차도 되지만 빗나가면 받아차기를 당할 수 있다. 몸통 2점, 머리 3점. 비기면 골든 라운드(먼저 따면 승). */
+const TK_R=3,TK_T=20,TK_WIN=.34;   // 라운드 수, 라운드 길이(초), 막기 창(초)
+function tkRival(){const n=MG_NAT()[0];return {n:n,sk:.9+Math.random()*.25};}
+function mgTkd(box,done){const R=tkRival(),$=id=>document.getElementById(id);
+  let me=0,op=0,rd=1,tl=TK_T,ph='ready',st='idle',tw=0,tt=0,ok='b',cool=0,ctr=0,gold=false,live=false,last=0,raf=0;
+  box.innerHTML='<div class="mgx tk"><div class="tk-sb"><div class="tk-p me"><span>'+OLY_HOME()+'</span><b id="tkMe">0</b></div><div class="tk-mid"><b id="tkRd">1라운드</b><i id="tkT">'+TK_T.toFixed(1)+'</i></div><div class="tk-p op"><b id="tkOp">0</b><span>'+R.n+'</span></div></div>'+
+    '<div class="tk-mat" id="tkMat"><div class="tk-f me" id="tkF0">'+tkFig('#2f5f99')+'</div><div class="tk-cue" id="tkCue"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="tk-g" cx="50" cy="50" r="22"/><circle id="tkRing" class="tk-ring" cx="50" cy="50" r="46"/></svg><b id="tkCueT"></b></div><div class="tk-f op" id="tkF1">'+tkFig('#c0392b')+'</div></div>'+
+    '<div class="pk-msg" id="tkMsg">상대가 발을 들면 원이 줄어든다. 초록일 때 막아라.</div>'+
+    '<div class="tk-btns"><button id="tkB" disabled>막기<small>Space</small></button><button id="tkK" disabled>몸통 차기<small>← · A</small></button><button id="tkH" disabled>머리 차기<small>→ · D</small></button></div>'+
+    '<button id="tkGo" class="pri" style="width:100%;padding:14px;margin-top:8px">경기 시작</button></div>';
+  const f0=$('tkF0'),f1=$('tkF1'),cue=$('tkCue'),ring=$('tkRing'),msg=t=>{$('tkMsg').textContent=t;};
+  const anim=(el,c)=>{el.classList.remove('kb','kh','hit','blk');void el.offsetWidth;el.classList.add(c);};
+  const sb=()=>{$('tkMe').textContent=me;$('tkOp').textContent=op;};
+  // ok: 상대가 노리는 곳(b 몸통·h 머리). 점수 크기(3점은 머리)로 누가 어느 발차기를 했는지 그린다
+  const score=(who,p,why)=>{if(who===0){me+=p;anim(f0,p===3?'kh':'kb');anim(f1,'hit');}else{op+=p;anim(f1,p===3?'kh':'kb');anim(f0,'hit');}
+    sb();msg(why);try{SFX.tkHit(p);}catch(e){}const el=$(who===0?'tkMe':'tkOp');el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
+    if(gold){live=false;setTimeout(end,700);}};
+  // 상대: 숨 고르기 → 발 들기(원이 줄어든다) → 차기
+  const idle=()=>{st='idle';tw=1+Math.random()*1.3/R.sk;cue.className='tk-cue';$('tkCueT').textContent='';};
+  const wind=()=>{st='wind';ok=Math.random()<.38*R.sk?'h':'b';tt=.95/R.sk;tw=tt;cue.className='tk-cue on '+ok;$('tkCueT').textContent=ok==='h'?'머리':'몸통';try{SFX.tkWind();}catch(e){}};
+  const act=a=>{if(!live)return;
+    if(a==='B'){if(st==='wind'){if(tw<=TK_WIN){st='ctr';ctr=.7;anim(f0,'blk');cue.className='tk-cue';try{SFX.tkBlock();}catch(e){}msg('막았다! 지금 차면 반격이다');}
+        else{st='idle';tw=.25;score(1,ok==='h'?3:2,'너무 일찍 막았다');idle();}}
+      return;}
+    if(cool>0)return;const kind=a==='H'?'h':'b',p=kind==='h'?3:2;cool=kind==='h'?1:.6;try{SFX.tkWhiff();}catch(e){}
+    if(st==='ctr'){score(0,p,'반격 성공! '+(p===3?'머리':'몸통')+' '+p+'점');idle();return;}
+    if(st==='wind'){if(Math.random()<.4){score(0,p,'먼저 꽂았다! '+p+'점');idle();}else{score(1,ok==='h'?3:2,'부딪쳤다. 상대 발이 먼저였다');idle();}return;}
+    const hit=Math.random()<(kind==='h'?.3:.55)/R.sk;anim(f0,kind==='h'?'kh':'kb');
+    if(hit)score(0,p,(kind==='h'?'머리':'몸통')+' 적중! '+p+'점');
+    else if(Math.random()<(kind==='h'?.5:.35)*R.sk){score(1,2,'빗나갔다. 받아차기를 당했다');idle();}
+    else msg('빗나갔다');};
+  const key=e=>{if(!live)return;const k=e.key;if(k===' '||k==='s'||k==='S'||k==='ArrowDown'){e.preventDefault();act('B');}
+    else if(k==='ArrowLeft'||k==='a'||k==='A'){e.preventDefault();act('K');}else if(k==='ArrowRight'||k==='ArrowUp'||k==='d'||k==='D'||k==='w'||k==='W'){e.preventDefault();act('H');}};
+  $('tkB').onclick=()=>act('B');$('tkK').onclick=()=>act('K');$('tkH').onclick=()=>act('H');document.addEventListener('keydown',key);
+  const stop=()=>{live=false;clearInterval(raf);document.removeEventListener('keydown',key);['tkB','tkK','tkH'].forEach(i=>{const b=$(i);if(b)b.disabled=true;});};
+  // 수영처럼 1/60초마다 돈다(시계는 실제 흐른 시간으로 잰다)
+  const loop=()=>{if(!box.isConnected){stop();return;}const now=performance.now(),dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;if(!live)return;
+    tl-=dt;cool=Math.max(0,cool-dt);$('tkT').textContent=Math.max(0,tl).toFixed(1);
+    if(st==='idle'){tw-=dt;if(tw<=0)wind();}
+    else if(st==='wind'){tw-=dt;const k=Math.max(0,tw/tt);ring.setAttribute('r',(22+24*k).toFixed(1));cue.classList.toggle('g',tw<=TK_WIN);
+      if(tw<=0){score(1,ok==='h'?3:2,'못 막았다. '+(ok==='h'?'머리 3점':'몸통 2점'));idle();}}
+    else if(st==='ctr'){ctr-=dt;if(ctr<=0){msg('반격 기회를 놓쳤다');idle();}}
+    if(tl<=0&&live){live=false;cue.className='tk-cue';
+      if(rd<TK_R){try{SFX.beep(0);}catch(e){}msg(rd+'라운드 끝 · '+me+' : '+op);setTimeout(()=>{rd++;tl=TK_T;$('tkRd').textContent=rd+'라운드';idle();live=true;},1400);}
+      else if(me===op&&!gold){gold=true;try{SFX.beep(0);}catch(e){}msg('동점! 골든 라운드 — 먼저 점수를 따면 이긴다');setTimeout(()=>{tl=15;$('tkRd').textContent='골든 라운드';idle();live=true;},1600);}
+      else end();}};
+  const end=()=>{stop();const win=me>op||(me===op&&Math.random()<.5),t=win?0:1;SFX.medal(t);
+    msg(me+' : '+op+' · '+(win?'금메달!':'은메달'));anim(win?f0:f1,'kh');$('tkGo').style.display='';$('tkGo').textContent='결과 보기';$('tkGo').onclick=()=>done(t);};
+  $('tkGo').onclick=()=>{$('tkGo').style.display='none';let c=3;msg('준비 · '+c);SFX.beep(3);const iv=setInterval(()=>{c--;if(c>0){msg('준비 · '+c);SFX.beep(c);}
+    else{clearInterval(iv);msg('시작!');SFX.beep(0);['tkB','tkK','tkH'].forEach(i=>$(i).disabled=false);idle();live=true;}},700);};
+  last=performance.now();raf=setInterval(loop,1000/60);}
+// 도복을 입은 선수 한 명(호구 색만 다르다). 차기·맞기·막기는 CSS로 움직인다.
+function tkFig(c){return '<svg viewBox="0 0 60 90" aria-hidden="true"><circle cx="30" cy="12" r="8" fill="#f2d7b6" stroke="#3a2a1c" stroke-width="1.4"/><path d="M22 8a8 8 0 0 1 16 0" fill="'+c+'"/>'+
+  '<path d="M18 24h24l-3 30H21z" fill="#fbfaf6" stroke="#3a2a1c" stroke-width="1.4"/><path d="M20 26h20l-2 18H22z" fill="'+c+'" opacity=".92"/><path d="M19 47h22" stroke="#1d1b18" stroke-width="3"/>'+
+  '<path class="tk-arm" d="M18 27l-8 12 6 4M42 27l8 12-6 4" fill="none" stroke="#fbfaf6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>'+
+  '<path class="tk-lg1" d="M24 54l-3 32" stroke="#fbfaf6" stroke-width="7" stroke-linecap="round"/><path class="tk-lg2" d="M36 54l3 32" stroke="#fbfaf6" stroke-width="7" stroke-linecap="round"/></svg>';}
+// 시뮬레이션: 라운드마다 주고받기 여러 번. 우리 선수 실력은 상대와 비슷하게(이길 확률 절반 남짓)
+function simTkd(){const R=tkRival(),m=.95+Math.random()*.25,L=[];let me=0,op=0;
+  for(let r=1;r<=TK_R;r++){let a=0,b=0;for(let x=0;x<6;x++){const p=Math.random()<.35?3:2;if(Math.random()<m/(m+R.sk))a+=Math.random()<.55?p:0;else b+=Math.random()<.55?p:0;}
+    me+=a;op+=b;L.push('<span class="k">'+r+'R</span>'+OLY_HOME()+' '+a+' : '+b+' '+R.n);}
+  let win=me>op;if(me===op){win=Math.random()<.5;L.push('<span class="k">골든</span>'+(win?OLY_HOME()+'이 먼저 땄다':R.n+'이 먼저 땄다'));}
+  return {lines:L,head:me+' : '+op+' · '+(win?'금메달':'은메달'),t:win?0:1};}
 function mgPick(kind,box){const G=MG_SPORT[kind];
   box.innerHTML='<div class="mgx mg-pick"><div class="mgx-h">'+G.n+'</div><div class="mgx-t">직접 치르면 실력만큼 결과가 나온다. 시뮬레이션으로 맡기면 선수들이 알아서 치르고, 결과만 빠르게 본다.</div>'+
     '<div class="mg-2"><button id="mgPlay" class="pri"><b>직접 한다</b><small>'+G.how+'</small></button><button id="mgSim"><b>시뮬레이션으로 진행</b><small>선수들에게 맡기고 결과만 본다</small></button></div></div>';
-  document.getElementById('mgPlay').onclick=()=>{try{aInit();SFX.click();}catch(e){}G.run(box,mgResolve);};
-  document.getElementById('mgSim').onclick=()=>{try{aInit();SFX.click();}catch(e){}mgSimShow(box,G.n,G.sim(),mgResolve);};}
+  // 경기가 끝나면 시상대를 세우고(메달 집계에 더한 뒤) 판정으로 넘어간다
+  const fin=t=>olyCere(box,G.n,t,()=>mgResolve(t));
+  document.getElementById('mgPlay').onclick=()=>{try{aInit();SFX.click();}catch(e){}G.run(box,fin);};
+  document.getElementById('mgSim').onclick=()=>{try{aInit();SFX.click();}catch(e){}mgSimShow(box,G.n,G.sim(),fin);};}
+/* 시상식: 종목이 끝날 때마다 시상대(2위·1위·3위)를 세우고 우리 자리를 금빛으로 비춘다. 메달을 못 따면 우리는 시상대 아래에서 박수를 친다.
+   올림픽 특집 중이면 메달을 집계(ctx.med)에 더한다. */
+function olyCere(box,n,t,go){const R0=CAR&&CAR.spRun;if(R0&&OLY_IDS.indexOf(R0.id)>=0&&t<3){R0.ctx.med=R0.ctx.med||[0,0,0];R0.ctx.med[t]++;}
+  const nat=MG_NAT(),home=OLY_HOME(),P=[0,1,2].map(k=>k===t?{n:home,me:1}:{n:nat.shift()}),col=['#e9c46a','#c9d1d9','#d08a54'],lab=['금','은','동'];
+  const blk=k=>'<div class="oc-s s'+k+(P[k].me?' me':'')+'" style="--d:'+[.5,.2,.8][k]+'s"><div class="oc-who"><i style="background:'+col[k]+'">'+lab[k]+'</i><b>'+(P[k].me?'우리 선수':P[k].n)+'</b><small>'+(P[k].me?home:'')+'</small></div><div class="oc-b"><span>'+(k+1)+'</span></div></div>';
+  const m=R0&&R0.ctx&&R0.ctx.med;
+  box.innerHTML='<div class="mgx oc"><div class="oc-h"><span class="oc-rings" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><b>'+n+' 시상식</b></div>'+
+    '<div class="oc-pod">'+blk(1)+blk(0)+blk(2)+'</div>'+
+    '<div class="oc-msg">'+(t<3?'<b>'+MEDAL[t]+'</b> · 시상대 '+(t+1)+'번째 칸에 '+home+' 국기가 오른다':'메달은 놓쳤다. 우리 선수가 시상대 아래에서 박수를 쳤다')+'</div>'+
+    (m?'<div class="oc-tally">'+olyTally(m)+'</div>':'')+'<button id="ocGo" class="pri" style="width:100%;padding:14px;margin-top:12px">계속</button></div>';
+  document.getElementById('ocGo').onclick=()=>{SFX.click();go();};}
+const olyTally=m=>'<span>메달 집계</span>'+['금','은','동'].map((x,k)=>'<i class="m'+k+'">'+x+'</i><b>'+m[k]+'</b>').join('');
 // r: {lines:[html], head:'결과 한 줄', t:0~3}. 줄이 하나씩 올라오고 마지막에 결과가 도장처럼 찍힌다.
 function mgSimShow(box,n,r,done){box.innerHTML='<div class="mgx mg-sim"><div class="mgx-h">'+n+' · 시뮬레이션</div><div class="mg-sl">'+
     r.lines.map((l,i)=>'<div style="animation-delay:'+(i*220)+'ms">'+l+'</div>').join('')+'</div>'+
@@ -4949,10 +5326,10 @@ function pkEnd(me,op){let a=pkScore(me),b=pkScore(op),lot='';if(a===b){lot=' (�
   const d=a-b;return {a:a,b:b,t:d>=2?0:d>=1?1:d>=-1?2:3,txt:'최종 '+a+' : '+b+(d>0?' 승리!':' 패배')+lot};}
 function mgPK(box,done){const me=[],op=[];let ph='',tgt=-1,pw=0,pd=1,tm=0,tmax=1.5,O=null,dive=-1,live=true,last=performance.now();
   box.innerHTML='<div class="mgx pq">'+
-   '<div class="pq-sb"><div><span>우리</span><b id="pqMe"></b></div><em id="pqRd"></em><div class="r"><span>상대</span><b id="pqOp"></b></div></div>'+
-   '<div class="pq-fd" id="pqFd"><div class="pq-gl"><div class="pq-net"></div><div class="pq-zs">'+PK_ZN.map((n,z)=>'<button class="pq-z" data-z="'+z+'" aria-label="'+n+'"></button>').join('')+'</div>'+
+   '<div class="pq-sb"><div><span>우리</span><b id="pqMe"></b></div><div class="c"><strong id="pqSc">0 : 0</strong><em id="pqRd"></em></div><div class="r"><span>상대</span><b id="pqOp"></b></div></div>'+
+   '<div class="pq-fd" id="pqFd"><div class="pq-cr" aria-hidden="true"></div><div class="pq-ad" aria-hidden="true"><span>PANDEMIC CUP · 결승 · 승부차기 · PANDEMIC CUP · 결승 · 승부차기 · PANDEMIC CUP · 결승 · 승부차기</span></div><div class="pq-gl"><div class="pq-net" id="pqNet"></div><div class="pq-zs">'+PK_ZN.map((n,z)=>'<button class="pq-z" data-z="'+z+'" aria-label="'+n+'"></button>').join('')+'</div>'+
     '<div class="pq-kp" id="pqKp">'+PK_FIG('#e3a72f',1)+'</div></div>'+
-    '<div class="pq-tg" id="pqTg"></div><div class="pq-kk" id="pqKk">'+PK_FIG('#b3261e',0)+'<i class="pq-tell" id="pqTell"></i></div><div class="pq-ball" id="pqBall"></div></div>'+
+    '<div class="pq-tg" id="pqTg"></div><div class="pq-kk" id="pqKk">'+PK_FIG('#b3261e',0)+'<i class="pq-tell" id="pqTell"></i></div><div class="pq-ball" id="pqBall"></div><div class="pq-fx" id="pqFx"></div></div>'+
    '<div class="pq-ctl"><div class="pq-pow" id="pqPow"><i class="pq-sw" id="pqSw"></i><b class="pq-nd" id="pqNd"></b><span>약하게</span><span>강하게</span></div>'+
     '<div class="pq-ti" id="pqTi"><i id="pqTf"></i></div>'+
     '<div class="pq-dv" id="pqDv"><button data-d="0">← 왼쪽</button><button data-d="1">가운데</button><button data-d="2">오른쪽 →</button></div></div>'+
@@ -4961,14 +5338,17 @@ function mgPK(box,done){const me=[],op=[];let ph='',tgt=-1,pw=0,pd=1,tm=0,tmax=1
   const GT=16,GH=130,BALL0=[50,206];   // 골문 위 여백·높이(px), 공 놓는 자리(가로 %, 세로 px)
   const zpos=(c,r)=>[10+80*(c+.5)/3,GT+GH*(r+.5)/2];
   const sbar=()=>{const n=Math.max(PK_N,me.length,op.length),d=a=>Array.from({length:n},(_,i)=>i<a.length?'<i class="'+(a[i]?'g':'x')+'"></i>':'<i></i>').join('');
-    $('pqMe').innerHTML=d(me);$('pqOp').innerHTML=d(op);const r=me.length+(me.length===op.length?1:0);
+    $('pqMe').innerHTML=d(me);$('pqOp').innerHTML=d(op);$('pqSc').textContent=me.filter(Boolean).length+' : '+op.filter(Boolean).length;const r=me.length+(me.length===op.length?1:0);
     $('pqRd').textContent=r>PK_N?'서든데스':r+'번째 키커';};
   const show=ids=>['pqPow','pqTi','pqDv','pqGo'].forEach(i=>{$(i).style.display=ids.indexOf(i)>=0?'':'none';});
   const reset=()=>{const b=$('pqBall'),kp=$('pqKp');b.style.transition=kp.style.transition='none';
     b.style.left=BALL0[0]+'%';b.style.top=BALL0[1]+'px';b.style.transform='translate(-50%,-50%)';kp.style.transform='translateX(-50%)';
-    void b.offsetWidth;b.style.transition=kp.style.transition='';$('pqTg').style.display='none';$('pqTell').style.opacity=0;fd.classList.remove('aim','keep');};
+    void b.offsetWidth;b.style.transition=kp.style.transition='';$('pqTg').style.display='none';$('pqFx').className='pq-fx';$('pqTell').style.opacity=0;fd.classList.remove('aim','keep');};
   // 공과 골키퍼를 움직인다. kc: 골키퍼가 날아간 쪽(0 왼쪽 1 가운데 2 오른쪽), kr: 높이(0 위 1 아래)
-  const fly=(x,y,kc,kr)=>{const b=$('pqBall'),kp=$('pqKp');b.style.left=x+'%';b.style.top=y+'px';b.style.transform='translate(-50%,-50%) scale(.62)';
+  // 결과 글씨(골!·선방!)를 크게 찍고, 골이면 그물이 출렁인다
+  const fx=(s,c,net)=>{const f=$('pqFx');f.textContent=s;f.className='pq-fx '+c;void f.offsetWidth;f.classList.add('on');
+    if(net){const n=$('pqNet');n.classList.remove('hit');void n.offsetWidth;n.classList.add('hit');}};
+  const fly=(x,y,kc,kr)=>{const b=$('pqBall'),kp=$('pqKp');b.style.left=x+'%';b.style.top=y+'px';b.style.transform='translate(-50%,-50%) scale(.62) rotate(600deg)';
     kp.style.transform=kc===1?(kr===0?'translateX(-50%) translateY(-24%)':'translateX(-50%) scaleY(.9)'):'translateX(-50%) translateX('+(kc===0?-115:115)+'%) rotate('+(kc===0?-1:1)*(kr===0?50:74)+'deg)';};
   const next=()=>{if(!live)return;sbar();reset();
     if(pkOver(me,op))return finish();
@@ -4985,11 +5365,13 @@ function mgPK(box,done){const me=[],op=[];let ph='',tgt=-1,pw=0,pd=1,tm=0,tmax=1
     const s=pkShot(tgt,pw);me.push(s.goal);let [x,y]=zpos(s.c,s.ty);if(s.miss==='over')y=GT-20;if(s.miss==='wide')x=s.c===0?4:96;
     fly(x,y,s.kc,s.kc===s.c?s.ty:1);
     setTimeout(()=>{$('pqMsg').textContent=s.goal?'골!':s.miss==='over'?'크로스바 위로 떴다!':s.miss==='wide'?'골대를 벗어났다!':s.weak?'힘이 실리지 않았다. 막혔다!':'골키퍼가 막았다!';
+      if(s.goal)fx('골!','g',1);else fx(s.miss?'실축':'막혔다','x');
       try{if(s.goal)SFX.goal();else SFX.miss();}catch(e){}sbar();},420);
     setTimeout(next,1700);};
   const kick=()=>{if(ph!=='keep')return;ph='fly';show([]);const d=dive<0?1:dive,k=pkKeep(d,O);op.push(k.goal);SFX.kick();if(d!==1)SFX.dive();
     let [x,y]=zpos(O.oc,O.orow);if(k.miss)y=GT-20;fly(x,y,d,d===O.oc?O.orow:1);
-    setTimeout(()=>{$('pqMsg').textContent=k.miss?'상대가 실축했다!':k.save?'막아냈다!':'실점…';try{if(k.save)SFX.save();else if(!k.goal)SFX.goal();else SFX.concede();}catch(e){}sbar();},420);
+    setTimeout(()=>{$('pqMsg').textContent=k.miss?'상대가 실축했다!':k.save?'막아냈다!':'실점…';
+      if(k.save)fx('선방!','s');else if(k.miss)fx('실축!','s');else fx('실점','x',1);try{if(k.save)SFX.save();else if(!k.goal)SFX.goal();else SFX.concede();}catch(e){}sbar();},420);
     setTimeout(next,1700);};
   $('pqDv').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(ph!=='keep')return;dive=+b.dataset.d;kick();});
   const key=e=>{if(!live)return;
@@ -5067,12 +5449,16 @@ function mgArch(box,done){const riv=arRivals(),mine=[];let live=true,ph='',ax=0,
   let rings='';for(let s=1;s<=10;s++)rings+='<circle r="'+(11-s)*AR_RW+'" fill="'+AR_COL(s)+'" stroke="'+(s===3||s===4?'#f7f3ea':'#1d1b18')+'" stroke-opacity=".45" stroke-width=".8"/>';
   box.innerHTML='<div class="mgx ar"><div class="ar-sb" id="arSb"></div>'+
    '<div class="ar-rng"><div class="ar-wind"><i class="ar-flag" id="arFlag"></i><span>바람</span><b id="arWind"></b></div>'+
-    '<div class="ar-tgt" id="arTgt"><svg viewBox="'+(-AR_R)+' '+(-AR_R)+' '+2*AR_R+' '+2*AR_R+'" aria-hidden="true">'+rings+'<path d="M-3 0H3M0 -3V3" stroke="#1d1b18" stroke-width=".8"/></svg>'+
+    '<div class="ar-hr" id="arHrW"><i id="arHeart">♥</i><b id="arHr">72</b><span>bpm</span></div>'+
+    '<div class="ar-tgt" id="arTgt"><svg viewBox="'+(-AR_R)+' '+(-AR_R)+' '+2*AR_R+' '+2*AR_R+'" aria-hidden="true">'+rings+'<circle r="'+AR_RW/2+'" fill="none" stroke="#1d1b18" stroke-opacity=".35" stroke-width=".6"/><path d="M-3 0H3M0 -3V3" stroke="#1d1b18" stroke-width=".8"/></svg>'+
     '<div class="ar-holes" id="arHoles"></div><i class="ar-aim" id="arAim"></i><i class="ar-ret" id="arRet"></i></div>'+
-    '<div class="ar-tip">바람 2m/s마다 과녁 한 칸쯤 밀린다 · 오래 당길수록 흔들린다</div></div>'+
+    '<div class="ar-tip">70m · 바람 2m/s마다 과녁 한 칸쯤 밀린다 · 오래 당길수록 심장이 뛰고 흔들린다</div></div>'+
    '<div class="pk-msg" id="arMsg"></div><button id="arGo" class="pri" style="width:100%;padding:15px;font-size:17px">쏜다!</button></div>';
   const $=id=>document.getElementById(id),tg=$('arTgt'),pos=(el,x,y)=>{el.style.left=((x+AR_R)/(2*AR_R)*100)+'%';el.style.top=((y+AR_R)/(2*AR_R)*100)+'%';};
-  const sbar=()=>{const row=(n,a,me)=>'<span class="n'+(me?' me':'')+'">'+n+'</span><span class="a">'+Array.from({length:AR_N},(_,i)=>i<a.length?'<i'+(a[i]===10?' class="x"':'')+'>'+(a[i]||'M')+'</i>':'<i></i>').join('')+'</span><b>'+arSum(a)+'</b>';
+  // 중계 화면 전광판: 칸 색은 맞힌 과녁 색, 이름 앞 숫자는 지금 순위
+  const sbar=()=>{const all=[mine].concat(riv.map(r=>r.sc)),rk=a=>1+all.filter(b=>arSum(b)>arSum(a)).length,
+    cell=s=>'<i class="s'+(s>=9?9:s>=7?7:s>=5?5:s>=3?3:s?1:0)+(s===10?' x':'')+'">'+(s||'M')+'</i>',
+    row=(n,a,me)=>'<span class="n'+(me?' me':'')+'"><em>'+rk(a)+'</em>'+n+'</span><span class="a">'+Array.from({length:AR_N},(_,i)=>i<a.length?cell(a[i]):'<i'+(me&&i===a.length&&live?' class="cur"':'')+'></i>').join('')+'</span><b'+(me?' class="me"':'')+'>'+arSum(a)+'</b>';
     $('arSb').innerHTML=row('우리',mine,1)+riv.map(r=>row(r.n,r.sc)).join('');};
   const next=()=>{if(!live)return;if(mine.length>=AR_N)return finish();
     ph='aim';SFX.bow();t0=performance.now();ax=ay=0;wind=Math.round((Math.random()<.5?-1:1)*Math.random()*6*10)/10;
@@ -5086,7 +5472,10 @@ function mgArch(box,done){const riv=arRivals(),mine=[];let live=true,ph='',ax=0,
   const shoot=()=>{if(ph!=='aim')return;ph='fly';$('arGo').disabled=true;
     const x=rx+wind*AR_DRIFT+mgGauss()*1.6,y=ry+mgGauss()*1.6,d=Math.hypot(x,y),s=d<=AR_R?Math.max(1,10-Math.floor(d/AR_RW)):0;
     mine.push(s);riv.forEach(r=>r.sc.push(arShot(r.m)));
-    const h=document.createElement('i');h.className='new';pos(h,x,y);$('arHoles').appendChild(h);
+    // 화살은 0.24초 날아가 꽂힌다. 꽂히면 과녁이 흔들리고 점수가 떠오른다
+    const h=document.createElement('i');h.className='new';pos(h,x,y);
+    setTimeout(()=>{if(!box.isConnected)return;$('arHoles').appendChild(h);tg.classList.remove('thk');void tg.offsetWidth;tg.classList.add('thk');
+      const pp=document.createElement('em');pp.className='ar-pop'+(s>=9?' g':'');pp.textContent=s===10&&Math.hypot(x,y)<=AR_RW/2?'X':s||'M';pos(pp,x,y);$('arHoles').appendChild(pp);setTimeout(()=>pp.remove(),1100);},240);
     $('arMsg').textContent=s===10?'텐! 한가운데다':s?s+'점':'과녁을 벗어났다';try{SFX.release();setTimeout(()=>SFX.thunk(s),240);}catch(e){}
     sbar();setTimeout(next,1300);};
   const key=e=>{if(!live||ph!=='aim')return;const m={ArrowLeft:[-4,0],ArrowRight:[4,0],ArrowUp:[0,-4],ArrowDown:[0,4]}[e.key];
@@ -5100,7 +5489,11 @@ function mgArch(box,done){const riv=arRivals(),mine=[];let live=true,ph='',ax=0,
     if(ph==='aim'){const t=(now-t0)/1000,A=3+9*Math.min(1,t/5);
       rx=ax+A*(Math.sin(1.7*t)+.5*Math.sin(4.3*t+1.3))/1.5;ry=ay+A*(Math.cos(1.3*t+.4)+.5*Math.sin(3.7*t))/1.5;
       pos($('arRet'),rx,ry);pos($('arAim'),ax,ay);}
+    // 심박수: 시위를 오래 당길수록 오르고(흔들림과 같은 곡선), 쏘고 나면 천천히 내려온다
+    if(now-hrT>400){hrT=now;const goal=(ph==='aim'?74+64*Math.min(1,(now-t0)/5000):72)+mine.length*2;bpm+=(goal-bpm)*.35+(Math.random()-.5)*2;
+      $('arHr').textContent=Math.round(bpm);$('arHeart').style.animationDuration=(60/bpm).toFixed(2)+'s';$('arHrW').classList.toggle('hi',bpm>118);}
     requestAnimationFrame(loop);};
+  let hrT=0,bpm=72;
   sbar();next();requestAnimationFrame(loop);}
 // 시뮬레이션: 우리 선수 실력은 화살당 평균 8.3~9.4점
 function simArch(){const riv=arRivals(),m=8.3+Math.random()*1.1,mine=[];for(let i=0;i<AR_N;i++){mine.push(arShot(m));riv.forEach(r=>r.sc.push(arShot(r.m)));}
@@ -5156,6 +5549,9 @@ function spAct(a,t){const R0=CAR.spRun;if(!R0)return;R0.done++;if(t<=1)R0.ok++;
   if(!queue.some(q=>q.sg)){ // 마지막 단계
     if(R0.k==='good'&&R0.tro){const g=R0.ok*2>R0.done;CAR.tro.push({id:'sp_'+R0.id,n:R0.tro[g?0:1],g:g?1:0,term:CAR.term,year:Math.floor(S.turn/PY)+1});
       last.x+=' <em>'+R0.n+' 마무리: '+(g?R0.tro[0]:R0.tro[1])+'</em>.';}
+    // 올림픽: 메달 집계를 커리어 기록에 남기고, 금메달 셋 이상이면 업적을 하나 더 준다
+    if(OLY_IDS.indexOf(R0.id)>=0&&R0.ctx.med){const m=R0.ctx.med;CAR.spEnds=CAR.spEnds||[];CAR.spEnds.push(R0.n+': 금 '+m[0]+' · 은 '+m[1]+' · 동 '+m[2]);
+      if(m[0]>=3)CAR.tro.push({id:'oly_gold',n:'금메달 '+m[0]+'개의 대회',g:1,term:CAR.term,year:Math.floor(S.turn/PY)+1});}
     CAR.spRun=null;if(OLY_SP.indexOf(R0.id)>=0)bgmGame();}}
 const SPEND={future:'다음 대통령부터 적용',drop:'논의를 접음',withdraw:'발의 철회',accept:'부결에 승복',refuse:'계엄 건의 거절',fire:'장성 경질',lift:'계엄 해제',purge:'공신 숙청',appease:'녹봉으로 회유',step:'권한 일부 반환',balance:'대간 강화',swap:'영의정 교체',trust:'재상에게 맡김',keep:'현행 유지'};
 // 한 번 고친 헌법은 계속 유지된다(amendPerm): 이후 임기마다 다시 출마할 수 있다
@@ -5270,6 +5666,10 @@ Object.assign(SFX,{
   else if(t===1){[523,659,784].forEach((f,k)=>tone(f,'triangle',.5,.14,k*.12));}
   else if(t===2){tone(523,'triangle',.3,.13);tone(659,'triangle',.5,.13,.14);}
   else{tone(330,'triangle',.4,.12);tone(262,'triangle',.6,.12,.2);}},
+ tkWhiff:()=>sweep(.16,.05,900,2400,0,1.2),                    // 태권도: 발이 바람을 가른다
+ tkWind:()=>tone(520,'triangle',.06,.05),                          // 상대가 발을 든다
+ tkBlock:()=>{clk(900,.6);tone(180,'sine',.08,.14);},              // 팔로 막아 냈다
+ tkHit:p=>{noise(.09,.16,0,2600);tone(p===3?150:110,'sine',.16,.24,0,60);if(p===3)tone(1320,'triangle',.18,.05,.06);},   // 호구에 꽂혔다(머리는 전자 호구 소리가 한 번 더)
  simRes:(n,t)=>{for(let i=0;i<n;i++)tone(1200,'square',.02,.04,i*.22);SFX.stamp(n*.22+.15);setTimeout(()=>SFX.medal(t),(n*.22+.35)*1000);},
  swing:()=>sweep(.16,.05,900,2600,0,1.1),                      // 백신 슬래시 칼바람
  whistle:()=>whis(2300,.4,.1),
@@ -5832,7 +6232,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   const ldex=LEADK.map(id=>{const on=MEM.leaders&&MEM.leaders[id],L=LEAD[id];return chip(on,L.col,on?portrait(L.n,22)+L.n:'???',on?'3px 10px 3px 3px':'');}).join('');
   const cmb=Object.keys(CAMPS).filter(campOn).map(id=>{const X=CAMPS[id];return '<button class="cmb'+(camp===id?' on':'')+'" data-c="'+id+'"><span class="cmb-t"><b>'+X.n+'</b><span class="cmb-tag'+(X.tag==='DLC'?' dlc':'')+'">'+X.tag+'</span></span><span class="cmb-s">'+X.sub+'</span></button>';}).join('');
   const lockd=BGS.map(q=>[q,bgLock(q)]).filter(x=>x[1]);
-  const opts='<option value=""'+(B?'':' selected')+' disabled>인물을 선택하세요</option>'+BGS.map((q,k)=>{const L=bgLock(q);
+  const opts='<option value=""'+(B?'':' selected')+' disabled>인물을 선택하세요</option><option value="r">🎲 랜덤 — 고를 수 있는 인물 중 무작위로</option>'+BGS.map((q,k)=>{const L=bgLock(q);
     return '<option value="'+k+'"'+(L?' disabled':'')+(bg===k?' selected':'')+'>'+(L?(L.used?q.n+' · 이미 함께한 비밀 인물':'??? · 잠긴 비밀 인물'):q.n+' — '+(q.k||''))+'</option>';}).join('');
   const bgSel='<label class="bgsel'+(B?'':' ph')+'"><select id="bgSel" aria-label="출발 인물">'+opts+'</select></label>'+
     (B?'<div class="bgcard">'+portrait(B.n,56)+'<div><div class="bgcard-h"><b>'+B.n+'</b><span>'+ageTxt(B)+'</span></div><div class="bgcard-k">'+(B.k||'')+(B.sec?' · 비밀 인물':'')+'</div>'+
@@ -5863,7 +6263,9 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   '<button id="edBtn" style="width:100%;font-size:13px;margin-bottom:8px">인적사항 바꾸기</button>'+
   '<div style="text-align:center;font-size:11px;color:var(--text-muted);margin:6px 0 10px">팬데믹 대통령 '+GAME_VER+' · 라이트</div></div>';
   const $=id=>document.getElementById(id);
-  $('bgSel').onchange=e=>{SFX.click();bg=e.target.value===''?-1:+e.target.value;homeLite();};
+  $('bgSel').onchange=e=>{SFX.click();const v=e.target.value;
+    // 랜덤: 지금 고를 수 있는(잠기지 않은) 인물 가운데 한 명
+    if(v==='r'){const P=BGS.map((q,i)=>i).filter(i=>!bgLock(BGS[i]));bg=P.length?P[Math.floor(Math.random()*P.length)]:-1;}else bg=v===''?-1:+v;homeLite();};
   R.querySelectorAll('.cmb').forEach(b=>b.onclick=()=>{SFX.click();if(camp!==b.dataset.c){camp=b.dataset.c;bg=-1;}homeLite();});
   R.querySelectorAll('.mdb').forEach(b=>b.onclick=()=>{SFX.click();mode=+b.dataset.k;homeLite();});
   R.querySelectorAll('.dfb').forEach(b=>b.onclick=()=>{SFX.click();dif=+b.dataset.k;homeLite();});
@@ -5893,7 +6295,8 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   const pb=(l,a,n)=>'<div class="gx-pb"><span>'+l+'</span><em>'+a+' / '+n+'</em><i><s style="width:'+(n?Math.round(a/n*100):0)+'%"></s></i></div>';
   const pc='<aside class="gx-pc" aria-label="내 기록"><div class="gx-pc-h"><span>기록 보관소</span><b>'+esc(NICK||'익명')+'</b></div>'+
     '<div class="gx-pc-g">'+st('최고 커리어 점수',MEM.best100?MEM.best100.toLocaleString('ko-KR'):'—','점')+st('최장 재임',MEM.longest||'—','년')+st('지나온 인생',MEM.careers||0,'번')+'</div>'+
-    pb('지도자 도감',Object.keys(MEM.leaders||{}).length,LEADK.length)+pb('임기 평가 도감',Object.keys(MEM.ends||{}).length,ENDC.length)+'</aside>';
+    pb('지도자 도감',Object.keys(MEM.leaders||{}).length,LEADK.length)+pb('임기 평가 도감',Object.keys(MEM.ends||{}).length,ENDC.length)+
+    (MEM.zg&&MEM.zg.runs?'<div class="gx-pc-z"><span>방역선 최고</span><b>'+MEM.zg.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+MEM.zg.wins+'번</span></div>':'')+'</aside>';
   let sel=0;
   cine([{t:'메인 메뉴',h:'<div class="gx gx-title"><canvas class="gx-bg" aria-hidden="true"></canvas><div class="gx-seal" aria-hidden="true">'+emblemSvg('embgS')+'</div>'+
     '<div class="gx-tl"><div class="emb go gx-logo">'+emblemSvg()+'<div><h1 class="emb-t"><span>팬데믹</span> <span>대통령</span></h1><p class="emb-s">한 번의 인생, 한 나라의 운명</p></div></div>'+
@@ -5946,19 +6349,21 @@ function gxStats(q,C){if(!q.e)return q.d?'<p class="gx-note">'+q.d+'</p>':'';
     return '<dt>'+vNameC(k,C)+'</dt><dd class="gx-bar"><i class="'+(v>0?'p':'n')+' '+c+'" style="width:'+w.toFixed(1)+'%;animation-delay:'+(120+j*60)+'ms"></i></dd><dd class="gx-v '+c+'">'+(v>0?'+':'−')+Math.abs(v)+'</dd>';}).join('')+'</dl>'+
     (q.t?'<div class="gx-note">운명 개입 +'+q.t+'</div>':'');}
 // 2단계: 지도자. 아래 명단에서 고르면 왼쪽 무대에 크게 선다. 잠긴 비밀 인물은 실루엣과 힌트만 보인다.
-// 명단 맨 끝의 '랜덤' 칸: 고르면 지금 고를 수 있는 지도자들 위를 룰렛처럼 돌다가 한 사람에게 멈추고 취임 준비로 간다
+// 명단 맨 앞의 '랜덤' 칸(처음 열면 여기가 골라져 있다. 앞쪽 인물만 몰리지 않게): 고르면 지금 고를 수 있는 지도자들 위를 룰렛처럼 돌다가 한 사람에게 멈추고 취임 준비로 간다
 const GX_SIL='<svg class="gx-sil" viewBox="-4 -8 72 72" aria-hidden="true"><path d="M7 64C9 52 19 46 32 46S55 52 57 64Z"/><path d="M28 39.5V47.5H36V39.5Z"/><ellipse cx="32" cy="30" rx="11.5" ry="13.5"/><text x="32" y="37" text-anchor="middle">?</text></svg>';
-function stepLeader(){const C=CAMPS[camp],BGS=C.bg,RI=BGS.length,pool=BGS.map((q,i)=>i).filter(i=>!bgLock(BGS[i]));
-  const first=BGS.findIndex(q=>!bgLock(q));let k=bg>=0&&!bgLock(BGS[bg])?bg:Math.max(0,first),spin=false;
-  const tiles=BGS.map((q,i)=>{const L=bgLock(q);return '<button class="gx-t'+(L?' lk'+(L.used?' used':''):'')+'" style="--i:'+i+'" aria-label="'+(L&&!L.used?'잠긴 비밀 인물':q.n)+'">'+portrait(q.n,'100%',0,1)+'<span class="gx-tn" aria-hidden="true">'+(L&&!L.used?'???':q.n)+'</span></button>';}).join('')+
-    '<button class="gx-t gx-rnd" style="--i:'+RI+'" aria-label="무작위 선택">'+GX_SIL+'<span class="gx-tn" aria-hidden="true">랜덤</span></button>';
+function stepLeader(){if(camp==='zombie')return zgOpen();const C=CAMPS[camp],BGS=C.bg,RI=BGS.length,pool=BGS.map((q,i)=>i).filter(i=>!bgLock(BGS[i]));
+  let k=bg>=0&&!bgLock(BGS[bg])?bg:RI,spin=false;
+  // 화면 순서: 랜덤 칸이 맨 앞, 그 뒤로 명단 순서. k는 늘 명단 번호(랜덤은 RI)이고 방향키는 화면 순서(VO)를 따른다
+  const VO=[RI].concat(BGS.map((q,i)=>i));
+  const tiles='<button class="gx-t gx-rnd" data-i="'+RI+'" style="--i:0" aria-label="무작위 선택">'+GX_SIL+'<span class="gx-tn" aria-hidden="true">랜덤</span></button>'+BGS.map((q,i)=>{const L=bgLock(q);return '<button class="gx-t'+(L?' lk'+(L.used?' used':''):'')+'" data-i="'+i+'" style="--i:'+(i+1)+'" aria-label="'+(L&&!L.used?'잠긴 비밀 인물':q.n)+'">'+portrait(q.n,'100%',0,1)+'<span class="gx-tn" aria-hidden="true">'+(L&&!L.used?'???':q.n)+'</span></button>';}).join('');
   cine([{t:'지도자 선택',h:'<div class="gx gx-ld" data-c="'+camp+'">'+gxTop(1,C.n+' · '+BGS.length+'명')+
     '<div class="gx-stage"><div class="gx-wm" aria-hidden="true"></div><div class="gx-fig"></div></div><div class="gx-info" aria-live="polite"></div><div class="gx-roster" role="listbox" aria-label="지도자 명단">'+tiles+'</div></div>'}],
     {nav:false,cls:'gm',back:stepCamp,key:e=>{if(spin)return true;const n=BGS.length+1;
-      if(e.key==='ArrowRight'||e.key==='ArrowLeft'){draw((k+(e.key==='ArrowRight'?1:-1)+n)%n,1);return true;}
-      if(e.key==='ArrowDown'||e.key==='ArrowUp'){const cols=T.filter(t=>t.offsetTop===T[0].offsetTop).length||n,j=k+(e.key==='ArrowDown'?cols:-cols);if(j>=0&&j<n)draw(j,1);return true;}
+      const p=VO.indexOf(k);
+      if(e.key==='ArrowRight'||e.key==='ArrowLeft'){draw(VO[(p+(e.key==='ArrowRight'?1:-1)+n)%n],1);return true;}
+      if(e.key==='ArrowDown'||e.key==='ArrowUp'){const D=[...root.querySelectorAll('.gx-t')],cols=D.filter(t=>t.offsetTop===D[0].offsetTop).length||n,j=p+(e.key==='ArrowDown'?cols:-cols);if(j>=0&&j<n)draw(VO[j],1);return true;}
       if(gxEnter(e)){ok();return true;}}});
-  const root=document.querySelector('.gx-ld'),T=[...root.querySelectorAll('.gx-t')],wm=root.querySelector('.gx-wm'),fig=root.querySelector('.gx-fig'),info=root.querySelector('.gx-info');
+  const root=document.querySelector('.gx-ld'),T=[...root.querySelectorAll('.gx-t')].sort((a,b)=>a.dataset.i-b.dataset.i),wm=root.querySelector('.gx-wm'),fig=root.querySelector('.gx-fig'),info=root.querySelector('.gx-info');
   const ok=()=>{if(spin)return;if(k===RI)return roll();if(bgLock(BGS[k]))return gxSfx('lock');gxSfx('coin');bg=k;stepSetup();};
   // 금테가 명단 순서대로 한 칸씩 돌며 점점 느려지다가, 미리 뽑아 둔 사람의 칸에서 정확히 멈춘다(마지막에 건너뛰지 않는다)
   const roll=()=>{if(!pool.length)return;spin=true;root.classList.add('spin');const L=pool.length,fi=Math.floor(Math.random()*L),s0=Math.floor(Math.random()*L),
@@ -6190,7 +6595,7 @@ function lbDet(r,rk){const d=r.det,dv=v=>v==null||v===''?'–':Number(v).toLocal
   bnSeen=d.bn?cur:null;ev();}// 무대·결정 빈도에 따라 정해지는 값(새 게임과 불러오기가 함께 쓴다)
 function cfgApply(){CP=CAMPS[camp];document.documentElement.dataset.camp=CP.id;YRS=CP.yrs;MAXT=CP.maxT;KN=Object.assign({},KN0,CP.lbl);PY=MODE[mode].py;TPT=12/PY;EVS=MODE[mode].evs;}
 
-/* ---------- START / TERM ---------- */function start(){
+/* ---------- START / TERM ---------- */function start(){if(camp==='zombie')return zgOpen();
   PINH='';cfgApply();bgmGame();
   if(!CP.bg[bg]||bgLock(CP.bg[bg])){bg=-1;return home();}
   const B=CP.bg[bg];if(B.once){MEM.secUsed=MEM.secUsed||{};MEM.secUsed[B.sec]=1;msave();}
@@ -6316,7 +6721,9 @@ function hud(o){if(isP())return hudP(o);const y=Math.floor(S.turn/PY)+1,v=Math.r
    '<div style="font-size:10.5px;letter-spacing:.06em;color:#ff8f86;font-weight:700;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#ff8f86;animation:pls 1.4s infinite"></span>'+(CP.id==='joseon'?'장계':'LIVE')+' · '+scnName()+'</div>'+
    hs.map((q,j)=>'<div style="font-size:11px;color:var(--text-secondary);white-space:nowrap;line-height:1.5">'+q[0]+' <span style="color:#fff;font-size:13px;font-weight:700">'+odoHTML(X.id+(isCov()?'':CAR.term)+'_'+j,q)+'</span></div>').join('')+'</div>'+
   '<div style="position:absolute;left:10px;bottom:7px;font-size:12px;color:var(--text-secondary);text-shadow:0 1px 6px rgba(0,0,0,.8)">'+X.iName+' <span style="font-weight:600;color:'+cL+'">'+v+'</span> <span style="color:'+cL+'">'+lb+'</span></div>'+
-  '<div style="position:absolute;right:10px;top:8px;font-size:11px;color:var(--text-muted)">'+X.map+'</div></div>'+
+  // 올림픽 중에는 지도 이름 자리에 메달 집계를 띄운다
+  (CAR&&CAR.spRun&&OLY_IDS.indexOf(CAR.spRun.id)>=0&&CAR.spRun.ctx.med?'<div class="map-med">'+CAR.spRun.ctx.med.map((n,k)=>'<i class="m'+k+'">'+['금','은','동'][k]+'</i><b>'+n+'</b>').join('')+'</div>'
+   :'<div style="position:absolute;right:10px;top:8px;font-size:11px;color:var(--text-muted)">'+X.map+'</div>')+'</div>'+
   statsHTML()+
   '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:12px;color:var(--text-muted)">'+
   '<span style="display:inline-flex;align-items:center;gap:6px">운명 개입 '+(tok?coins:'<span style="opacity:.5">없음</span>')+'</span>'+
@@ -6355,8 +6762,12 @@ const SPX={
  jikgye:{bg:'#4a1712',ac:'#d9b25a',art:'seal',ch:'權'},envoy:{bg:'#7a1f1a',ac:'#4f9a8a',art:'gate'},gwageo:{bg:'#33312c',ac:'#c7a35a',art:'scroll'},compile:{bg:'#4b3a26',ac:'#e6cf9a',art:'books'}};
 function spxOpen(){const R0=CAR.spRun||{},X=SPX[R0.id]||(R0.k==='power'?SPX.amend:SPX.g20),i=cur.sp.i,n=cur.sp.n;
   const dots=Array.from({length:n},(_,j)=>'<i'+(j<i?' class="d"':j===i?' class="c"':'')+'></i>').join('');
-  return '<div class="spx" style="--sb:'+X.bg+';--sa:'+X.ac+'"><svg class="spx-art" viewBox="0 0 120 120" aria-hidden="true">'+SPX_ART[X.art]+(X.ch?'<text x="60" y="76" text-anchor="middle" font-size="44" font-weight="800" stroke="none" fill="currentColor">'+X.ch+'</text>':'')+'</svg>'+
-   '<div class="spx-h"><b class="hd">'+(R0.n||'특별 이벤트')+'</b><span class="spx-st">특별 이벤트 · '+String(cur.tag||'').replace('특별 이벤트 · '+(R0.n||'')+' ','').replace('/',' / ')+'<span class="spx-d">'+dots+'</span></span></div>';}
+  // 특집마다 머리에 한 줄을 더한다: 올림픽은 메달 집계, 방역은 작은 상황판
+  const oly=OLY_IDS.indexOf(R0.id)>=0,pand=/^pand_/.test(R0.id||''),m=R0.ctx&&R0.ctx.med;
+  const bar=(k,v,c)=>'<span>'+k+'<em><i style="width:'+Math.max(0,Math.min(100,v))+'%;background:'+c+'"></i></em><b>'+Math.round(v)+'</b></span>';
+  const extra=oly&&m?'<div class="spx-med">'+olyTally(m)+'</div>':pand?'<div class="spx-dash">'+bar(SCX().iName||'위기 지수',S.i,S.i>=50?'#ff7b6b':S.i>=25?'#ffd166':'#7ee0a8')+bar(vName('H'),vVal('H'),'#8fd3ff')+bar(vName('A'),vVal('A'),'#f1d589')+'</div>':'';
+  return '<div class="spx'+(oly?' oly':'')+'" style="--sb:'+X.bg+';--sa:'+X.ac+'"><svg class="spx-art" viewBox="0 0 120 120" aria-hidden="true">'+SPX_ART[X.art]+(X.ch?'<text x="60" y="76" text-anchor="middle" font-size="44" font-weight="800" stroke="none" fill="currentColor">'+X.ch+'</text>':'')+'</svg>'+
+   '<div class="spx-h"><b class="hd">'+(R0.n||'특별 이벤트')+'</b><span class="spx-st">특별 이벤트 · '+String(cur.tag||'').replace('특별 이벤트 · '+(R0.n||'')+' ','').replace('/',' / ')+'<span class="spx-d">'+dots+'</span></span>'+extra+'</div>';}
 
 function ev(){if(pendingNews){const n=pendingNews;pendingNews=null;return breaking(n,ev);}
   if(cur.bn&&bnSeen!==cur){bnSeen=cur;return breaking(cur.bn,ev);}
@@ -7253,6 +7664,21 @@ function hofRender(){const v=hofView(),body=document.getElementById('hofBody');h
   body.classList.toggle('still',!first);
   body.innerHTML='<div class="hof-side">'+left+'</div>'+mainCard+'<div class="hof-side">'+right+'</div>';}
 
+/* ---------- 좀비 아포칼립스: 서바이벌 액션 「방역선」 ----------
+   좀비 무대는 정치 시뮬레이션 대신 따로 만든 액션 게임(zombie.html)을 화면 가득 띄운다. 게임이 끝나면 결과를 postMessage로 알려 오고,
+   최고 점수는 기록 보관소(MEM)에 남긴다. 게임 안 음악과 겹치지 않게 그동안 배경음악은 멈춘다. */
+let ZG=null;
+function zgOpen(){if(ZG)return;try{if(CINE)cineClose();}catch(e){}window.scrollTo(0,0);bgmSet(BGM.trk,false);
+  const w=document.createElement('div');w.className='lbe zge';w.setAttribute('role','dialog');w.setAttribute('aria-label','좀비 아포칼립스 · 방역선');
+  w.innerHTML='<iframe src="zombie.html?embed=1&nick='+encodeURIComponent(NICK||'')+'" title="방역선" allow="autoplay"></iframe>';
+  document.body.appendChild(w);document.body.style.overflow='hidden';ZG={el:w};
+  const fr=w.querySelector('iframe');fr.onload=()=>{try{fr.contentWindow.focus();}catch(e){}};
+  try{eggSet('zombie');}catch(e){}}
+function zgClose(){if(!ZG)return;ZG.el.remove();ZG=null;document.body.style.overflow='';home();}
+addEventListener('message',e=>{if(!ZG||!e.data||!e.data.zg)return;const fr=ZG.el.querySelector('iframe');if(!fr||e.source!==fr.contentWindow)return;
+  if(e.data.zg==='result'){const r=e.data;try{MEM.zg=MEM.zg||{best:0,runs:0,wins:0};MEM.zg.runs++;if(r.win)MEM.zg.wins++;if((+r.score||0)>MEM.zg.best)MEM.zg.best=+r.score||0;msave();}catch(x){}}
+  else if(e.data.zg==='close'){try{SFX.back();}catch(x){}zgClose();}});
+
 // 예전 명예의 전당(leaderboard.html을 화면 가득 띄우던 방식). 지금은 쓰지 않지만 postMessage 처리를 위해 남겨 둔다.
 let LBE=null;
 function openBoardEmbed(o){o=o||{};if(IN_ART)return artBoard(o);lbeClose();window.scrollTo(0,0);
@@ -7415,7 +7841,7 @@ const TOUR=[
   [[93,740,116,34],'임명','누구 대신 앉힐지 고르면 바로 바뀐다.']]},
  {img:'board',y:[130,745],t:'특별 국정 과제',c:[
   [[16,143,168,150],'잠긴 과제','조건이 모자란 칸은 회색이다. ✗가 붙은 조건이 모자란 것이다.'],
-  [[16,301,168,150],'고를 수 있는 과제','조건을 채운 칸은 색이 들어온다. 눌러서 고른다. 올림픽·방역 총력전 같은 과제는 수영, 승부차기, 백신 슬래시를 직접 해야 한다.'],
+  [[16,301,168,150],'고를 수 있는 과제','조건을 채운 칸은 색이 들어온다. 눌러서 고른다. 올림픽·방역 총력전 같은 과제는 양궁·수영·태권도·승부차기, 백신 슬래시를 직접 하거나 시뮬레이션으로 맡긴다. 대회와 현장의 사건은 판마다 다르다.'],
   [[28,264,111,17],'조건','무엇이 얼마나 필요한지, 지금 값은 얼마인지.'],
   [[16,623,343,53],'과제 시작','고른 과제가 올해의 사건으로 이어진다.'],
   [[16,684,343,48],'넘어가기','올해는 아무 과제도 벌이지 않는다.']]},
@@ -7480,7 +7906,7 @@ function guideText(back){window.scrollTo(0,0);
    '<p>위기와 상관없는 공통 고민(측근 인사, 통계, 언론 등)도 위기마다 다른 모습으로 나온다. 한 커리어에서 같은 사건은 다시 나오지 않는다.</p>');
   const S6=sec('scen','6. 위기와 특별 이벤트',
    '<p>위기는 임기마다 다르다. 무엇이 올지는 미리 알 수 없다. 해가 바뀔 때마다 위기가 다시 커지고, 큰일이 터지면 <b>호외</b>가 뜬다. 위기마다 사건과 참모, 뉴스, 상황판 숫자가 모두 다르다.</p>'+
-   '<p><b style="color:#8f6a12">특별 국정 과제</b> · 해마다 참모 회의가 끝나면 6칸짜리 판이 열린다. 조건을 채운 과제만 색이 들어오고, 하나를 골라 벌이거나 넘어갈 수 있다. 단계가 2~4개 이어지고, 절반 넘게 성공하면 업적, 아니면 불명예가 붙는다. 올림픽은 <b>수영과 승부차기</b>를, 방역 총력전(조선은 역병 퇴치, 미국은 대유행 총력 대응)은 <b>백신 슬래시</b>를 직접 해야 하고, 그 단계는 주사위 대신 경기 결과로 판정한다. 백신 슬래시에서 <b>S등급</b>을 받고 선언에 성공하면 엔데믹(종식)이 선포되어, 남은 임기 동안 위기가 다시 커지지 않고 해마다 경제·안전망·지지율이 오른다. <b>군사가 70 이상</b>이면 전쟁 과제(다국적 연합 작전 · 대마도 정벌 · 해외 원정)가 열린다.</p>'+
+   '<p><b style="color:#8f6a12">특별 국정 과제</b> · 해마다 참모 회의가 끝나면 6칸짜리 판이 열린다. 조건을 채운 과제만 색이 들어오고, 하나를 골라 벌이거나 넘어갈 수 있다. 단계가 2~4개 이어지고, 절반 넘게 성공하면 업적, 아니면 불명예가 붙는다. 올림픽은 <b>양궁·수영·태권도·승부차기</b> 가운데 세 종목을(대회마다 다르다. 끝날 때마다 시상식이 열리고 메달이 집계된다), 방역 총력전(조선은 역병 퇴치, 미국은 대유행 총력 대응)은 <b>백신 슬래시</b>를 직접 해야 하고, 그 단계는 주사위 대신 경기 결과로 판정한다. 백신 슬래시에서 <b>S등급</b>을 받고 선언에 성공하면 엔데믹(종식)이 선포되어, 남은 임기 동안 위기가 다시 커지지 않고 해마다 경제·안전망·지지율이 오른다. <b>군사가 70 이상</b>이면 전쟁 과제(다국적 연합 작전 · 대마도 정벌 · 해외 원정)가 열린다.</p>'+
    '<p><b style="color:#b3261e">연임 개헌</b> · 대한민국은 5년 단임이다. 하지만 <b>권력이 50 이상</b>이면 판에 연임 개헌 과제가 열린다. 개헌안을 내면 국민투표(지지율이 높을수록 통과 가능성이 크다)를 거친다. 국민투표는 판정 주사위 없이 화면에 보인 통과 가능성으로만 갈린다. <b>한 번 통과한 개헌은 계속 유지돼</b>, 이후 임기마다 다시 대선에 나갈 수 있고 임기 한도도 두 배로 늘어난다. 편법이나 재투표 강행 같은 길도 있지만 기록에 남는다. 미국은 두 번째 임기에 같은 방식으로 3선 금지 조항 폐지 이벤트가 열린다.</p>'+
    '<p><b style="color:#b3261e">비상계엄</b> · 대한민국에서 연임 개헌을 마친 뒤 <b>권력 70 이상, 군사 70 이상</b>이면 군 수뇌부가 계엄을 건의한다. 거사 성공 가능성은 지지율과 상관없고, 권력·군사가 높을수록, <b>나라가 혼란할수록</b> 오른다(10~90%, 판정 주사위 없음). 성공하면 선거가 사라지는 <b>영구집권</b>이 시작된다. 견제·신뢰가 무너지고, 이후 지지율은 떨어질 때마다 1.5배로 떨어진다. 임기 말 지지율이 35 미만이면 봉기 위험이 생기고 15 미만이면 봉기로 쫓겨난다. 실패하면 내란으로 체포돼 그대로 끝난다(명예 −8).</p>');
   const S7=sec('elect','7. 임기 말 규칙',
