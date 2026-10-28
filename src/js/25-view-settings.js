@@ -255,11 +255,4 @@ function stepSetup(){const C=CAMPS[camp],B=C.bg[bg];if(!B||bgLock(B))return step
   document.getElementById('gxGo').onclick=go;
   paint();}
 // 도감: 만난 지도자와 받아 본 임기 평가
-function dexScene(){const got=Object.keys(MEM.ends).length,lg=Object.keys(MEM.leaders||{}).length;
-  const chip=(on,col,inner,pad)=>'<span style="display:inline-flex;align-items:center;gap:6px;vertical-align:middle;font-size:12px;padding:'+(pad||'4px 10px')+';border-radius:999px;margin:0 6px 6px 0;'+(on?'background:color-mix(in srgb,'+col+' 18%,var(--surface-1));border:1px solid color-mix(in srgb,'+col+' 45%,transparent);color:var(--text-primary);font-weight:600':'border:1px dashed var(--border-strong);color:var(--text-muted)')+'">'+inner+'</span>';
-  const dex=ENDC.map(e=>{const on=MEM.ends[e[0]];return chip(on,'#2f4a6b',on?(HNAME[e[0]]||e[1]):(HNAME[e[0]]?'???':e[1]));}).join('');
-  const ldex=LEADK.map(id=>{const on=MEM.leaders&&MEM.leaders[id],L=LEAD[id];return chip(on,L.col,on?portrait(L.n,22)+L.n:'???',on?'3px 10px 3px 3px':'');}).join('');
-  cine([{t:'도감',h:'<div class="cs-c" style="max-width:860px"><div class="cs-h a2" style="font-size:clamp(30px,4.6vw,52px)">도감</div><div class="cs-line"></div>'+
-    '<div class="cs-paper a3">'+lab('지도자 도감 · '+lg+' / '+LEADK.length)+'<div style="margin-bottom:18px">'+ldex+'</div>'+lab('임기 평가 도감 · '+got+' / '+ENDC.length)+'<div>'+dex+'</div></div></div>'}],
-    {nav:false,back:home,title:'기록 보관소'});}
 

@@ -1,7 +1,8 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"58ccd837a1","h":"34a8bacb4a83d616"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"b0fc23ca22","h":"30c6ccf18792f5c6"},"guide":{"v":"6e340774ec","h":"f9cc624808514a7e"},"sail":{"v":"a030839df5","h":"01634b3d6493b2d8"},"slash":{"v":"91b6243685","h":"9a753ed1fed964a5"},"sports":{"v":"b0afee4c6b","h":"002ce537ad523cf9"}};
+const LZ_M={"board":{"v":"58ccd837a1","h":"34a8bacb4a83d616"},"dex":{"v":"26cfda6042","h":"6576c1542ccf56b4"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"b0fc23ca22","h":"30c6ccf18792f5c6"},"guide":{"v":"6e340774ec","h":"f9cc624808514a7e"},"sail":{"v":"a030839df5","h":"01634b3d6493b2d8"},"slash":{"v":"91b6243685","h":"9a753ed1fed964a5"},"sports":{"v":"b0afee4c6b","h":"002ce537ad523cf9"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
+function dexScene(){return lzCall('dex','dexScene',arguments);}
 function mgWar(){return lzCall('games','mgWar',arguments);}
 function simWar(){return lzCall('games','simWar',arguments);}
 function mgMoon(){return lzCall('games','mgMoon',arguments);}
@@ -416,6 +417,7 @@ const BG=[
  {id:'chung',n:'정주영',k:'맨손으로 일군 기업가',s:'맨손으로 일군 현대를 이끄는 기업인. 모래사장 사진 한 장으로 배를 수주해 조선소를 세계 무대에 올렸다.',e:{e:10,chk:-4,a:-4},age:60,x:'정주영의 길'},
  {id:'ahn',n:'안철수',k:'백신을 만든 과학 기업가',s:'의사이자 컴퓨터 백신을 만든 과학 기업가. "새 정치" 바람을 일으키며 2012년 대선에 뛰어들었다.',e:{m:8,trn:6,a:-4},age:50,x:'안철수의 길'},
  {id:'dangun',n:'단군왕검',k:'나라를 처음 연 시조',sec:'dangun',hint:'숨겨진 임기 평가를 하나라도 찾으면 깨어난다.',s:'하늘의 뜻을 받아 아사달에 처음 나라를 열었다는 고조선의 시조. "널리 인간을 이롭게 하라."',e:{a:8,u:-6,m:4,e:4,mil:3},age:40,ageQ:1,t:1,x:'단군왕검의 길'},
+ {id:'jusigyeong',n:'주시경',k:'한글을 가르친 국어학자',sec:'tutor',hint:'튜토리얼을 하나도 빠짐없이 끝까지 읽은 사람에게만 말을 건다.',s:'"말이 오르면 나라가 오르고, 말이 내리면 나라도 내린다." 우리말 문법을 세우고 밤낮으로 학생을 가르친 국어학자. 설명서를 끝까지 읽는 사람을 누구보다 아낀다.',e:{trn:8,u:-6,a:3,saf:3,chk:3},age:38,t:1,x:'주시경의 길'},
  {id:'jyw',n:'정영우',k:'외대부고 3대 교장',sec:'jyw',once:1,al:'출발',hint:'학교 이름에 비밀이 숨어 있다.',s:'외대부고 3대 교장. 20여 년간 수학 교사로 교단에 섰다. 서로 다른 학생들을 한 교실에 모으듯 갈라진 나라를 하나로 묶고, 사람을 길러 위기를 넘는다.',e:{u:-12,a:10,trn:7,m:6,e:6,chk:5,saf:4},age:50,t:3,x:'정영우의 길'}];
 const MODE=[{n:'표준',d:'1년에 6번 결정',py:6,evs:.78},{n:'속전속결',d:'1년에 3번 결정',py:3,evs:1.05}];
 
@@ -953,7 +955,8 @@ const PFS={
  '광개토대왕':'c=gap,cc=#7a2e2a,h=short,hw=crown,f=mus+full','선덕여왕':'c=hanfu,cc=#8a2e4a,h=bun,hc=#1d1b18,hw=crown','김춘추':'c=hanfu,cc=#2f4a6b,hw=gwan,f=mus+goatee',
  '장보고':'c=gap,cc=#2c5a7a,h=short,f=full,w','왕건':'c=hanfu,cc=#7a2e2a,hw=myeon,f=mus+full','서희':'c=dan,cc=#2f5f7a,hw=samo,f=mus+jbeard',
  '강감찬':'c=gap,cc=#5d6b7a,hw=iron,f=long,hc=#cfc8ba','안창호':'c=suit,cc=#2b3a55,t=#3d5a80,h=side,f=mus','이승만':'c=suit,cc=#3a3f45,t=#2f4a6b,h=side,hc=#cfc8ba',
- '단군왕검':'c=robe,cc=#e6dcc6,h=long,hc=#e6e0d4,f=long','정영우':'c=suit,cc=#2b3a55,t=#2f5f99,h=side,hc=#3a352e,g,a=smile',
+ '주시경':'c=suit,cc=#3a352e,t=#e6dcc6,h=short,hc=#1d1b18,f=mus',
+'단군왕검':'c=robe,cc=#e6dcc6,h=long,hc=#e6e0d4,f=long','정영우':'c=suit,cc=#2b3a55,t=#2f5f99,h=side,hc=#3a352e,g,a=smile',
  // 엔딩 지도자 추가분
  '니콜라이 2세':'c=milcoat,cc=#2e5a3a,h=side,hc=#6b5038,f=mus+full','찰스 1세':'c=ruff,cc=#3a3f45,h=long,hc=#4a3b2e,f=mus+goatee','로베스피에르':'c=coat18,cc=#2f5f7a,h=wigw',
  '페르디난드 마르코스':'c=shirt,cc=#e9e2d2,sk=#c99a72,h=side,hc=#1d1b18','니콜라에 차우셰스쿠':'c=suit,cc=#3a3f45,t=#7a2e2a,h=messy,hc=#6a645b','수하르토':'c=suit,cc=#2b3a55,t=#3a3f45,sk=#b98a62,h=side,hc=#1d1b18,a=smile',
@@ -4279,13 +4282,6 @@ function stepSetup(){const C=CAMPS[camp],B=C.bg[bg];if(!B||bgLock(B))return step
   document.getElementById('gxGo').onclick=go;
   paint();}
 // 도감: 만난 지도자와 받아 본 임기 평가
-function dexScene(){const got=Object.keys(MEM.ends).length,lg=Object.keys(MEM.leaders||{}).length;
-  const chip=(on,col,inner,pad)=>'<span style="display:inline-flex;align-items:center;gap:6px;vertical-align:middle;font-size:12px;padding:'+(pad||'4px 10px')+';border-radius:999px;margin:0 6px 6px 0;'+(on?'background:color-mix(in srgb,'+col+' 18%,var(--surface-1));border:1px solid color-mix(in srgb,'+col+' 45%,transparent);color:var(--text-primary);font-weight:600':'border:1px dashed var(--border-strong);color:var(--text-muted)')+'">'+inner+'</span>';
-  const dex=ENDC.map(e=>{const on=MEM.ends[e[0]];return chip(on,'#2f4a6b',on?(HNAME[e[0]]||e[1]):(HNAME[e[0]]?'???':e[1]));}).join('');
-  const ldex=LEADK.map(id=>{const on=MEM.leaders&&MEM.leaders[id],L=LEAD[id];return chip(on,L.col,on?portrait(L.n,22)+L.n:'???',on?'3px 10px 3px 3px':'');}).join('');
-  cine([{t:'도감',h:'<div class="cs-c" style="max-width:860px"><div class="cs-h a2" style="font-size:clamp(30px,4.6vw,52px)">도감</div><div class="cs-line"></div>'+
-    '<div class="cs-paper a3">'+lab('지도자 도감 · '+lg+' / '+LEADK.length)+'<div style="margin-bottom:18px">'+ldex+'</div>'+lab('임기 평가 도감 · '+got+' / '+ENDC.length)+'<div>'+dex+'</div></div></div>'}],
-    {nav:false,back:home,title:'기록 보관소'});}
 
 /* ---------- 불러오기: 진행 중인 게임 저장 ---------- */
 // 게임 중 저장하기를 누르면 이 기기(localStorage)에 저장한다(결정 화면·결과 화면에서만). 커리어가 끝나면 그 판의 저장은 지운다.
@@ -4810,11 +4806,15 @@ const TIPS={
  special:['특별 이벤트','특별 국정 과제 판에서 고른 큰일이다. 단계가 2~4개 이어지고, 앞에서 고른 것이 뒤를 바꾼다. 절반 넘게 성공하면 업적, 아니면 불명예가 붙는다. <b>권력</b>이 50을 넘으면 연임 개헌 같은 권력 과제도 판에 열린다. 경기가 들어간 단계는 주사위 대신 경기 결과로 판정한다.'],
  path:['선택이 부른 사건','비슷한 방향의 선택이 쌓이면 그 <b>노선의 후속 사건</b>이 나온다. 강경·협치·경제 우선 중 무엇을 골랐느냐에 따라 다음 이야기가 달라진다.']};
 const tutOn=()=>MEM.tut!==false;
+// 이스터에그: 튜토리얼 안내 아홉 가지를 모두 '알겠어요'로 끝까지 읽으면(커리어를 넘어 모인다) 비밀 인물 주시경이 깨어난다
+function tutRead(id){if(!TIPS[id])return;const R=MEM.tutRead=MEM.tutRead||{};if(R[id])return;R[id]=1;const H=MEM.sec=MEM.sec||{};
+  if(!H.tutor&&Object.keys(TIPS).every(k=>R[k])){H.tutor=1;try{SFX.unlock();}catch(e){}eggToast('📖 <b>"말이 오르면 나라가 오른다."</b><br>튜토리얼을 끝까지 읽었어요. 비밀 인물 「주시경」이 깨어났어요.');}
+  msave();}
 function tip(id){if(!tutOn()||!CAR||(CAR.tips=CAR.tips||{})[id])return '';CAR.tips[id]=1;const t=TIPS[id];
   return '<div class="tip" data-tip="'+id+'"><div class="tip-h"><span class="tip-b">튜토리얼</span>'+t[0]+'</div><div class="tip-t">'+t[1]+'</div>'+
    '<div class="tip-a"><button class="tip-ok">알겠어요</button><button class="tip-off">튜토리얼 끄기</button></div></div>';}
 function bindTips(){document.querySelectorAll('.tip').forEach(el=>{const ok=el.querySelector('.tip-ok'),off=el.querySelector('.tip-off');
-  if(ok)ok.onclick=()=>{SFX.click();el.remove();};if(off)off.onclick=()=>{SFX.click();MEM.tut=false;msave();document.querySelectorAll('.tip').forEach(x=>x.remove());};});}
+  if(ok)ok.onclick=()=>{SFX.click();el.remove();tutRead(el.dataset.tip);};if(off)off.onclick=()=>{SFX.click();MEM.tut=false;msave();document.querySelectorAll('.tip').forEach(x=>x.remove());};});}
 function choose(k){SVAT=null;SFX.pick(cur.o[k][1].X?1:stakeOf(cur.o[k],cur.o));document.querySelectorAll('#wrap button').forEach(b=>b.disabled=true);   /* 룰렛이 뜨기 전에 다른 화면(비상소집 등)으로 넘어가지 않게 이 화면의 단추를 모두 잠근다 */
   takeSnap();lastO=cur.o[k];if(lastO[1].X==='crush')CAR.crush++;lastFit=fitOf(lastO,cur.o);lastS=stakeOf(lastO,cur.o);logChoice(k);
   const go=()=>{
@@ -5085,7 +5085,7 @@ function evalTerm(kind){
 // 대선: 지지율 35 미만은 출마 불가, 35~65는 1~100% 확률, 65 이상은 확실히 당선
 const winPct=a=>a<35?0:a>=65?100:Math.round(1+(a-35)*99/30);
 function termEnd(){window.scrollTo(0,0);
-  const te=evalTerm('done');CAR.terms.push(te);CAR.tEval=CAR.term;MEM.ends[te.eid]=1;msave();
+  const te=evalTerm('done');CAR.terms.push(te);CAR.tEval=CAR.term;MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;msave();
   if(CP.rule==='reign')return reignEnd(te);
   // 개헌(amendPerm)이나 영구집권(dict)이면 임기 한도가 두 배로 늘어난다
   const av=Math.round(cl(S.a)),pct=winPct(av),amended=!!CAR.amendPerm||CAR.amendOK===CAR.term,limit=CP.rule==='single'?!amended:CP.rule==='two'?(CAR.term>=2&&!amended):false;
@@ -5354,7 +5354,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   add('운명 개입',-60*((RUN&&RUN.rr)||0),((RUN&&RUN.rr)||0)+'번');
   const total=it.reduce((s,x)=>s+x[1],0),ex=EXITPT[kind]||0;
   return {total:total,perf:perf,cont:cont,honor:total-perf-cont,avg:r1(CAR.terms.reduce((s,t)=>s+cl(t.sc),0)/Math.max(1,CAR.terms.length)),ex:ex,items:it};}function careerEnd(kind){if(CAR.done)return;CAR.done=1;if(RUN)svDrop(RUN.id);window.scrollTo(0,0);
-  if(CAR.tEval!==CAR.term){const te=evalTerm(ENDS[kind]||kind==='quit'?kind:'done');te.decision=EXH[kind]||kind;CAR.terms.push(te);CAR.tEval=CAR.term;MEM.ends[te.eid]=1;
+  if(CAR.tEval!==CAR.term){const te=evalTerm(ENDS[kind]||kind==='quit'?kind:'done');te.decision=EXH[kind]||kind;CAR.terms.push(te);CAR.tEval=CAR.term;MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;
     const py=partialYear();if(py)CAR.yrs.push(yearSnap(py,[],0));}
   secCheck(kind);
   CAR.exit=kind;if(!CAR.cs.length||kind!=='retire'&&kind!=='lost'&&kind!=='limit'&&kind!=='defeated'){CAR.cs.push(S.c);CAR.ts.push(S.trn);CAR.us.push(S.u);CAR.ss.push(S.saf);}
@@ -5363,7 +5363,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   const years=(CAR.term-1)*YRS+Math.max(1,Math.ceil(S.turn/PY)),age1=CAR.age0+years;
   const SC=careerScore(kind,years),csc=SC.total;
   const newBest=csc>(MEM.best100||0),newLead=!(MEM.leaders||{})[lid];
-  MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=1;msave();
+  MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=(+MEM.leaders[lid]||0)+1;msave();
   sendCareer(EXH[kind]||kind,{lid:lid,csc:csc,years:years,good:good,bad:badN,SC:SC});
 
   const ct=CAR.terms.map((t,j)=>'<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);opacity:0;animation:fdIn .35s ease-out forwards;animation-delay:'+(j*90)+'ms">'+

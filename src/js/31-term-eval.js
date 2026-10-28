@@ -45,7 +45,7 @@ function evalTerm(kind){
 // 대선: 지지율 35 미만은 출마 불가, 35~65는 1~100% 확률, 65 이상은 확실히 당선
 const winPct=a=>a<35?0:a>=65?100:Math.round(1+(a-35)*99/30);
 function termEnd(){window.scrollTo(0,0);
-  const te=evalTerm('done');CAR.terms.push(te);CAR.tEval=CAR.term;MEM.ends[te.eid]=1;msave();
+  const te=evalTerm('done');CAR.terms.push(te);CAR.tEval=CAR.term;MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;msave();
   if(CP.rule==='reign')return reignEnd(te);
   // 개헌(amendPerm)이나 영구집권(dict)이면 임기 한도가 두 배로 늘어난다
   const av=Math.round(cl(S.a)),pct=winPct(av),amended=!!CAR.amendPerm||CAR.amendOK===CAR.term,limit=CP.rule==='single'?!amended:CP.rule==='two'?(CAR.term>=2&&!amended):false;

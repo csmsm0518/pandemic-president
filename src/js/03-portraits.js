@@ -20,7 +20,8 @@ const PFS={
  '광개토대왕':'c=gap,cc=#7a2e2a,h=short,hw=crown,f=mus+full','선덕여왕':'c=hanfu,cc=#8a2e4a,h=bun,hc=#1d1b18,hw=crown','김춘추':'c=hanfu,cc=#2f4a6b,hw=gwan,f=mus+goatee',
  '장보고':'c=gap,cc=#2c5a7a,h=short,f=full,w','왕건':'c=hanfu,cc=#7a2e2a,hw=myeon,f=mus+full','서희':'c=dan,cc=#2f5f7a,hw=samo,f=mus+jbeard',
  '강감찬':'c=gap,cc=#5d6b7a,hw=iron,f=long,hc=#cfc8ba','안창호':'c=suit,cc=#2b3a55,t=#3d5a80,h=side,f=mus','이승만':'c=suit,cc=#3a3f45,t=#2f4a6b,h=side,hc=#cfc8ba',
- '단군왕검':'c=robe,cc=#e6dcc6,h=long,hc=#e6e0d4,f=long','정영우':'c=suit,cc=#2b3a55,t=#2f5f99,h=side,hc=#3a352e,g,a=smile',
+ '주시경':'c=suit,cc=#3a352e,t=#e6dcc6,h=short,hc=#1d1b18,f=mus',
+'단군왕검':'c=robe,cc=#e6dcc6,h=long,hc=#e6e0d4,f=long','정영우':'c=suit,cc=#2b3a55,t=#2f5f99,h=side,hc=#3a352e,g,a=smile',
  // 엔딩 지도자 추가분
  '니콜라이 2세':'c=milcoat,cc=#2e5a3a,h=side,hc=#6b5038,f=mus+full','찰스 1세':'c=ruff,cc=#3a3f45,h=long,hc=#4a3b2e,f=mus+goatee','로베스피에르':'c=coat18,cc=#2f5f7a,h=wigw',
  '페르디난드 마르코스':'c=shirt,cc=#e9e2d2,sk=#c99a72,h=side,hc=#1d1b18','니콜라에 차우셰스쿠':'c=suit,cc=#3a3f45,t=#7a2e2a,h=messy,hc=#6a645b','수하르토':'c=suit,cc=#2b3a55,t=#3a3f45,sk=#b98a62,h=side,hc=#1d1b18,a=smile',

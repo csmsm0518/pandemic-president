@@ -135,7 +135,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   add('운명 개입',-60*((RUN&&RUN.rr)||0),((RUN&&RUN.rr)||0)+'번');
   const total=it.reduce((s,x)=>s+x[1],0),ex=EXITPT[kind]||0;
   return {total:total,perf:perf,cont:cont,honor:total-perf-cont,avg:r1(CAR.terms.reduce((s,t)=>s+cl(t.sc),0)/Math.max(1,CAR.terms.length)),ex:ex,items:it};}function careerEnd(kind){if(CAR.done)return;CAR.done=1;if(RUN)svDrop(RUN.id);window.scrollTo(0,0);
-  if(CAR.tEval!==CAR.term){const te=evalTerm(ENDS[kind]||kind==='quit'?kind:'done');te.decision=EXH[kind]||kind;CAR.terms.push(te);CAR.tEval=CAR.term;MEM.ends[te.eid]=1;
+  if(CAR.tEval!==CAR.term){const te=evalTerm(ENDS[kind]||kind==='quit'?kind:'done');te.decision=EXH[kind]||kind;CAR.terms.push(te);CAR.tEval=CAR.term;MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;
     const py=partialYear();if(py)CAR.yrs.push(yearSnap(py,[],0));}
   secCheck(kind);
   CAR.exit=kind;if(!CAR.cs.length||kind!=='retire'&&kind!=='lost'&&kind!=='limit'&&kind!=='defeated'){CAR.cs.push(S.c);CAR.ts.push(S.trn);CAR.us.push(S.u);CAR.ss.push(S.saf);}
@@ -144,7 +144,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   const years=(CAR.term-1)*YRS+Math.max(1,Math.ceil(S.turn/PY)),age1=CAR.age0+years;
   const SC=careerScore(kind,years),csc=SC.total;
   const newBest=csc>(MEM.best100||0),newLead=!(MEM.leaders||{})[lid];
-  MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=1;msave();
+  MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=(+MEM.leaders[lid]||0)+1;msave();
   sendCareer(EXH[kind]||kind,{lid:lid,csc:csc,years:years,good:good,bad:badN,SC:SC});
 
   const ct=CAR.terms.map((t,j)=>'<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);opacity:0;animation:fdIn .35s ease-out forwards;animation-delay:'+(j*90)+'ms">'+

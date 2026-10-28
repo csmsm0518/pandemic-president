@@ -281,11 +281,15 @@ const TIPS={
  special:['특별 이벤트','특별 국정 과제 판에서 고른 큰일이다. 단계가 2~4개 이어지고, 앞에서 고른 것이 뒤를 바꾼다. 절반 넘게 성공하면 업적, 아니면 불명예가 붙는다. <b>권력</b>이 50을 넘으면 연임 개헌 같은 권력 과제도 판에 열린다. 경기가 들어간 단계는 주사위 대신 경기 결과로 판정한다.'],
  path:['선택이 부른 사건','비슷한 방향의 선택이 쌓이면 그 <b>노선의 후속 사건</b>이 나온다. 강경·협치·경제 우선 중 무엇을 골랐느냐에 따라 다음 이야기가 달라진다.']};
 const tutOn=()=>MEM.tut!==false;
+// 이스터에그: 튜토리얼 안내 아홉 가지를 모두 '알겠어요'로 끝까지 읽으면(커리어를 넘어 모인다) 비밀 인물 주시경이 깨어난다
+function tutRead(id){if(!TIPS[id])return;const R=MEM.tutRead=MEM.tutRead||{};if(R[id])return;R[id]=1;const H=MEM.sec=MEM.sec||{};
+  if(!H.tutor&&Object.keys(TIPS).every(k=>R[k])){H.tutor=1;try{SFX.unlock();}catch(e){}eggToast('📖 <b>"말이 오르면 나라가 오른다."</b><br>튜토리얼을 끝까지 읽었어요. 비밀 인물 「주시경」이 깨어났어요.');}
+  msave();}
 function tip(id){if(!tutOn()||!CAR||(CAR.tips=CAR.tips||{})[id])return '';CAR.tips[id]=1;const t=TIPS[id];
   return '<div class="tip" data-tip="'+id+'"><div class="tip-h"><span class="tip-b">튜토리얼</span>'+t[0]+'</div><div class="tip-t">'+t[1]+'</div>'+
    '<div class="tip-a"><button class="tip-ok">알겠어요</button><button class="tip-off">튜토리얼 끄기</button></div></div>';}
 function bindTips(){document.querySelectorAll('.tip').forEach(el=>{const ok=el.querySelector('.tip-ok'),off=el.querySelector('.tip-off');
-  if(ok)ok.onclick=()=>{SFX.click();el.remove();};if(off)off.onclick=()=>{SFX.click();MEM.tut=false;msave();document.querySelectorAll('.tip').forEach(x=>x.remove());};});}
+  if(ok)ok.onclick=()=>{SFX.click();el.remove();tutRead(el.dataset.tip);};if(off)off.onclick=()=>{SFX.click();MEM.tut=false;msave();document.querySelectorAll('.tip').forEach(x=>x.remove());};});}
 function choose(k){SVAT=null;SFX.pick(cur.o[k][1].X?1:stakeOf(cur.o[k],cur.o));document.querySelectorAll('#wrap button').forEach(b=>b.disabled=true);   /* 룰렛이 뜨기 전에 다른 화면(비상소집 등)으로 넘어가지 않게 이 화면의 단추를 모두 잠근다 */
   takeSnap();lastO=cur.o[k];if(lastO[1].X==='crush')CAR.crush++;lastFit=fitOf(lastO,cur.o);lastS=stakeOf(lastO,cur.o);logChoice(k);
   const go=()=>{
