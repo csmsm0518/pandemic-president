@@ -136,6 +136,8 @@
 /* 색은 쨍하지 않게 한 톤 죽이고(채도·밝기를 낮추고 누런 종이 빛을 살짝 얹는다) */
 .gx-cp-art{position:absolute;inset:0;filter:saturate(.62) brightness(.86) contrast(.94) sepia(.12);transition:transform .8s cubic-bezier(.2,.8,.2,1)}
 .gx-cp-art svg{display:block;width:100%;height:100%}
+/* 모든 판에 같은 직물 결(가는 빗금 두 겹)과 왼쪽 위에서 드는 빛 */
+.gx-cp-art::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(118deg,rgba(255,250,235,.16) 0%,rgba(255,250,235,0) 38%,rgba(0,0,0,0) 62%,rgba(0,0,0,.28) 100%),repeating-linear-gradient(45deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px),repeating-linear-gradient(-45deg,rgba(0,0,0,.05) 0 1px,transparent 1px 3px)}
 .gx-cp.on .gx-cp-art{transform:scale(1.03)}
 .gx-cp-art .cp-fold{animation:cpFold 9s ease-in-out infinite alternate}
 @keyframes cpFold{from{transform:translateX(-26px)}to{transform:translateX(26px)}}

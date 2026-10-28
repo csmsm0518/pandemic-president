@@ -181,7 +181,7 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
 }
 // 1단계: 무대. 비스듬한 깃발 판 중 하나를 고르면 그 판이 넓게 펼쳐진다. 고른 판을 한 번 더 누르면(또는 Enter) 지도자 고르기로.
 // 무대 판은 세로로 긴 포스터 한 장처럼 판 전체를 나라의 상징으로 채운다(넓은 판·낮은 판에서는 가운데를 중심으로 잘려 보인다).
-// 깃발은 천처럼 주름 그림자가 천천히 일렁이고, 대항해는 물결 위에 배가 떠서 출렁인다. 판이 골라지면 밝아진다
+// 다섯 판 모두 같은 그림체: 큰 색면으로 된 깃발 그림에 같은 천 주름(일렁인다) · 같은 직물 결 · 같은 빛(CSS)을 입힌다. 대항해는 그 위에서 물결이 흐르고 배가 출렁인다
 const CP_ART=(()=>{const sv=(id,b,w)=>'<svg viewBox="0 0 '+(w||300)+' 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'+b+'</svg>';
   // 천 주름: 비스듬한 어두운 띠와 밝은 띠를 겹쳐 놓고 조금씩 흔든다
   const fold=id=>'<defs><linearGradient id="'+id+'d" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset=".5" stop-color="#000" stop-opacity=".28"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>'+
@@ -199,27 +199,27 @@ const CP_ART=(()=>{const sv=(id,b,w)=>'<svg viewBox="0 0 '+(w||300)+' 600" prese
   us+='<rect width="300" height="250" fill="#2c3e86"/>';for(let r=0;r<9;r++)for(let c=0;c<(r%2?5:6);c++){const x=26+c*50+(r%2?25:0),y=22+r*26;us+='<path transform="translate('+x+' '+y+') scale(1.35)" d="M0-6L1.8-1.9 6.3-1.9 2.6.8 4 5.1 0 2.5-4 5.1-2.6.8-6.3-1.9-1.8-1.9Z" fill="#f2ede4"/>';}
   const usa=sv('u',us+fold('u'));
   // 일월오봉도: 하늘 · 해와 달 · 다섯 봉우리 · 아래 물결 · 양옆 붉은 소나무
-  let jw='';for(let r=0;r<4;r++)for(let i=-1;i<8;i++)jw+='<path d="M'+(i*44+(r%2?22:0))+' '+(470+r*30)+'q22 -20 44 0" fill="none" stroke="#e8e2d2" stroke-width="4"/>';
-  const jo=sv('j','<defs><linearGradient id="jsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d3a5c"/><stop offset="1" stop-color="#2f5f7d"/></linearGradient></defs><rect width="300" height="600" fill="url(#jsky)"/>'+
+  let jw='';for(let r=0;r<4;r++)for(let i=-1;i<11;i++)jw+='<path d="M'+(i*44+(r%2?22:0))+' '+(470+r*30)+'q22 -20 44 0" fill="none" stroke="#e8e2d2" stroke-width="4"/>';
+  // 넓은 판에서도 해와 달이 잘리지 않게 가로 440으로: 가운데 300폭 그림을 70만큼 옮기고 양옆에 낮은 봉우리를 더한다
+  const jo=sv('j','<rect width="440" height="600" fill="#2a4b6c"/><path d="M0 450L0 360 40 330 90 450ZM350 450L400 330 440 360 440 450Z" fill="#3c8f7a"/><rect y="446" width="440" height="160" fill="#2f63a5"/><g transform="translate(70 0)">'+
     '<circle cx="222" cy="110" r="32" fill="#d23b2f"/><circle cx="78" cy="110" r="28" fill="#ece6d6"/>'+
     '<path d="M0 450L56 300 100 360 150 190 200 360 244 300 300 450Z" fill="#2e8a72"/><path d="M90 450L150 250 210 450Z" fill="#23705d"/><path d="M0 450L56 340 112 450ZM188 450L244 340 300 450Z" fill="#44a184"/>'+
-    '<rect y="446" width="300" height="160" fill="#2f63a5"/>'+jw+
+    '</g>'+jw+'<g transform="translate(70 0)">'+
     '<rect x="18" y="300" width="12" height="160" fill="#b23a24"/><circle cx="24" cy="292" r="30" fill="#2f7a52"/><circle cx="40" cy="330" r="20" fill="#2f7a52"/>'+
-    '<rect x="270" y="300" width="12" height="160" fill="#b23a24"/><circle cx="276" cy="292" r="30" fill="#2f7a52"/><circle cx="260" cy="330" r="20" fill="#2f7a52"/>');
-  // 좀비: 어두운 벽에 노랑·검정 경고 테이프 두 줄과 큰 생물학적 위험 표시
-  const tape=y=>'<g transform="rotate(-12 150 '+y+')"><rect x="-80" y="'+(y-22)+'" width="460" height="44" fill="#e8b81e"/>'+Array.from({length:16},(_,i)=>'<path d="M'+(-80+i*32)+' '+(y-22)+'h16l-22 44h-16z" fill="#1a1d14"/>').join('')+'</g>';
-  const ring=a=>'<circle cx="'+(150+44*Math.cos(a)).toFixed(1)+'" cy="'+(300+44*Math.sin(a)).toFixed(1)+'" r="50"/><circle cx="'+(150+58*Math.cos(a)).toFixed(1)+'" cy="'+(300+58*Math.sin(a)).toFixed(1)+'" r="33" fill="#262e1f" stroke="none"/>';
-  const zb=sv('z','<rect width="300" height="600" fill="#262e1f"/><rect width="300" height="600" fill="url(#zg)" opacity=".5"/><defs><radialGradient id="zg"><stop offset="0" stop-color="#5a6a3a"/><stop offset="1" stop-color="#262e1f"/></radialGradient></defs>'+
-    tape(90)+tape(520)+'<g fill="#e8b81e" stroke="#262e1f" stroke-width="6">'+[-Math.PI/2,Math.PI/6,5*Math.PI/6].map(ring).join('')+'</g><circle cx="150" cy="300" r="32" fill="none" stroke="#e8b81e" stroke-width="10"/><circle cx="150" cy="300" r="13" fill="#262e1f"/>');
-  // 대항해: 노을 진 하늘 아래 겹겹이 흐르는 물결과 그 위에 떠서 출렁이는 범선
+    '<rect x="270" y="300" width="12" height="160" fill="#b23a24"/><circle cx="276" cy="292" r="30" fill="#2f7a52"/><circle cx="260" cy="330" r="20" fill="#2f7a52"/></g>'+'<g transform="translate(70 0)">'+fold('j')+'</g>',440);
+  // 좀비: 노란 검역기(배가 전염병을 알릴 때 다는 깃발) 바탕에 검정 생물학적 위험 표시와 위아래 경고 띠
+  const tape=y=>'<g transform="rotate(-12 150 '+y+')"><rect x="-80" y="'+(y-22)+'" width="460" height="44" fill="#1e2418"/>'+Array.from({length:16},(_,i)=>'<path d="M'+(-80+i*32)+' '+(y-22)+'h16l-22 44h-16z" fill="#d7aa22"/>').join('')+'</g>';
+  const ring=a=>'<circle cx="'+(150+44*Math.cos(a)).toFixed(1)+'" cy="'+(300+44*Math.sin(a)).toFixed(1)+'" r="50"/><circle cx="'+(150+58*Math.cos(a)).toFixed(1)+'" cy="'+(300+58*Math.sin(a)).toFixed(1)+'" r="33" fill="#d7aa22" stroke="none"/>';
+  const zb=sv('z','<rect width="300" height="600" fill="#d7aa22"/>'+
+    tape(90)+tape(520)+'<g fill="#1e2418" stroke="#d7aa22" stroke-width="6">'+[-Math.PI/2,Math.PI/6,5*Math.PI/6].map(ring).join('')+'</g><circle cx="150" cy="300" r="32" fill="none" stroke="#1e2418" stroke-width="10"/><circle cx="150" cy="300" r="13" fill="#d7aa22"/>'+fold('z'));
+  // 대항해: 노을 띠가 걸린 하늘 아래 겹겹이 흐르는 물결과 그 위에 떠서 출렁이는 범선
   const wv=(y,c,a)=>{let d='M-300 '+y;for(let x=-300;x<600;x+=60)d+='q15 -'+a+' 30 0t30 0';return '<path class="cp-wv" style="animation-duration:'+(36/a).toFixed(1)+'s" d="'+d+'V620H-300Z" fill="'+c+'"/>';};
-  const sa=sv('s','<defs><linearGradient id="ssky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14365a"/><stop offset=".55" stop-color="#3f7fa8"/><stop offset="1" stop-color="#f0c27a"/></linearGradient></defs>'+
-    '<rect width="300" height="600" fill="url(#ssky)"/><circle cx="230" cy="250" r="34" fill="#ffe08a" opacity=".85"/>'+
+  const sa=sv('s','<rect width="300" height="600" fill="#2b5f86"/><rect y="200" width="300" height="120" fill="#d9a86a"/><circle cx="230" cy="250" r="34" fill="#ffe08a" opacity=".85"/>'+
     '<path d="M40 120l10 4 10-4M80 90l8 3 8-3M200 150l9 3 9-3" fill="none" stroke="#0f2a44" stroke-width="3" stroke-linecap="round"/>'+
     wv(300,'#2a6f9e',10)+
     '<g transform="translate(0 16)"><g class="cp-ship"><path d="M95 318h110l-18 30h-74z" fill="#6b3f22"/><path d="M95 318h110l-4 8h-102z" fill="#8a5a33"/><rect x="146" y="196" width="6" height="124" fill="#3b2416"/>'+
     '<path d="M152 204q48 40 2 104z" fill="#f4eee0"/><path d="M146 214q-40 34 -2 92z" fill="#e8dfc8"/><path d="M149 192l22 8-22 8z" fill="#c0392b"/><rect x="128" y="324" width="10" height="8" fill="#f4eee0"/><rect x="162" y="324" width="10" height="8" fill="#f4eee0"/></g></g>'+
-    wv(340,'#225e8c',12)+wv(390,'#1b4f78',14)+wv(450,'#164265',16)+wv(520,'#11354f',18));
+    wv(340,'#225e8c',12)+wv(390,'#1b4f78',14)+wv(450,'#164265',16)+wv(520,'#11354f',18)+fold('s'));
   return {kr:kr,usa:usa,joseon:jo,zombie:zb,sail:sa};})();
 // 비밀 모드 「대항해」: 나라가 아니라 따로 노는 레이스라 CAMPS에 넣지 않고, 열렸으면 무대 고르기 맨 끝에 판 하나로 붙인다
 const SAIL_CP={tag:'비밀 모드',n:'대항해',sub:'폭풍을 뚫고 섬마을로 · 시간과의 레이스',intro:'백신이 상하기 전에 폭풍 해협을 뚫고 섬마을 세 곳을 지나 달려라. 암초를 스치면 시간이 붙고, 부딪히면 배가 상한다.'};
