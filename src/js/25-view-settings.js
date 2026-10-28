@@ -180,12 +180,42 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   if(SEC_NEW.length){const nm=SEC_NEW.map(id=>{for(const c in CAMPS){const q=CAMPS[c].bg.find(b=>b.sec===id);if(q)return q.n;}return id;});SEC_NEW=[];SFX.unlock();eggToast('🔓 비밀 인물 해금: <b>'+nm.join(', ')+'</b>');}
 }
 // 1단계: 무대. 비스듬한 깃발 판 중 하나를 고르면 그 판이 넓게 펼쳐진다. 고른 판을 한 번 더 누르면(또는 Enter) 지도자 고르기로.
-const CP_WM={kr:'大韓民國',joseon:'朝鮮',usa:'美合衆國',zombie:'生存',sail:'航海'};
+// 무대 판의 바탕 그림: 나라마다 상징(태극기 · 성조기 휘장 · 일월오봉도 · 생물학적 위험 표시 · 나침반). 판이 골라지면 더 진하게 떠오른다
+const CP_ART=(()=>{const svg=b=>'<svg viewBox="0 0 200 200" aria-hidden="true">'+b+'</svg>',f=n=>n.toFixed(1);
+  // 태극기: 33.7° 기운 태극(위 빨강 · 아래 파랑)과 네 귀퉁이의 건(☰) · 곤(☷) · 감(☵) · 리(☲)
+  const bar=(y,br)=>br?'<rect x="0" y="'+y+'" width="16" height="7"/><rect x="24" y="'+y+'" width="16" height="7"/>':'<rect x="0" y="'+y+'" width="40" height="7"/>';
+  const tri=(a,p)=>'<g transform="rotate('+a+' 100 100) translate(80 4)">'+p.map((b,i)=>bar(i*11,b)).join('')+'</g>';
+  const kr=svg('<g transform="rotate(33.7 100 100)"><circle cx="100" cy="100" r="46" fill="#0047a0"/><path d="M54 100A46 46 0 0 1 146 100A23 23 0 0 1 100 100A23 23 0 0 0 54 100Z" fill="#cd2e3a"/></g>'+
+    '<g fill="#efe7d6">'+tri(-56.3,[0,0,0])+tri(123.7,[1,1,1])+tri(56.3,[1,0,1])+tri(-123.7,[0,1,0])+'</g>');
+  // 성조기 휘장: 둥근 틀 안에 13줄, 왼쪽 위 파란 칸에 별
+  let st='';for(let i=0;i<13;i++)st+='<rect x="12" y="'+f(12+i*176/13)+'" width="176" height="'+f(176/13+.4)+'" fill="'+(i%2?'#f2efe6':'#b22234')+'"/>';
+  let sr='';for(let r=0;r<5;r++)for(let c=0;c<(r%2?4:5);c++){const x=24+c*17+(r%2?8.5:0),y=24+r*14;sr+='<path transform="translate('+x+' '+y+')" d="M0-6L1.8-1.9 6.3-1.9 2.6.8 4 5.1 0 2.5-4 5.1-2.6.8-6.3-1.9-1.8-1.9Z"/>';}
+  const usa=svg('<defs><clipPath id="cpUs"><circle cx="100" cy="100" r="86"/></clipPath></defs><g clip-path="url(#cpUs)">'+st+'<rect x="12" y="12" width="92" height="80" fill="#3c3b6e"/><g fill="#f2efe6">'+sr+'</g></g>'+
+    '<circle cx="100" cy="100" r="88" fill="none" stroke="#d9b45c" stroke-width="5"/><circle cx="100" cy="100" r="80" fill="none" stroke="#d9b45c" stroke-width="1.2" opacity=".7"/>');
+  // 일월오봉도: 해(빨강) · 달(흰빛) · 다섯 봉우리 · 아래 물결 · 양옆 붉은 소나무
+  let wv='';for(let i=0;i<7;i++)wv+='<path d="M'+(14+i*26)+' 160q13 -12 26 0"/>';for(let i=0;i<6;i++)wv+='<path d="M'+(27+i*26)+' 176q13 -12 26 0"/>';
+  const jo=svg('<rect x="14" y="14" width="172" height="172" rx="6" fill="#16324a"/><circle cx="148" cy="52" r="15" fill="#c0392b"/><circle cx="52" cy="52" r="13" fill="#ece6d6"/>'+
+    '<path d="M14 150L40 96 58 122 100 54 142 122 160 96 186 150Z" fill="#2e7d6b"/><path d="M60 150L100 82 140 150Z" fill="#245f52"/><path d="M14 150L40 112 66 150ZM134 150L160 112 186 150Z" fill="#3c8f7a"/>'+
+    '<rect x="14" y="146" width="172" height="40" fill="#2f5f99"/><g fill="none" stroke="#ece6d6" stroke-width="3">'+wv+'</g>'+
+    '<rect x="22" y="96" width="6" height="56" fill="#a8321f"/><circle cx="25" cy="94" r="12" fill="#2a6e4b"/><rect x="172" y="96" width="6" height="56" fill="#a8321f"/><circle cx="175" cy="94" r="12" fill="#2a6e4b"/>'+
+    '<rect x="14" y="14" width="172" height="172" rx="6" fill="none" stroke="#d9a441" stroke-width="5"/>');
+  // 생물학적 위험 표시: 노랑 고리 셋과 가운데 고리, 바깥은 노랑·검정 경고 띠
+  let hz='';for(let i=0;i<24;i++){const a=i*Math.PI/12,b=(i+.5)*Math.PI/12;hz+='<path d="M'+f(100+92*Math.cos(a))+' '+f(100+92*Math.sin(a))+'A92 92 0 0 1 '+f(100+92*Math.cos(b))+' '+f(100+92*Math.sin(b))+'"/>';}
+  const ring=a=>'<circle cx="'+f(100+30*Math.cos(a))+'" cy="'+f(100+30*Math.sin(a))+'" r="34"/><circle cx="'+f(100+40*Math.cos(a))+'" cy="'+f(100+40*Math.sin(a))+'" r="22" fill="#1c231b" stroke="none"/>';
+  const zb=svg('<circle cx="100" cy="100" r="92" fill="#1c231b"/><g fill="none" stroke="#d9a441" stroke-width="10">'+hz+'</g>'+
+    '<g fill="#d9a441" stroke="#1c231b" stroke-width="4">'+[-Math.PI/2,Math.PI/6,5*Math.PI/6].map(ring).join('')+'</g><circle cx="100" cy="100" r="22" fill="none" stroke="#d9a441" stroke-width="7"/><circle cx="100" cy="100" r="9" fill="#1c231b"/>');
+  // 나침반 방위표: 여덟 갈래 별(북쪽만 빨강), 눈금 고리
+  let tk='';for(let i=0;i<32;i++){const a=i*Math.PI/16,r1=i%4?78:72;tk+='<line x1="'+f(100+r1*Math.cos(a))+'" y1="'+f(100+r1*Math.sin(a))+'" x2="'+f(100+84*Math.cos(a))+'" y2="'+f(100+84*Math.sin(a))+'"/>';}
+  const pt=(a,l,w,c)=>{const x=Math.cos(a),y=Math.sin(a),px=-y,py=x;return '<path d="M100 100L'+f(100+px*w)+' '+f(100+py*w)+'L'+f(100+x*l)+' '+f(100+y*l)+'L'+f(100-px*w)+' '+f(100-py*w)+'Z" fill="'+c+'"/>';};
+  let rose='';for(let k=0;k<4;k++)rose+=pt(Math.PI/4+k*Math.PI/2,46,9,'#8fb3d1');for(let k=0;k<4;k++)rose+=pt(-Math.PI/2+k*Math.PI/2,68,13,k===0?'#b3261e':'#f2efe6');
+  const sa=svg('<circle cx="100" cy="100" r="88" fill="#0c2236" stroke="#f2efe6" stroke-width="3"/><g stroke="#f2efe6" stroke-width="2">'+tk+'</g>'+rose+
+    '<circle cx="100" cy="100" r="8" fill="#0c2236" stroke="#d9a441" stroke-width="3"/><text x="100" y="24" text-anchor="middle" font-size="14" font-weight="800" fill="#b3261e" font-family="sans-serif">N</text>');
+  return {kr:kr,usa:usa,joseon:jo,zombie:zb,sail:sa};})();
 // 비밀 모드 「대항해」: 나라가 아니라 따로 노는 레이스라 CAMPS에 넣지 않고, 열렸으면 무대 고르기 맨 끝에 판 하나로 붙인다
 const SAIL_CP={tag:'비밀 모드',n:'대항해',sub:'폭풍을 뚫고 섬마을로 · 시간과의 레이스',intro:'백신이 상하기 전에 폭풍 해협을 뚫고 섬마을 세 곳을 지나 달려라. 암초를 스치면 시간이 붙고, 부딪히면 배가 상한다.'};
 function stepCamp(){const ids=Object.keys(CAMPS).filter(campOn).concat(eggOn('sail')?['sail']:[]);let k=Math.max(0,ids.indexOf(camp));
   cine([{t:'무대 선택',h:'<div class="gx gx-camp">'+gxTop(0)+'<h2 class="gx-q">어느 나라를 이끌 것인가</h2><div class="gx-cpw">'+
-    ids.map((id,i)=>{const C=CAMPS[id]||SAIL_CP;return '<button class="gx-cp" data-c="'+id+'" style="--i:'+i+'"><span class="gx-cp-wm" aria-hidden="true">'+(CP_WM[id]||'')+'</span>'+
+    ids.map((id,i)=>{const C=CAMPS[id]||SAIL_CP;return '<button class="gx-cp" data-c="'+id+'" style="--i:'+i+'"><span class="gx-cp-wm" aria-hidden="true">'+(CP_ART[id]||'')+'</span>'+
       '<span class="gx-cp-tx"><span class="gx-cp-tag">'+C.tag+'</span><b>'+C.n+'</b><span class="gx-cp-sub">'+C.sub+'</span><span class="gx-cp-in">'+C.intro+'</span>'+
       '<span class="gx-cp-go">이 무대로 ▶ <kbd class="gx-keys">Enter</kbd></span></span></button>';}).join('')+'</div></div>'}],
     {nav:false,cls:'gm',back:home,key:e=>{const n=ids.length;
