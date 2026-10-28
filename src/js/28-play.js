@@ -177,7 +177,9 @@ const f=document.getElementById('fx'),w=document.getElementById('wrap'),q=lastFi
   const fin=()=>{if(done)return;done=true;const T=TIER[t],ms=Math.max(1100,T.ms);SFX.rstop();SFX.tier(t);vib(t===3?[70,50,90]:t===2?45:t===0?[20,30,20]:0);
      f.innerHTML='<div style="position:absolute;inset:0;background:'+T.tint+';border-radius:12px;animation:fxT '+ms+'ms ease-out forwards!important"></div>'+
      (document.documentElement.dataset.lite?'<div style="position:relative;padding:12px 30px 12px 35px;border-radius:16px;background:var(--surface-2);border:2px solid '+WCOL[t]+';box-shadow:0 14px 34px -8px rgba(70,50,20,.38);font-size:'+Math.max(30,T.fs)+'px;font-weight:700;letter-spacing:5px;color:'+WCOL[t]+';animation:fxL '+ms+'ms ease-out forwards!important">'+T.n+'</div>'
-     :'<div class="vd vd'+t+'" style="animation:fxL '+ms+'ms ease-out forwards!important"><span class="vd-r"><s></s><b class="vd-n">'+T.n+'</b><s></s></span><i class="vd-h" aria-hidden="true">'+['大成功','成功','失敗','大失敗'][t]+'</i></div>');
+     :'<div class="vd vd'+t+'" style="--ms:'+ms+'ms"><span class="vd-s"><b class="vd-n">'+T.n+'</b></span></div>');
+     // 도장이 바닥에 닿는 순간(0.17초) 쿵 소리
+     if(!document.documentElement.dataset.lite)try{thud(t===3?110:140,t%3===0?.2:.13,.17,.2);}catch(e){}
      if(t>=2)w.style.animation='shk '+(t===3?480:320)+'ms ease-out';
      setTimeout(()=>{w.style.animation='';f.innerHTML='';cb();},ms);};
   setTimeout(fin,SP+150);
