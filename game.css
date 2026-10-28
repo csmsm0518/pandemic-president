@@ -915,10 +915,18 @@ html:has(.cine:not(.out)),html:has(.cine:not(.out)) body,html:has(.lbfs),html:ha
 .gx-cp:hover{background:var(--cp-bg)}
 .gx-cp.on{flex-grow:2.1;filter:none}
 .gx-cp::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:var(--cp-bar)}
-.gx-cp::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,rgba(6,5,4,.92) 0%,rgba(6,5,4,.35) 45%,rgba(6,5,4,0) 70%)}
-.gx-cp-wm{position:absolute;top:42%;left:50%;width:min(78%,42vh);transform:translate(-50%,-50%);opacity:.24;filter:saturate(.7);transition:opacity .5s,filter .5s,transform .7s cubic-bezier(.2,.8,.2,1)}
-.gx-cp-wm svg{display:block;width:100%;height:auto;filter:drop-shadow(0 10px 30px rgba(0,0,0,.55))}
-.gx-cp.on .gx-cp-wm{opacity:.82;filter:none;transform:translate(-50%,-54%) scale(1.06)}
+.gx-cp::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,rgba(6,5,4,.94) 0%,rgba(6,5,4,.62) 30%,rgba(6,5,4,.18) 55%,rgba(6,5,4,0) 72%)}
+/* 판 전체를 채우는 포스터(CP_ART). 골라진 판은 살짝 다가온다. 천 주름은 일렁이고, 대항해의 물결은 흐르고 배는 출렁인다 */
+.gx-cp-art{position:absolute;inset:0;transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+.gx-cp-art svg{display:block;width:100%;height:100%}
+.gx-cp.on .gx-cp-art{transform:scale(1.03)}
+.gx-cp-art .cp-fold{animation:cpFold 9s ease-in-out infinite alternate}
+@keyframes cpFold{from{transform:translateX(-26px)}to{transform:translateX(26px)}}
+.gx-cp-art .cp-wv{animation:cpWv 4s linear infinite}
+@keyframes cpWv{to{transform:translateX(60px)}}
+.gx-cp-art .cp-ship{transform-box:fill-box;transform-origin:50% 90%;animation:cpBob 3.2s ease-in-out infinite}
+@keyframes cpBob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(7px) rotate(3deg)}}
+@media (prefers-reduced-motion:reduce){.gx-cp-art .cp-fold,.gx-cp-art .cp-wv,.gx-cp-art .cp-ship{animation:none}}
 .gx-cp-tx{position:absolute;z-index:1;left:clamp(18px,2.4vw,40px);right:calc(var(--sk) + 12px);bottom:clamp(22px,5vh,56px);display:flex;flex-direction:column;align-items:flex-start;gap:8px}
 .gx-cp-tag{font-size:11px;font-weight:800;letter-spacing:.16em;color:#15120e;background:#c9a24a;padding:2px 8px}
 .gx-cp-tx b{font:800 clamp(26px,5.4vh,52px)/1.1 var(--font-voice);color:#fff4d6;white-space:nowrap}
@@ -937,9 +945,9 @@ html:has(.cine:not(.out)),html:has(.cine:not(.out)) body,html:has(.lbfs),html:ha
   html[data-ori="p"] .gx-q{top:58px}
   html[data-ori="p"] .gx-cpw{flex-direction:column;padding-top:112px}
   html[data-ori="p"] .gx-cp,html[data-ori="p"] .gx-cp:first-child,html[data-ori="p"] .gx-cp:last-child{margin:0 0 3px;clip-path:none}
-  html[data-ori="p"] .gx-cp-wm{left:auto;right:4%;top:50%;width:clamp(80px,26vw,150px);transform:translateY(-50%)}
-  html[data-ori="p"] .gx-cp.on .gx-cp-wm{opacity:.28;transform:translateY(-50%) scale(1.06)}
   html[data-ori="p"] .gx-cp-tx{right:18px;bottom:16px;gap:6px}
+  html[data-ori="p"] .gx-cp::after{background:linear-gradient(90deg,rgba(6,5,4,.9) 0%,rgba(6,5,4,.66) 45%,rgba(6,5,4,.12) 100%)}
+  html[data-ori="p"] .gx-cp-art svg{opacity:.9}
   html[data-ori="p"] .gx-cp-tx b{font-size:clamp(24px,7vw,34px)}
 
 /* 지도자 고르기: 큰 인물 + 정보 + 아래 명단 */
