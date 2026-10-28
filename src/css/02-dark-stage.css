@@ -1,0 +1,125 @@
+/* ---------- 어두운 무대 ---------- */
+.dk{position:relative;overflow:hidden;color:var(--dk-text);background:radial-gradient(ellipse at 50% 32%,#3a2e1c 0%,#1b1610 58%,#0e0c09 100%);border:1px solid rgba(201,162,74,.5);border-radius:4px;
+  box-shadow:inset 0 0 0 4px #0e0c09,inset 0 0 0 5px rgba(201,162,74,.25),0 16px 34px -16px rgba(0,0,0,.65)}
+.dk-rays{position:absolute;left:50%;top:38%;width:820px;height:820px;margin:-410px 0 0 -410px;background:repeating-conic-gradient(from 0deg,rgba(241,213,137,.09) 0 5deg,transparent 5deg 15deg);
+  -webkit-mask:radial-gradient(circle,#000 0,transparent 55%);mask:radial-gradient(circle,#000 0,transparent 55%);animation:dkSpin 70s linear infinite;pointer-events:none}
+@keyframes dkSpin{to{transform:rotate(360deg)}}
+@keyframes dkUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes dkTitle{from{opacity:0;letter-spacing:.6em;filter:blur(8px)}to{opacity:1;filter:blur(0)}}
+@keyframes dkWord{from{opacity:0;transform:translateY(6px);filter:blur(3px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes dkFade{from{opacity:0}to{opacity:1}}
+@keyframes dkDraw{to{stroke-dashoffset:0}}
+@keyframes dkRing{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.45)}}
+/* 시작 엠블럼 */
+.emb{text-align:center;padding:26px 16px 22px}
+.emb svg{width:132px;height:132px;display:block;margin:0 auto}
+.emb .d{fill:none;stroke:#c9a24a;stroke-width:1.4;stroke-dasharray:1;stroke-dashoffset:0}
+.emb .d.thin{stroke-width:.8;stroke:#8a6a24}
+.emb .star{transform-origin:100px 100px}
+.emb-t{font-family:var(--font-voice);font-weight:800;font-size:38px;line-height:1.2;margin:14px 0 4px;letter-spacing:.06em;
+  background:linear-gradient(100deg,#8a6a24 0%,#c9a24a 30%,#fff3c4 46%,#c9a24a 60%,#8a6a24 100%);background-size:250% 100%;background-position:100% 0;-webkit-background-clip:text;background-clip:text;color:transparent}
+.emb-s{margin:0;color:var(--dk-muted);font-family:var(--font-voice);font-size:14px;letter-spacing:.2em}
+.emb.go .d{stroke-dashoffset:1;animation:dkDraw 1.5s cubic-bezier(.6,.1,.3,1) forwards}
+.emb.go .d.thin{animation-delay:.25s}
+.emb.go .ray{animation:dkDraw .5s ease-out forwards;animation-delay:calc(.8s + var(--i) * 40ms)}
+.emb.go .star{animation:embStar .9s 1.2s cubic-bezier(.2,1.4,.4,1) both}
+.emb.go .emb-t{animation:dkTitle 1.3s 1.5s cubic-bezier(.2,.8,.2,1) both,embShine 2.4s 2.8s ease-in-out}
+.emb.go .emb-s{animation:dkFade 1s 2.4s both}
+@keyframes embStar{from{opacity:0;transform:scale(.2) rotate(-90deg)}to{opacity:1;transform:none}}
+@keyframes embShine{from{background-position:100% 0}to{background-position:-60% 0}}
+/* 지도자 초상 액자(금테 메달) */
+.lrv-m{position:relative;width:128px;height:128px;margin:0 auto;border-radius:50%;padding:6px;background:conic-gradient(from 210deg,#7a5a1c,#f1d589,#a8822e,#f8e7ad,#7a5a1c,#e2c06a,#7a5a1c);box-shadow:0 0 0 2px #0e0c09,0 0 0 3px rgba(241,213,137,.5),0 16px 34px -10px #000}
+.lrv-m .pf{width:100%!important;height:100%!important;border-radius:50%;filter:sepia(.22) contrast(1.05)}
+.lrv-m::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid #f1d589;opacity:0}
+@keyframes lrvIn{from{opacity:0;transform:scale(.45) rotate(-10deg);filter:blur(10px)}60%{opacity:1;filter:blur(0)}to{transform:none}}
+.emb>*:not(.dk-rays){position:relative}
+/* 새해 전환: 위아래 금장 셔터가 닫혔다가, 가운데 금선 위로 해가 바뀐 것을 알리고 다시 열린다 */
+.yrfx{position:fixed;inset:0;z-index:80;pointer-events:auto}
+.yrfx-h{position:absolute;left:0;right:0;height:50.5%;background:#15120e;transition:transform .6s cubic-bezier(.7,0,.3,1)}
+.yrfx-h::after{content:"";position:absolute;left:0;right:0;height:1px;background:rgba(201,162,74,.45)}
+.yrfx-h.t{top:0;transform:translateY(-101%);border-bottom:2px solid #c9a24a;background:linear-gradient(180deg,#0e0c09,#2a2116)}
+.yrfx-h.t::after{bottom:6px}
+.yrfx-h.b{bottom:0;transform:translateY(101%);border-top:2px solid #c9a24a;background:linear-gradient(0deg,#0e0c09,#2a2116)}
+.yrfx-h.b::after{top:6px}
+.yrfx.in .yrfx-h{transform:none}
+.yrfx.open .yrfx-h.t{transform:translateY(-101%)}.yrfx.open .yrfx-h.b{transform:translateY(101%)}
+.yrfx-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px;opacity:0}
+.yrfx-c b{font-family:var(--font-voice);font-weight:800;font-size:38px;color:#f1d589;letter-spacing:.08em;margin-bottom:14px}
+.yrfx-c i{display:block;width:min(320px,70vw);height:1px;background:linear-gradient(90deg,transparent,#f1d589,transparent);transform:scaleX(0);position:relative}
+.yrfx-c i::after{content:"◆";position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);font-size:10px;color:#f1d589;font-style:normal}
+.yrfx-c span{font-family:var(--font-voice);font-size:15px;color:var(--dk-muted);letter-spacing:.14em;margin-top:14px}
+.yrfx.show .yrfx-c{opacity:1}
+.yrfx.show .yrfx-c b{animation:dkTitle .9s cubic-bezier(.2,.8,.2,1) both}
+.yrfx.show .yrfx-c i{animation:qfxGrow .8s .1s cubic-bezier(.2,.8,.2,1) forwards}
+.yrfx.show .yrfx-c span{animation:dkUp .7s .35s both}
+.yrfx.open .yrfx-c{opacity:0;transition:opacity .25s}
+.yrfx.open{pointer-events:none}
+/* 인용구 카드 */
+.qfx{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse at 50% 30%,#2c2418,#0e0c09 75%);cursor:pointer;animation:dkFade .5s both}
+.qfx.out{opacity:0;transition:opacity .5s ease}
+.qfx-in{max-width:520px;text-align:center}
+.qfx-l{font-size:12px;letter-spacing:.3em;color:#c9a24a;font-weight:700;animation:dkFade .6s .2s both}
+.qfx-r{height:1px;width:180px;margin:14px auto 18px;background:linear-gradient(90deg,transparent,#f1d589,transparent);transform:scaleX(0);animation:qfxGrow .9s .35s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes qfxGrow{to{transform:scaleX(1)}}
+.qfx-q{font-family:var(--font-voice);font-size:21px;line-height:1.75;color:#fff4d6}
+.qfx-q .w{display:inline-block;white-space:pre;animation:dkWord .5s both}
+.qfx-w{margin-top:16px;color:#c9a24a;font-size:13.5px}
+.qfx-k{margin-top:30px;font-size:11.5px;color:#7d715c;letter-spacing:.1em}
+/* 지도자 명언: 한문은 크게 띄어, 영어는 기울여 쓰고 아래에 해석 */
+.qfx-q.hj,.yq-q.hj{letter-spacing:.14em}
+.qfx-q.en,.yq-q.en{font-style:italic}
+.qfx-s{margin-top:12px;font-size:14.5px;line-height:1.7;color:#cbbd9c}
+.yq{max-width:min(640px,88vw);margin-top:20px;opacity:0}
+.yrfx.show .yq{animation:dkUp .7s .4s both}
+.yq-q{font-family:var(--font-voice);font-size:clamp(17px,2.4vw,23px);line-height:1.7;color:#fff4d6;text-wrap:balance}
+.yq-q.hj{font-size:clamp(20px,3vw,29px)}
+.yq-s{margin-top:8px;font-size:14px;line-height:1.65;color:#cbbd9c;text-wrap:balance}
+.yq-w{margin-top:12px;font-size:12.5px;color:#c9a24a}
+.yq-k{margin-top:20px;font-size:11px;letter-spacing:.1em;color:#7d715c}
+.yrfx:has(.yq){cursor:pointer}
+/* 명언은 문장 단위로 한 줄씩(qLines). 한 줄이 넘치면 그 안에서 고르게 나눈다. */
+.yq-q .ln,.yq-s .ln,.qfx-q .ln,.qfx-s .ln,.fxn .ln{display:block;text-wrap:balance}
+/* 연차 셔터가 걷히기 전까지 신문·TV·조보를 첫 장면에 멈춰 둔다 */
+.np-hold,.np-hold *{animation-play-state:paused!important}
+/* 라이트 모드의 명언: 다음 화면 맨 위에 조용히 */
+.fxn{margin:0 0 14px;padding:12px 14px;background:var(--surface-1);border-left:3px solid #c9a24a;border-radius:6px}
+.fxn-k{margin-bottom:6px;font-size:12px;font-weight:700;color:#8f6a12}
+.fxn-q{font-family:var(--font-voice);font-size:15px;line-height:1.7}
+.fxn-q.hj{letter-spacing:.1em}.fxn-q.en{font-style:italic}
+.fxn-s{margin-top:4px;font-size:13px;line-height:1.6;color:var(--text-secondary)}
+.fxn-w{margin-top:6px;font-size:12px;color:var(--text-muted)}
+/* 라이트 모드: 모든 애니메이션·전환을 즉시 끝난 상태로(사라지지 않게 '없음' 대신 길이 0) */
+html[data-lite] *,html[data-lite] *::before,html[data-lite] *::after{animation-duration:0s!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:0s!important;transition-delay:0s!important}
+html[data-lite] [style*="animation:tk"]{padding-left:0!important;display:block!important;overflow:hidden;text-overflow:ellipsis}
+/* 명언이 있으면 셔터가 맞물리는 금선 위에 연차 제목, 아래에 명언이 오도록.
+   vh는 주소창을 뺀 실제 화면 높이와 달라서(아이패드 크롬 등) 제목이 금선에 걸리므로, 제목 칸을 화면 위쪽 절반으로 잡고 그 바닥에 선을 붙인다 */
+.yrfx-top{display:flex;flex-direction:column;align-items:center}
+.yrfx-c:has(.yq){justify-content:flex-start}
+.yrfx-c:has(.yq) .yrfx-top{flex:0 0 50%;justify-content:flex-end}
+/* 등급 인장 */
+.seal{position:absolute;right:12px;top:12px;width:66px;height:66px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--sc);border:3px double var(--sc);font-family:var(--font-voice);
+  background:color-mix(in srgb,var(--sc) 7%,transparent);transform:rotate(-12deg);animation:sealIn .45s .35s cubic-bezier(.3,1.6,.5,1) both}
+.seal b{font-size:32px;line-height:1;font-weight:800}
+.seal span{font-size:9.5px;font-weight:700;letter-spacing:.12em;margin-top:1px}
+.seal::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--sc);opacity:0;animation:dkRing .7s .7s ease-out}
+.sealhit{animation:sealShake .35s .62s}
+@keyframes sealIn{from{opacity:0;transform:scale(2.6) rotate(-30deg)}to{opacity:.95;transform:scale(1) rotate(-12deg)}}
+@keyframes sealShake{20%{transform:translate(2px,1px)}40%{transform:translate(-2px,-1px)}60%{transform:translate(1px,-1px)}80%{transform:translate(-1px,1px)}}
+/* 연대기 두루마리 + 메달 */
+.chr{position:relative;margin-bottom:12px}
+.chr-roll{height:14px;margin:0 -6px;border-radius:7px;background:linear-gradient(180deg,#6b4a22,#c99a52 45%,#6b4a22);box-shadow:0 3px 6px rgba(0,0,0,.35)}
+.chr-w{display:grid;grid-template-rows:0fr;transition:grid-template-rows 1.3s cubic-bezier(.4,0,.2,1)}
+.chr-w>div{overflow:hidden}
+.chr.open .chr-w{grid-template-rows:1fr}
+.chr.still .chr-w{transition:none}
+.chr-p{min-height:118px;padding:14px 16px 10px;background:linear-gradient(90deg,#dccaa2,#f6eedb 8%,#f6eedb 92%,#dccaa2)}
+.chr-p .ct{margin-right:76px}
+.chr-md{position:absolute;right:12px;top:30px;width:70px;transform-origin:50% 0;pointer-events:none}
+.chr.open:not(.still) .chr-md{animation:chrDrop 1.4s 1.2s cubic-bezier(.3,.7,.3,1) both}
+.chr-md .disc{position:relative;overflow:hidden;width:58px;height:58px;margin:-4px auto 0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3c4,#d8b45c 45%,#8a6a24);box-shadow:0 0 0 3px #6b4f1a,0 6px 14px rgba(0,0,0,.4);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--font-voice);font-weight:800;color:#5d4515;line-height:1.1}
+.chr-md .disc b{font-size:24px}.chr-md .disc span{font-size:9px;letter-spacing:.06em}
+.chr-md .disc::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.85) 50%,transparent 65%);transform:translateX(-120%)}
+.chr.open:not(.still) .chr-md .disc::after{animation:chrGl 1s 2.7s ease-in-out}
+@keyframes chrDrop{0%{opacity:0;transform:translateY(-110px) rotate(-22deg)}55%{opacity:1;transform:translateY(6px) rotate(10deg)}75%{transform:rotate(-5deg)}90%{transform:rotate(2deg)}100%{opacity:1;transform:none}}
+@keyframes chrGl{to{transform:translateX(120%)}}

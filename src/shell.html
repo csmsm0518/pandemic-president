@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script>
+// 큰 태블릿(아이패드 프로 12.9 등)에서는 글자와 버튼이 휴대폰 크기 그대로라 화면이 휑하다. 짧은 변 700px 이상인 터치 기기면
+// 뷰포트 폭을 세로 680px · 가로 1100px로 좁혀 화면 전체를 비례해서 키운다. 휴대폰과 PC는 그대로.
+// 기기 크기는 바뀌지 않으므로 처음 한 번만 잰다(뷰포트를 바꾼 뒤 다시 재면 브라우저에 따라 줄어든 값이 나와 키웠다 줄였다를 반복한다).
+(function(){var m=document.querySelector('meta[name=viewport]'),base=m.getAttribute('content'),
+    s=Math.min(screen.width,screen.height),l=Math.max(screen.width,screen.height);
+  function fit(){var o=screen.orientation&&screen.orientation.type,port=o?o.indexOf('portrait')===0:matchMedia('(orientation:portrait)').matches,
+      touch=navigator.maxTouchPoints>1||matchMedia('(pointer:coarse)').matches,dw=port?s:l,tw=port?680:1100,
+      c=touch&&s>=700&&dw>tw?'width='+tw+',viewport-fit=cover':base;
+    if(m.getAttribute('content')!==c)m.setAttribute('content',c);}
+  fit();addEventListener('orientationchange',function(){setTimeout(fit,60);});addEventListener('resize',fit);})();
+</script>
+<meta name="theme-color" content="#efe9dd">
+<title>팬데믹 대통령</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;800&family=UnifrakturMaguntia&display=swap">
+<!--@CSS-->
+</head>
+<body>
+<div id="app">
+  <div id="root">
+    <h1 class="hd" style="font-size:40px;line-height:1.15;margin:8px 0 10px">팬데믹<br>대통령</h1>
+    <div style="font-size:12.5px;font-weight:600;color:var(--accent-soft);margin-bottom:18px">5년 단임 · 한 번의 인생 · DLC 조선·미국</div>
+    <button class="bgm-cue" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg><span>배경음악 켜기</span></button>
+    <div style="font-size:15px;color:var(--text-secondary);line-height:1.8;margin-bottom:10px">취임 3주 만에 <em>첫 확진자</em>가 나왔다. 임기는 <em>5년, 단 한 번</em>이다. 권한을 쥐면 연임의 유혹이 온다. DLC에서는 <em>조선의 왕</em>이나 <em>미국 대통령</em>이 되어 다른 시대, 다른 규칙으로 나라를 이끈다.</div>
+    <div style="font-size:13px;color:var(--text-muted);line-height:1.8;margin-bottom:24px">감염은 지수적으로 번지고 사라지지 않는다. 권한을 쥐면 유착이 자라고, 지지율은 가만히 두면 떨어진다. 처음이라면 다음 화면에서 <em>가이드북</em>부터 보자.</div>
+    <div id="pfMem" class="pf-mem" style="display:none"></div>
+    <div class="pf">
+    <div class="pf-row pf-pii"><label for="pfSchool">학교 <b>*</b></label><input id="pfSchool" maxlength="30" placeholder="예: 용인외대부고" autocomplete="off"></div>
+    <div class="pf-row pf-pii"><label for="pfName">이름 <b>*</b></label><input id="pfName" maxlength="20" placeholder="실명" autocomplete="off"></div>
+    <div class="pf-row"><label for="nick">닉네임 <span>명예의 전당에 보이는 이름 · 비우면 익명</span></label><input id="nick" maxlength="20" placeholder="예: 백신 대통령" autocomplete="off"></div>
+    <div class="pf-row pf-pii"><label for="pfPhone">전화번호 <span>선택 · 점수에 따른 상품을 받고 싶을 때만</span></label><input id="pfPhone" type="tel" inputmode="tel" maxlength="13" placeholder="010-0000-0000" autocomplete="off"></div>
+    <label class="pf-ok pf-pii"><input type="checkbox" id="pfAgree"><span>개인정보 수집·이용에 동의합니다 <b>*</b></span></label>
+    <details class="pf-d pf-pii"><summary>무엇을 왜 모으나요?</summary><ul>
+      <li><b>모으는 것</b> · 학교, 이름, 닉네임, 전화번호(적은 경우만), 게임 속 선택과 결과</li>
+      <li><b>쓰는 곳</b> · 사람들이 권력과 부패 앞에서 어떻게 선택하는지 알아보는 학생 탐구, 점수 상위자 상품 연락</li>
+      <li><b>보이는 곳</b> · 명예의 전당에는 닉네임·학교·점수(그리고 닮은 지도자)가 보여요. 이름·전화번호는 탐구 진행자만 보는 시트에 따로 보관해요.</li>
+      <li><b>보관 기간</b> · 탐구와 상품 지급이 끝나면 지워요.</li>
+      <li>동의하지 않을 수 있어요. 다만 그러면 이 게임에 참여할 수 없어요.</li></ul></details>
+    <div id="pfErr" class="pf-err" role="alert"></div>
+  </div>
+    <div style="font-size:12.5px;color:var(--text-muted);line-height:1.6;margin-bottom:14px">게임 속 선택과 결과는 연구 기록으로 남아요. 명예의 전당에는 닉네임만 보여요.</div>
+    <button id="go" class="pri" style="width:100%;padding:16px;font-size:16px">다음</button>
+    <div style="font-size:12px;color:var(--text-muted);margin-top:14px;text-align:center">최고 기록과 도감은 이 브라우저에 저장된다</div>
+  </div>
+</div>
+<noscript><div style="margin:14px 16px;padding:12px 14px;border:1px solid #b3261e;border-radius:10px;color:#a8321f;font-size:14px;line-height:1.7">이 화면에서는 게임이 실행되지 않아요. 파일 미리보기가 아니라 <b>사파리·크롬 같은 브라우저</b>에서 게임 링크로 열어 주세요.</div></noscript>
+<div id="bootmsg" style="display:none;position:fixed;left:12px;right:12px;bottom:12px;z-index:99;background:#f6e3dd;border:1px solid #b3261e;border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.6;color:#a8321f"></div>
+<script>window.onerror=function(m,s,l,c){try{var b=document.getElementById("bootmsg");if(b&&b.style.display!=="block"){b.style.display="block";b.textContent="오류가 났어요: "+m+" ("+l+":"+c+") · 이 화면을 캡처해서 알려 주세요. (누르면 닫힘)";b.onclick=function(){b.style.display="none";};}}catch(e){}};</script>
+<!--@JS-->
+</body>
+</html>

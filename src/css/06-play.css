@@ -1,0 +1,104 @@
+/* ---------- 게임 진행 화면: 메뉴와 같은 결의 움직임 ---------- */
+/* 턴 카드: 새 사건이 열릴 때 비스듬한 금테 띠가 화면을 가로지르며 몇 번째 결정인지와 사건 이름을 알린다. 누르면 걷힌다. */
+.turnfx{position:fixed;inset:0;z-index:70;display:flex;align-items:center;overflow:hidden;cursor:pointer}
+.turnfx::before{content:"";position:absolute;inset:0;background:rgba(11,10,8,.42);animation:tfDim 1.25s ease both}
+.turnfx-b{position:relative;width:100%;padding:clamp(16px,3.6vh,32px) 0;background:linear-gradient(90deg,#15120e,#2c2318 50%,#15120e);border-top:2px solid #c9a24a;border-bottom:2px solid #c9a24a;box-shadow:0 22px 60px rgba(0,0,0,.45);transform:skewY(-3deg);animation:tfBand 1.25s cubic-bezier(.7,0,.3,1) both}
+.turnfx-in{display:flex;align-items:baseline;justify-content:center;gap:clamp(14px,2.4vw,34px);padding:0 24px;transform:skewY(3deg);animation:tfText 1.25s cubic-bezier(.2,.8,.2,1) both}
+.turnfx-k{flex:none;font:700 clamp(12px,1.7vh,14px) var(--font-ui);letter-spacing:.16em;color:#c9a24a;white-space:nowrap}
+.turnfx-t{min-width:0;font:800 clamp(24px,5vh,46px)/1.2 var(--font-voice);color:#fff4d6;text-align:center;text-wrap:balance}
+@keyframes tfBand{0%{clip-path:inset(0 100% 0 0)}26%,74%{clip-path:inset(0 0 0 0)}100%{clip-path:inset(0 0 0 100%)}}
+@keyframes tfText{0%,12%{opacity:0;translate:-48px 0}34%,72%{opacity:1;translate:0 0}92%,100%{opacity:0;translate:48px 0}}
+@keyframes tfDim{0%{opacity:0}24%,72%{opacity:1}100%{opacity:0}}
+@media (max-width:600px){.turnfx-in{flex-direction:column;align-items:center;gap:6px}}
+/* 사건 카드: 위에 금선이 그어지고 제목이 왼쪽부터 드러난다 */
+.evc{position:relative;overflow:hidden}
+.evc.go::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#8a6a24,#f1d589,#8a6a24);transform-origin:left;animation:evLine .9s calc(var(--tfd,0ms) + 80ms) cubic-bezier(.2,.8,.2,1) both}
+.evc.go .evt{animation:evTitle .75s calc(var(--tfd,0ms) + 140ms) cubic-bezier(.2,.8,.2,1) both}
+@keyframes evLine{from{transform:scaleX(0)}}
+@keyframes evTitle{from{clip-path:inset(0 100% 0 0);opacity:.2;translate:-10px 0}to{clip-path:inset(0 -2% 0 0);opacity:1;translate:0 0}}
+/* 선택지: 오른쪽에서 비스듬히 미끄러져 들어오고, 올리면 금색 표시가 서며, 고르면 그것만 남는다 */
+#gOpts .opt{position:relative;opacity:0;animation:gOptIn .5s cubic-bezier(.2,.8,.2,1) forwards;transition:transform .2s cubic-bezier(.2,.8,.2,1),border-color .15s,box-shadow .2s}
+#gOpts .opt::before{content:"";position:absolute;left:-1px;top:12px;bottom:12px;width:4px;background:#c9a24a;transform:scaleY(0);transition:transform .2s}
+#gOpts .opt:hover:not(:disabled){transform:translateX(6px);border-color:#8f6a12;box-shadow:0 10px 24px -14px rgba(70,50,20,.55)}
+#gOpts .opt:hover:not(:disabled)::before{transform:scaleY(1)}
+#gOpts .opt.picked,#gOpts .opt.picked:disabled{opacity:1;border-color:#c9a24a;box-shadow:0 0 0 2px #c9a24a,0 12px 30px -12px rgba(143,106,18,.65);animation:gPick .45s ease both}
+#gOpts .opt.picked::before{transform:scaleY(1)}
+#gOpts .opt.drop{animation:gDrop .32s ease-in both}
+@keyframes gOptIn{from{opacity:0;transform:translateX(40px) skewX(-6deg)}to{opacity:1;transform:none}}
+@keyframes gPick{0%{transform:scale(1)}35%{transform:scale(1.03)}100%{transform:scale(1)}}
+@keyframes gDrop{from{opacity:1}to{opacity:0;transform:translateY(10px) scale(.98)}}
+/* 지표 카드: 방금 움직인 지표가 번쩍이고 변화량이 떠올랐다 사라진다 */
+.sb.up{--fl:#2e7d55}.sb.dn{--fl:#b3261e}.sb.nt{--fl:#3d5a80}
+.sb.up,.sb.dn,.sb.nt{animation:sbFlash 1.2s ease .35s both}
+.sb[data-d]::after{content:attr(data-d);position:absolute;right:6px;top:4px;font-size:11.5px;font-weight:800;color:var(--fl);animation:sbRise 1.8s ease .35s both}
+@keyframes sbFlash{0%{box-shadow:0 0 0 0 var(--fl)}25%{box-shadow:0 0 0 2px var(--fl),0 0 16px var(--fl)}100%{box-shadow:0 0 0 0 transparent}}
+@keyframes sbRise{0%{opacity:0;transform:translateY(8px)}18%{opacity:1;transform:none}75%{opacity:1}100%{opacity:0;transform:translateY(-8px)}}
+/* 결과: 판정 등급이 도장처럼 찍히고, 계속 버튼은 메뉴와 같은 화살촉 모양 */
+.tierb{display:inline-block;animation:stamp .55s cubic-bezier(.2,1.4,.4,1) both}
+#wrap #nx{border-radius:0;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,0 100%);font-family:var(--font-voice);font-weight:800;letter-spacing:.06em}
+/* 가로 화면에서는 왼쪽에 상황판, 오른쪽에 사건과 선택지를 두고 화면을 넓게 쓴다 */
+/* 가로 모드를 골랐을 때(넓은 화면) */
+@media (min-width:720px){
+  html[data-ori="l"] #app:has(#wrap){max-width:1220px;padding:clamp(12px,2vw,22px) clamp(14px,2.6vw,32px) 48px}
+  html[data-ori="l"] #wrap{display:grid;grid-template-columns:minmax(0,min(430px,44%)) minmax(0,1fr);column-gap:clamp(24px,3vw,44px);align-items:start}
+  html[data-ori="l"] #wrap>.g-main{min-width:0}
+  html[data-ori="l"] #wrap .evc .evt{font-size:clamp(22px,2.2vw,30px)!important}
+  html[data-ori="l"] #wrap .g-side{display:flex;flex-direction:column;gap:12px}}
+/* 가로 화면 사건·결과(fit): 화면 높이에 꼭 맞춰 페이지 스크롤을 없앤다.
+   오른쪽은 사건 칸(g-sc, 넘치면 글씨를 줄이고 그래도 넘치면 그 안에서만 스크롤) 바로 아래에 선택지(g-bt)가 늘 보인다.
+   왼쪽 상황판은 넘치는 만큼 결정 기록 줄을 빼고(fitP), 그래도 넘치면 그 칸 안에서만 스크롤한다. */
+@media (min-width:720px){
+  html[data-ori="l"] #app:has(#wrap.fit){height:100vh;height:100dvh;min-height:0;padding-bottom:clamp(10px,1.6vw,18px);display:flex;flex-direction:column;overflow:hidden}
+  html[data-ori="l"] #app:has(#wrap.fit)>#root{flex:1;min-height:0;display:flex;flex-direction:column}
+  html[data-ori="l"] #wrap.fit{flex:1;min-height:0;grid-template-rows:minmax(0,1fr);align-items:stretch}
+  html[data-ori="l"] #wrap.fit>.g-hud{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+  html[data-ori="l"] #wrap.fit>.g-hud::-webkit-scrollbar{display:none}
+  html[data-ori="l"] #wrap.fit>.g-main{display:flex;flex-direction:column;min-height:0}
+  html[data-ori="l"] #wrap.fit .g-sc{flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+  html[data-ori="l"] #wrap.fit .g-sc::-webkit-scrollbar{display:none}
+  html[data-ori="l"] #wrap.fit .g-sc.more{-webkit-mask-image:linear-gradient(#000 calc(100% - 26px),transparent);mask-image:linear-gradient(#000 calc(100% - 26px),transparent)}
+  html[data-ori="l"] #wrap.fit .g-bt{flex:0 0 auto;padding-top:10px}
+  html[data-ori="l"] #wrap.fit .evc{margin-bottom:12px!important}
+  html[data-ori="l"] #wrap.fit .evc .evt{font-size:calc(clamp(22px,2.2vw,30px)*var(--fz,1))!important}
+  html[data-ori="l"] #wrap.fit .evd{font-size:calc(15px*var(--fz,1))!important}
+  html[data-ori="l"] #wrap.fit .rsd{font-size:calc(15.5px*var(--fz,1))!important}
+  html[data-ori="l"] #wrap.fit .advrec{margin:0 0 12px}
+  html[data-ori="l"] #wrap.fit #gOpts{gap:8px!important}
+  html[data-ori="l"] #wrap.fit #gOpts .opt{gap:6px;padding:11px 14px 10px}
+  html[data-ori="l"] #wrap.fit .g-bt #nx{margin-bottom:6px!important}
+  html[data-ori="l"] #wrap.fit .g-bt .rs-hint{display:none}
+  html[data-ori="l"] #wrap.fit #gOpts .opt-ok{flex-direction:row;align-items:baseline;gap:3px}
+  html[data-ori="l"] #wrap.fit #gOpts .opt-ok span{margin-top:0}}
+.gs-em{margin-left:auto;margin-right:10px;padding:3px 9px;font-size:11.5px;font-weight:700;line-height:1.3;color:#7a150f;border:1.5px dashed rgba(179,38,30,.55);background:rgba(179,38,30,.06);border-radius:7px}
+/* 왼쪽 상황판 아래 패널(가로 2단일 때만 보인다) */
+.g-side{display:none}
+.gs-me{position:relative;display:flex;align-items:flex-end;gap:14px;min-height:118px;padding:0 16px 0 6px;overflow:hidden;border-radius:10px;color:#efe7d6;
+  background:radial-gradient(70% 120% at 18% 100%,#4a3a22 0%,#1d1b18 70%);box-shadow:inset 0 0 0 1px rgba(201,162,74,.35);animation:gxUp .5s .1s both}
+.gs-me::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#8a6a24,#f1d589,#8a6a24)}
+.gs-pf{flex:none;width:112px;height:112px;margin-top:8px}
+.gs-pf svg{display:block;width:100%;height:100%;filter:drop-shadow(0 0 1px rgba(255,236,190,.55)) drop-shadow(0 8px 14px rgba(0,0,0,.5))}
+.gs-tx{display:flex;flex-direction:column;gap:2px;min-width:0;padding:14px 0 16px}
+.gs-k{font-size:11.5px;font-weight:700;letter-spacing:.12em;color:#c9a24a}
+.gs-tx b{font:800 24px/1.2 var(--font-voice);color:#fff4d6}
+.gs-s{font-size:12.5px;color:#b3a68c}
+.gs-box{padding:12px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;animation:gxUp .5s .2s both}
+.gs-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;font-size:12px;font-weight:700;letter-spacing:.06em;color:#8f6a12}
+.gs-h span{font-weight:600;letter-spacing:0;color:var(--text-muted)}
+.gs-cn{display:flex;align-items:center;gap:10px;padding:5px 0}
+.gs-cn+.gs-cn{border-top:1px solid var(--border)}
+.gs-cn b{display:block;font-size:14px}
+.gs-cn span{font-size:11.5px;color:var(--text-muted)}
+.gs-lg{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px;min-width:0}
+.gs-lg i{flex:none;min-width:44px;padding:1px 6px;font-style:normal;font-size:11px;font-weight:700;color:#fff;text-align:center;border-radius:3px}
+.gs-lg span{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:var(--text-secondary)}
+.gs-h+.gs-lg span{color:var(--text-primary);font-weight:600}
+.gs-e{font-size:12.5px;line-height:1.6;color:var(--text-muted)}
+/* 지도자 명단 칸 아래 이름 */
+.gx-roster .gx-t{width:calc(var(--tile) * 1.16);height:auto;display:flex;flex-direction:column}
+.gx-roster .gx-t svg{width:100%;height:var(--tile)}
+.gx-tn{display:block;padding:3px 3px 4px;font-size:11px;font-weight:600;line-height:1.25;color:#cbbd9c;background:rgba(0,0,0,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gx-t.on .gx-tn{color:#15120e;background:#f1d589}
+.gx-roster .gx-t.lk::after{bottom:auto;height:var(--tile)}
+@media (orientation:landscape) and (max-height:540px){.gx-tn{font-size:10px;padding:2px 2px 3px}}
+@media (prefers-reduced-motion:reduce){#gOpts .opt,.evc.go .evt,.evc.go::before,.sb.up,.sb.dn,.sb.nt,.tierb{animation:none!important;opacity:1}.sb[data-d]::after{display:none}}
+

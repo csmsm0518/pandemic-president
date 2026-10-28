@@ -1,0 +1,193 @@
+/* ---------- 세로 화면: 사건·결과 화면을 휴대폰 한 화면에 맞춘다 ----------
+   위 상태 바(고정) · 가운데 사건(남는 공간, 넘치면 그 안에서만 스크롤) · 아래 선택지(엄지 자리에 고정).
+   dvh는 주소창이 나타나고 사라져도 실제 보이는 높이를 따른다. */
+.hp-top,.hp-seg,.hp-live,.hp-map,.hp-line{display:none}
+html[data-ori="p"] #app:has(#wrap.fit){height:100vh;height:100dvh;min-height:0;padding:max(10px,env(safe-area-inset-top)) 12px max(8px,env(safe-area-inset-bottom));display:flex;flex-direction:column;overflow:hidden}
+html[data-ori="p"] #app:has(#wrap.fit)>#root{flex:1;min-height:0;display:flex;flex-direction:column}
+html[data-ori="p"] #wrap.fit{flex:1;min-height:0;display:flex;flex-direction:column}
+html[data-ori="p"] #wrap.fit>.g-hud{flex:0 0 auto}
+html[data-ori="p"] #wrap.fit>.g-main{flex:1;min-height:0;display:flex;flex-direction:column}
+html[data-ori="p"] #wrap.fit .g-sc{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:8px 1px 4px;margin:0 -1px}
+html[data-ori="p"] #wrap.fit .g-sc::-webkit-scrollbar{display:none}
+html[data-ori="p"] #wrap.fit .g-bt{flex:0 0 auto;padding-top:8px}
+/* 자리가 남는 화면(fitP가 loose를 붙인다): 사건과 선택지 사이를 벌리지 않고 둘을 함께 가운데보다 조금 위로(남는 자리를 위 1 : 아래 2) */
+html[data-ori="p"] #wrap.fit.loose>.g-main::before{content:"";flex:1 1 0}
+html[data-ori="p"] #wrap.fit.loose>.g-main::after{content:"";flex:2 1 0}
+html[data-ori="p"] #wrap.fit.loose .g-sc{flex:0 1 auto}
+html[data-ori="p"] #wrap.fit.loose .g-bt{padding-top:14px}
+/* 태블릿 세로: 한 칸 화면을 조금 넓혀 양옆이 휑하지 않게 */
+@media (min-width:600px){html[data-ori="p"] #app:has(#wrap.fit){max-width:640px}}
+/* 상태 바 */
+html[data-ori="p"] .hp-top{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);margin-bottom:5px;white-space:nowrap;min-width:0}
+html[data-ori="p"] .hp-k{background:rgba(47,74,107,.18);color:#3d5a80;font-weight:700;padding:1px 7px;border-radius:6px}
+html[data-ori="p"] .hp-top>b{color:var(--text-secondary);font-weight:700}
+html[data-ori="p"] .hp-m{overflow:hidden;text-overflow:ellipsis;opacity:.8;min-width:0}
+html[data-ori="p"] .hp-st{color:#2e7d55;font-weight:700}
+html[data-ori="p"] .hp-r{margin-left:auto;display:flex;align-items:center;gap:6px;flex-shrink:0}
+html[data-ori="p"] .hp-r .dots i{width:7px;height:7px}
+html[data-ori="p"] .hp-em{padding:3px 8px;font-size:11.5px;font-weight:700;color:#7a150f;border:1.5px dashed rgba(179,38,30,.55);background:rgba(179,38,30,.06);border-radius:7px;line-height:1.3}
+html[data-ori="p"] .hp-snd{width:30px;height:26px;padding:0;display:flex;align-items:center;justify-content:center}
+html[data-ori="p"] .hp-seg{display:flex;gap:2px;margin-bottom:6px}
+html[data-ori="p"] .hp-seg span{flex:1;height:3px;border-radius:2px}
+html[data-ori="p"] .hp-live{display:flex;align-items:center;gap:9px;width:100%;padding:6px 10px;margin-bottom:6px;border:0;border-radius:9px;background:#1d1b18;color:#cfc6b4;font-size:11.5px;line-height:1.3;white-space:nowrap;overflow:hidden;text-align:left}
+html[data-ori="p"] .hp-live>span{flex-shrink:0}
+html[data-ori="p"] .hp-live .odo{color:#fff;font-weight:700;font-size:12.5px}
+html[data-ori="p"] .hp-lv{color:#ff8f86;font-size:11px;letter-spacing:.04em;flex-shrink:0}
+html[data-ori="p"] .hp-live>.hp-hs{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+html[data-ori="p"] .hp-dot{width:6px;height:6px;border-radius:50%;background:#ff8f86;flex-shrink:0;animation:pls 1.4s infinite}
+html[data-ori="p"] .hp-chev{margin-left:auto;font-style:normal;color:#a39a88;transition:transform .2s}
+html[data-ori="p"] .hp-live[aria-expanded="true"]{border-radius:9px 9px 0 0;margin-bottom:0}
+html[data-ori="p"] .hp-live[aria-expanded="true"] .hp-chev{transform:rotate(180deg)}
+html[data-ori="p"] .hp-map{display:block;position:relative;margin-bottom:6px;border-radius:0 0 9px 9px;overflow:hidden;background:#1d1b18}
+html[data-ori="p"] .hp-map[hidden]{display:none}
+html[data-ori="p"] .hp-map canvas{display:block;width:100%;height:96px}
+html[data-ori="p"] .hp-map span{position:absolute;right:10px;bottom:6px;font-size:11px;color:#a39a88}
+/* 지표 6칸을 한 줄로 */
+html[data-ori="p"] #wrap .g-hud .sg6{grid-template-columns:minmax(0,4fr) minmax(0,2fr);gap:5px;margin:0 0 6px}
+html[data-ori="p"] #wrap .g-hud .sg-h{display:none}
+html[data-ori="p"] #wrap .g-hud .sg-r{gap:4px}
+html[data-ori="p"] #wrap .g-hud .sg6 .sb{padding:3px 5px 5px;border-radius:7px}
+html[data-ori="p"] #wrap .g-hud .sg6 .sb-n{font-size:10px;letter-spacing:-.04em}
+html[data-ori="p"] #wrap .g-hud .sg6 .sb b{font-size:15px;line-height:1.1}
+html[data-ori="p"] #wrap .g-hud .sb[data-d]::after{right:3px;top:2px;font-size:10px}
+/* 급한 문제 + 속보 한 줄 */
+html[data-ori="p"] .hp-line{display:flex;align-items:center;gap:8px;padding:5px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);min-width:0}
+html[data-ori="p"] .hp-line .urg{flex:0 1 auto;flex-wrap:nowrap;margin:0;gap:4px;font-size:11.5px;min-width:0;overflow:hidden}
+html[data-ori="p"] .hp-line .urg-l{font-size:11px;white-space:nowrap}
+html[data-ori="p"] .hp-line .urg-c{padding:1px 7px;white-space:nowrap}
+html[data-ori="p"] .hp-line .urg-c b{font-size:9px}
+html[data-ori="p"] .hp-tk{flex:1 1 60px;min-width:60px;overflow:hidden;white-space:nowrap;font-size:11.5px;color:var(--text-secondary)}
+html[data-ori="p"] .hp-tk>span{display:inline-block;padding-left:100%;animation:tk 30s linear infinite;animation-delay:-7s}
+html[data-ori="p"] .hp-tk b{color:var(--text-danger);font-weight:600}
+/* 사건 카드: 글씨는 화면 높이에 맞춰 줄고(--fz), 칸을 넘치면 그 안에서 스크롤 */
+html[data-ori="p"] #wrap.fit .evc{padding:13px 14px 12px!important;margin-bottom:0!important}
+html[data-ori="p"] #wrap.fit .evc .evt{font-size:calc(clamp(17px,2.7vh,21px)*var(--fz,1))!important;line-height:1.32!important}
+html[data-ori="p"] #wrap.fit .evg{font-size:12px!important;margin-top:3px!important}
+html[data-ori="p"] #wrap.fit .evd{font-size:calc(clamp(13.5px,2.05vh,15px)*var(--fz,1))!important;line-height:1.65!important;margin-top:8px!important}
+/* 튜토리얼 안내는 사건 글 아래에 둔다(사건을 먼저 읽게) */
+html[data-ori="p"] #wrap.fit .g-sc{display:flex;flex-direction:column}
+html[data-ori="p"] #wrap.fit .g-sc>*{flex-shrink:0}
+html[data-ori="p"] #wrap.fit .g-sc>.tip{order:2;margin:8px 0 0}
+/* 가운데 칸이 스크롤될 때는 아래를 흐려서 글이 더 있다는 것을 알린다 */
+html[data-ori="p"] #wrap.fit .g-sc.more{-webkit-mask-image:linear-gradient(#000 calc(100% - 26px),transparent);mask-image:linear-gradient(#000 calc(100% - 26px),transparent)}
+/* 선택지: 제목 줄 · 확률 막대 · [지표 칩][성격·추천 참모] 세 줄로 압축 */
+html[data-ori="p"] #wrap.fit #gOpts{gap:6px!important}
+html[data-ori="p"] #wrap.fit #gOpts .opt{flex-flow:row wrap;column-gap:10px;row-gap:4px;padding:8px 11px 11px;font-size:14px;line-height:1.38}
+html[data-ori="p"] #wrap.fit #gOpts .opt-t{flex:1 0 100%;align-items:center}
+html[data-ori="p"] #wrap.fit #gOpts .opt-n{margin-top:0}
+html[data-ori="p"] #wrap.fit #gOpts .opt-ok{flex-direction:row;align-items:baseline;gap:3px}
+html[data-ori="p"] #wrap.fit #gOpts .opt-ok b{font-size:18px}
+html[data-ori="p"] #wrap.fit #gOpts .opt-ok small{font-size:11px}
+html[data-ori="p"] #wrap.fit #gOpts .opt-ok span{font-size:10.5px;margin-top:0}
+/* 확률 막대는 카드 아래 테두리에 얇게 붙인다 */
+html[data-ori="p"] #wrap.fit #gOpts .opt-bar{position:absolute;left:39px;right:11px;bottom:5px;height:3px;margin:0}
+html[data-ori="p"] #wrap.fit #gOpts .opt-c{order:2;flex:0 1 auto;min-width:0}
+html[data-ori="p"] #wrap.fit #gOpts .opt-m{order:2;flex:1 1 auto;padding-left:0;justify-content:flex-end;gap:4px 6px}
+html[data-ori="p"] #wrap.fit #gOpts .opt-t+.opt-m{padding-left:28px;justify-content:flex-start}
+html[data-ori="p"] #wrap.fit #gOpts .opt-p{display:none}
+html[data-ori="p"] #wrap.fit #gOpts .ch{font-size:12px;line-height:1.35}
+html[data-ori="p"] #wrap.fit #gOpts .chs{gap:2px 9px}
+html[data-ori="p"] #wrap.fit #gOpts .stk{font-size:10.5px}
+html[data-ori="p"] #wrap.fit #gOpts .opt-rec{display:inline-flex;align-items:center;gap:3px;margin-left:0;font-size:11px}
+html[data-ori="p"] #wrap.fit #gOpts .opt-rec svg{flex-shrink:0;border-radius:50%}
+/* 결과 화면: 글은 가운데 칸, 계속 버튼은 아래 고정 */
+html[data-ori="p"] #wrap.fit .rsd{font-size:calc(clamp(14px,2.1vh,15.5px)*var(--fz,1))!important;line-height:1.75!important}
+html[data-ori="p"] #wrap.fit #txt{padding:13px 14px!important;margin-bottom:10px!important}
+html[data-ori="p"] #wrap.fit .g-bt #nx{padding:12px!important;margin-bottom:6px!important}
+html[data-ori="p"] #wrap.fit .g-bt #rr{padding:9px 12px}
+html[data-ori="p"] #wrap.fit .g-bt .rs-hint{display:none}
+/* 인물 선택·게임 설정: 인물 그림 칸이 남는 높이만 쓰고, 확인 버튼까지 한 화면에 */
+html[data-ori="p"] .cine.gm .cs:has(.gx-ld,.gx-su){overflow:hidden}
+html[data-ori="p"] .gx-ld,html[data-ori="p"] .gx-su{height:100%;min-height:0;grid-template-rows:52px minmax(80px,1fr) auto auto}
+html[data-ori="p"] .gx-su{grid-template-rows:52px minmax(80px,1fr) auto}
+html[data-ori="p"] .gx-ld .gx-top,html[data-ori="p"] .gx-su .gx-top{height:52px}
+html[data-ori="p"] .gx-wm{font-size:clamp(40px,11vw,64px)}
+html[data-ori="p"] .gx-roster{--tile:clamp(38px,6.4vh,52px);padding:6px 12px 8px}
+html[data-ori="p"] .gx-info,html[data-ori="p"] .gx-panel{overflow:visible;padding:10px 18px max(12px,env(safe-area-inset-bottom))}
+html[data-ori="p"] .gx-info>:first-child,html[data-ori="p"] .gx-panel>:first-child{margin-top:0}
+html[data-ori="p"] .gx-nm{font-size:clamp(26px,4.6vh,40px);margin:2px 0}
+html[data-ori="p"] .gx-s{margin:6px 0 10px;font-size:clamp(13px,1.9vh,15px);line-height:1.6}
+html[data-ori="p"] .gx-st{gap:3px 12px;font-size:12px}
+html[data-ori="p"] .gx-info .gx-ok,html[data-ori="p"] .gx-panel .gx-ok{position:static;margin-top:12px;padding:12px 36px 12px 22px;font-size:16px}
+html[data-ori="p"] .gx-plate b{font-size:clamp(17px,2.8vh,24px);padding:4px 16px}
+html[data-ori="p"] .gx-plate span{margin-top:3px;font-size:11.5px}
+html[data-ori="p"] .gx-ph{font-size:clamp(22px,3.6vh,30px)}
+html[data-ori="p"] .gx-ph-s{margin:2px 0 8px;font-size:12px}
+html[data-ori="p"] .gx-row{padding:5px 10px;gap:0 12px}
+html[data-ori="p"] .gx-ar{width:34px;height:34px}
+html[data-ori="p"] .gx-rd{font-size:11.5px;line-height:1.45}
+/* 라이트 메인: 무대는 한 줄 3칸, 취임 버튼은 화면 아래에 붙어 있다 */
+html[data-ori="p"] .hl .cmbs{grid-template-columns:repeat(3,minmax(0,1fr))}
+html[data-ori="p"] .hl .cmb{flex-direction:column;padding:9px 10px}
+html[data-ori="p"] .hl .cmb-s{display:none}
+html[data-ori="p"] #app:has(.hl){padding-top:max(14px,env(safe-area-inset-top))}
+html[data-ori="p"] .hl .hl-hd{margin-bottom:6px!important}
+html[data-ori="p"] .hl .lbl{margin-bottom:6px}
+html[data-ori="p"] .hl .bgsel{margin-bottom:8px}
+html[data-ori="p"] .hl .bgcard-h{flex-wrap:wrap;column-gap:8px;row-gap:0}
+html[data-ori="p"] .hl .bgcard-h span{white-space:normal}
+html[data-ori="p"] .hl .hl-mode,html[data-ori="p"] .hl .hl-dif{margin-bottom:14px!important}
+html[data-ori="p"] .hl .hl-mode button,html[data-ori="p"] .hl .hl-dif button{padding:8px 6px!important}
+html[data-ori="p"] .hl .bgsel select{padding:11px 40px 11px 12px}
+html[data-ori="p"] .hl .bgcard{padding:11px 12px}
+html[data-ori="p"] .hl .bgcard p{margin:5px 0 4px;font-size:12.5px;line-height:1.55}
+html[data-ori="p"] .hl .bghint{margin-bottom:14px}
+html[data-ori="p"] .hl .hl-go{position:sticky;bottom:0;z-index:3;margin:0 -16px;padding:10px 16px max(2px,env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,var(--bg) 22%)}
+html[data-ori="p"] .hl .hl-go #st{padding:14px!important}
+/* 특별 국정 과제: 카드 높이를 줄이고, 시작·넘어가기 버튼을 한 줄로 아래에 붙인다 */
+html[data-ori="p"] .spw .spb{min-height:108px;padding:10px 10px 9px}
+html[data-ori="p"] .spw .spb .spb-art{width:68px;height:68px}
+html[data-ori="p"] .spw .spb-n{font-size:15.5px}
+html[data-ori="p"] .spw .spb-c{font-size:11px}
+html[data-ori="p"] .spw .hd{font-size:23px!important}
+html[data-ori="p"] .spw-bt{position:sticky;bottom:0;z-index:3;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:8px;margin:0 -16px;padding:10px 16px max(4px,env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,var(--bg) 22%)}
+html[data-ori="p"] .spw-bt button{margin:0!important;padding:13px 8px!important}
+/* 한 화면 틀(pfit): 내용은 가운데 칸에서만 스크롤, 다음으로 가는 버튼은 아래 고정 */
+html[data-ori="p"] #app:has(.pfit){max-width:440px;height:100vh;height:100dvh;min-height:0;padding:max(14px,env(safe-area-inset-top)) 12px max(8px,env(safe-area-inset-bottom));display:flex;flex-direction:column;overflow:hidden}
+html[data-ori="p"] #app:has(.pfit)>#root{flex:1;min-height:0;display:flex;flex-direction:column}
+html[data-ori="p"] .pfit{flex:1;min-height:0;display:flex;flex-direction:column}
+html[data-ori="p"] .pfit>.p-sc{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;margin:0 -12px;padding:0 12px 6px}
+html[data-ori="p"] .pfit>.p-sc::-webkit-scrollbar{display:none}
+html[data-ori="p"] .pfit>.p-sc.more{-webkit-mask-image:linear-gradient(#000 calc(100% - 26px),transparent);mask-image:linear-gradient(#000 calc(100% - 26px),transparent)}
+html[data-ori="p"] .pfit>.p-bt{flex:none;padding-top:8px}
+html[data-ori="p"] .pfit>.p-bt>button{margin:0!important;padding:13px!important}
+/* 연간 총결산 */
+html[data-ori="p"] .rp .rp-h{font-size:22px!important;margin-bottom:6px!important}
+html[data-ori="p"] .rp .cd{padding:11px 12px!important;margin-bottom:8px!important}
+html[data-ori="p"] .rp .lbl{margin-bottom:6px}
+.rp-tl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.rp-t{display:grid;grid-template-columns:1fr auto;align-items:baseline;padding:5px 8px 6px;border-radius:8px;background:color-mix(in srgb,var(--c) 9%,var(--surface-0));border:1px solid color-mix(in srgb,var(--c) 30%,transparent)}
+.rp-t span{grid-column:1/-1;font-size:10.5px;color:var(--text-secondary)}
+.rp-t b{font-size:17px;font-variant-numeric:tabular-nums;line-height:1.15}
+.rp-t i{font-style:normal;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+.rp-ch{margin-top:8px}
+.rp-ch svg{height:64px!important}
+/* 연말 참모 회의 */
+html[data-ori="p"] .gcn .gcn-h{font-size:24px}
+html[data-ori="p"] .gcn .gcn-s{margin-bottom:10px;font-size:12.5px}
+html[data-ori="p"] .gcn .cn-n{font-size:12.5px;line-height:1.5;padding:2px 0}
+html[data-ori="p"] .gcn .cn-enc{padding:12px 13px;margin-bottom:12px;border-radius:12px}
+html[data-ori="p"] .gcn .cn-enc-h{font-size:18px;margin-bottom:4px}
+html[data-ori="p"] .gcn .cn-enc-t{font-size:12.5px;line-height:1.6}
+html[data-ori="p"] .gcn .cn-enc-w{margin:8px 0 2px}
+html[data-ori="p"] .gcn .cn-q-mark{width:32px;height:32px;font-size:16px}
+html[data-ori="p"] .gcn .cn-l{margin-bottom:12px}
+html[data-ori="p"] .gcn .cn-now{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+html[data-ori="p"] .gcn .cn-now>.cn{flex-direction:column;align-items:center;gap:6px;padding:10px 8px;text-align:center}
+html[data-ori="p"] .gcn .cn-now>.cn>.pf{width:44px;height:44px}
+html[data-ori="p"] .gcn .cn-now .cn-h{justify-content:center;gap:2px 6px}
+html[data-ori="p"] .gcn .cn-now .cn-h b{font-size:14.5px;flex-basis:100%}
+html[data-ori="p"] .gcn .cn-now .cn-s,html[data-ori="p"] .gcn .cn-now .cn-q,html[data-ori="p"] .gcn .cn-now .cn-sp{display:none}
+html[data-ori="p"] .gcn .cn-now .cn-e{margin-top:4px;font-size:11px;line-height:1.4}
+html[data-ori="p"] .gcn .cn-now .cn-b{justify-content:center;margin-top:6px}
+html[data-ori="p"] .gcn .cn-now .cn-btn{padding:5px 12px;font-size:12px}
+html[data-ori="p"] .gcn .cn-now>.cn-empty{min-height:0;justify-content:center}
+html[data-ori="p"] .gcn .cn-now>.cn-embtn{padding:8px;margin:0;font-size:12.5px}
+html[data-ori="p"] .gcn .cn-cand{display:flex;flex-direction:row;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;margin:0 -12px 6px;padding:4px 12px 10px;scrollbar-width:none;align-items:stretch}
+html[data-ori="p"] .gcn .cn-cand::-webkit-scrollbar{display:none}
+html[data-ori="p"] .gcn .cn-cand>.cn{flex:0 0 86%;scroll-snap-align:center;padding:12px}
+html[data-ori="p"] .gcn .cn-cand>.cn:only-child{flex-basis:100%}
+html[data-ori="p"] .gcn .cn-cand>.cn>.pf{width:48px;height:48px}
+html[data-ori="p"] .gcn .cn-cand>.cn-s{flex:1 0 100%}
+html[data-ori="p"] .gcn .cn-cand .cn-q{font-size:12.5px;margin-top:4px}
+html[data-ori="p"] .gcn .cn-cand .cn-sp{font-size:12px;padding:6px 9px}

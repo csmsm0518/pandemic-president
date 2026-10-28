@@ -1,0 +1,75 @@
+/* ---------- 체육 종목: 직접/시뮬레이션 고르기 · 시뮬레이션 결과 ---------- */
+.mg-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mg-2 button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:16px 12px;text-align:center}
+.mg-2 button b{font-size:16px}
+.mg-2 button small{font-size:12px;font-weight:500;line-height:1.45;opacity:.8}
+@media (max-width:420px){.mg-2{grid-template-columns:1fr}}
+.mg-sl{display:flex;flex-direction:column;gap:6px;font-size:13.5px;line-height:1.5}
+.mg-sl>div{padding:8px 11px;background:var(--surface-1);border-radius:6px;animation:gxUp .4s cubic-bezier(.2,.8,.2,1) both}
+.mg-sl .k{display:inline-block;min-width:58px;margin-right:6px;font-size:12px;font-weight:700;color:var(--text-muted)}
+.mg-sl b.me{color:#8f6a12}.mg-sl b.g{color:#2e7d55}.mg-sl b.x{color:#b3261e}
+/* 태권도: 위 점수판(청·홍), 가운데 매트 위 두 선수와 상대의 발차기 신호 원, 아래 세 단추 */
+.tk-sb{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-bottom:10px}
+.tk-p{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;color:#fff;font-weight:700;font-size:13px}
+.tk-p.me{background:linear-gradient(90deg,#1f4a85,#2f5f99)}.tk-p.op{background:linear-gradient(90deg,#c0392b,#962d22);justify-content:flex-end}
+.tk-p b{font:800 30px/1 var(--font-voice);font-variant-numeric:tabular-nums}.tk-p b.pop{animation:stamp .45s cubic-bezier(.2,1.4,.4,1)}
+.tk-mid{text-align:center;line-height:1.2}.tk-mid b{display:block;font-size:12px;color:var(--text-secondary)}.tk-mid i{font:800 22px var(--font-voice);font-style:normal;font-variant-numeric:tabular-nums}
+.tk-mat{position:relative;height:214px;border-radius:12px;overflow:hidden;background:radial-gradient(60% 70% at 50% 60%,#f2c14e 0 38%,#3b7fc4 38.5% 100%);box-shadow:inset 0 0 0 3px rgba(255,255,255,.35),inset 0 -30px 40px -20px rgba(0,0,0,.35)}
+.tk-mat::after{content:"";position:absolute;left:12%;right:12%;bottom:8px;height:3px;border-radius:2px;background:rgba(255,255,255,.55)}
+.tk-f{position:absolute;bottom:12px;width:94px;height:142px;z-index:1;transition:transform .12s}
+.tk-f.me{left:16%}.tk-f.op{right:16%;transform:scaleX(-1)}
+.tk-f svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 6px 4px rgba(0,0,0,.3))}
+.tk-f .tk-lg2{transform-origin:36px 54px;transition:transform .12s}
+.tk-f.kb .tk-lg2{animation:tkKb .32s ease-out}.tk-f.kh .tk-lg2{animation:tkKh .38s ease-out}
+.tk-f.me.hit{animation:tkHitL .3s}.tk-f.op.hit{animation:tkHitR .3s}
+.tk-f.blk .tk-arm{animation:tkBlk .3s}
+@keyframes tkKb{40%{transform:rotate(-82deg)}100%{transform:none}}
+@keyframes tkKh{45%{transform:rotate(-128deg)}100%{transform:none}}
+@keyframes tkHitL{30%{transform:translateX(-10px) rotate(-6deg)}100%{transform:none}}
+@keyframes tkHitR{30%{transform:scaleX(-1) translateX(-10px) rotate(-6deg)}100%{transform:scaleX(-1)}}
+@keyframes tkBlk{40%{transform:translateY(-6px)}}
+.tk-cue{position:absolute;left:50%;top:40%;width:84px;height:84px;transform:translate(-50%,-50%) scale(.6);opacity:0;transition:opacity .15s,transform .15s;z-index:2}
+.tk-cue.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.tk-cue svg{width:100%;height:100%}
+.tk-cue .tk-g{fill:rgba(255,255,255,.2);stroke:#fff;stroke-width:3}
+.tk-cue .tk-ring{fill:none;stroke:#fff;stroke-width:4}
+.tk-cue.h .tk-ring{stroke:#ffd166}.tk-cue.g .tk-g{fill:rgba(63,195,143,.55);stroke:#3fc38f}.tk-cue.g .tk-ring{stroke:#3fc38f}
+.tk-cue b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 14px var(--font-voice);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.tk .pk-msg{margin:12px 0 10px}
+.tk-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.tk-btns button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:16px 4px;font-size:16px;font-weight:800;touch-action:manipulation}
+.tk-btns button small{font-size:10.5px;font-weight:600;opacity:.6}
+#tkB{color:#1f6b4e;border-color:rgba(46,125,85,.45);background:rgba(46,125,85,.08)}
+/* 시상식: 2위·1위·3위 단상. 우리 자리는 금빛으로 비추고 국기 대신 나라 이름이 올라간다 */
+.oc-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}.oc-h b{font:800 18px var(--font-voice)}
+.oc-rings{display:inline-flex}.oc-rings i{width:14px;height:14px;margin-right:-4px;border-radius:50%;border:2.4px solid}
+.oc-rings i:nth-child(1){border-color:#0081c8}.oc-rings i:nth-child(2){border-color:#1d1b18}.oc-rings i:nth-child(3){border-color:#ee334e}.oc-rings i:nth-child(4){border-color:#fcb131}.oc-rings i:nth-child(5){border-color:#00a651}
+.oc-pod{display:grid;grid-template-columns:1fr 1.1fr 1fr;align-items:end;gap:6px;padding:16px 6px 0;border-radius:12px;background:radial-gradient(70% 90% at 50% 100%,rgba(241,213,137,.28),transparent 70%),linear-gradient(180deg,#1d2a44,#0f1626)}
+.oc-s{display:flex;flex-direction:column;align-items:center;animation:ocUp .7s var(--d) cubic-bezier(.2,.9,.2,1) both}
+.oc-who{display:flex;flex-direction:column;align-items:center;gap:3px;margin-bottom:6px;color:#e8edf6;text-align:center}
+.oc-who i{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font:800 12px var(--font-ui);font-style:normal;color:#2a1c06;box-shadow:0 2px 0 rgba(0,0,0,.35),inset 0 -2px 3px rgba(0,0,0,.2)}
+.oc-who b{font-size:13px}.oc-who small{font-size:10.5px;color:#9fb0c8}
+.oc-b{width:100%;display:flex;justify-content:center;padding-top:8px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,#e9e3d3,#c8bfa8);color:#5b4a2a;font:800 22px var(--font-voice)}
+.oc-s.s0 .oc-b{height:86px}.oc-s.s1 .oc-b{height:60px}.oc-s.s2 .oc-b{height:44px}
+.oc-s.me .oc-b{background:linear-gradient(180deg,#fff3c4,#d9b24f);box-shadow:0 0 24px rgba(241,213,137,.55)}
+.oc-s.me .oc-who b{color:#ffe08a}
+@keyframes ocUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.oc-msg{margin-top:12px;text-align:center;font-size:14px;color:var(--text-secondary)}.oc-msg b{color:var(--text-primary);font-family:var(--font-voice)}
+.oc-tally,.spx-med{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;font-size:12px;font-weight:700;color:var(--text-muted)}
+.oc-tally span,.spx-med span{margin-right:4px}
+.oc-tally i,.spx-med i{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;font-size:10px;font-style:normal;color:#2a1c06}
+.oc-tally b,.spx-med b{margin-right:6px;font:800 15px var(--font-voice);color:var(--text-primary)}
+.m0{background:#e9c46a}.m1{background:#c9d1d9}.m2{background:#d08a54}
+.map-med{position:absolute;right:8px;top:7px;display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;background:rgba(10,14,20,.66);border:1px solid rgba(255,255,255,.09)}
+.map-med i{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;font-size:9px;font-style:normal;font-weight:800;color:#2a1c06}.map-med b{margin-right:4px;font-size:12px;color:#fff}
+.spx-med{justify-content:flex-start;margin-top:2px;color:rgba(255,255,255,.75)}.spx-med b{color:#fff}
+/* 올림픽 특집 머리: 오륜 색 띠 */
+.spx.oly::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:linear-gradient(90deg,#0081c8 0 20%,#1d1b18 20% 40%,#ee334e 40% 60%,#fcb131 60% 80%,#00a651 80%)}
+/* 방역 특집 머리: 작은 상황판(위기·의료·지지) */
+.spx-dash{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:4px;font-size:11.5px;font-weight:700;color:rgba(255,255,255,.75)}
+.spx-dash span{display:inline-flex;align-items:center;gap:6px}
+.spx-dash em{position:relative;display:inline-block;width:54px;height:5px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden}
+.spx-dash em i{position:absolute;left:0;top:0;bottom:0;border-radius:3px}
+.spx-dash b{color:#fff;font-variant-numeric:tabular-nums}
+.mg-res{margin-top:14px;text-align:center;font:800 21px var(--font-voice);animation:stamp .55s cubic-bezier(.2,1.4,.4,1) both}
+

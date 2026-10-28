@@ -1,0 +1,87 @@
+/* ---------- 화면 설정: 세로/가로 모드 · 라이트 모드 ---------- */
+.vw{margin:4px 0 16px;padding:14px;background:var(--surface-1);border:1px solid var(--border);border-radius:12px}
+.vw-h{margin:0 0 10px;font-size:13px;font-weight:700}
+.vw-h span{margin-left:6px;font-weight:500;font-size:12px;color:var(--text-muted)}
+.vw-l{margin:2px 0 7px;font-size:12px;font-weight:700;color:var(--text-secondary)}
+.vw-g{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.vw-g:last-child{margin-bottom:0}
+.vw-g button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;text-align:left;border-radius:10px;background:var(--surface-0)}
+.vw-g button b{font-size:14px}
+.vw-g button span{font-size:11.5px;line-height:1.4;color:var(--text-muted)}
+.vw-g button.on{border-color:var(--ink);background:#fbf8f2;box-shadow:inset 0 0 0 1px var(--ink)}
+/* 고른 방향과 휴대폰 방향이 다를 때 돌려 달라는 안내 */
+.rotq{display:none;position:fixed;inset:0;z-index:96;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;font-size:15px;line-height:1.6;color:#efe7d6;background:#15120e}
+.rotq svg{width:64px;height:64px;color:#f1d589;animation:rotqL 2.2s ease-in-out infinite}
+html[data-ori="p"] .rotq svg{animation-name:rotqP}
+@keyframes rotqL{0%,25%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
+@keyframes rotqP{0%,25%{transform:rotate(-90deg)}55%,100%{transform:rotate(0)}}
+.rotq button{padding:11px 20px;border:0;border-radius:8px;font-weight:700;color:#1d150a;background:linear-gradient(180deg,#f3d98f,#c49a3e)}
+html[data-ori="p"] .rotq .rq-l,html[data-ori="l"] .rotq .rq-p{display:none}
+@media (pointer:coarse) and (orientation:portrait){html[data-ori="l"] .rotq{display:flex}}
+@media (pointer:coarse) and (orientation:landscape) and (max-height:520px){html[data-ori="p"] .rotq{display:flex}}
+/* 라이트 모드: 무거운 연출을 끄고 예전 화면처럼 가볍게 */
+html[data-lite] .evc.go .evt,html[data-lite] .evc.go::before,html[data-lite] .tierb,
+html[data-lite] .sb.up,html[data-lite] .sb.dn,html[data-lite] .sb.nt{animation:none}
+html[data-lite] .sb[data-d]::after{display:none}
+html[data-lite] #gOpts .opt{animation:optIn .25s ease-out forwards}
+html[data-lite] #gOpts .opt:hover:not(:disabled){transform:none;box-shadow:none}
+html[data-lite] .gcn,html[data-lite] .gcn *{animation:none!important}
+html[data-lite] .gcn .cn.tier4::after{display:none}
+html[data-lite] #app:has(.gcn){max-width:440px}
+html[data-lite] .gcn .cn-l{grid-template-columns:minmax(0,1fr)}
+html[data-lite] #wrap .g-side{display:none!important}
+/* 인적사항 다음의 화면 설정: 화면 가득, 가운데에 큰 카드 넷 */
+.vset{position:fixed;inset:0;z-index:90;display:flex;overflow-y:auto;padding:24px 16px;background:var(--bg) radial-gradient(ellipse at 50% 0%,rgba(255,250,235,.85),transparent 60%);animation:fdIn .35s ease-out}
+.vset.out{opacity:0;transition:opacity .3s}
+.vset-in{width:min(720px,100%);margin:auto;text-align:center}
+.vset-k{font-size:12.5px;font-weight:700;letter-spacing:.14em;color:var(--text-muted)}
+.vset-h{margin:6px 0 8px;font:800 clamp(32px,6.5vw,48px)/1.2 var(--font-voice)}
+.vset-p{margin:0 0 26px;font-size:14.5px;line-height:1.7;color:var(--text-secondary)}
+.vset-l{margin:0 0 10px;font-size:13px;font-weight:700;color:var(--text-secondary);text-align:left}
+.vset-g{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px}
+.vset-c{display:flex;flex-direction:column;align-items:center;gap:6px;padding:clamp(16px,3.2vh,28px) 12px;border-radius:14px;background:var(--surface-2);border:1.5px solid var(--border-strong);transition:transform .15s,border-color .15s,box-shadow .15s}
+.vset-c svg{width:clamp(40px,8vh,58px);height:clamp(40px,8vh,58px);fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;color:var(--text-muted);transition:color .15s}
+.vset-c b{font-size:clamp(17px,2.5vh,21px)}
+.vset-c span{font-size:12.5px;line-height:1.45;color:var(--text-muted)}
+.vset-c:hover{transform:translateY(-2px);border-color:var(--ink)}
+.vset-c.on{border-color:var(--ink);background:#fbf8f2;box-shadow:inset 0 0 0 1.5px var(--ink),0 10px 24px -12px rgba(70,50,20,.45)}
+.vset-c.on svg{color:var(--accent)}
+.vset-go{width:100%;padding:17px;font-size:17px}
+body:has(.vset) .rotq{display:none!important}
+/* 라이트 모드 출발 인물: 드롭다운 + 소개 카드 */
+.bgsel{position:relative;display:block;margin-bottom:10px}
+.bgsel::after{content:"";position:absolute;right:18px;top:50%;width:9px;height:9px;margin-top:-7px;border-right:2px solid var(--text-secondary);border-bottom:2px solid var(--text-secondary);transform:rotate(45deg);pointer-events:none}
+.bgsel select{width:100%;padding:14px 44px 14px 14px;font:600 15px/1.4 var(--font-ui);color:var(--text-primary);background:var(--surface-2);border:1.5px solid var(--border-strong);border-radius:12px;-webkit-appearance:none;appearance:none;cursor:pointer}
+.bgsel select:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(29,27,24,.08)}
+.bgsel.ph select{color:var(--text-muted);border-style:dashed}
+.bgcard{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;padding:14px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;animation:fdIn .25s ease-out}
+.bgcard>div{flex:1;min-width:0}
+.bgcard-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.bgcard-h b{font-size:16px}.bgcard-h span{font-size:12px;color:var(--text-muted);white-space:nowrap}
+.bgcard-k{margin-top:2px;font-size:12.5px;color:var(--text-secondary)}
+.bgcard p{margin:8px 0 6px;font-size:13px;line-height:1.65;color:var(--text-secondary)}
+.bgcard-e{font-size:12.5px;line-height:1.6}
+.bgcard-w{margin-top:6px;font-size:12px;font-weight:700;color:#a8321f}
+.bgcard.empty{display:block;font-size:13px;line-height:1.6;color:var(--text-muted);background:transparent;border-style:dashed}
+.bghint{margin:0 0 24px;font-size:12px;line-height:1.75;color:var(--text-muted)}
+/* 기본 모드 지도자 명단의 '랜덤' 칸 */
+.gx-roster .gx-rnd{position:relative;background:linear-gradient(180deg,#3a2e1c,#1a150f);border-color:rgba(241,213,137,.45)}
+.gx-sil{display:block;width:100%;height:100%;fill:#050403;stroke:rgba(241,213,137,.55);stroke-width:.9;filter:drop-shadow(0 0 3px rgba(241,213,137,.35))}
+.gx-sil text{fill:#f1d589;stroke:none;font:800 20px var(--font-voice)}
+.gx-roster .gx-rnd .gx-sil{height:var(--tile)}
+.gx-fig-in.gx-rand .gx-sil{stroke-width:.6;filter:drop-shadow(0 0 2px rgba(255,236,190,.7)) drop-shadow(0 0 30px rgba(241,213,137,.3)) drop-shadow(0 24px 40px rgba(0,0,0,.65))}
+.gx-fig-in.gx-rand .gx-sil text{animation:gxPulse 2.4s ease-in-out infinite}
+.gx-ld.spin .gx-fig-in{animation-duration:.16s}
+/* 위아래로 갈라지며 걷히는 퇴장(연차 화면 · 임기 시작 인용구): 화면을 두 장으로 복제해 위 절반은 위로, 아래 절반은 아래로 */
+.sp{pointer-events:none!important;animation:none!important;opacity:1!important;transition:transform .75s cubic-bezier(.7,0,.3,1)!important}
+.sp *{animation:none!important;transition:none!important}
+.sp-t{clip-path:inset(0 0 50% 0)}.sp-b{clip-path:inset(50% 0 0 0)}
+.sp-t.go{transform:translateY(-51%)}.sp-b.go{transform:translateY(51%)}
+.sp .qfx-r,.sp .yrfx-c i{transform:none}
+.sp .yrfx-c,.sp .yq{opacity:1!important}
+.qfx.sp::after{content:"";position:absolute;left:0;right:0;height:2px;background:#c9a24a;box-shadow:0 0 12px rgba(241,213,137,.5)}
+.qfx.sp-t::after{top:calc(50% - 2px)}.qfx.sp-b::after{top:50%}
+@media (orientation:landscape) and (max-height:600px){
+  .vset{padding:12px 16px}.vset-h{font-size:28px;margin:2px 0 4px}.vset-p{margin-bottom:12px;font-size:13px}
+  .vset-g{margin-bottom:10px}.vset-c{flex-direction:row;justify-content:center;gap:10px;padding:10px}.vset-c svg{width:30px;height:30px}.vset-c span{display:none}
+  .vset-go{padding:12px}}
