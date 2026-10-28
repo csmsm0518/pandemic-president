@@ -4104,12 +4104,13 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   const dfb=DIFF.map((q,k)=>'<button class="dfb" data-k="'+k+'" style="flex:1;font-size:13.5px;padding:11px 6px;'+(dif===k?sel:'')+'">'+q.n+'<span class="dfp d'+k+'">'+Array.from({length:DIFF.length},(_,j)=>'<i'+(j<=k?' class="f"':'')+'></i>').join('')+'</span></button>').join('');
   const stat=(a,b)=>'<div style="flex:1;min-width:0;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:10px 12px"><div style="font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+a+'</div><div style="font-size:18px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums">'+b+'</div></div>';
   // 세로 화면에서는 무대 소개와 기록 카드를 취임 버튼 아래로 내려, 게임을 시작하는 데 필요한 것만 첫 화면에 둔다
-  const P=isP(),intro='<div class="hl-in" style="font-size:14px;color:var(--text-secondary);line-height:1.75;margin:12px 0 18px">'+C.intro+'</div>'+
+  // 이름을 introH로: intro라고 하면 첫 화면을 여는 intro() 함수를 가려 '인적사항 바꾸기'가 오류를 낸다
+  const P=isP(),introH='<div class="hl-in" style="font-size:14px;color:var(--text-secondary);line-height:1.75;margin:12px 0 18px">'+C.intro+'</div>'+
     '<div style="display:flex;gap:8px;margin-bottom:24px">'+stat('최고 커리어 점수',MEM.best100?MEM.best100.toLocaleString('ko-KR')+'<span style="font-size:12px;color:var(--text-muted)">점</span>':'—')+stat('최장 재임',MEM.longest?MEM.longest+'년':'—')+stat('지나온 인생',(MEM.careers||0)+'번')+'</div>';
   R.innerHTML='<div class="hl" style="animation:fdIn .35s ease-out">'+
   '<div class="hl-hd" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span class="hd" id="ttl" style="font-size:25px;user-select:none">팬데믹 대통령</span><button id="snd" style="width:38px;height:34px;padding:0;display:flex;align-items:center;justify-content:center" aria-label="소리 설정">'+sndIco()+'</button></div>'+
   (msg?'<div style="font-size:13.5px;line-height:1.7;color:var(--text-secondary);background:var(--surface-1);border-radius:10px;padding:10px 12px;margin-bottom:16px">'+msg+'</div>':'')+
-  lab('무대 고르기')+'<div class="cmbs">'+cmb+'</div>'+(P?'<div style="height:14px"></div>':intro)+
+  lab('무대 고르기')+'<div class="cmbs">'+cmb+'</div>'+(P?'<div style="height:14px"></div>':introH)+
   lab('출발 인물')+bgSel+(P?'<div style="height:12px"></div>':bgHint)+
   lab('결정 빈도')+'<div class="hl-mode" style="display:flex;gap:8px;margin-bottom:22px">'+mdb+'</div>'+
   lab('난이도')+'<div class="hl-dif" style="display:flex;gap:8px;margin-bottom:24px">'+dfb+'</div>'+
