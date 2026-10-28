@@ -1,0 +1,79 @@
+/* ---------- 전선 배치: 어두운 작전 지도 위 세 전선. 위는 적(붉은 칸), 아래는 아군(파란 칸), 가운데 금빛 전선이 이긴 쪽으로 밀린다 ---------- */
+.wr-top{display:flex;align-items:center;gap:12px;margin-bottom:10px;font-size:12px;color:var(--text-muted)}
+.wr-top>b{font:800 16px var(--font-voice);color:var(--text-primary)}
+.wr-days{display:flex;align-items:center;gap:5px}.wr-days i{width:9px;height:9px;border-radius:50%;background:var(--surface-1);box-shadow:inset 0 0 0 1.5px var(--border-strong)}
+.wr-days i.d{background:#8f6a12;box-shadow:none}.wr-days i.on{background:#d9a441;box-shadow:0 0 0 3px rgba(217,164,65,.25)}.wr-days span{margin-left:3px;font-weight:700;color:var(--text-secondary)}
+.wr-left{margin-left:auto;font-size:12.5px}.wr-left b{font-size:16px;color:var(--text-primary);font-variant-numeric:tabular-nums}
+.wr-map{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:10px;border-radius:12px;
+  background:repeating-radial-gradient(circle at 30% 40%,transparent 0 22px,rgba(217,164,65,.07) 22px 23px),repeating-radial-gradient(circle at 78% 70%,transparent 0 18px,rgba(217,164,65,.06) 18px 19px),linear-gradient(180deg,#26301f,#1a2016);box-shadow:inset 0 0 0 1px rgba(217,164,65,.25)}
+.wr-f{display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0;padding:8px 6px;border-radius:9px;background:rgba(0,0,0,.18);transition:background .3s,box-shadow .3s}
+.wr-f.w{background:rgba(63,195,143,.12);box-shadow:inset 0 0 0 1.5px rgba(63,195,143,.45)}.wr-f.l{background:rgba(224,80,74,.12);box-shadow:inset 0 0 0 1.5px rgba(224,80,74,.45)}
+.wr-in{min-height:30px;font-size:11px;line-height:1.35;text-align:center;color:#c9c2a8}.wr-in b{display:block;font-size:13px;color:#ffd9a0}.wr-in .fog{color:#8c907f}
+.wr-zone{position:relative;height:150px;border-radius:6px;background:linear-gradient(180deg,rgba(224,80,74,.08),transparent 45%,transparent 55%,rgba(90,169,255,.08))}
+.wr-en,.wr-me{position:absolute;left:4px;right:4px;display:flex;flex-wrap:wrap;justify-content:center;gap:3px}
+.wr-en{top:6px}.wr-me{bottom:6px;flex-wrap:wrap-reverse}
+.wr-en i,.wr-me i{width:15px;height:11px;border-radius:2px;animation:wrIn .25s calc(var(--i)*40ms) both}
+.wr-me i.u{background:linear-gradient(180deg,#7fb6ff,#3d7fd6);box-shadow:0 1px 0 #1c3f73}.wr-me i.h{background:linear-gradient(180deg,#ffe08a,#c9962e);box-shadow:0 1px 0 #6e4f12}
+.wr-en i.q{background:rgba(224,80,74,.22);box-shadow:inset 0 0 0 1px rgba(224,80,74,.5)}.wr-en i.e{background:linear-gradient(180deg,#f08a7f,#c0392b);box-shadow:0 1px 0 #6b1a12}
+@keyframes wrIn{from{opacity:0;transform:scale(.4)}}
+.wr-ln{position:absolute;left:0;right:0;top:var(--y,50%);height:0;transition:top .6s cubic-bezier(.3,1.3,.5,1)}
+.wr-ln span{position:absolute;left:-2px;right:-2px;top:-1.5px;height:3px;border-radius:2px;background:repeating-linear-gradient(90deg,#d9a441 0 7px,transparent 7px 11px);box-shadow:0 0 8px rgba(217,164,65,.5)}
+.wr-n{text-align:center;font:800 14px var(--font-voice);color:#f3ead7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wr-rs{min-height:16px;text-align:center;font-size:11.5px;font-weight:700;color:#c9c2a8;font-variant-numeric:tabular-nums}.wr-rs.w{color:#7fe0b4}.wr-rs.l{color:#ff9a90}
+.wr-ctl{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:4px}
+.wr-ctl button{padding:9px 0;font-size:18px;font-weight:800;line-height:1;touch-action:manipulation;color:#f3ead7;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)}
+.wr-ctl b{min-width:30px;text-align:center;font:800 17px var(--font-ui);color:#fff;font-variant-numeric:tabular-nums}
+.wr.fought .wr-ctl{opacity:.35;pointer-events:none}
+.wr .pk-msg b.g,.mn .pk-msg b.g{color:#2e7d55}.wr .pk-msg b.x,.mn .pk-msg b.x{color:#b3261e}
+.wr .pk-msg,.mn .pk-msg,.db .pk-msg{margin:12px 0 10px;line-height:1.55}
+
+/* ---------- 달 착륙: 검은 하늘 · 지구 · 회색 달 표면. 왼쪽 위 계기판, 가운데 아래 관제 무전 ---------- */
+.mn-sc{position:relative;overflow:hidden;border-radius:12px;background:#05070d;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.mn-sc canvas{display:block;width:100%!important;height:auto!important}
+.mn-hud{position:absolute;left:0;right:0;top:0;display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;padding:7px 10px;background:linear-gradient(180deg,rgba(5,7,13,.92),rgba(5,7,13,.55));border-bottom:1px solid rgba(255,255,255,.08);font-size:10.5px;color:#9aa3ad;font-variant-numeric:tabular-nums}
+.mn-hud div{display:flex;align-items:baseline;gap:4px}.mn-hud b{font:800 15px var(--font-ui);color:#e8edf6}.mn-hud b.x{color:#ff8a80}.mn-hud small{font-size:10px}
+.mn-fu{margin-left:auto}.mn-fu i{position:relative;flex:1;width:90px;height:6px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden}
+.mn-fu em{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:linear-gradient(90deg,#d9a441,#ffe08a)}.mn-fu em.x{background:#e0504a}
+.mn-call{position:absolute;left:50%;bottom:12px;max-width:calc(100% - 24px);padding:5px 11px;transform:translateX(-50%);border-radius:6px;font-size:12px;font-weight:700;color:#cfe6ff;background:rgba(5,7,13,.72);border:1px solid rgba(143,199,255,.3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .3s}
+.mn-call.on{opacity:1}
+.mn-ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(5,7,13,.55)}
+.mn-br{display:flex;flex-direction:column;align-items:center;gap:8px;max-width:320px;text-align:center;color:#e8edf6}
+.mn-br b{font:800 17px/1.35 var(--font-voice);color:#ffe08a}.mn-br span{font-size:12.5px;line-height:1.6;color:#c9d3e2}.mn-br button{margin-top:6px;padding:12px 26px;font-size:15px}
+.mn-ctl{display:grid;grid-template-columns:1fr 2fr 1fr;gap:8px;margin-top:10px;user-select:none;-webkit-user-select:none}
+.mn-ctl button{padding:16px 0;font-size:18px;font-weight:800;touch-action:none;-webkit-touch-callout:none}
+.mn-ctl .mn-main{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:16px}.mn-ctl .mn-main small{font-size:10.5px;font-weight:600;opacity:.6}
+.mn-ctl button.on{color:#1d150a;background:linear-gradient(180deg,#ffe08a,#d9a441);border-color:#b88a2c}
+.mn-ctl.off{opacity:.35;pointer-events:none}
+
+/* ---------- 대선 TV 토론: 남색 스튜디오 · 두 연단 · 생중계 표시 · 방청석 반응 선 · 아래 자막 ---------- */
+.db-st{position:relative;height:214px;overflow:hidden;border-radius:12px 12px 0 0;
+  background:radial-gradient(40% 70% at 22% 100%,rgba(90,169,255,.28),transparent 70%),radial-gradient(40% 70% at 78% 100%,rgba(224,80,74,.24),transparent 70%),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 2px,transparent 2px 40px),linear-gradient(180deg,#0d1730,#16264a 60%,#0b1224)}
+.db-live{position:absolute;left:10px;top:10px;padding:2px 7px;border-radius:4px;font:800 11px var(--font-ui);letter-spacing:.08em;color:#fff;background:#d32f2f;animation:pls 1.6s infinite}
+.db-ch{position:absolute;right:10px;top:10px;font-size:11px;font-weight:700;color:rgba(255,255,255,.7)}
+.db-pd{position:absolute;bottom:26px;width:30%;display:flex;flex-direction:column;align-items:center;padding-bottom:8px;transition:filter .3s}
+.db-pd svg{width:54px;height:54px;fill:rgba(255,255,255,.2);transition:fill .3s}
+.db-pd b{margin-top:-2px;padding:4px 10px;border-radius:4px 4px 0 0;font-size:11px;color:#fff}.db-pd span{width:100%;padding:5px 4px;text-align:center;font:800 13px var(--font-voice);color:#fff;border-radius:0 0 6px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.db-pd.me{left:6%}.db-pd.me b{background:#2f6fd0}.db-pd.me span{background:linear-gradient(180deg,#1f4f9a,#163a73)}
+.db-pd.op{right:6%}.db-pd.op b{background:#c0392b}.db-pd.op span{background:linear-gradient(180deg,#8f2a20,#6b1a12)}
+.db-pd.on svg{fill:rgba(255,255,255,.62)}.db-pd.on{filter:drop-shadow(0 0 14px rgba(255,224,138,.45))}
+.db-wm{position:absolute;left:36%;right:36%;top:36px;display:flex;flex-direction:column;align-items:center;gap:1px}
+.db-wm span{font-size:10px;color:rgba(255,255,255,.6)}.db-wm b{font:800 18px var(--font-ui);color:#fff;font-variant-numeric:tabular-nums}.db-wm b.g{color:#7fe0b4}.db-wm b.x{color:#ff9a90}
+.db-wm svg{width:100%;height:56px;overflow:visible}.db-wm line{stroke:rgba(255,255,255,.25);stroke-dasharray:3 3}.db-wm polyline{fill:none;stroke:#ffe08a;stroke-width:2;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.db-fc{position:absolute;left:0;right:0;bottom:0;padding:5px 10px;font-size:12px;font-weight:800;color:#1d150a;background:#ffe08a;transform:translateY(100%);transition:transform .25s}
+.db-fc.on{transform:none}.db-fc.x{color:#fff;background:#c0392b}
+.db-q{min-height:86px;padding:10px 12px;border-radius:0 0 12px 12px;background:#0b1224;color:#e8edf6}
+.db-qh{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 10px;margin-bottom:5px;font-size:11px;color:#9fb0c8}
+.db-qh em{padding:2px 8px;border-radius:999px;font-style:normal;font-weight:800}.db-qh em.g{color:#7fe0b4;background:rgba(63,195,143,.14)}.db-qh em.x{color:#ff9a90;background:rgba(224,80,74,.16)}
+.db-q p{margin:0;font-size:14.5px;line-height:1.6}.db-q p b{color:#ff9a90;margin-right:4px}.db-q .db-in b{color:#ffe08a}
+.db-ti{height:5px;margin:8px 0;border-radius:3px;background:var(--surface-1);overflow:hidden}.db-ti i{display:block;height:100%;background:#2f6fd0;transition:width .1s linear}.db-ti i.x{background:#d32f2f}
+.db-as{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.db-as button{display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:12px;text-align:left;touch-action:manipulation}
+.db-as button b{font-size:14px}.db-as button small{font-size:11px;line-height:1.4;font-weight:500;color:var(--text-muted)}
+.db-as button.pick{border-color:#d9a441;box-shadow:inset 0 0 0 1px #d9a441}
+@media (max-width:560px){.db-as{grid-template-columns:1fr}.db-as button{flex-direction:row;align-items:baseline;gap:8px}.db-wm{left:33%;right:33%}}
+.db .pk-msg b.g{color:#2e7d55}.db .pk-msg b.x{color:#b3261e}
+.db-end{display:flex;flex-direction:column;align-items:center;gap:8px;padding:6px 0}
+.db-end p{font-size:13px;color:#c9d3e2}.db-end p b{color:#fff;font-size:16px}
+.db-stamp{display:inline-block;padding:4px 18px;border:3px solid;border-radius:10px;font:800 30px var(--font-voice);letter-spacing:.1em;transform:rotate(-4deg);animation:stamp .6s cubic-bezier(.2,1.4,.4,1) both}
+.db-stamp.t0,.db-stamp.t1{color:#7fe0b4}.db-stamp.t2{color:#ffd28a}.db-stamp.t3{color:#ff9a90}

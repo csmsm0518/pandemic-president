@@ -1,7 +1,12 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"fa1dc1ab5c","h":"bbff77d8d79a9539"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"guide":{"v":"dcbf15cb71","h":"c6376b93b408bfad"},"slash":{"v":"91b6243685","h":"9a753ed1fed964a5"},"sports":{"v":"02c3edd7d7","h":"57d705b1ae5d3a60"}};
+const LZ_M={"board":{"v":"fa1dc1ab5c","h":"bbff77d8d79a9539"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"b0fc23ca22","h":"30c6ccf18792f5c6"},"guide":{"v":"6e340774ec","h":"f9cc624808514a7e"},"slash":{"v":"91b6243685","h":"9a753ed1fed964a5"},"sports":{"v":"b0afee4c6b","h":"002ce537ad523cf9"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
+function mgWar(){return lzCall('games','mgWar',arguments);}
+function simWar(){return lzCall('games','simWar',arguments);}
+function mgMoon(){return lzCall('games','mgMoon',arguments);}
+function simMoon(){return lzCall('games','simMoon',arguments);}
+function debateRun(){return lzCall('games','debateRun',arguments);}
 function guide(){return lzCall('guide','guide',arguments);}
 function mini(){return lzCall('slash','mini',arguments);}
 function mgTkd(){return lzCall('sports','mgTkd',arguments);}
@@ -382,12 +387,13 @@ function lzLoad(n){if(LZ.x[n])return Promise.resolve(LZ.x[n]);if(LZ.p[n])return 
 function lzNote(h,btn,fn){let el=document.getElementById('lzNote');if(!h){if(el)el.remove();return;}
   if(!el){el=document.createElement('div');el.id='lzNote';el.className='lz-note';el.setAttribute('role','status');document.body.appendChild(el);}
   el.innerHTML='<span>'+h+'</span>'+(btn?'<button type="button">'+btn+'</button>':'');if(btn)el.querySelector('button').onclick=fn;}
-function lzCall(n,f,a){const X=LZ.x[n];if(X)return X[f].apply(null,a);
+// 조각 n을 받은 뒤 fn을 부른다(이미 있으면 바로). 받은 뒤 fn에서 난 오류는 예전처럼 화면 아래 오류 안내(window.onerror)로 보낸다
+function lzThen(n,fn){if(LZ.x[n])return fn();
   const tm=setTimeout(()=>lzNote('불러오는 중…'),300);
-  // 받은 뒤 진짜 함수에서 난 오류는 예전처럼 화면 아래 오류 안내(window.onerror)로 보낸다
-  return lzLoad(n).then(X=>{clearTimeout(tm);lzNote('');try{return X[f].apply(null,a);}catch(e){setTimeout(()=>{throw e;});}},e=>{clearTimeout(tm);
+  return lzLoad(n).then(()=>{clearTimeout(tm);lzNote('');try{return fn();}catch(e){setTimeout(()=>{throw e;});}},e=>{clearTimeout(tm);
     if(e&&e.lzVer)lzNote('게임이 새 버전으로 바뀌었어요.','새로고침',()=>location.reload());
-    else lzNote('불러오지 못했어요. 인터넷 연결을 확인해 주세요.','다시 시도',()=>{lzNote('');lzCall(n,f,a);});});}
+    else lzNote('불러오지 못했어요. 인터넷 연결을 확인해 주세요.','다시 시도',()=>{lzNote('');lzThen(n,fn);});});}
+function lzCall(n,f,a){return lzThen(n,()=>LZ.x[n][f].apply(null,a));}
 // 첫 화면이 뜨고 2.5초 뒤부터 쉬는 틈에 하나씩 미리 받아 둔다(문 소리는 소리를 켤 때 받는다)
 addEventListener('load',()=>setTimeout(function pre(){const n=Object.keys(LZ_M).find(k=>k!=='door'&&!LZ.x[k]&&!LZ.p[k]);if(!n)return;
   const go=()=>lzLoad(n).then(()=>setTimeout(pre,200),()=>{});window.requestIdleCallback?requestIdleCallback(go,{timeout:4000}):go();},2500));
@@ -2976,10 +2982,14 @@ const SP={
      ['NASA 단독으로 간다',{e:-6,trn:3},'느리지만 공적이었다.'],
      ['동맹국들과 국제 공동 탐사로',{chk:3,e:-3},'성조기 옆에 다른 깃발들도 실리게 됐다.']]),
     c=>spEv('발사 당일','발사 당일, <em>상층 바람이 기준치를 살짝 넘었다</em>. 엔지니어 한 명이 연기를 건의한다.',[
-     ['예정대로 발사한다',{a:6,e:2},'불기둥이 하늘을 갈랐다. 관제실의 환호가 전국에 생중계됐다.'],
-     ['하루 미루고 다시 점검한다',{a:-1,trn:2},'다음 날 바람은 잔잔했다.'],
-     ['엔지니어의 의견을 공개하고 결정을 맡긴다',{trn:5,chk:2},'발사 책임자가 결정했다. 대통령은 옆에서 지켜봤다.']]),
-    c=>spEv('달 표면의 첫마디','우주인이 달에 내렸다. <em>첫마디</em>를 무엇으로 할지 백악관에 묻는다.',[
+     ['예정대로 발사한다',{a:6,e:2},'불기둥이 하늘을 갈랐다. 관제실의 환호가 전국에 생중계됐다.',null,{nx:'moon'}],
+     ['하루 미루고 다시 점검한다',{a:-1,trn:2},'다음 날 바람은 잔잔했다.',null,{nx:'moon'}],
+     ['엔지니어의 의견을 공개하고 결정을 맡긴다',{trn:5,chk:2},'발사 책임자가 결정했다. 대통령은 옆에서 지켜봤다.',null,{nx:'moon'}]]),
+    c=>c.land===0?spEv('귀환 담화','착륙선이 궤도로 돌아왔다. 우주인들은 무사하다. <em>국민에게 무엇이라고 말할까</em>.',[
+     ['"우리는 다시 간다"고 약속한다',{a:2,e:-3},'예산 증액안이 함께 발표됐다.'],
+     ['실패를 인정하고 조사를 맡긴다',{trn:4,a:-1},'조사위원회가 꾸려졌다. 우주인들이 증언대에 섰다.'],
+     ['우주인들의 무사 귀환을 앞세운다',{a:1,u:-1},'귀환한 우주인들이 백악관 잔디밭에 섰다.']]):
+    spEv('달 표면의 첫마디','우주인이 달에 내렸다. <em>첫마디</em>를 무엇으로 할지 백악관에 묻는다.',[
      ['인류 모두를 위한 한 걸음',{u:-4,a:3},'전 세계가 그 말을 따라 했다.'],
      ['미국이 돌아왔다',{a:5,u:3},'지지층은 열광했다. 동맹국들은 조금 서운했다.'],
      ['우주인에게 맡긴다',{trn:3},'우주인은 딸의 이름을 불렀다.']])]}]};
@@ -3030,6 +3040,13 @@ const MG_PK=c=>Object.assign(spEv('축구 결승 승부차기','연장까지 비
 const MG_TKD=c=>Object.assign(spEv('태권도 결승','종주국의 자존심이 걸린 <em>태권도 결승</em>이다. 직접 겨루거나 선수에게 맡길 수 있다. 직접 할 때는 상대가 발을 들 때 원이 초록으로 바뀌는 순간 <b>막기</b>를 누르고, 막아 낸 직후 차면 반격이 꽂힌다. 몸통은 2점, 머리는 3점이다.',[
   ['태권도 금메달',{a:5,u:-1},'마지막 돌려차기가 머리에 꽂혔다. 선수가 태극기를 두르고 매트를 돌았다.'],['태권도 은메달',{a:2},'종이 한 장 차이였다. 선수는 상대의 손을 들어 주었다.'],
   ['태권도 동메달',{a:1},'동메달 결정전을 이겼다.'],['태권도 노메달',{a:-2},'경기장이 조용해졌다.']]),{mg:'tkd'});
+// 전쟁 과제의 전투(작전 지휘에서 공세·방어를 고르면 이어진다)와 달 착륙(발사 뒤 이어진다)
+SP_NEXT.war=c=>Object.assign(spEv('전선 배치','적과 맞닿은 <em>세 전선</em>에 병력을 나눠 보낸다. 직접 지휘하거나 '+(CP.id==='joseon'?'도원수':'참모본부')+'에 맡길 수 있다. 전선마다 더 많은 쪽이 이기고, 이긴 전선이 진 전선보다 많으면 그날을 이긴다. 사흘 싸운다. '+(c.stance==='def'?'<b>방어전</b>이라 비기면 우리가 지킨다.':'<b>공세</b>라 적이 하나 더 많다.'),[
+  ['전선 완승',{mil:4,a:5,u:2},'사흘 내내 전선을 밀어붙였다. 적이 백기를 들었다.'],['전선 우세',{mil:2,a:3},'이틀을 이겼다. 전선은 우리 쪽으로 기울었다.'],
+  ['전선 열세',{mil:-1,a:-2,e:-1},'하루밖에 이기지 못했다. 전선은 제자리였다.'],['전선 붕괴',{mil:-4,a:-5,u:3},'사흘 모두 밀렸다. 후퇴 명령이 내려졌다.']]),{mg:'war'});
+SP_NEXT.moon=c=>Object.assign(spEv('달 착륙','착륙선이 사령선에서 떨어져 나왔다. <em>고도 600m, 착륙 표지가 보인다.</em> 직접 내리거나 자동 착륙 장치에 맡길 수 있다. 직접 할 때는 주 엔진(누르고 있기 · 스페이스)으로 하강을 늦추고 ◀ ▶ 분사로 표지 위에 맞춰라. 너무 세게 닿으면 착륙을 포기하고 궤도로 돌아간다.',[
+  ['정밀 착륙',{a:6,e:2},'착륙선이 표지 한가운데 내려앉았다. 관제실이 일어나 손뼉을 쳤다.',null,{ctx:['land',2]}],['착륙 성공',{a:4},'"독수리는 내려앉았다." 중계를 보던 사람들이 환호했다.',null,{ctx:['land',1]}],
+  ['표지 밖 착륙',{a:1,trn:1},'예정지에서 벗어나 거칠게 내렸다. 다리 하나가 휘었지만 모두 무사하다.',null,{ctx:['land',1]}],['착륙 중단',{a:-5,e:-2},'착륙선이 상했다. 상승단만 떼어 궤도로 돌아갔다. 우주인은 무사하지만, 달에는 아무도 내리지 못했다.',null,{ctx:['land',0]}]]),{mg:'moon'});
 const mgSlash=(endN)=>c=>Object.assign(spEv('현장 지휘','현장을 직접 지휘한다. <em>화면을 그어 바이러스를 베어라.</em> 시민은 베면 안 된다. <b>S등급</b>이면 '+endN+'을 선언할 수 있다.',[
   ['현장 지휘 S등급',{i:-12,m:5,a:4},'바이러스가 눈에 띄게 물러났다.',null,{ctx:['endemic',1]}],['현장 지휘 A등급',{i:-7,m:3,a:2},'확산세가 꺾였다.'],
   ['현장 지휘 B등급',{i:-2,a:-1},'기대만큼 빠르지 않았다.'],['현장 지휘 C등급 이하',{i:4,a:-3,m:-2},'현장이 무너졌다.']]),{mg:'slash'});
@@ -3123,7 +3140,9 @@ function mkPand(id,n,endN,lead,prep,bn){return {id:id,n:n,k:'good',tro:[endN+' �
   c=>spEv(n+' 이후',c.endemic?'<em>S등급.</em> 확산이 잡혔다. 지금 '+endN+'을 선언할 수 있다. 선언에 성공하면 남은 임기 동안 위기가 다시 커지지 않고 해마다 내실이 쌓인다.':'위기는 아직 끝나지 않았다. 장기전을 준비해야 한다.',
    c.endemic?[[endN+'을 선언한다',{a:5,e:3},'선언문이 낭독됐다. 거리에서 박수가 터졌다.',null,{endemic:endN}],['선언은 미루고 감시를 이어 간다',{m:3,trn:2},'신중함을 택했다.']]
     :[['장기 대응 체계를 세운다',{m:3,saf:2,e:-1},'대응은 일상이 됐다.'],['회복으로 무게를 옮긴다',{e:3,i:2},'가게들이 다시 문을 열었다.']])]};}
-const mkWar=(id,n,tro,bn,s1,s2,s3)=>({id:id,n:n,k:'good',tro:tro,cond:()=>true,bn:bn,steps:[c=>spEv(s1[0],s1[1],s1[2]),c=>spEv(s2[0],s2[1](c),s2[2]),c=>spEv(s3[0],s3[1],s3[2])]});
+// 둘째 단계(작전 지휘)의 첫 두 선택(공세·방어)은 전선 배치(SP_NEXT.war)로 이어지고, 셋째(철수·회군)는 바로 종전으로 간다
+const mkWar=(id,n,tro,bn,s1,s2,s3)=>{const o2=s2[2].map((o,k)=>k<2?[o[0],o[1],o[2],null,{nx:'war',ctx:['stance',k?'def':'atk']}]:o);
+  return {id:id,n:n,k:'good',tro:tro,cond:()=>true,bn:bn,steps:[c=>spEv(s1[0],s1[1],s1[2]),c=>spEv(s2[0],s2[1](c),o2),c=>spEv(s3[0],s3[1],s3[2])]};};
 SP.kr.push(mkWar('war_k','다국적 연합 작전',['연합 작전의 주역','상처뿐인 참전'],
   {k:'bad',h:'정부, 다국적 연합 작전 참여 검토',s:'동맹국 "결정적 기여 기대"… 파병 동의 논쟁',b:'군이 강해진 만큼, 그 힘을 어디에 쓸지가 시험대에 올랐다.'},
   ['참전 결정','동맹국들이 해상 교역로를 위협하는 무장 세력 소탕 작전에 <em>한국군의 주력 참여</em>를 요청했다.',[
@@ -3296,7 +3315,8 @@ function spBoard(go){const y=Math.round(S.turn/PY);if(y>=YRS)return go();CAR.spD
   draw();}
 // 경기 단계: 화면의 선택지 대신 경기를 치르고, 결과(0 대성공 ~ 3 대실패)를 그 단계의 판정으로 쓴다
 function mgResolve(t){SVAT=null;SFX.click();takeSnap();lastO=cur.o[t];lastFit={q:0,why:[['+','경기 결과로 판정했다']]};lastS=1;logChoice(t);lastT=t;tally[t]++;yTally[t]++;CAR.tt[t]++;resolve(lastO,t);}
-function mgRun(kind,box){if(MG_SPORT[kind])return mgPick(kind,box);
+// 다른 조각의 경기(lz)는 그 조각을 먼저 받아 둔다. 시뮬레이션 결과를 바로 돌려받아야 해서다
+function mgRun(kind,box){const G=MG_SPORT[kind];if(G)return G.lz?lzThen(G.lz,()=>mgPick(kind,box)):mgPick(kind,box);
   box.innerHTML='<div class="mgx"><div class="mgx-h">백신 슬래시 · 현장 지휘</div><div class="mgx-t">손가락(또는 마우스)으로 화면을 그어 바이러스를 벤다. 시민을 베거나 바이러스를 놓치면 병상이 줄고, 병상이 바닥나면 끝난다. 결과는 등급으로 매겨진다.</div><button id="mgxGo" class="pri" style="width:100%;padding:14px">현장 지휘 시작</button></div>';
   document.getElementById('mgxGo').onclick=()=>{try{aInit();}catch(e){}mini(null,(gr,sc)=>{CAR.slashGrade=gr;RUN.slash=(RUN.slash?RUN.slash+' / ':'')+gr+' '+sc;mgResolve(gr==='S'?0:gr==='A'?1:gr==='B'?2:3);});};}
 // 체육 종목(양궁·수영·승부차기)은 먼저 직접 할지, 시뮬레이션으로 맡길지 고른다.
@@ -3305,7 +3325,12 @@ const MG_SPORT={
   arch:{n:'양궁 개인전 결승',how:'바람을 읽고 흔들리는 조준점을 맞춰 여섯 발을 쏜다',run:(b,d)=>mgArch(b,d),sim:()=>simArch()},
   swim:{n:'수영 50m 결승',how:'왼팔·오른팔을 번갈아 빠르게 눌러 헤엄친다',run:(b,d)=>mgSwim(b,d),sim:()=>simSwim()},
   pk:{n:'축구 결승 승부차기',how:'우리 차례엔 직접 차고, 상대 차례엔 직접 막는다',run:(b,d)=>mgPK(b,d),sim:()=>simPK()},
-  tkd:{n:'태권도 결승',how:'상대의 발차기를 막고 반격해 점수를 딴다',run:(b,d)=>mgTkd(b,d),sim:()=>simTkd()}};
+  tkd:{n:'태권도 결승',how:'상대의 발차기를 막고 반격해 점수를 딴다',run:(b,d)=>mgTkd(b,d),sim:()=>simTkd()},
+  // 체육 종목이 아닌 경기: 시상식(nc) 없이 바로 판정한다
+  war:{n:'전선 배치',how:'사흘 동안 세 전선에 병력을 나눠 보낸다',run:(b,d)=>mgWar(b,d),sim:()=>simWar(),nc:1,lz:'games',
+    pick:'직접 지휘하면 판단만큼 결과가 나온다. 맡기면 참모들이 알아서 배치하고, 결과만 빠르게 본다.',simN:'참모본부에 맡긴다',simS:'작전 참모들이 배치하고 결과만 본다'},
+  moon:{n:'달 착륙',how:'주 엔진과 좌우 분사로 표지 위에 내려앉는다',run:(b,d)=>mgMoon(b,d),sim:()=>simMoon(),nc:1,lz:'games',
+    pick:'직접 내리면 손끝만큼 결과가 나온다. 맡기면 자동 착륙 장치가 내리고, 결과만 빠르게 본다.',simN:'자동 착륙 장치에 맡긴다',simS:'컴퓨터가 내리고 결과만 본다'}};
 // 메달 집계 한 줄(상황판·특집 머리에서도 쓴다)
 const olyTally=m=>'<span>메달 집계</span>'+['금','은','동'].map((x,k)=>'<i class="m'+k+'">'+x+'</i><b>'+m[k]+'</b>').join('');
 /* ---------- 특별 과제 진행: 시작 시점, 단계 만들기, 선택의 뒷일, 개헌·계엄 ---------- */
@@ -5131,14 +5156,28 @@ function reignEnd(te){const av=Math.round(cl(S.a)),isLast=CAR.term>=MAXT,risk=av
   if(b('dep'))b('dep').onclick=()=>{SFX.click();te.decision='반정';careerEnd('deposed');};
   if(b('fin'))b('fin').onclick=()=>{SFX.click();te.decision='치세 완료';careerEnd('served');};}
 
-function election(amend,pct,te){window.scrollTo(0,0);
+// 대통령 선거(조선 반정 제외)는 당선이 확정이 아니면 개표 전에 TV 토론이 열린다. 토론 결과로 당선 가능성이 오르내린다.
+const DB_D=[14,6,-4,-10];
+function debateGate(amend,pct,te){window.scrollTo(0,0);const n=CAR.term+1;
+  R.innerHTML='<div style="animation:fdIn .35s ease-out">'+lab((amend?n+'선 대선':n+'번째 대통령 선거')+' · 투표 사흘 전')+
+   card('<div class="hd" style="font-size:22px;margin-bottom:8px">대선 TV 토론</div><div style="font-size:14px;line-height:1.75;color:var(--text-secondary)">투표 사흘 전, 생중계 TV 토론이 잡혔다. 도전자가 이번 임기의 약점을 파고든다. 잘 받아치면 판이 뒤집히고, 무너지면 앞서던 표도 흔들린다. 지금 당선 가능성은 <b>'+pct+'%</b>다.</div>'+
+     '<div style="font-size:12.5px;color:var(--text-muted);margin-top:8px">압승 +'+DB_D[0]+'%p · 우세 +'+DB_D[1]+'%p · 열세 '+DB_D[2]+'%p · 완패 '+DB_D[3]+'%p</div>')+
+   '<button id="dbIn" class="pri" style="width:100%;padding:15px;font-size:15px;margin-bottom:8px">토론에 나간다</button>'+
+   '<button id="dbNo" style="width:100%;padding:13px;font-size:14px">토론을 거부한다 <span style="font-size:12px;color:var(--text-muted)">· "토론 회피" 비판으로 당선 가능성 −3%p</span></button></div>';
+  const go=(p2,why)=>{te.debate=why;RUN.debate=why;election(amend,p2,te,1);};
+  document.getElementById('dbNo').onclick=()=>{SFX.click();te.dbD=-3;go(Math.max(1,pct-3),'거부');};
+  document.getElementById('dbIn').onclick=()=>{SFX.click();window.scrollTo(0,0);R.innerHTML='<div style="animation:fdIn .35s ease-out">'+lab('대선 TV 토론 · 생중계')+'<div id="dbBox"></div></div>';
+    debateRun(document.getElementById('dbBox'),{pct:pct,amend:amend},(t,v)=>{te.dbD=DB_D[t];go(Math.max(1,Math.min(99,pct+DB_D[t])),['압승','우세','열세','완패'][t]+' '+v+'%');});};}
+function election(amend,pct,te,deb){
+  if(!deb&&CP.rule!=='reign'&&pct>0&&pct<100)return debateGate(amend,pct,te);
+  window.scrollTo(0,0);
   const n=CAR.term+1,win=Math.random()*100<pct,jit=Math.random()*4-2;
   const share=win?Math.max(50.4,Math.min(79,50.5+(S.a-50)*.55+jit)):Math.min(49.6,Math.max(28,48+(S.a-50)*.45+jit));
   const RG=CP.rule==='reign';te.elect=RG?(win?'반정 진압':'반정'):win?'당선':'낙선';te.winP=pct;CAR.elections.push(n+(RG?'번째 치세 ':'기 ')+pct+'% '+te.elect);
   R.innerHTML='<div style="animation:fdIn .35s ease-out;padding-top:10px">'+
    lab(RG?'반정 모의 · '+n+'번째 치세의 문턱':amend?n+'선 대선 · 고친 헌법 아래':(n)+'번째 대통령 선거')+
    '<div id="vt" style="font-size:24px;font-weight:600;margin-bottom:6px">'+(RG?'궐 밖이 술렁인다':'개표 중')+'</div>'+
-   '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:18px">'+(RG?'반정을 꾀하는 무리가 있다는 밀고가 들어왔다. 군사와 대신들은 누구 편에 설 것인가.':amend?'헌법이 바뀌었다. 이제 남은 것은 표다.':'국민이 다시 묻는다. 한 번 더 맡길 것인가.')+' <span style="color:var(--text-muted)">· '+(RG?'진압 가능성 ':'당선 가능성 ')+pct+'%</span></div>'+
+   '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:18px">'+(RG?'반정을 꾀하는 무리가 있다는 밀고가 들어왔다. 군사와 대신들은 누구 편에 설 것인가.':amend?'헌법이 바뀌었다. 이제 남은 것은 표다.':'국민이 다시 묻는다. 한 번 더 맡길 것인가.')+' <span style="color:var(--text-muted)">· '+(RG?'진압 가능성 ':'당선 가능성 ')+pct+'%'+(te.dbD!=null&&!RG?' (TV 토론 '+(te.dbD>=0?'+':'')+te.dbD+'%p)':'')+'</span></div>'+
    card('<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:6px"><span>'+(RG?'임금 편에 선 군사':'득표율')+'</span><span id="vp">0%</span></div>'+
      '<div style="position:relative;height:20px;border-radius:10px;background:rgba(29,27,24,.07);overflow:hidden"><span id="vb" style="position:absolute;left:0;top:0;bottom:0;width:0;background:#2f4a6b;border-radius:10px;transition:width 1.6s cubic-bezier(.2,.8,.2,1)"></span>'+
      '<span style="position:absolute;left:calc(50% - 1px);top:0;bottom:0;width:2px;background:#fff;opacity:.8"></span></div>')+

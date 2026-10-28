@@ -141,14 +141,28 @@ function reignEnd(te){const av=Math.round(cl(S.a)),isLast=CAR.term>=MAXT,risk=av
   if(b('dep'))b('dep').onclick=()=>{SFX.click();te.decision='반정';careerEnd('deposed');};
   if(b('fin'))b('fin').onclick=()=>{SFX.click();te.decision='치세 완료';careerEnd('served');};}
 
-function election(amend,pct,te){window.scrollTo(0,0);
+// 대통령 선거(조선 반정 제외)는 당선이 확정이 아니면 개표 전에 TV 토론이 열린다. 토론 결과로 당선 가능성이 오르내린다.
+const DB_D=[14,6,-4,-10];
+function debateGate(amend,pct,te){window.scrollTo(0,0);const n=CAR.term+1;
+  R.innerHTML='<div style="animation:fdIn .35s ease-out">'+lab((amend?n+'선 대선':n+'번째 대통령 선거')+' · 투표 사흘 전')+
+   card('<div class="hd" style="font-size:22px;margin-bottom:8px">대선 TV 토론</div><div style="font-size:14px;line-height:1.75;color:var(--text-secondary)">투표 사흘 전, 생중계 TV 토론이 잡혔다. 도전자가 이번 임기의 약점을 파고든다. 잘 받아치면 판이 뒤집히고, 무너지면 앞서던 표도 흔들린다. 지금 당선 가능성은 <b>'+pct+'%</b>다.</div>'+
+     '<div style="font-size:12.5px;color:var(--text-muted);margin-top:8px">압승 +'+DB_D[0]+'%p · 우세 +'+DB_D[1]+'%p · 열세 '+DB_D[2]+'%p · 완패 '+DB_D[3]+'%p</div>')+
+   '<button id="dbIn" class="pri" style="width:100%;padding:15px;font-size:15px;margin-bottom:8px">토론에 나간다</button>'+
+   '<button id="dbNo" style="width:100%;padding:13px;font-size:14px">토론을 거부한다 <span style="font-size:12px;color:var(--text-muted)">· "토론 회피" 비판으로 당선 가능성 −3%p</span></button></div>';
+  const go=(p2,why)=>{te.debate=why;RUN.debate=why;election(amend,p2,te,1);};
+  document.getElementById('dbNo').onclick=()=>{SFX.click();te.dbD=-3;go(Math.max(1,pct-3),'거부');};
+  document.getElementById('dbIn').onclick=()=>{SFX.click();window.scrollTo(0,0);R.innerHTML='<div style="animation:fdIn .35s ease-out">'+lab('대선 TV 토론 · 생중계')+'<div id="dbBox"></div></div>';
+    debateRun(document.getElementById('dbBox'),{pct:pct,amend:amend},(t,v)=>{te.dbD=DB_D[t];go(Math.max(1,Math.min(99,pct+DB_D[t])),['압승','우세','열세','완패'][t]+' '+v+'%');});};}
+function election(amend,pct,te,deb){
+  if(!deb&&CP.rule!=='reign'&&pct>0&&pct<100)return debateGate(amend,pct,te);
+  window.scrollTo(0,0);
   const n=CAR.term+1,win=Math.random()*100<pct,jit=Math.random()*4-2;
   const share=win?Math.max(50.4,Math.min(79,50.5+(S.a-50)*.55+jit)):Math.min(49.6,Math.max(28,48+(S.a-50)*.45+jit));
   const RG=CP.rule==='reign';te.elect=RG?(win?'반정 진압':'반정'):win?'당선':'낙선';te.winP=pct;CAR.elections.push(n+(RG?'번째 치세 ':'기 ')+pct+'% '+te.elect);
   R.innerHTML='<div style="animation:fdIn .35s ease-out;padding-top:10px">'+
    lab(RG?'반정 모의 · '+n+'번째 치세의 문턱':amend?n+'선 대선 · 고친 헌법 아래':(n)+'번째 대통령 선거')+
    '<div id="vt" style="font-size:24px;font-weight:600;margin-bottom:6px">'+(RG?'궐 밖이 술렁인다':'개표 중')+'</div>'+
-   '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:18px">'+(RG?'반정을 꾀하는 무리가 있다는 밀고가 들어왔다. 군사와 대신들은 누구 편에 설 것인가.':amend?'헌법이 바뀌었다. 이제 남은 것은 표다.':'국민이 다시 묻는다. 한 번 더 맡길 것인가.')+' <span style="color:var(--text-muted)">· '+(RG?'진압 가능성 ':'당선 가능성 ')+pct+'%</span></div>'+
+   '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:18px">'+(RG?'반정을 꾀하는 무리가 있다는 밀고가 들어왔다. 군사와 대신들은 누구 편에 설 것인가.':amend?'헌법이 바뀌었다. 이제 남은 것은 표다.':'국민이 다시 묻는다. 한 번 더 맡길 것인가.')+' <span style="color:var(--text-muted)">· '+(RG?'진압 가능성 ':'당선 가능성 ')+pct+'%'+(te.dbD!=null&&!RG?' (TV 토론 '+(te.dbD>=0?'+':'')+te.dbD+'%p)':'')+'</span></div>'+
    card('<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:6px"><span>'+(RG?'임금 편에 선 군사':'득표율')+'</span><span id="vp">0%</span></div>'+
      '<div style="position:relative;height:20px;border-radius:10px;background:rgba(29,27,24,.07);overflow:hidden"><span id="vb" style="position:absolute;left:0;top:0;bottom:0;width:0;background:#2f4a6b;border-radius:10px;transition:width 1.6s cubic-bezier(.2,.8,.2,1)"></span>'+
      '<span style="position:absolute;left:calc(50% - 1px);top:0;bottom:0;width:2px;background:#fff;opacity:.8"></span></div>')+

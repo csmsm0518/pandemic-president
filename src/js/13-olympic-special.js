@@ -115,7 +115,8 @@ function spBoard(go){const y=Math.round(S.turn/PY);if(y>=YRS)return go();CAR.spD
   draw();}
 // 경기 단계: 화면의 선택지 대신 경기를 치르고, 결과(0 대성공 ~ 3 대실패)를 그 단계의 판정으로 쓴다
 function mgResolve(t){SVAT=null;SFX.click();takeSnap();lastO=cur.o[t];lastFit={q:0,why:[['+','경기 결과로 판정했다']]};lastS=1;logChoice(t);lastT=t;tally[t]++;yTally[t]++;CAR.tt[t]++;resolve(lastO,t);}
-function mgRun(kind,box){if(MG_SPORT[kind])return mgPick(kind,box);
+// 다른 조각의 경기(lz)는 그 조각을 먼저 받아 둔다. 시뮬레이션 결과를 바로 돌려받아야 해서다
+function mgRun(kind,box){const G=MG_SPORT[kind];if(G)return G.lz?lzThen(G.lz,()=>mgPick(kind,box)):mgPick(kind,box);
   box.innerHTML='<div class="mgx"><div class="mgx-h">백신 슬래시 · 현장 지휘</div><div class="mgx-t">손가락(또는 마우스)으로 화면을 그어 바이러스를 벤다. 시민을 베거나 바이러스를 놓치면 병상이 줄고, 병상이 바닥나면 끝난다. 결과는 등급으로 매겨진다.</div><button id="mgxGo" class="pri" style="width:100%;padding:14px">현장 지휘 시작</button></div>';
   document.getElementById('mgxGo').onclick=()=>{try{aInit();}catch(e){}mini(null,(gr,sc)=>{CAR.slashGrade=gr;RUN.slash=(RUN.slash?RUN.slash+' / ':'')+gr+' '+sc;mgResolve(gr==='S'?0:gr==='A'?1:gr==='B'?2:3);});};}
 // 체육 종목(양궁·수영·승부차기)은 먼저 직접 할지, 시뮬레이션으로 맡길지 고른다.
@@ -124,6 +125,11 @@ const MG_SPORT={
   arch:{n:'양궁 개인전 결승',how:'바람을 읽고 흔들리는 조준점을 맞춰 여섯 발을 쏜다',run:(b,d)=>mgArch(b,d),sim:()=>simArch()},
   swim:{n:'수영 50m 결승',how:'왼팔·오른팔을 번갈아 빠르게 눌러 헤엄친다',run:(b,d)=>mgSwim(b,d),sim:()=>simSwim()},
   pk:{n:'축구 결승 승부차기',how:'우리 차례엔 직접 차고, 상대 차례엔 직접 막는다',run:(b,d)=>mgPK(b,d),sim:()=>simPK()},
-  tkd:{n:'태권도 결승',how:'상대의 발차기를 막고 반격해 점수를 딴다',run:(b,d)=>mgTkd(b,d),sim:()=>simTkd()}};
+  tkd:{n:'태권도 결승',how:'상대의 발차기를 막고 반격해 점수를 딴다',run:(b,d)=>mgTkd(b,d),sim:()=>simTkd()},
+  // 체육 종목이 아닌 경기: 시상식(nc) 없이 바로 판정한다
+  war:{n:'전선 배치',how:'사흘 동안 세 전선에 병력을 나눠 보낸다',run:(b,d)=>mgWar(b,d),sim:()=>simWar(),nc:1,lz:'games',
+    pick:'직접 지휘하면 판단만큼 결과가 나온다. 맡기면 참모들이 알아서 배치하고, 결과만 빠르게 본다.',simN:'참모본부에 맡긴다',simS:'작전 참모들이 배치하고 결과만 본다'},
+  moon:{n:'달 착륙',how:'주 엔진과 좌우 분사로 표지 위에 내려앉는다',run:(b,d)=>mgMoon(b,d),sim:()=>simMoon(),nc:1,lz:'games',
+    pick:'직접 내리면 손끝만큼 결과가 나온다. 맡기면 자동 착륙 장치가 내리고, 결과만 빠르게 본다.',simN:'자동 착륙 장치에 맡긴다',simS:'컴퓨터가 내리고 결과만 본다'}};
 // 메달 집계 한 줄(상황판·특집 머리에서도 쓴다)
 const olyTally=m=>'<span>메달 집계</span>'+['금','은','동'].map((x,k)=>'<i class="m'+k+'">'+x+'</i><b>'+m[k]+'</b>').join('');

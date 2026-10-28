@@ -33,12 +33,13 @@ function lzLoad(n){if(LZ.x[n])return Promise.resolve(LZ.x[n]);if(LZ.p[n])return 
 function lzNote(h,btn,fn){let el=document.getElementById('lzNote');if(!h){if(el)el.remove();return;}
   if(!el){el=document.createElement('div');el.id='lzNote';el.className='lz-note';el.setAttribute('role','status');document.body.appendChild(el);}
   el.innerHTML='<span>'+h+'</span>'+(btn?'<button type="button">'+btn+'</button>':'');if(btn)el.querySelector('button').onclick=fn;}
-function lzCall(n,f,a){const X=LZ.x[n];if(X)return X[f].apply(null,a);
+// 조각 n을 받은 뒤 fn을 부른다(이미 있으면 바로). 받은 뒤 fn에서 난 오류는 예전처럼 화면 아래 오류 안내(window.onerror)로 보낸다
+function lzThen(n,fn){if(LZ.x[n])return fn();
   const tm=setTimeout(()=>lzNote('불러오는 중…'),300);
-  // 받은 뒤 진짜 함수에서 난 오류는 예전처럼 화면 아래 오류 안내(window.onerror)로 보낸다
-  return lzLoad(n).then(X=>{clearTimeout(tm);lzNote('');try{return X[f].apply(null,a);}catch(e){setTimeout(()=>{throw e;});}},e=>{clearTimeout(tm);
+  return lzLoad(n).then(()=>{clearTimeout(tm);lzNote('');try{return fn();}catch(e){setTimeout(()=>{throw e;});}},e=>{clearTimeout(tm);
     if(e&&e.lzVer)lzNote('게임이 새 버전으로 바뀌었어요.','새로고침',()=>location.reload());
-    else lzNote('불러오지 못했어요. 인터넷 연결을 확인해 주세요.','다시 시도',()=>{lzNote('');lzCall(n,f,a);});});}
+    else lzNote('불러오지 못했어요. 인터넷 연결을 확인해 주세요.','다시 시도',()=>{lzNote('');lzThen(n,fn);});});}
+function lzCall(n,f,a){return lzThen(n,()=>LZ.x[n][f].apply(null,a));}
 // 첫 화면이 뜨고 2.5초 뒤부터 쉬는 틈에 하나씩 미리 받아 둔다(문 소리는 소리를 켤 때 받는다)
 addEventListener('load',()=>setTimeout(function pre(){const n=Object.keys(LZ_M).find(k=>k!=='door'&&!LZ.x[k]&&!LZ.p[k]);if(!n)return;
   const go=()=>lzLoad(n).then(()=>setTimeout(pre,200),()=>{});window.requestIdleCallback?requestIdleCallback(go,{timeout:4000}):go();},2500));

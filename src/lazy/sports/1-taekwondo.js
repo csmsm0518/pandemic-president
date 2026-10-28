@@ -65,10 +65,10 @@ function simTkd(){const R=tkRival(),m=.95+Math.random()*.25,L=[];let me=0,op=0;
   return {lines:L,head:me+' : '+op+' · '+(win?'금메달':'은메달'),t:win?0:1};}
 // 받아 오는 사이 화면이 넘어갔으면(상자가 빠졌으면) 그리지 않는다
 function mgPick(kind,box){if(!box||!box.isConnected)return;const G=MG_SPORT[kind];
-  box.innerHTML='<div class="mgx mg-pick"><div class="mgx-h">'+G.n+'</div><div class="mgx-t">직접 치르면 실력만큼 결과가 나온다. 시뮬레이션으로 맡기면 선수들이 알아서 치르고, 결과만 빠르게 본다.</div>'+
-    '<div class="mg-2"><button id="mgPlay" class="pri"><b>직접 한다</b><small>'+G.how+'</small></button><button id="mgSim"><b>시뮬레이션으로 진행</b><small>선수들에게 맡기고 결과만 본다</small></button></div></div>';
+  box.innerHTML='<div class="mgx mg-pick"><div class="mgx-h">'+G.n+'</div><div class="mgx-t">'+(G.pick||'직접 치르면 실력만큼 결과가 나온다. 시뮬레이션으로 맡기면 선수들이 알아서 치르고, 결과만 빠르게 본다.')+'</div>'+
+    '<div class="mg-2"><button id="mgPlay" class="pri"><b>직접 한다</b><small>'+G.how+'</small></button><button id="mgSim"><b>'+(G.simN||'시뮬레이션으로 진행')+'</b><small>'+(G.simS||'선수들에게 맡기고 결과만 본다')+'</small></button></div></div>';
   // 경기가 끝나면 시상대를 세우고(메달 집계에 더한 뒤) 판정으로 넘어간다
-  const fin=t=>olyCere(box,G.n,t,()=>mgResolve(t));
+  const fin=t=>G.nc?mgResolve(t):olyCere(box,G.n,t,()=>mgResolve(t));
   document.getElementById('mgPlay').onclick=()=>{try{aInit();SFX.click();}catch(e){}G.run(box,fin);};
   document.getElementById('mgSim').onclick=()=>{try{aInit();SFX.click();}catch(e){}mgSimShow(box,G.n,G.sim(),fin);};}
 /* 시상식: 종목이 끝날 때마다 시상대(2위·1위·3위)를 세우고 우리 자리를 금빛으로 비춘다. 메달을 못 따면 우리는 시상대 아래에서 박수를 친다.

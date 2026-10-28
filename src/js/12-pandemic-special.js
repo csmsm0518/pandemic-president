@@ -88,7 +88,9 @@ function mkPand(id,n,endN,lead,prep,bn){return {id:id,n:n,k:'good',tro:[endN+' �
   c=>spEv(n+' 이후',c.endemic?'<em>S등급.</em> 확산이 잡혔다. 지금 '+endN+'을 선언할 수 있다. 선언에 성공하면 남은 임기 동안 위기가 다시 커지지 않고 해마다 내실이 쌓인다.':'위기는 아직 끝나지 않았다. 장기전을 준비해야 한다.',
    c.endemic?[[endN+'을 선언한다',{a:5,e:3},'선언문이 낭독됐다. 거리에서 박수가 터졌다.',null,{endemic:endN}],['선언은 미루고 감시를 이어 간다',{m:3,trn:2},'신중함을 택했다.']]
     :[['장기 대응 체계를 세운다',{m:3,saf:2,e:-1},'대응은 일상이 됐다.'],['회복으로 무게를 옮긴다',{e:3,i:2},'가게들이 다시 문을 열었다.']])]};}
-const mkWar=(id,n,tro,bn,s1,s2,s3)=>({id:id,n:n,k:'good',tro:tro,cond:()=>true,bn:bn,steps:[c=>spEv(s1[0],s1[1],s1[2]),c=>spEv(s2[0],s2[1](c),s2[2]),c=>spEv(s3[0],s3[1],s3[2])]});
+// 둘째 단계(작전 지휘)의 첫 두 선택(공세·방어)은 전선 배치(SP_NEXT.war)로 이어지고, 셋째(철수·회군)는 바로 종전으로 간다
+const mkWar=(id,n,tro,bn,s1,s2,s3)=>{const o2=s2[2].map((o,k)=>k<2?[o[0],o[1],o[2],null,{nx:'war',ctx:['stance',k?'def':'atk']}]:o);
+  return {id:id,n:n,k:'good',tro:tro,cond:()=>true,bn:bn,steps:[c=>spEv(s1[0],s1[1],s1[2]),c=>spEv(s2[0],s2[1](c),o2),c=>spEv(s3[0],s3[1],s3[2])]};};
 SP.kr.push(mkWar('war_k','다국적 연합 작전',['연합 작전의 주역','상처뿐인 참전'],
   {k:'bad',h:'정부, 다국적 연합 작전 참여 검토',s:'동맹국 "결정적 기여 기대"… 파병 동의 논쟁',b:'군이 강해진 만큼, 그 힘을 어디에 쓸지가 시험대에 올랐다.'},
   ['참전 결정','동맹국들이 해상 교역로를 위협하는 무장 세력 소탕 작전에 <em>한국군의 주력 참여</em>를 요청했다.',[
