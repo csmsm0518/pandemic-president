@@ -87,6 +87,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   lab('지도자 도감 '+lg+' / '+LEADK.length)+'<div style="margin-bottom:22px">'+ldex+'</div>'+
   lab('임기 평가 도감 '+got+' / '+ENDC.length)+'<div style="margin-bottom:22px">'+dex+'</div>'+
   '<button id="edBtn" style="width:100%;font-size:13px;margin-bottom:8px">인적사항 바꾸기</button>'+
+  '<button id="rsBtn" style="width:100%;font-size:12.5px;margin-bottom:8px;color:var(--text-muted)">이 기기 기록 초기화</button>'+
   '<div style="text-align:center;font-size:11px;color:var(--text-muted);margin:6px 0 10px">팬데믹 대통령 '+GAME_VER+' · 라이트</div></div>';
   const $=id=>document.getElementById(id);
   $('bgSel').onchange=e=>{SFX.click();const v=e.target.value;
@@ -102,6 +103,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   if($('ldBtn'))$('ldBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();svPicker();};   // 라이트 모드 메인 화면은 작은 창으로 연다
   $('gbBtn').onclick=()=>{SFX.click();guide(home);};
   $('edBtn').onclick=()=>{SFX.click();intro();};
+  $('rsBtn').onclick=()=>{SFX.click();resetAsk();};
   vwBind(R,k=>{if(k==='lite')home();});
   // 이스터에그: 제목을 3초 안에 7번 누르면 좀비 무대가 열린다
   $('ttl').onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];
@@ -110,6 +112,24 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   if(SEC_NEW.length){const nm=SEC_NEW.map(id=>{for(const c in CAMPS){const q=CAMPS[c].bg.find(b=>b.sec===id);if(q)return q.n;}return id;});SEC_NEW=[];SFX.unlock();eggToast('🔓 비밀 인물 해금: <b>'+nm.join(', ')+'</b>');}
 }
 
+// 이 기기 기록 초기화: 이 브라우저에 저장된 것(기록·도감·저장한 게임·인적사항·설정·이스터에그·좀비 게임 기록)을 지우고 처음처럼 다시 연다.
+// 명예의 전당(구글 시트)에 이미 올라간 기록은 그대로 남는다. 되돌릴 수 없으니 한 번 더 묻는다.
+const RESET_KEYS=k=>/^pandemic_|^pp_zombie_/.test(k);
+function resetAsk(){const o=document.getElementById('rsAsk');if(o)o.remove();
+  const w=document.createElement('div');w.id='rsAsk';w.className='rs-ask';w.setAttribute('role','dialog');w.setAttribute('aria-modal','true');w.setAttribute('aria-labelledby','rsT');
+  w.innerHTML='<div class="rs-card"><span class="rs-k">이 기기 기록 초기화</span><h2 id="rsT">처음처럼 다시 시작할까요?</h2>'+
+    '<p>이 기기(브라우저)에 저장된 것을 모두 지워요.</p><ul><li>최고 기록 · 도감 · 기록 보관소</li><li>저장한 게임</li><li>인적사항(학교 · 이름 · 닉네임)</li><li>화면 · 소리 설정, 연 이스터에그, 좀비 게임 기록</li></ul>'+
+    '<p class="rs-keep">명예의 전당(구글 시트)에 이미 올라간 기록은 지워지지 않아요.</p>'+
+    '<div class="rs-b"><button type="button" id="rsNo">취소</button><button type="button" id="rsYes" class="rs-yes">모두 지우고 처음부터</button></div></div>';
+  document.body.appendChild(w);const no=()=>{w.remove();document.removeEventListener('keydown',kd,true);},
+    // 창이 떠 있는 동안 키는 뒤의 메인 메뉴로 가지 않게 먼저 가로챈다(Enter·스페이스는 창 안의 단추를 누른다)
+    kd=e=>{if(!/^(Escape|Enter| |Arrow|Tab)/.test(e.key))return;if(e.key==='Tab')return;e.stopPropagation();e.preventDefault();if(e.key==='Escape')return no();
+      const a=document.activeElement;if((e.key==='Enter'||e.key===' ')&&a&&w.contains(a))a.click();else if(/^Arrow/.test(e.key)){const b=[...w.querySelectorAll('button')],i=b.indexOf(a);b[(i+1+b.length)%b.length].focus();}};
+  document.addEventListener('keydown',kd,true);
+  w.onclick=e=>{if(e.target===w)no();};document.getElementById('rsNo').onclick=()=>{try{SFX.click();}catch(e){}no();};
+  document.getElementById('rsYes').onclick=()=>{try{const L=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(RESET_KEYS(k))L.push(k);}L.forEach(k=>localStorage.removeItem(k));}catch(e){}
+    location.reload();};
+  setTimeout(()=>{const b=document.getElementById('rsNo');if(b)b.focus();},30);}
 function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp))camp='kr';document.documentElement.dataset.camp='kr';
   R.innerHTML='<div style="min-height:70vh"></div>';
@@ -129,7 +149,7 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
     '<div class="gx-tl"><div class="emb go gx-logo">'+emblemSvg()+'<div><h1 class="emb-t"><span>팬데믹</span> <span>대통령</span></h1><p class="emb-s">한 번의 인생, 한 나라의 운명</p></div></div>'+
     (msg?'<div class="gx-msg">'+msg+'</div>':'')+
     '<div class="gx-row2"><nav class="gx-menu" aria-label="메인 메뉴">'+M.map((m,i)=>'<button class="gx-mi" id="'+m[0]+'" style="--i:'+i+'"><span class="gx-ic" aria-hidden="true">'+GX_IC[m[3]]+'</span><span class="gx-mt"><b>'+m[1]+'</b><small>'+m[2]+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>').join('')+
-    '<button class="gx-mi sub" id="mmView" style="--i:'+(M.length-1)+'">화면 설정 · 세로/가로 · 라이트</button><button class="gx-mi sub" id="mmEdit" style="--i:'+M.length+'">인적사항 바꾸기</button></nav>'+pc+'</div></div>'+
+    '<button class="gx-mi sub" id="mmView" style="--i:'+(M.length-1)+'">화면 설정 · 세로/가로 · 라이트</button><button class="gx-mi sub" id="mmEdit" style="--i:'+M.length+'">인적사항 바꾸기</button><button class="gx-mi sub dim" id="mmReset" style="--i:'+(M.length+1)+'">이 기기 기록 초기화</button></nav>'+pc+'</div></div>'+
     '<div class="gx-foot"><span class="gx-keys"><kbd>↑</kbd><kbd>↓</kbd> 고르기 &nbsp;<kbd>Enter</kbd> 결정</span><span>'+GAME_VER+'</span></div></div>'}],
     {nav:false,cls:'gm',top:'<button id="snd" class="cine-x cine-snd" aria-label="소리 설정">'+sndIco()+'</button>',
      key:e=>{const n=MI.length;if(e.key==='ArrowDown'){mark((sel+1)%n,1);return true;}if(e.key==='ArrowUp'){mark((sel-1+n)%n,1);return true;}
@@ -146,6 +166,7 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   $('mmGuide').onclick=()=>{gxSfx('click');cineClose();guide(home);};
   $('mmEdit').onclick=()=>{gxSfx('click');cineClose();intro();};
   $('mmView').onclick=()=>{gxSfx('click');viewPage(home);};
+  $('mmReset').onclick=()=>{gxSfx('click');resetAsk();};
   // 이스터에그: 로고의 나침반을 다섯 바퀴 돌리면 비밀 모드 「대항해」가 새 게임의 무대 고르기에 생긴다
   compassSpin(document.querySelector('.cine .gx-logo svg'),()=>{
     if(eggOn('sail')){eggToast('⚓ 대항해는 이미 열려 있어요. 새 게임에서 고르세요.');return;}
