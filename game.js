@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"fa1dc1ab5c","h":"bbff77d8d79a9539"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"guide":{"v":"02c61fb7d7","h":"52a30991e0d54409"},"slash":{"v":"91b6243685","h":"9a753ed1fed964a5"},"sports":{"v":"02c3edd7d7","h":"57d705b1ae5d3a60"}};
+const LZ_M={"board":{"v":"fa1dc1ab5c","h":"bbff77d8d79a9539"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"guide":{"v":"dcbf15cb71","h":"c6376b93b408bfad"},"slash":{"v":"91b6243685","h":"9a753ed1fed964a5"},"sports":{"v":"02c3edd7d7","h":"57d705b1ae5d3a60"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
 function guide(){return lzCall('guide','guide',arguments);}
 function mini(){return lzCall('slash','mini',arguments);}
@@ -3180,7 +3180,7 @@ SP.usa.push({id:'newdeal',n:'뉴딜 대공사',k:'good',tro:['뉴딜의 설계�
    c=>spEv('법원의 제동','대법원이 <em>공공사업법 일부에 위헌</em> 판결을 냈다.',[
     ['대법관 수를 늘려 밀어붙인다',{p:6,chk:-6,e:2},'"법원 장악"이라는 비판이 쏟아졌다.'],['법안을 다듬어 다시 낸다',{chk:3,e:1},'시간은 걸렸지만 통과됐다.'],['라디오로 국민에게 직접 호소한다',{a:4,p:2},'노변담화가 전국에 방송됐다.']])]});
 /* ---------- 올림픽 특집: 판마다 다른 대회 ----------
-   개막 → 개막 전야 이야기(무작위) → 종목 셋(양궁·수영·태권도·승부차기 가운데 무작위, 승부차기는 나오면 늘 마지막) → 대회 중 사건(무작위) → 폐막.
+   개막 → 개막 전야 이야기(무작위) → 종목 둘(양궁·수영·태권도·승부차기 가운데 무작위, 승부차기는 나오면 늘 뒤) → 대회 중 사건(무작위) → 폐막.
    무작위로 고른 것은 첫 단계에서 ctx에 적어 두어 저장·불러오기 뒤에도 같은 대회가 이어진다.
    종목이 끝날 때마다 시상대가 서고, 메달은 ctx.med(금·은·동)에 쌓여 특별 이벤트 머리의 메달 집계판과 폐막식에 나온다. */
 const OLY_IDS=['olym','olym_u'];
@@ -3244,19 +3244,21 @@ const olyGet=(L,i)=>L[i].f?L[i].f():Object.assign({},L[i].e);   // 표의 원본
 // 종목: 셋을 고르고 승부차기가 있으면 마지막에 둔다
 const OLY_SPORT={arch:c=>MG_ARCH(c),swim:c=>MG_SWIM(c),tkd:c=>MG_TKD(c),pk:c=>MG_PK(c)};
 function olyPlan(c){if(c.plan)return;const A=olyPool(OLY_PRE),B=olyPool(OLY_MID),pick=a=>a[Math.floor(Math.random()*a.length)];
-  const S=['arch','swim','tkd','pk'].sort(()=>Math.random()-.5).slice(0,3).sort((a,b)=>(a==='pk')-(b==='pk'));
+  const S=['arch','swim','tkd','pk'].sort(()=>Math.random()-.5).slice(0,2).sort((a,b)=>(a==='pk')-(b==='pk'));
   c.plan=1;c.pre=pick(A);c.mid=pick(B);c.sports=S;c.med=[0,0,0];}
 // 메달 집계 한 줄(폐막 글에 쓴다). 금메달 수로 종합 순위를 어림한다.
 function olyMedalLine(c){const m=c.med||[0,0,0],n=m[0]+m[1]+m[2],rk=m[0]>=3?1:m[0]===2?2+(m[1]?0:1):m[0]===1?4+Math.max(0,2-m[1]):n?9:15;
   return '<em>금 '+m[0]+' · 은 '+m[1]+' · 동 '+m[2]+'</em>, 종합 '+rk+'위로 대회를 마쳤다. ';}
-function olySteps(open,close){return [
+function olySteps(open,close){const ST=[
   c=>{olyPlan(c);return open(c);},
   c=>{olyPlan(c);return olyGet(OLY_PRE,c.pre);},
   c=>{olyPlan(c);return OLY_SPORT[c.sports[0]](c);},
   c=>{olyPlan(c);return olyGet(OLY_MID,c.mid);},
   c=>{olyPlan(c);return OLY_SPORT[c.sports[1]](c);},
-  c=>{olyPlan(c);return OLY_SPORT[c.sports[2]](c);},
-  c=>{olyPlan(c);const e=close(c);return Object.assign({},e,{d:olyMedalLine(c)+e.d});}];}
+  // 종목이 셋이던 때 저장한 대회는 여기서 셋째 종목을 치르고, 폐막은 steps.close로 이어진다(spGen)
+  c=>{olyPlan(c);return c.sports[2]?OLY_SPORT[c.sports[2]](c):cl(c);}];
+  const cl=c=>{const e=close(c);return Object.assign({},e,{d:olyMedalLine(c)+e.d});};
+  ST.close=c=>{olyPlan(c);return cl(c);};return ST;}
 {const O=SP.kr.find(s=>s.id==='olym');if(O){const st=O.steps;O.steps=olySteps(st[0],st[st.length-1]);}
  const U=SP.usa.find(s=>s.id==='olym_u');if(U){const st=U.steps;U.steps=olySteps(st[0],st[st.length-1]);}}
 // 판의 6칸과 조건. 조건 하나 = [화면 지표, 비교, 기준] 또는 특별한 조건 이름
@@ -3319,7 +3321,7 @@ function checkSpecial(){const y=Math.round(S.turn/PY);if(y>=YRS)return false;CAR
   pendingNews=Object.assign({},sp.bn);bgmGame();return true;}
 // 대기열의 특별 이벤트 단계는 함수 대신 [과제 id, 단계 번호] 또는 ['+이어지는 단계 키', 번호]로 둔다(게임 저장이 되도록)
 function spGen(g){const k=g[0];if(k[0]==='+')return spMake(SP_NEXT[k.slice(1)],g[1],'이어지는 단계');
-  const sp=(SP[CP.id]||[]).find(s=>s.id===k);return spMake(sp.steps[g[1]],g[1]);}
+  const sp=(SP[CP.id]||[]).find(s=>s.id===k);return spMake(sp.steps[g[1]]||sp.steps.close,g[1]);}
 function spMake(f,i,label){const R0=CAR.spRun;const e=f(R0.ctx);e.sp={i:i,n:R0.total};
   e.tag='특별 이벤트 · '+R0.n+' '+(label||((i+1)+'/'+R0.total));e.tc='#8f6a12';return e;}
 // 고른 선택의 뒷일: 맥락 저장, 이어지는 단계, 국민투표, 연임 허용

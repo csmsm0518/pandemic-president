@@ -11,7 +11,7 @@ function checkSpecial(){const y=Math.round(S.turn/PY);if(y>=YRS)return false;CAR
   pendingNews=Object.assign({},sp.bn);bgmGame();return true;}
 // 대기열의 특별 이벤트 단계는 함수 대신 [과제 id, 단계 번호] 또는 ['+이어지는 단계 키', 번호]로 둔다(게임 저장이 되도록)
 function spGen(g){const k=g[0];if(k[0]==='+')return spMake(SP_NEXT[k.slice(1)],g[1],'이어지는 단계');
-  const sp=(SP[CP.id]||[]).find(s=>s.id===k);return spMake(sp.steps[g[1]],g[1]);}
+  const sp=(SP[CP.id]||[]).find(s=>s.id===k);return spMake(sp.steps[g[1]]||sp.steps.close,g[1]);}
 function spMake(f,i,label){const R0=CAR.spRun;const e=f(R0.ctx);e.sp={i:i,n:R0.total};
   e.tag='특별 이벤트 · '+R0.n+' '+(label||((i+1)+'/'+R0.total));e.tc='#8f6a12';return e;}
 // 고른 선택의 뒷일: 맥락 저장, 이어지는 단계, 국민투표, 연임 허용
