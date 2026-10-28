@@ -2,12 +2,13 @@
    메인 화면 로고의 나침반을 다섯 바퀴 돌리면 열리고, 새 게임의 무대 고르기 끝에 생긴다.
    폭풍 속 해협을 배가 멈추지 않고 달린다(점점 빨라진다). 백신이 상하기 전에 섬마을 관문 셋을 지나 모항 결승선에 닿아야 한다.
    · ◀ ▶(A D · ← →)로 피하고, 가운데 돛 단추(스페이스 · ↑)로 모아 둔 순풍을 터뜨려 가속한다.
-   · 관문(빨강·흰 부표 사이)을 지나면 백신을 내리고 남은 시간 +15초. 놓치면 그 마을은 실패(기록에 오르지 못한다).
+   · 관문(빨강·흰 부표 사이)을 지나면 백신을 내리고 남은 시간 +14초. 놓치면 그 마을은 실패(기록에 오르지 못한다).
    · 암초를 아슬아슬하게 스치면 +0.5초와 순풍이 붙고, 연달아 스칠수록 더 붙는다. 부딪히면 느려지고 선체가 상한다(셋).
    · 파도 벽은 틈으로, 번개 표시는 빠져나가고, 소용돌이는 비켜 간다. 푸른 순풍 띠를 타면 저절로 빨라진다.
    기록은 결승까지 걸린 시간. 금·은·동은 코스 길이로 정한 기준 시간으로 매긴다. 최고 기록은 MEM.sail(v:2)에 남는다. */
-const SR={LEGS:[5200,5600,6000,5400],T0:25,TB:15,V0:250,V1:430,BOOST:1.45,LAT:390,SHIP:14};
-const SR_TOTAL=SR.LEGS.reduce((a,b)=>a+b,0),SR_PAR=Math.round(SR_TOTAL/365);
+// 속도: 출발 310 → 결승 500(순풍 돛 1.45배). 좌우는 최대 330, 키를 누르면 0.17초쯤 걸려 다 붙는다(LATK)
+const SR={LEGS:[5200,5600,6000,5400],T0:21,TB:14,V0:310,V1:500,BOOST:1.45,LAT:330,LATK:6,SHIP:14};
+const SR_TOTAL=SR.LEGS.reduce((a,b)=>a+b,0),SR_PAR=Math.round(SR_TOTAL/440);
 const SR_NAMES=['갈매섬','등대섬','동백섬','바람섬','달섬','소금섬'];
 const srTime=s=>Math.floor(s/60)+':'+(s%60).toFixed(1).padStart(4,'0');
 const srMedal=s=>s<=SR_PAR?0:s<=SR_PAR*1.12?1:s<=SR_PAR*1.3?2:3;
@@ -88,7 +89,7 @@ function sailOpen(){if(document.getElementById('sl'))return;try{if(CINE)cineClos
     let lane=0;for(const o of OB)if(o.t==='lane'&&S.d>o.d&&S.d<o.d+o.len&&Math.abs(S.x-o.x)<36)lane=1;
     S.slow=Math.min(1,S.slow+dt*.55);if(S.inv>0)S.inv-=dt;
     const tv=(SR.V0+(SR.V1-SR.V0)*k)*(S.boosting?SR.BOOST:1)*(lane?1.28:1)*S.slow;S.v+=(tv-S.v)*Math.min(1,dt*3);
-    const tx=((inp.r?1:0)-(inp.l?1:0))*SR.LAT;S.vx+=(tx-S.vx)*Math.min(1,dt*7);
+    const tx=((inp.r?1:0)-(inp.l?1:0))*SR.LAT;S.vx+=(tx-S.vx)*Math.min(1,dt*SR.LATK);
     // 소용돌이: 가운데로 끌어당기고 느리게 한다. 한가운데에 빠지면 선체가 상한다
     for(const o of OB)if(o.t==='whirl'){const dx=o.x-S.x,dd=o.d-S.d,dist=Math.hypot(dx,dd);if(dist<o.r){S.vx+=dx*3.2*dt;S.v*=1-dt*.9;if(dist<22&&!o.got){o.got=1;hit('소용돌이에 휘말렸다!');}}}
     S.x+=S.vx*dt;S.d+=S.v*dt;
@@ -111,8 +112,8 @@ function sailOpen(){if(document.getElementById('sl'))return;try{if(CINE)cineClos
     if(Math.random()<dt*30)wake.push({x:S.x+(Math.random()-.5)*8,d:S.d-18,l:1.1});
     if(S.boosting||lane)for(let i=0;i<2;i++)fx.push({x:S.x+(Math.random()-.5)*20,d:S.d+16,vx:(Math.random()-.5)*120,vd:-S.v*.6,l:.35,c:'rgba(200,235,255,.9)'});
     hud();};
-  // ----- 그리기: 배는 화면 아래쪽(74%)에 두고, 앞(위)을 길게 보여 준다 -----
-  const draw=()=>{const t=T,sy0=VH*.74,ox=VW/2,X=x=>ox+(x-camX)*sc,Y=d=>sy0-(d-S.d)*sc;camX+=(S.x-camX)*.12;
+  // ----- 그리기: 배는 화면 아래쪽(80%)에 두고, 앞(위)을 길게 보여 준다(빠른 배라 미리 볼 거리가 필요하다) -----
+  const draw=()=>{const t=T,sy0=VH*.8,ox=VW/2,X=x=>ox+(x-camX)*sc,Y=d=>sy0-(d-S.d)*sc;camX+=(S.x-camX)*.12;
     g.save();if(shake>0)g.translate((Math.random()-.5)*14*shake,(Math.random()-.5)*14*shake);
     const bg=g.createLinearGradient(0,0,0,VH);bg.addColorStop(0,'#0a2233');bg.addColorStop(1,'#123a4d');g.fillStyle=bg;g.fillRect(-20,-20,VW+40,VH+40);
     const d0=S.d-(VH-sy0)/sc-60,d1=S.d+sy0/sc+60;
