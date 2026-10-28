@@ -48,7 +48,8 @@ function spAct(a,t){const R0=CAR.spRun;if(!R0)return;R0.done++;if(t<=1)R0.ok++;
       last.x+=' <em>'+R0.n+' 마무리: '+(g?R0.tro[0]:R0.tro[1])+'</em>.';}
     // 올림픽: 메달 집계를 커리어 기록에 남기고, 금메달 셋 이상이면 업적을 하나 더 준다
     if(OLY_IDS.indexOf(R0.id)>=0&&R0.ctx.med){const m=R0.ctx.med;CAR.spEnds=CAR.spEnds||[];CAR.spEnds.push(R0.n+': 금 '+m[0]+' · 은 '+m[1]+' · 동 '+m[2]);
-      if(m[0]>=3)CAR.tro.push({id:'oly_gold',n:'금메달 '+m[0]+'개의 대회',g:1,term:CAR.term,year:Math.floor(S.turn/PY)+1});}
+      if(m[0]>=3)CAR.tro.push({id:'oly_gold',n:'금메달 '+m[0]+'개의 대회',g:1,term:CAR.term,year:Math.floor(S.turn/PY)+1});
+      if(CAR.wolyAt!=null&&WOLY_IDS.indexOf(R0.id)<0)last.x+=' <em>2년 뒤에는 동계올림픽이 열린다.</em>';}
     CAR.spRun=null;if(OLY_SP.indexOf(R0.id)>=0)bgmGame();}}
 const SPEND={future:'다음 대통령부터 적용',drop:'논의를 접음',withdraw:'발의 철회',accept:'부결에 승복',refuse:'계엄 건의 거절',fire:'장성 경질',lift:'계엄 해제',purge:'공신 숙청',appease:'녹봉으로 회유',step:'권한 일부 반환',balance:'대간 강화',swap:'영의정 교체',trust:'재상에게 맡김',keep:'현행 유지'};
 // 한 번 고친 헌법은 계속 유지된다(amendPerm): 이후 임기마다 다시 출마할 수 있다

@@ -260,7 +260,7 @@ function bgmWith(L){let s='';try{s=String((PF&&PF.school)||'');}catch(e){}return
 function bgmIntro(on){if(on){const was=!!(BGM.list&&BGM.list.indexOf(BGM_MENU[0])>=0);BGM.list=bgmWith(BGM_MENU);bgmSet(BGM.list.indexOf(BGM.trk)>=0&&(was||BGM.trk!==BGM_HAFS)?BGM.trk:BGM_MENU[Math.floor(Math.random()*BGM_MENU.length)],true);}else bgmSet(BGM.trk,false);}
 // 게임을 시작하면 그 무대의 곡으로 넘어가고, 곡이 없는 무대는 음악을 끈다
 // 올림픽 한정: 대한민국 하계올림픽 과제(olym)를 벌이는 동안에는 응원가 목록으로 바뀌고, 과제가 끝나면 무대 곡으로 돌아온다
-const BGM_OLY=['olympic_1.mp3','olympic_2.mp3','olympic_3.mp3','olympic_4.mp3','olympic_5.mp3','olympic_6.mp3','olympic_7.mp3','olympic_8.mp3','olympic_reds2018.mp3'],OLY_SP=['olym'];
+const BGM_OLY=['olympic_1.mp3','olympic_2.mp3','olympic_3.mp3','olympic_4.mp3','olympic_5.mp3','olympic_6.mp3','olympic_7.mp3','olympic_8.mp3','olympic_reds2018.mp3'],OLY_SP=['olym','wolym'];
 function bgmOly(){try{return !!(CP&&CP.id==='kr'&&CAR&&CAR.spRun&&OLY_SP.indexOf(CAR.spRun.id)>=0);}catch(e){return false;}}
 function bgmGame(){const s=bgmOly()?BGM_OLY:CP&&BGM_PLAY[CP.id];if(!s)return bgmIntro(false);const L=[].concat(s),F=bgmWith(L);
   BGM.list=F.length>1?F:null;bgmSet(BGM.list&&BGM.list.indexOf(BGM.trk)>=0&&BGM.trk!==BGM_HAFS?BGM.trk:L[Math.floor(Math.random()*L.length)],true);}

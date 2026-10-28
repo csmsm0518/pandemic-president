@@ -82,9 +82,10 @@ const SPX_ART={
  shield:'<path d="M60 12L98 26V58C98 82 80 100 60 108C40 100 22 82 22 58V26Z"/><path d="M42 46L78 82M78 46L42 82"/>',
  vial:'<rect x="48" y="24" width="24" height="60" rx="5" transform="rotate(40 60 54)"/><path d="M83 27L95 15M90 20L100 30M36 82L22 96"/><path d="M45 62L57 50M51 70L63 58"/>',
  gear:'<circle cx="60" cy="60" r="22"/><circle cx="60" cy="60" r="8"/>'+Array.from({length:8},(_,i)=>{const a=i/8*Math.PI*2;return '<path d="M'+(60+30*Math.cos(a)).toFixed(1)+' '+(60+30*Math.sin(a)).toFixed(1)+'L'+(60+42*Math.cos(a)).toFixed(1)+' '+(60+42*Math.sin(a)).toFixed(1)+'"/>';}).join(''),
+ flake:Array.from({length:6},(_,i)=>{const a=i*60;return '<g transform="rotate('+a+' 60 60)"><path d="M60 60V14"/><path d="M60 28l-10-10M60 28l10-10M60 42l-8-8M60 42l8-8"/></g>';}).join('')+'<circle cx="60" cy="60" r="7"/>',
  moon:'<path d="M76 18a42 42 0 1 0 26 66A34 34 0 1 1 76 18z"/><circle cx="24" cy="26" r="2"/><circle cx="102" cy="30" r="1.6"/><circle cx="16" cy="70" r="1.6"/><ellipse cx="60" cy="60" rx="58" ry="16" transform="rotate(-18 60 60)"/>'};
 const SPX={
- olym:{bg:'#1d4f73',ac:'#e3a72f',art:'track'},expo:{bg:'#1f6b63',ac:'#e8c872',art:'globe'},g20:{bg:'#2b3a55',ac:'#c9a85a',art:'table'},
+ olym:{bg:'#1d4f73',ac:'#e3a72f',art:'track'},wolym:{bg:'#1b4566',ac:'#cfe8f7',art:'flake'},wolym_u:{bg:'#1b4566',ac:'#cfe8f7',art:'flake'},expo:{bg:'#1f6b63',ac:'#e8c872',art:'globe'},g20:{bg:'#2b3a55',ac:'#c9a85a',art:'table'},
  peace:{bg:'#3d6b88',ac:'#f0e3b0',art:'branch'},war_k:{bg:'#3a2a1c',ac:'#d9a441',art:'shield'},war_j:{bg:'#3a2a1c',ac:'#d9a441',art:'shield'},war_u:{bg:'#3a2a1c',ac:'#d9a441',art:'shield'},
  pand_k:{bg:'#1f5f5a',ac:'#e8f0d8',art:'vial'},pand_j:{bg:'#1f5f5a',ac:'#e8f0d8',art:'vial'},pand_u:{bg:'#1f5f5a',ac:'#e8f0d8',art:'vial'},olym_u:{bg:'#1d4f73',ac:'#e3a72f',art:'track'},newdeal:{bg:'#3b4a2a',ac:'#e6cf9a',art:'gear'},moon:{bg:'#141b2d',ac:'#e8e2c8',art:'moon'},
  amend:{bg:'#5a1410',ac:'#e0b23c',art:'seal',ch:'憲'},amend22:{bg:'#5a1410',ac:'#e0b23c',art:'seal',ch:'憲'},coup:{bg:'#3a0f0c',ac:'#e0b23c',art:'seal',ch:'亂'},

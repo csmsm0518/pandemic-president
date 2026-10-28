@@ -1,0 +1,54 @@
+/* ---------- 컬링 결승: 중계 화면처럼 어두운 남색 판 위에 얼음 시트. 짧은 가로 화면은 시트 옆에 조작판(.side) ---------- */
+.mgx.cu{padding:12px;color:#dfe6f1;background:linear-gradient(180deg,#16233d,#0c1424);border-color:rgba(241,213,137,.34);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.cu-sb{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px;margin-bottom:8px;padding:7px 10px;border-radius:10px;font-size:12px;
+  background:linear-gradient(180deg,#1d2a44,#0f1626);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 0 0 1px rgba(241,213,137,.16)}
+.cu-sb>div{display:flex;flex-direction:column;gap:4px;min-width:0}.cu-sb>.r{align-items:flex-end}
+.cu-sb span{max-width:100%;font-weight:700;color:#c9d3e2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cu-sb .u span{color:#ffe08a}
+.cu-sb b{display:flex;gap:4px}
+.cu-sb b i{width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,var(--c) 0 36%,#8a8f97 40%,#5b5f66 100%);box-shadow:inset 0 0 0 1px rgba(0,0,0,.45);opacity:.2;transition:opacity .3s}
+.cu-sb b i.on{opacity:1}.cu-sb .u b{--c:#f1c34f}.cu-sb .r b{--c:#e0504a}
+.cu-sb .c{display:flex;flex-direction:column;align-items:center;gap:2px}
+.cu-sb strong{font:800 20px/1 var(--font-voice);color:#fff;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.cu-sb em{font-style:normal;font-weight:700;font-size:10.5px;color:#ffe08a;white-space:nowrap}
+.cu-sc{position:relative;overflow:hidden;border-radius:10px;background:#0b1526;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 6px 18px -10px rgba(0,0,0,.6)}
+.cu-sc canvas{display:block;margin:0 auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.cu-ov{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(8,14,28,.62);pointer-events:none}
+.cu-ov.on{display:flex}
+.cu-br{display:flex;flex-direction:column;align-items:center;gap:7px;max-width:340px;text-align:center}
+.cu-br b{font:800 17px/1.35 var(--font-voice);color:#ffe08a}.cu-br span{font-size:12.5px;line-height:1.6;color:#d6deea}.cu-br em{font-style:normal;font-weight:800;color:#ffe08a}
+.cu-br .cu-how{margin-top:2px;padding:3px 10px;border-radius:999px;font-weight:800;font-size:12px;letter-spacing:.02em;color:#14203a;background:#f1d589}
+.cu-ov.res{align-items:flex-start;padding:8px;background:none}.cu-ov.res.hz{justify-content:flex-start}
+.cu-res{display:flex;align-items:baseline;gap:10px;padding:6px 16px;border-radius:999px;background:rgba(12,20,36,.86);box-shadow:0 0 0 1.5px rgba(241,213,137,.55),0 8px 22px -8px rgba(0,0,0,.6);animation:cuPop .5s cubic-bezier(.2,1.4,.4,1) both}
+.cu-res b{font:800 20px/1.2 var(--font-voice);color:#fff;white-space:nowrap}.cu-res span{font:800 16px var(--font-voice);white-space:nowrap}
+.cu-res.g span{color:#ffd34d;text-shadow:0 0 12px rgba(255,211,77,.6)}.cu-res.s span{color:#d8dee8}
+@keyframes cuPop{from{opacity:0;transform:translateY(-8px) scale(.85)}}
+.cu .pk-msg{min-height:38px;margin:8px 0 6px;font-size:13px;line-height:1.45;color:#e8edf6}
+.cu .pk-msg b{color:#ffe08a}
+.cu-slot{display:flex;min-height:50px}
+.cu-aim{display:grid;grid-template-columns:52px minmax(0,1fr) 52px;gap:6px;width:100%}
+.cu-aim button{min-height:48px;padding:6px 4px;font-size:17px;font-weight:800;color:#f3ead7;background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2);touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.cu-aim button:active{background:rgba(241,213,137,.22)}
+.cu-spin{display:flex;align-items:center;justify-content:center;gap:8px}
+.cu-spin b{font-size:24px;line-height:1;color:#ffe08a}.cu-spin span{display:flex;flex-direction:column;align-items:flex-start;font-size:13px;line-height:1.2}
+.cu-spin small{font-size:10px;font-weight:600;color:#9fb0c8}
+.cu-pow{width:100%;padding-top:4px}
+.cu-bar{position:relative;height:28px;border-radius:7px;overflow:hidden;background:#070d1a;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.cu-bar .z{position:absolute;top:0;bottom:0}
+.cu-bar .z.g{background:rgba(110,160,225,.3)}.cu-bar .z.h{background:linear-gradient(90deg,rgba(241,213,137,.3),rgba(241,213,137,.62),rgba(241,213,137,.3))}.cu-bar .z.t{background:linear-gradient(90deg,rgba(224,80,74,.25),rgba(224,80,74,.5))}
+.cu-mk{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:#fff;box-shadow:0 0 6px #fff}
+.cu-nd{position:absolute;top:3px;bottom:3px;width:7px;margin-left:-3.5px;border-radius:3px;background:#ffe08a;box-shadow:0 0 0 1.5px #1d150a,0 0 10px rgba(255,224,138,.85)}
+.cu-lb{position:relative;height:14px;margin-top:3px;font-size:10px;font-weight:700;color:#9fb0c8}.cu-lb span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.cu-go{position:relative;overflow:hidden;width:100%;min-height:50px;margin-top:8px;padding:11px 12px;font-size:16px;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.cu-go small{margin-left:6px;font:600 11px var(--font-ui);opacity:.65}
+.cu-go:disabled{opacity:.55;cursor:default;filter:saturate(.6)}
+.cu-go.sw{min-height:58px;font-size:19px}
+.cu-go.sw:active{transform:translateY(1px) scale(.99)}
+.cu-swm{position:absolute;left:0;bottom:0;height:5px;width:0;background:linear-gradient(90deg,#fff6d6,#fff);box-shadow:0 0 8px #fff}
+/* 짧은 가로 화면: 왼쪽 시트, 오른쪽 점수판 · 조작판 */
+.mgx.cu.side{display:grid;grid-template-columns:minmax(0,1fr) 184px;grid-template-rows:auto 1fr;column-gap:10px;align-items:start}
+.cu.side .cu-sc{grid-column:1;grid-row:1/3}.cu.side .cu-sb{grid-column:2;grid-row:1;margin-bottom:4px;padding:5px 8px;gap:4px}.cu.side .cu-pn{grid-column:2;grid-row:2}
+.cu.side .cu-sb strong{font-size:16px}.cu.side .cu-sb em{font-size:9.5px}.cu.side .cu-sb b{gap:2px}.cu.side .cu-sb b i{width:9px;height:9px}
+.cu.side .pk-msg{min-height:44px;margin:2px 0 4px;font-size:11.5px;line-height:1.35}
+.cu.side .cu-go{margin-top:6px;min-height:46px;font-size:15px}.cu.side .cu-go.sw{min-height:54px}
+.cu.side .cu-aim{grid-template-columns:46px minmax(0,1fr) 46px;gap:4px}.cu.side .cu-spin{gap:4px}.cu.side .cu-spin span{font-size:11.5px}
+@media (prefers-reduced-motion:reduce){.cu-res{animation:none}}

@@ -419,6 +419,14 @@ button:hover{border-color:var(--gold)}
 .cmb.on,.lb-tabs button[aria-selected="true"]{border-color:var(--gold)!important;background:#fbf4e1!important;box-shadow:inset 0 0 0 1px var(--gold)!important}
 .hm-i{background:var(--gold-soft);color:var(--gold-lo)}
 
+/* 동계올림픽 개막 안내(하계올림픽 2년 뒤, 그해 과제 판 자리) */
+.wo-card{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:6px;margin-top:12px;padding:18px 16px 16px;border-radius:14px;background:var(--sb);color:#f7f3ea;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 10px 24px -14px rgba(10,30,50,.6)}
+.wo-card .spb-art{position:absolute;right:-18px;top:-18px;width:120px;height:120px;fill:none;stroke:var(--sa);stroke-width:2.4;opacity:.5}
+.wo-card>div{position:relative;padding-right:64px}
+.wo-card b{position:relative;font-family:var(--font-voice);font-size:18px;font-weight:800;color:#fff}
+.wo-card p{position:relative;margin:4px 0 0;font-size:13.5px;line-height:1.65;color:#e6eef4;max-width:46ch}
+.wo-sp{position:relative;display:inline-block;margin-top:10px;padding:4px 9px;border-radius:999px;font-size:11.5px;font-weight:700;color:var(--sa);background:rgba(255,255,255,.1)}
 /* ---------- 어두운 무대 ---------- */
 .dk{position:relative;overflow:hidden;color:var(--dk-text);background:radial-gradient(ellipse at 50% 32%,#3a2e1c 0%,#1b1610 58%,#0e0c09 100%);border:1px solid rgba(201,162,74,.5);border-radius:4px;
   box-shadow:inset 0 0 0 4px #0e0c09,inset 0 0 0 5px rgba(201,162,74,.25),0 16px 34px -16px rgba(0,0,0,.65)}
