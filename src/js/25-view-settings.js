@@ -75,7 +75,8 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   R.innerHTML='<div class="hl" style="animation:fdIn .35s ease-out">'+
   '<div class="hl-hd" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span class="hd" id="ttl" style="font-size:25px;user-select:none">팬데믹 대통령</span><button id="snd" style="width:38px;height:34px;padding:0;display:flex;align-items:center;justify-content:center" aria-label="소리 설정">'+sndIco()+'</button></div>'+
   (msg?'<div style="font-size:13.5px;line-height:1.7;color:var(--text-secondary);background:var(--surface-1);border-radius:10px;padding:10px 12px;margin-bottom:16px">'+msg+'</div>':'')+
-  lab('무대 고르기')+'<div class="cmbs">'+cmb+'</div>'+(P?'<div style="height:14px"></div>':introH)+
+  lab('무대 고르기')+'<div class="cmbs">'+cmb+'</div>'+
+  '<button id="miBtn" class="hl-mini"><b>미니게임</b><span>'+miniSub()+'</span><span class="hm-go">'+CHEV+'</span></button>'+(P?'<div style="height:14px"></div>':introH)+
   lab('출발 인물')+bgSel+(P?'<div style="height:12px"></div>':bgHint)+
   lab('결정 빈도')+'<div class="hl-mode" style="display:flex;gap:8px;margin-bottom:22px">'+mdb+'</div>'+
   lab('난이도')+'<div class="hl-dif" style="display:flex;gap:8px;margin-bottom:24px">'+dfb+'</div>'+
@@ -83,7 +84,6 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   '<div class="hm-row"><button id="tutBtn" class="tgl" role="switch" aria-checked="'+tutOn()+'"><span class="tgl-k"></span><span>튜토리얼 '+(tutOn()?'켜짐':'꺼짐')+'</span></button></div>'+
   '<button id="ldBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>불러오기</b><span>'+gEsc(svMenuTxt()||'저장된 게임이 없다')+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="lbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>명예의 전당</b><span>모두의 최고 기록</span></span><span class="hm-go">'+CHEV+'</span></button>'+
-  '<button id="miBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>미니게임</b><span>'+miniSub()+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="gbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>가이드북</b><span>판정 규칙, 지표, 대선, 점수 계산까지 한 번에</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<div style="height:16px"></div>'+vwHTML()+
   lab('지도자 도감 '+lg+' / '+LEADK.length)+'<div style="margin-bottom:22px">'+ldex+'</div>'+
@@ -109,7 +109,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   // 이스터에그: 제목을 3초 안에 7번 누르면 좀비 무대가 열린다
   $('ttl').onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];
     if(eggOn('zombie')){eggToast('🧟 좀비 무대는 이미 열려 있어요.');return;}
-    eggSet('zombie');try{SFX.zombie();}catch(e){}vib([60,40,60,40,200]);eggToast('🧟 <b>어디선가 신음 소리가 들린다…</b><br>미니게임 「방역선」이 열렸어요. 미니게임에서 할 수 있어요.');homeLite();};
+    eggSet('zombie');try{SFX.zombie();}catch(e){}vib([60,40,60,40,200]);eggToast('🧟 <b>어디선가 신음 소리가 들린다…</b><br>미니게임 「방역선」이 열렸어요. 새 게임의 미니게임 탭에서 할 수 있어요.');homeLite();};
   if(SEC_NEW.length){const nm=SEC_NEW.map(id=>{for(const c in CAMPS){const q=CAMPS[c].bg.find(b=>b.sec===id);if(q)return q.n;}return id;});SEC_NEW=[];SFX.unlock();eggToast('🔓 비밀 인물 해금: <b>'+nm.join(', ')+'</b>');}
   // 수영 금메달 선물: 라이트 화면에는 로고 나침반이 없어서 튜토리얼 창 안에 나침반을 띄운다(sailTut(null))
   if(MEM.sailHint===1&&!eggOn('sail'))setTimeout(()=>{if(MEM.sailHint===1&&!eggOn('sail')&&viewGet().lite&&!CINE&&R.querySelector('.hl'))sailTut(null);},700);
@@ -137,7 +137,7 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp)||camp==='zombie')camp='kr';document.documentElement.dataset.camp='kr';
   R.innerHTML='<div style="min-height:70vh"></div>';
   const msg=HUB_MSG;HUB_MSG='';
-  const sv=svMenuTxt(),M=[].concat([['mmNew','새 게임','한 번의 인생을 시작한다','new'],['mmLoad','불러오기',sv||'저장된 게임이 없다','guide']],[['mmBoard','명예의 전당','모두의 최고 기록','board'],['mmDex','도감','만난 지도자와 임기 평가','dex'],['mmMini','미니게임',miniSub(),'mini'],['mmGuide','가이드북','처음이라면 여기부터','guide']]);
+  const sv=svMenuTxt(),M=[].concat([['mmNew','새 게임','한 번의 인생을 시작한다','new'],['mmLoad','불러오기',sv||'저장된 게임이 없다','guide']],[['mmBoard','명예의 전당','모두의 최고 기록','board'],['mmDex','도감','만난 지도자와 임기 평가','dex'],['mmGuide','가이드북','처음이라면 여기부터','guide']]);
   // 기록 카드: 닉네임, 최고 기록, 도감 진행도
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
   const st=(l,v,u)=>'<div><span>'+l+'</span><b>'+v+'</b>'+(u&&v!=='—'?'<small>'+u+'</small>':'')+'</div>';
@@ -169,15 +169,14 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   $('mmBoard').onclick=()=>{gxSfx('click');cineClose();openBoard({back:home});};
   $('mmDex').onclick=()=>{gxSfx('click');dexScene();};
   $('mmGuide').onclick=()=>{gxSfx('click');cineClose();guide(home);};
-  $('mmMini').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');stepMini();};
   $('mmEdit').onclick=()=>{gxSfx('click');cineClose();intro();};
   $('mmView').onclick=()=>{gxSfx('click');viewPage(home);};
   // 이스터에그: 로고의 나침반을 다섯 바퀴 돌리면 비밀 모드 「대항해」가 새 게임의 무대 고르기에 생긴다
   compassSpin(document.querySelector('.cine .gx-logo svg'),()=>{
-    if(eggOn('sail')){eggToast('⚓ 대항해는 이미 열려 있어요. 메인 메뉴의 미니게임에서 고르세요.');return;}
+    if(eggOn('sail')){eggToast('⚓ 대항해는 이미 열려 있어요. 새 게임의 미니게임 탭에서 고르세요.');return;}
     eggSet('sail');delete MEM.sailHint;msave();try{SFX.unlock();}catch(e){}vib([40,30,40,30,160]);
     // 잠금 해제 튜토리얼 중이면 튜토리얼 창이 축하를 맡는다
-    if(!document.querySelector('#stut:not(.out)'))eggToast('⚓ <b>나침반 바늘이 바다를 가리킨다…</b><br>미니게임 「대항해」가 열렸어요. 메인 메뉴의 미니게임에서 할 수 있어요.');});
+    if(!document.querySelector('#stut:not(.out)'))eggToast('⚓ <b>나침반 바늘이 바다를 가리킨다…</b><br>미니게임 「대항해」가 열렸어요. 새 게임의 미니게임 탭에서 할 수 있어요.');});
   // 수영 금메달 선물: 대항해를 아직 못 열었으면 로고가 다 그려지고 메뉴가 들어온 뒤에 나침반 돌리는 법을 차근차근 보여 준다
   if(MEM.sailHint===1&&!eggOn('sail'))setTimeout(()=>{const s=document.querySelector('.cine .gx-logo svg');if(s&&s.isConnected&&MEM.sailHint===1&&!eggOn('sail'))sailTut(s);},2400);
   // 이스터에그: 뒤의 큰 나침반을 돌려 하얀 바늘 끝이 원 밖의 별을 3초 동안 가리키면 「별똥별을 피해라」가 열리고 바로 시작한다
@@ -187,7 +186,7 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   const tt=document.querySelector('.cine .emb-t');tt.id='ttl';tt.style.cursor='default';tt.style.userSelect='none';
   tt.onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];
     if(eggOn('zombie')){eggToast('🧟 좀비 무대는 이미 열려 있어요.');return;}
-    eggSet('zombie');try{SFX.zombie();}catch(e){}vib([60,40,60,40,200]);eggToast('🧟 <b>어디선가 신음 소리가 들린다…</b><br>미니게임 「방역선」이 열렸어요. 메인 메뉴의 미니게임에서 할 수 있어요.');};
+    eggSet('zombie');try{SFX.zombie();}catch(e){}vib([60,40,60,40,200]);eggToast('🧟 <b>어디선가 신음 소리가 들린다…</b><br>미니게임 「방역선」이 열렸어요. 새 게임의 미니게임 탭에서 할 수 있어요.');};
   if(SEC_NEW.length){const nm=SEC_NEW.map(id=>{for(const c in CAMPS){const q=CAMPS[c].bg.find(b=>b.sec===id);if(q)return q.n;}return id;});SEC_NEW=[];SFX.unlock();eggToast('🔓 비밀 인물 해금: <b>'+nm.join(', ')+'</b>');}
 }
 // 1단계: 무대. 비스듬한 깃발 판 중 하나를 고르면 그 판이 넓게 펼쳐진다. 고른 판을 한 번 더 누르면(또는 Enter) 지도자 고르기로.
@@ -242,8 +241,15 @@ const CP_ART=(()=>{const sv=(id,b,w)=>'<svg viewBox="0 0 '+(w||300)+' 600" prese
   return {kr:kr,usa:usa,joseon:jo,zombie:zb,sail:sa,star:st};})();
 // 비밀 모드 「대항해」: 나라가 아니라 따로 노는 레이스라 CAMPS에 넣지 않고, 열렸으면 무대 고르기 맨 끝에 판 하나로 붙인다
 const SAIL_CP={tag:'비밀 모드',n:'대항해',sub:'폭풍을 뚫고 섬마을로 · 시간과의 레이스',intro:'백신이 상하기 전에 폭풍 해협을 뚫고 섬마을 세 곳을 지나 달려라. 암초를 스치면 시간이 붙고, 부딪히면 배가 상한다.'};
+// 새 게임 화면 위쪽의 탭 둘: 나라 고르기(무대) · 미니게임. 미니게임은 메인 메뉴가 아니라 여기서 연다
+const gxTabs=mini=>{const n=MINI.filter(x=>eggOn(x.id)).length;
+  return '<div class="gx-tabs" role="tablist" aria-label="새 게임"><button type="button" role="tab" class="gx-tb'+(mini?'':' on')+'" id="gxTbCamp" aria-selected="'+!mini+'">나라 고르기</button>'+
+    '<button type="button" role="tab" class="gx-tb'+(mini?' on':'')+'" id="gxTbMini" aria-selected="'+mini+'">미니게임<small>'+n+'/'+MINI.length+'</small></button></div>';};
+function gxTabsBind(){const a=document.getElementById('gxTbCamp'),b=document.getElementById('gxTbMini');
+  if(a)a.onclick=()=>{if(a.classList.contains('on'))return;gxSfx('tick',0);stepCamp();};
+  if(b)b.onclick=()=>{if(b.classList.contains('on'))return;try{aInit();}catch(e){}gxSfx('tick',1);stepMini();};}
 function stepCamp(){const ids=Object.keys(CAMPS).filter(id=>id!=='zombie');let k=Math.max(0,ids.indexOf(camp));
-  cine([{t:'무대 선택',h:'<div class="gx gx-camp">'+gxTop(0)+'<h2 class="gx-q">어느 나라를 이끌 것인가</h2><div class="gx-cpw">'+
+  cine([{t:'무대 선택',h:'<div class="gx gx-camp">'+gxTop(0)+gxTabs(0)+'<h2 class="gx-q">어느 나라를 이끌 것인가</h2><div class="gx-cpw">'+
     ids.map((id,i)=>{const C=CAMPS[id]||SAIL_CP;return '<button class="gx-cp" data-c="'+id+'" style="--i:'+i+'"><span class="gx-cp-art" aria-hidden="true">'+(CP_ART[id]||'')+'</span>'+
       '<span class="gx-cp-tx"><span class="gx-cp-tag">'+C.tag+'</span><b>'+C.n+'</b><span class="gx-cp-sub">'+C.sub+'</span><span class="gx-cp-in">'+C.intro+'</span>'+
       '<span class="gx-cp-go">이 무대로 ▶ <kbd class="gx-keys">Enter</kbd></span></span></button>';}).join('')+'</div></div>'}],
@@ -251,11 +257,11 @@ function stepCamp(){const ids=Object.keys(CAMPS).filter(id=>id!=='zombie');let k
       if(e.key==='ArrowRight'||e.key==='ArrowDown'){pick((k+1)%n,1);return true;}
       if(e.key==='ArrowLeft'||e.key==='ArrowUp'){pick((k-1+n)%n,1);return true;}
       if(gxEnter(e)){go();return true;}}});
-  const P=[...document.querySelectorAll('.gx-cp')],hov=matchMedia('(hover:hover)').matches;
+  const P=[...document.querySelectorAll('.gx-camp:not(.gx-mini) .gx-cp')],hov=matchMedia('(hover:hover)').matches;
   const pick=(i,snd)=>{if(snd&&i!==k)gxSfx('tick',i);k=i;P.forEach((p,j)=>p.classList.toggle('on',j===i));};
   const go=()=>{const id=ids[k];gxSfx('click');if(camp!==id){camp=id;bg=-1;}stepLeader();};
   P.forEach((p,i)=>{if(hov)p.onmouseenter=()=>pick(i,1);p.onclick=()=>{if(i===k)go();else pick(i,1);};});
-  pick(k);}
+  gxTabsBind();pick(k);}
 // 미니게임: 비밀을 찾아 연 작은 게임 셋. 새 게임의 무대 고르기와 같은 판 모양이고, 잠긴 판은 그림이 어둡고 수수께끼 같은 힌트만 보인다.
 // 판을 고르고(한 번) 한 번 더 누르면(또는 Enter) 그 게임을 연다. 게임을 마치고 나오면 이 화면으로 돌아온다.
 const MINI=[
@@ -269,7 +275,7 @@ const miniSub=()=>{const n=MINI.filter(x=>eggOn(x.id)).length;return n?n+' / '+M
 // 수영 금메달 선물을 받았는데 아직 대항해를 못 열었으면, 잠긴 대항해 칸에 여는 법을 그대로 적고 그 칸을 고르면 튜토리얼을 다시 연다
 const miniGift=x=>x.id==='sail'&&!!MEM.sailHint&&!eggOn('sail');
 function stepMini(){let k=Math.max(0,MINI.findIndex(x=>eggOn(x.id)));const n=MINI.filter(x=>eggOn(x.id)).length;
-  cine([{t:'미니게임',h:'<div class="gx gx-camp gx-mini"><div class="gx-top"><span class="gx-tag">미니게임 · '+n+' / '+MINI.length+' 열림</span></div><h2 class="gx-q">어떤 게임을 할까</h2><div class="gx-cpw">'+
+  cine([{t:'미니게임',h:'<div class="gx gx-camp gx-mini"><div class="gx-top"><span class="gx-tag">미니게임 · '+n+' / '+MINI.length+' 열림</span></div>'+gxTabs(1)+'<h2 class="gx-q">어떤 게임을 할까</h2><div class="gx-cpw">'+
     MINI.map((x,i)=>{const on=eggOn(x.id),r=on&&x.rec(),gf=miniGift(x);return '<button class="gx-cp'+(on?'':' lk')+(gf?' gift':'')+'" data-c="'+x.id+'" style="--i:'+i+'"><span class="gx-cp-art" aria-hidden="true">'+(CP_ART[x.id]||'')+'</span>'+
       '<span class="gx-cp-tx"><span class="gx-cp-tag">'+(on?x.tag:gf?'금메달 선물':'잠김')+'</span><b>'+(on?x.n:'???')+'</b><span class="gx-cp-sub">'+(on?x.sub:gf?'로고의 금빛 나침반을 다섯 바퀴 돌려라':x.h)+'</span>'+
       (on?'<span class="gx-cp-in">'+x.intro+(r?'<br><span class="gx-cp-rec">'+r+'</span>':'')+'</span><span class="gx-cp-go">이 게임으로 ▶ <kbd class="gx-keys">Enter</kbd></span>':
@@ -282,7 +288,7 @@ function stepMini(){let k=Math.max(0,MINI.findIndex(x=>eggOn(x.id)));const n=MIN
   const pick=(i,snd)=>{if(snd&&i!==k)gxSfx('tick',i);k=i;P.forEach((p,j)=>p.classList.toggle('on',j===i));};
   const go=()=>{const x=MINI[k];if(!eggOn(x.id)){if(miniGift(x)){gxSfx('click');MEM.sailHint=1;msave();home();return;}gxSfx('lock');return;}gxSfx('click');try{aInit();}catch(e){}x.open();};
   P.forEach((p,i)=>{if(hov)p.onmouseenter=()=>pick(i,1);p.onclick=()=>{if(i===k)go();else pick(i,1);};});
-  pick(k);}
+  gxTabsBind();pick(k);}
 // 지도자 능력치: 기본 지표에 주는 보정을 가운데 0선 기준 막대로
 function gxStats(q,C){if(!q.e)return q.d?'<p class="gx-note">'+q.d+'</p>':'';
   const xs=VORD.map(k=>[k,Math.round(vDelta(k,q.e))]).filter(x=>x[1]);

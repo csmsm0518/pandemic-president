@@ -87,7 +87,7 @@ function dexScene(){dexClose();window.scrollTo(0,0);try{if(CINE)cineClose();}cat
       D[key]=on?'<b>'+E(q.n)+'</b> · '+E(x.camp)+'<p>'+E(q.s)+'</p><small>'+(bgLock(q)&&bgLock(q).used?'단 한 번뿐인 만남을 이미 함께했다':'새 게임의 지도자 고르기에서 고를 수 있다')+'</small>':'<b>잠긴 비밀 인물</b> · '+E(x.camp)+'<p>'+E(DX_SH[q.id]||'아직은 아무것도 알 수 없다.')+'</p>';
       return card({i:i,key:key,on:on,c:'#c9a24a',av:av(q.n,78),n:on?E(q.n):'???',s:on?E(q.k||''):E(DX_SH[q.id]||''),top:'<span class="dx-era">'+E(x.camp)+'</span>'});}).join(''),
     arc:()=>ARC.map((x,i)=>{const key='a'+x.id;
-      D[key]=x.on?'<b>'+E(x.n)+'</b><p>'+(x.rec?x.rec.map(E).join(' · '):'열렸지만 아직 한 번도 해 보지 않았다.')+'</p><small>메인 메뉴 → 미니게임에서 할 수 있다</small>':'<b>잠긴 비밀 기록</b><p>힌트: '+E(x.h)+'</p>';
+      D[key]=x.on?'<b>'+E(x.n)+'</b><p>'+(x.rec?x.rec.map(E).join(' · '):'열렸지만 아직 한 번도 해 보지 않았다.')+'</p><small>새 게임 → 미니게임 탭에서 할 수 있다</small>':'<b>잠긴 비밀 기록</b><p>힌트: '+E(x.h)+'</p>';
       return card({i:i,key:key,on:x.on,c:ACOL[x.id],lav:1,av:'<span class="dx-seal">'+(x.on?DX_IC[AIC[x.id]]:'<i class="dx-q">?</i>')+'</span>',n:x.on?E(x.n.split(' · ')[0]):'???',s:x.on?(x.rec?E(x.rec[0]):'아직 기록 없음'):'미니게임'});}).join('')};
   const ring='<svg class="dx-ring" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52"/><circle class="v" cx="60" cy="60" r="52" style="stroke-dasharray:'+(326.7*pct/100).toFixed(1)+' 400"/></svg>';
   const w=document.createElement('div');w.id='dex';w.className='dexs';

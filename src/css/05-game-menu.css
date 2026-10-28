@@ -319,3 +319,16 @@
   html[data-ori="p"] .gx-info .gx-ok,html[data-ori="p"] .gx-panel .gx-ok{position:sticky;bottom:14px;align-self:stretch;justify-content:center}
 @media (prefers-reduced-motion:reduce){.gx *,.gx{animation:none!important;transition:none!important}.gx .d{stroke-dashoffset:0!important}.gx-seal .star{opacity:1}}
 
+/* 새 게임 화면 위쪽 탭(나라 고르기 · 미니게임). 질문 제목은 탭 아래로 내린다 */
+.gx-tabs{position:absolute;z-index:5;top:62px;left:50%;transform:translateX(-50%);display:flex;padding:3px;background:rgba(9,8,6,.78);border:1px solid rgba(241,213,137,.38);box-shadow:0 6px 22px rgba(0,0,0,.45);animation:gxFd .5s .05s both}
+@keyframes gxFd{from{opacity:0}}
+.gx .gx-tb{display:inline-flex;align-items:center;gap:6px;min-height:36px;margin:0;padding:7px 18px;border:0;border-radius:0;background:none;color:#a39578;font:800 13.5px var(--font-voice);letter-spacing:.06em;white-space:nowrap;cursor:pointer;transition:background .2s,color .2s}
+.gx .gx-tb:hover{color:#f1d589;background:rgba(241,213,137,.08)}
+.gx .gx-tb.on{background:#f1d589;color:#15120e;cursor:default}
+.gx .gx-tb small{font-size:11px;font-weight:800;opacity:.75}
+.gx .gx-tb:focus-visible{outline:2px solid #f1d589;outline-offset:2px}
+.gx-camp .gx-q{top:112px}
+@media (orientation:landscape) and (max-height:540px){.gx-tabs{top:46px}.gx .gx-tb{min-height:32px;padding:5px 14px;font-size:12.5px}.gx-camp .gx-q{top:84px;font-size:clamp(20px,5.4vh,30px)}}
+html[data-ori="p"] .gx-tabs{top:56px}
+html[data-ori="p"] .gx-camp .gx-q{top:104px}
+html[data-ori="p"] .gx-camp .gx-cpw{padding-top:152px}

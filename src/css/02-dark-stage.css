@@ -96,8 +96,9 @@ html[data-lite] [style*="animation:tk"]{padding-left:0!important;display:block!i
 /* 명언이 있으면 셔터가 맞물리는 금선 위에 연차 제목, 아래에 명언이 오도록.
    vh는 주소창을 뺀 실제 화면 높이와 달라서(아이패드 크롬 등) 제목이 금선에 걸리므로, 제목 칸을 화면 위쪽 절반으로 잡고 그 바닥에 선을 붙인다 */
 .yrfx-top{display:flex;flex-direction:column;align-items:center}
-.yrfx-c:has(.yq){justify-content:flex-start}
-.yrfx-c:has(.yq) .yrfx-top{flex:0 0 50%;justify-content:flex-end}
+.yrfx-c:has(.yq){justify-content:flex-start;padding-top:0}
+/* 명언이 있을 때 연차 글씨는 위 문짝에 붙인다: 위 칸이 화면 위 절반을 꼭 채우고(가운데 맞춤용 자동 여백을 빼서 아래로 밀리지 않게) 글씨는 그 바닥, 문 이음매 바로 위에 선다 */
+.yrfx-c:has(.yq) .yrfx-top{flex:0 0 calc(50% + 14px);margin-top:0;justify-content:flex-end;padding-bottom:12px;box-sizing:border-box}
 /* 등급 인장 */
 .seal{position:absolute;right:12px;top:12px;width:66px;height:66px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--sc);border:3px double var(--sc);font-family:var(--font-voice);
   background:color-mix(in srgb,var(--sc) 7%,transparent);transform:rotate(-12deg);animation:sealIn .45s .35s cubic-bezier(.3,1.6,.5,1) both}

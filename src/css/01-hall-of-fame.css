@@ -345,3 +345,8 @@ button:hover{border-color:var(--gold)}
 .wo-card b{position:relative;font-family:var(--font-voice);font-size:18px;font-weight:800;color:#fff}
 .wo-card p{position:relative;margin:4px 0 0;font-size:13.5px;line-height:1.65;color:#e6eef4;max-width:46ch}
 .wo-sp{position:relative;display:inline-block;margin-top:10px;padding:4px 9px;border-radius:999px;font-size:11.5px;font-weight:700;color:var(--sa);background:rgba(255,255,255,.1)}
+/* 라이트 메인: 무대 고르기 바로 아래의 미니게임 줄(새 게임 안에서 연다) */
+.hl-mini{display:flex;align-items:center;gap:10px;width:100%;margin-top:6px;padding:10px 12px;text-align:left;min-width:0}
+.hl-mini b{flex-shrink:0;font-size:14px}
+.hl-mini>span:not(.hm-go){flex:1;min-width:0;font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hl-mini .hm-go{flex-shrink:0;display:flex;color:var(--text-muted)}

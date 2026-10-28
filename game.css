@@ -427,6 +427,11 @@ button:hover{border-color:var(--gold)}
 .wo-card b{position:relative;font-family:var(--font-voice);font-size:18px;font-weight:800;color:#fff}
 .wo-card p{position:relative;margin:4px 0 0;font-size:13.5px;line-height:1.65;color:#e6eef4;max-width:46ch}
 .wo-sp{position:relative;display:inline-block;margin-top:10px;padding:4px 9px;border-radius:999px;font-size:11.5px;font-weight:700;color:var(--sa);background:rgba(255,255,255,.1)}
+/* 라이트 메인: 무대 고르기 바로 아래의 미니게임 줄(새 게임 안에서 연다) */
+.hl-mini{display:flex;align-items:center;gap:10px;width:100%;margin-top:6px;padding:10px 12px;text-align:left;min-width:0}
+.hl-mini b{flex-shrink:0;font-size:14px}
+.hl-mini>span:not(.hm-go){flex:1;min-width:0;font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hl-mini .hm-go{flex-shrink:0;display:flex;color:var(--text-muted)}
 /* ---------- 어두운 무대 ---------- */
 .dk{position:relative;overflow:hidden;color:var(--dk-text);background:radial-gradient(ellipse at 50% 32%,#3a2e1c 0%,#1b1610 58%,#0e0c09 100%);border:1px solid rgba(201,162,74,.5);border-radius:4px;
   box-shadow:inset 0 0 0 4px #0e0c09,inset 0 0 0 5px rgba(201,162,74,.25),0 16px 34px -16px rgba(0,0,0,.65)}
@@ -525,8 +530,9 @@ html[data-lite] [style*="animation:tk"]{padding-left:0!important;display:block!i
 /* 명언이 있으면 셔터가 맞물리는 금선 위에 연차 제목, 아래에 명언이 오도록.
    vh는 주소창을 뺀 실제 화면 높이와 달라서(아이패드 크롬 등) 제목이 금선에 걸리므로, 제목 칸을 화면 위쪽 절반으로 잡고 그 바닥에 선을 붙인다 */
 .yrfx-top{display:flex;flex-direction:column;align-items:center}
-.yrfx-c:has(.yq){justify-content:flex-start}
-.yrfx-c:has(.yq) .yrfx-top{flex:0 0 50%;justify-content:flex-end}
+.yrfx-c:has(.yq){justify-content:flex-start;padding-top:0}
+/* 명언이 있을 때 연차 글씨는 위 문짝에 붙인다: 위 칸이 화면 위 절반을 꼭 채우고(가운데 맞춤용 자동 여백을 빼서 아래로 밀리지 않게) 글씨는 그 바닥, 문 이음매 바로 위에 선다 */
+.yrfx-c:has(.yq) .yrfx-top{flex:0 0 calc(50% + 14px);margin-top:0;justify-content:flex-end;padding-bottom:12px;box-sizing:border-box}
 /* 등급 인장 */
 .seal{position:absolute;right:12px;top:12px;width:66px;height:66px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--sc);border:3px double var(--sc);font-family:var(--font-voice);
   background:color-mix(in srgb,var(--sc) 7%,transparent);transform:rotate(-12deg);animation:sealIn .45s .35s cubic-bezier(.3,1.6,.5,1) both}
@@ -1125,6 +1131,19 @@ html:has(.cine:not(.out)),html:has(.cine:not(.out)) body,html:has(.lbfs),html:ha
   html[data-ori="p"] .gx-info .gx-ok,html[data-ori="p"] .gx-panel .gx-ok{position:sticky;bottom:14px;align-self:stretch;justify-content:center}
 @media (prefers-reduced-motion:reduce){.gx *,.gx{animation:none!important;transition:none!important}.gx .d{stroke-dashoffset:0!important}.gx-seal .star{opacity:1}}
 
+/* 새 게임 화면 위쪽 탭(나라 고르기 · 미니게임). 질문 제목은 탭 아래로 내린다 */
+.gx-tabs{position:absolute;z-index:5;top:62px;left:50%;transform:translateX(-50%);display:flex;padding:3px;background:rgba(9,8,6,.78);border:1px solid rgba(241,213,137,.38);box-shadow:0 6px 22px rgba(0,0,0,.45);animation:gxFd .5s .05s both}
+@keyframes gxFd{from{opacity:0}}
+.gx .gx-tb{display:inline-flex;align-items:center;gap:6px;min-height:36px;margin:0;padding:7px 18px;border:0;border-radius:0;background:none;color:#a39578;font:800 13.5px var(--font-voice);letter-spacing:.06em;white-space:nowrap;cursor:pointer;transition:background .2s,color .2s}
+.gx .gx-tb:hover{color:#f1d589;background:rgba(241,213,137,.08)}
+.gx .gx-tb.on{background:#f1d589;color:#15120e;cursor:default}
+.gx .gx-tb small{font-size:11px;font-weight:800;opacity:.75}
+.gx .gx-tb:focus-visible{outline:2px solid #f1d589;outline-offset:2px}
+.gx-camp .gx-q{top:112px}
+@media (orientation:landscape) and (max-height:540px){.gx-tabs{top:46px}.gx .gx-tb{min-height:32px;padding:5px 14px;font-size:12.5px}.gx-camp .gx-q{top:84px;font-size:clamp(20px,5.4vh,30px)}}
+html[data-ori="p"] .gx-tabs{top:56px}
+html[data-ori="p"] .gx-camp .gx-q{top:104px}
+html[data-ori="p"] .gx-camp .gx-cpw{padding-top:152px}
 /* ---------- 게임 진행 화면: 메뉴와 같은 결의 움직임 ---------- */
 /* 턴 카드: 새 사건이 열릴 때 비스듬한 금테 띠가 화면을 가로지르며 몇 번째 결정인지와 사건 이름을 알린다. 누르면 걷힌다. */
 .turnfx{position:fixed;inset:0;z-index:70;display:flex;align-items:center;overflow:hidden;cursor:pointer}
