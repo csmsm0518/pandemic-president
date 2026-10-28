@@ -2,7 +2,7 @@
 // 신문 삽화풍 초상. 실제 얼굴을 닮게 그리지 않고, 시대와 신분은 옷차림·머리·소품으로만 드러낸다.
 // c 옷, cc 옷 색, t 넥타이 색, h 머리, hc 머리 색, f 수염(+로 겹침), hw 모자, g 안경, w 넓은 얼굴, sk 피부
 const PFS={
- '박정희':'c=mil,cc=#5b6146,h=side,a=sung','김대중':'c=suit,cc=#2b3a55,t=#a8321f,h=side,hc=#9a948a,w,a=smile','노무현':'c=shirt,cc=#e9e2d2,h=short,hw=straw,a=smile',
+ '박정희':'c=mil,cc=#5b6146,h=side,a=sung','조성민':'c=suit,cc=#1b1d20,t=#c9a227,h=side,hc=#1f1b16,a=sung+smile','김대중':'c=suit,cc=#2b3a55,t=#a8321f,h=side,hc=#9a948a,w,a=smile','노무현':'c=shirt,cc=#e9e2d2,h=short,hw=straw,a=smile',
  '정주영':'c=work,cc=#6f7a6a,h=side,hc=#8d877c,w','안철수':'c=doctor,t=#3d5a80,h=side,g',
  '태조 이성계':'c=gon,cc=#2c5a7a,hw=ikseon,f=mus+full,hc=#6a645b','세종':'c=gon,hw=ikseon,f=mus+jbeard','세조':'c=gon,cc=#7d241a,hw=ikseon,f=full',
  '광해군':'c=gon,hw=ikseon,f=mus','정조':'c=gon,cc=#9a2d22,hw=ikseon,f=mus+goatee',

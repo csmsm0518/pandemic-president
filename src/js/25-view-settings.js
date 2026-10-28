@@ -50,7 +50,7 @@ document.querySelectorAll('.rotq [data-o]').forEach(b=>b.onclick=()=>setView('or
 function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp)||camp==='zombie')camp='kr';document.documentElement.dataset.camp=camp;
   const msg=HUB_MSG;HUB_MSG='';const C=CAMPS[camp],BGS=C.bg;
   // 출발 인물은 드롭다운으로 고른다. 처음엔 '인물을 선택하세요'이고, 고르기 전에는 취임할 수 없다.
-  if(bg>=BGS.length||(bg>=0&&bgLock(BGS[bg])))bg=-1;const B=bg>=0?BGS[bg]:null;
+  if(bg>=BGS.length||(bg>=0&&bgLock(BGS[bg])))bg=-1;if(bg<0)bg=BGS.indexOf(GOD);const B=bg>=0?BGS[bg]:null;
   const sel='border-color:var(--ink);background:#fbf8f2;box-shadow:inset 0 0 0 1px var(--ink);';
   const got=Object.keys(MEM.ends).length,lg=Object.keys(MEM.leaders||{}).length;
   const chip=(on,col,inner,pad)=>'<span style="display:inline-flex;align-items:center;gap:6px;vertical-align:middle;font-size:12px;padding:'+(pad||'4px 10px')+';border-radius:999px;margin:0 6px 6px 0;'+(on?'background:color-mix(in srgb,'+col+' 18%,var(--surface-1));border:1px solid color-mix(in srgb,'+col+' 45%,transparent);color:var(--text-primary);font-weight:600':'border:1px dashed var(--border-strong);color:var(--text-muted)')+'">'+inner+'</span>';
@@ -293,7 +293,7 @@ function gxStats(q,C){if(!q.e)return q.d?'<p class="gx-note">'+q.d+'</p>':'';
 // 명단 맨 앞의 '랜덤' 칸(처음 열면 여기가 골라져 있다. 앞쪽 인물만 몰리지 않게): 고르면 지금 고를 수 있는 지도자들 위를 룰렛처럼 돌다가 한 사람에게 멈추고 취임 준비로 간다
 const GX_SIL='<svg class="gx-sil" viewBox="-4 -8 72 72" aria-hidden="true"><path d="M7 64C9 52 19 46 32 46S55 52 57 64Z"/><path d="M28 39.5V47.5H36V39.5Z"/><ellipse cx="32" cy="30" rx="11.5" ry="13.5"/><text x="32" y="37" text-anchor="middle">?</text></svg>';
 function stepLeader(){if(camp==='zombie')return zgOpen();const C=CAMPS[camp],BGS=C.bg,RI=BGS.length,pool=BGS.map((q,i)=>i).filter(i=>!bgLock(BGS[i]));
-  let k=bg>=0&&!bgLock(BGS[bg])?bg:RI,spin=false;
+  let k=bg>=0&&!bgLock(BGS[bg])?bg:BGS.indexOf(GOD)>=0?BGS.indexOf(GOD):RI,spin=false;   // 조성민 닉네임이면 처음부터 조성민이 골라져 있다
   // 화면 순서: 랜덤 칸이 맨 앞, 그 뒤로 명단 순서. k는 늘 명단 번호(랜덤은 RI)이고 방향키는 화면 순서(VO)를 따른다
   const VO=[RI].concat(BGS.map((q,i)=>i));
   const tiles='<button class="gx-t gx-rnd" data-i="'+RI+'" style="--i:0" aria-label="무작위 선택">'+GX_SIL+'<span class="gx-tn" aria-hidden="true">랜덤</span></button>'+BGS.map((q,i)=>{const L=bgLock(q);return '<button class="gx-t'+(L?' lk'+(L.used?' used':''):'')+'" data-i="'+i+'" style="--i:'+(i+1)+'" aria-label="'+(L&&!L.used?'잠긴 비밀 인물':q.n)+'">'+portrait(q.n,'100%',0,1)+'<span class="gx-tn" aria-hidden="true">'+(L&&!L.used?'???':q.n)+'</span></button>';}).join('');

@@ -135,16 +135,16 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   add('운명 개입',-60*((RUN&&RUN.rr)||0),((RUN&&RUN.rr)||0)+'번');
   const total=it.reduce((s,x)=>s+x[1],0),ex=EXITPT[kind]||0;
   return {total:total,perf:perf,cont:cont,honor:total-perf-cont,avg:r1(CAR.terms.reduce((s,t)=>s+cl(t.sc),0)/Math.max(1,CAR.terms.length)),ex:ex,items:it};}function careerEnd(kind){if(CAR.done)return;CAR.done=1;if(RUN)svDrop(RUN.id);window.scrollTo(0,0);
-  if(CAR.tEval!==CAR.term){const te=evalTerm(ENDS[kind]||kind==='quit'?kind:'done');te.decision=EXH[kind]||kind;CAR.terms.push(te);CAR.tEval=CAR.term;MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;
+  if(CAR.tEval!==CAR.term){const te=evalTerm(ENDS[kind]||kind==='quit'?kind:'done');te.decision=EXH[kind]||kind;CAR.terms.push(te);CAR.tEval=CAR.term;if(!godRun())MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;
     const py=partialYear();if(py)CAR.yrs.push(yearSnap(py,[],0));}
-  secCheck(kind);
+  const god=godRun();if(!god)secCheck(kind);   // 조성민 판은 비밀 인물을 열지 않고 이 기기 기록에도 남기지 않는다
   CAR.exit=kind;if(!CAR.cs.length||kind!=='retire'&&kind!=='lost'&&kind!=='limit'&&kind!=='defeated'){CAR.cs.push(S.c);CAR.ts.push(S.trn);CAR.us.push(S.u);CAR.ss.push(S.saf);}
   const C=careerStats(),lid=leaderOf(C),L=LEAD[lid],why=leadWhy(LEADF);
   const good=CAR.tro.filter(t=>t.g).length,badN=CAR.tro.length-good;
   const years=(CAR.term-1)*YRS+Math.max(1,Math.ceil(S.turn/PY)),age1=CAR.age0+years;
   const SC=careerScore(kind,years),csc=SC.total;
-  const newBest=csc>(MEM.best100||0),newLead=!(MEM.leaders||{})[lid];
-  MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=(+MEM.leaders[lid]||0)+1;msave();
+  const newBest=!god&&csc>(MEM.best100||0),newLead=!god&&!(MEM.leaders||{})[lid];
+  if(!god){MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=(+MEM.leaders[lid]||0)+1;msave();}
   sendCareer(EXH[kind]||kind,{lid:lid,csc:csc,years:years,good:good,bad:badN,SC:SC});
 
   const ct=CAR.terms.map((t,j)=>'<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);opacity:0;animation:fdIn .35s ease-out forwards;animation-delay:'+(j*90)+'ms">'+
@@ -181,7 +181,8 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
    '<div style="background:var(--surface-1);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px">'+
    VORD.map(k=>row(vName(k),Math.round(vVal(k)))).join('')+row(SCX().iName,Math.round(S.i))+row('누적 인명 피해 지수',Math.round(cDeaths))+row('개헌',(CAR.amend||0)+'회'+(CAR.amendHow?' ('+CAR.amendHow+')':''))+(CAR.dict?row('영구집권',CAR.dict+'기 계엄으로 시작'):'')+(CAR.spLog&&CAR.spLog.length?row('특별 이벤트',CAR.spLog.join(', ')):'')+'</div>'+
    '<button id="again" style="width:100%;margin-bottom:8px;padding:14px;font-weight:600;background:#2f4a6b;border-color:#2f4a6b">새 인생 시작</button>'+
-   '<button id="lbMine" style="display:block;width:100%;margin-bottom:8px;padding:13px;border-radius:10px;font-size:14px;font-weight:600;color:#8f6a12;border:1px solid rgba(143,106,18,.45);background:rgba(143,106,18,.08)">명예의 전당에서 내 순위 보기</button>'+
+   (god?'<p style="margin:0 0 8px;padding:12px;border-radius:10px;font-size:13px;line-height:1.6;text-align:center;color:var(--text-secondary);border:1px dashed var(--border)">⚡ 데우스 엑스 마키나의 판은 명예의 전당과 이 기기의 기록에 남지 않는다.</p>':
+   '<button id="lbMine" style="display:block;width:100%;margin-bottom:8px;padding:13px;border-radius:10px;font-size:14px;font-weight:600;color:#8f6a12;border:1px solid rgba(143,106,18,.45);background:rgba(143,106,18,.08)">명예의 전당에서 내 순위 보기</button>')+
    '<button id="cp" style="width:100%;font-size:13px">결과 복사하기</button></div>';
   // 두루마리 펼침과 점수 올라가기(처음 그릴 때만)
   const openChr=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{const c=document.getElementById('chr');if(c)c.classList.add('open');}));
@@ -189,7 +190,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   if(!first)document.getElementById('scn').textContent=csc;
   if(first){openChr();runScore();}
   document.getElementById('again').onclick=()=>{SFX.click();home();};
-  document.getElementById('lbMine').onclick=()=>{SFX.click();openBoard({back:()=>show(false),id:RUN.id,nick:NICK});};
+  if(!god)document.getElementById('lbMine').onclick=()=>{SFX.click();openBoard({back:()=>show(false),id:RUN.id,nick:NICK});};
   document.getElementById('cp').onclick=function(){copyText(summary,this);};};
   show(false);
   // 화면을 꽉 채운 엔딩 장면: 결말 → 닮은 지도자 → 연대기 → 커리어 점수. 마지막 버튼을 누르면 자세한 결과 화면이 보인다.

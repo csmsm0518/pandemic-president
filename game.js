@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"bd9735212d","h":"f87737383d4b62a2"},"dex":{"v":"8b442c1f40","h":"51b7861bc0db4378"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"b0fc23ca22","h":"30c6ccf18792f5c6"},"guide":{"v":"209422ec37","h":"a9fb039747ebdfe6"},"sail":{"v":"f189ce3af2","h":"76407ef9a4732b7e"},"slash":{"v":"d103abedd4","h":"78654cc3d9ee3d36"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"5d853ed9c9","h":"9494196eed521f86"}};
+const LZ_M={"board":{"v":"bd9735212d","h":"f87737383d4b62a2"},"dex":{"v":"8b442c1f40","h":"51b7861bc0db4378"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"b0fc23ca22","h":"30c6ccf18792f5c6"},"guide":{"v":"100cf1d78e","h":"797b4ed1da5bd528"},"sail":{"v":"f189ce3af2","h":"76407ef9a4732b7e"},"slash":{"v":"d103abedd4","h":"78654cc3d9ee3d36"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"5d853ed9c9","h":"9494196eed521f86"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
 function dexScene(){return lzCall('dex','dexScene',arguments);}
 function mgWar(){return lzCall('games','mgWar',arguments);}
@@ -943,7 +943,7 @@ LEADK.push('rhee','yeltsin','edward8','chamb','gorby');
 // 신문 삽화풍 초상. 실제 얼굴을 닮게 그리지 않고, 시대와 신분은 옷차림·머리·소품으로만 드러낸다.
 // c 옷, cc 옷 색, t 넥타이 색, h 머리, hc 머리 색, f 수염(+로 겹침), hw 모자, g 안경, w 넓은 얼굴, sk 피부
 const PFS={
- '박정희':'c=mil,cc=#5b6146,h=side,a=sung','김대중':'c=suit,cc=#2b3a55,t=#a8321f,h=side,hc=#9a948a,w,a=smile','노무현':'c=shirt,cc=#e9e2d2,h=short,hw=straw,a=smile',
+ '박정희':'c=mil,cc=#5b6146,h=side,a=sung','조성민':'c=suit,cc=#1b1d20,t=#c9a227,h=side,hc=#1f1b16,a=sung+smile','김대중':'c=suit,cc=#2b3a55,t=#a8321f,h=side,hc=#9a948a,w,a=smile','노무현':'c=shirt,cc=#e9e2d2,h=short,hw=straw,a=smile',
  '정주영':'c=work,cc=#6f7a6a,h=side,hc=#8d877c,w','안철수':'c=doctor,t=#3d5a80,h=side,g',
  '태조 이성계':'c=gon,cc=#2c5a7a,hw=ikseon,f=mus+full,hc=#6a645b','세종':'c=gon,hw=ikseon,f=mus+jbeard','세조':'c=gon,cc=#7d241a,hw=ikseon,f=full',
  '광해군':'c=gon,hw=ikseon,f=mus','정조':'c=gon,cc=#9a2d22,hw=ikseon,f=mus+goatee',
@@ -3813,6 +3813,19 @@ function bgLock(q){if(!q.sec)return null;
   if(q.once&&MEM.secUsed&&MEM.secUsed[q.sec])return {used:1,h:'이미 한 번 함께했다. 단 한 번뿐인 만남이었다.'};
   if(q.sec==='jyw')return /hafs/i.test(String((PF&&PF.school)||''))?null:{h:q.hint};
   return MEM.sec&&MEM.sec[q.sec]?null:{h:q.hint};}
+// 데우스 엑스 마키나: 닉네임을 '조성민잘생겼다'로 넣으면 대한민국 · 조선 · 미국 지도자 명단 맨 끝에 조성민이 선다(지도자 고르기에서 처음부터 골라져 있다).
+// 좋은 지표(지지율 · 경제 · 방역 · 군사 · 권력 · 견제 · 투명성 · 안전망)는 100, 나쁜 지표(위기 · 갈등 · 부패)는 0에서 시작한다.
+// 이 판은 기록 시트 · 명예의 전당 · 이 기기의 기록(최고 점수 · 결말 · 닮은 지도자 · 비밀 인물 해금)에 남지 않는다. 도감에도 나오지 않는다
+const GOD_NICK='조성민잘생겼다';
+const GOD={id:'csm',n:'조성민',k:'데우스 엑스 마키나',god:1,al:'강림',age:18,t:5,x:'조성민의 길',
+  s:'막이 내리기 직전, 기계 장치를 타고 무대 위로 내려온 신. 풀리지 않던 모든 문제가 그가 서는 순간 풀린다.',
+  d:'지지율 · 경제 · 방역 · 군사 100, 혼란 0에서 시작한다(권력과 견제도 모두 100이라 권력 칸은 60). 운명 개입 +5. 이 판은 어떤 기록에도 남지 않는다.',
+  f:s=>{Object.assign(s,{a:100,e:100,m:100,saf:100,mil:100,p:100,chk:100,trn:100,i:0,u:0,c:0});}};
+const godNick=()=>String(NICK||'').replace(/\s/g,'')===GOD_NICK;
+const godRun=()=>!!(CAR&&CAR.bgid===GOD.id);
+// 닉네임이 바뀔 때(시작 화면 · 불러오기) 명단에 넣거나 뺀다. 맨 끝에 두어 다른 지도자의 번호(저장 파일의 bg)는 그대로다
+function godSync(){['kr','joseon','usa'].forEach(c=>{const B=CAMPS[c]&&CAMPS[c].bg;if(!B)return;const i=B.indexOf(GOD);
+  if(godNick()){if(i<0)B.push(GOD);}else if(i>=0)B.splice(i,1);});}
 // 커리어가 끝날 때 비밀 인물 해금 조건을 확인한다
 function secCheck(kind){const H=MEM.sec=MEM.sec||{},nw=[],un=id=>{if(!H[id]){H[id]=1;nw.push(id);}};
   if(CAR.camp==='joseon'&&kind==='deposed')un('hong');
@@ -4177,7 +4190,7 @@ document.querySelectorAll('.rotq [data-o]').forEach(b=>b.onclick=()=>setView('or
 function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp)||camp==='zombie')camp='kr';document.documentElement.dataset.camp=camp;
   const msg=HUB_MSG;HUB_MSG='';const C=CAMPS[camp],BGS=C.bg;
   // 출발 인물은 드롭다운으로 고른다. 처음엔 '인물을 선택하세요'이고, 고르기 전에는 취임할 수 없다.
-  if(bg>=BGS.length||(bg>=0&&bgLock(BGS[bg])))bg=-1;const B=bg>=0?BGS[bg]:null;
+  if(bg>=BGS.length||(bg>=0&&bgLock(BGS[bg])))bg=-1;if(bg<0)bg=BGS.indexOf(GOD);const B=bg>=0?BGS[bg]:null;
   const sel='border-color:var(--ink);background:#fbf8f2;box-shadow:inset 0 0 0 1px var(--ink);';
   const got=Object.keys(MEM.ends).length,lg=Object.keys(MEM.leaders||{}).length;
   const chip=(on,col,inner,pad)=>'<span style="display:inline-flex;align-items:center;gap:6px;vertical-align:middle;font-size:12px;padding:'+(pad||'4px 10px')+';border-radius:999px;margin:0 6px 6px 0;'+(on?'background:color-mix(in srgb,'+col+' 18%,var(--surface-1));border:1px solid color-mix(in srgb,'+col+' 45%,transparent);color:var(--text-primary);font-weight:600':'border:1px dashed var(--border-strong);color:var(--text-muted)')+'">'+inner+'</span>';
@@ -4420,7 +4433,7 @@ function gxStats(q,C){if(!q.e)return q.d?'<p class="gx-note">'+q.d+'</p>':'';
 // 명단 맨 앞의 '랜덤' 칸(처음 열면 여기가 골라져 있다. 앞쪽 인물만 몰리지 않게): 고르면 지금 고를 수 있는 지도자들 위를 룰렛처럼 돌다가 한 사람에게 멈추고 취임 준비로 간다
 const GX_SIL='<svg class="gx-sil" viewBox="-4 -8 72 72" aria-hidden="true"><path d="M7 64C9 52 19 46 32 46S55 52 57 64Z"/><path d="M28 39.5V47.5H36V39.5Z"/><ellipse cx="32" cy="30" rx="11.5" ry="13.5"/><text x="32" y="37" text-anchor="middle">?</text></svg>';
 function stepLeader(){if(camp==='zombie')return zgOpen();const C=CAMPS[camp],BGS=C.bg,RI=BGS.length,pool=BGS.map((q,i)=>i).filter(i=>!bgLock(BGS[i]));
-  let k=bg>=0&&!bgLock(BGS[bg])?bg:RI,spin=false;
+  let k=bg>=0&&!bgLock(BGS[bg])?bg:BGS.indexOf(GOD)>=0?BGS.indexOf(GOD):RI,spin=false;   // 조성민 닉네임이면 처음부터 조성민이 골라져 있다
   // 화면 순서: 랜덤 칸이 맨 앞, 그 뒤로 명단 순서. k는 늘 명단 번호(랜덤은 RI)이고 방향키는 화면 순서(VO)를 따른다
   const VO=[RI].concat(BGS.map((q,i)=>i));
   const tiles='<button class="gx-t gx-rnd" data-i="'+RI+'" style="--i:0" aria-label="무작위 선택">'+GX_SIL+'<span class="gx-tn" aria-hidden="true">랜덤</span></button>'+BGS.map((q,i)=>{const L=bgLock(q);return '<button class="gx-t'+(L?' lk'+(L.used?' used':''):'')+'" data-i="'+i+'" style="--i:'+(i+1)+'" aria-label="'+(L&&!L.used?'잠긴 비밀 인물':q.n)+'">'+portrait(q.n,'100%',0,1)+'<span class="gx-tn" aria-hidden="true">'+(L&&!L.used?'???':q.n)+'</span></button>';}).join('');
@@ -4655,7 +4668,7 @@ function lbDet(r,rk){const d=r.det,dv=v=>v==null||v===''?'–':Number(v).toLocal
     L('대성공 · 성공',dv(D[0])+' · '+dv(D[1]))+L('실패 · 대실패',dv(D[2])+' · '+dv(D[3]))+L('권력 집중 선택',dv(R[0]))+L('견제·분산 선택',dv(R[1]))+L('업적 · 불명예',dv(T[0])+' · '+dv(T[1]))+L('내린 결정',dv(d.n)+'번')+'</dl>'+
     (d.camp||d.scen?'<p class="lbd-p"><b>겪은 위기</b>'+lbEsc([d.camp,d.scen].filter(Boolean).join(' · '))+'</p>':'')+(d.titles?'<p class="lbd-p"><b>임기 평가</b>'+lbEsc(d.titles)+'</p>':'')+'</div>';}function svLoad(id){const d=svList().find(x=>x.id===id);
   if(!d||d.v!==1||!CAMPS[d.camp]){svDrop(id);return home();}
-  try{camp=d.camp;bg=d.bg;mode=d.mode;dif=d.dif;NICK=d.nick||NICK;if(d.pf)PF=Object.assign({school:'',name:'',phone:'',agree:false},d.pf);PINH=d.pin||'';
+  try{camp=d.camp;bg=d.bg;mode=d.mode;dif=d.dif;NICK=d.nick||NICK;godSync();if(d.pf)PF=Object.assign({school:'',name:'',phone:'',agree:false},d.pf);PINH=d.pin||'';
     cineClose();cfgApply();
     ({S,pool,cur,last,tally,chron,queue,base,deaths,yd,MOD,tok,streak,lastT,lastO,peakI,hist,adv,CAR,TH,SEEN,YS,yTally,cDeaths,covD,SEENT,SEENN,banner,pendingNews,LOG,RUN}=svDec(d.g));
     prev=null;snap=null;T0=Date.now()-(d.el||0);SHOWN=0;tfLast=null;alLast=null;lastFit={q:0,why:[]};lastS=1;
@@ -5313,7 +5326,7 @@ function evalTerm(kind){
 // 대선: 지지율 35 미만은 출마 불가, 35~65는 1~100% 확률, 65 이상은 확실히 당선
 const winPct=a=>a<35?0:a>=65?100:Math.round(1+(a-35)*99/30);
 function termEnd(){window.scrollTo(0,0);
-  const te=evalTerm('done');CAR.terms.push(te);CAR.tEval=CAR.term;MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;msave();
+  const te=evalTerm('done');CAR.terms.push(te);CAR.tEval=CAR.term;if(!godRun()){MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;msave();}
   if(CP.rule==='reign')return reignEnd(te);
   // 개헌(amendPerm)이나 영구집권(dict)이면 임기 한도가 두 배로 늘어난다
   const av=Math.round(cl(S.a)),pct=winPct(av),amended=!!CAR.amendPerm||CAR.amendOK===CAR.term,limit=CP.rule==='single'?!amended:CP.rule==='two'?(CAR.term>=2&&!amended):false;
@@ -5589,16 +5602,16 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   add('운명 개입',-60*((RUN&&RUN.rr)||0),((RUN&&RUN.rr)||0)+'번');
   const total=it.reduce((s,x)=>s+x[1],0),ex=EXITPT[kind]||0;
   return {total:total,perf:perf,cont:cont,honor:total-perf-cont,avg:r1(CAR.terms.reduce((s,t)=>s+cl(t.sc),0)/Math.max(1,CAR.terms.length)),ex:ex,items:it};}function careerEnd(kind){if(CAR.done)return;CAR.done=1;if(RUN)svDrop(RUN.id);window.scrollTo(0,0);
-  if(CAR.tEval!==CAR.term){const te=evalTerm(ENDS[kind]||kind==='quit'?kind:'done');te.decision=EXH[kind]||kind;CAR.terms.push(te);CAR.tEval=CAR.term;MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;
+  if(CAR.tEval!==CAR.term){const te=evalTerm(ENDS[kind]||kind==='quit'?kind:'done');te.decision=EXH[kind]||kind;CAR.terms.push(te);CAR.tEval=CAR.term;if(!godRun())MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;
     const py=partialYear();if(py)CAR.yrs.push(yearSnap(py,[],0));}
-  secCheck(kind);
+  const god=godRun();if(!god)secCheck(kind);   // 조성민 판은 비밀 인물을 열지 않고 이 기기 기록에도 남기지 않는다
   CAR.exit=kind;if(!CAR.cs.length||kind!=='retire'&&kind!=='lost'&&kind!=='limit'&&kind!=='defeated'){CAR.cs.push(S.c);CAR.ts.push(S.trn);CAR.us.push(S.u);CAR.ss.push(S.saf);}
   const C=careerStats(),lid=leaderOf(C),L=LEAD[lid],why=leadWhy(LEADF);
   const good=CAR.tro.filter(t=>t.g).length,badN=CAR.tro.length-good;
   const years=(CAR.term-1)*YRS+Math.max(1,Math.ceil(S.turn/PY)),age1=CAR.age0+years;
   const SC=careerScore(kind,years),csc=SC.total;
-  const newBest=csc>(MEM.best100||0),newLead=!(MEM.leaders||{})[lid];
-  MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=(+MEM.leaders[lid]||0)+1;msave();
+  const newBest=!god&&csc>(MEM.best100||0),newLead=!god&&!(MEM.leaders||{})[lid];
+  if(!god){MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=(+MEM.leaders[lid]||0)+1;msave();}
   sendCareer(EXH[kind]||kind,{lid:lid,csc:csc,years:years,good:good,bad:badN,SC:SC});
 
   const ct=CAR.terms.map((t,j)=>'<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);opacity:0;animation:fdIn .35s ease-out forwards;animation-delay:'+(j*90)+'ms">'+
@@ -5635,7 +5648,8 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
    '<div style="background:var(--surface-1);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px">'+
    VORD.map(k=>row(vName(k),Math.round(vVal(k)))).join('')+row(SCX().iName,Math.round(S.i))+row('누적 인명 피해 지수',Math.round(cDeaths))+row('개헌',(CAR.amend||0)+'회'+(CAR.amendHow?' ('+CAR.amendHow+')':''))+(CAR.dict?row('영구집권',CAR.dict+'기 계엄으로 시작'):'')+(CAR.spLog&&CAR.spLog.length?row('특별 이벤트',CAR.spLog.join(', ')):'')+'</div>'+
    '<button id="again" style="width:100%;margin-bottom:8px;padding:14px;font-weight:600;background:#2f4a6b;border-color:#2f4a6b">새 인생 시작</button>'+
-   '<button id="lbMine" style="display:block;width:100%;margin-bottom:8px;padding:13px;border-radius:10px;font-size:14px;font-weight:600;color:#8f6a12;border:1px solid rgba(143,106,18,.45);background:rgba(143,106,18,.08)">명예의 전당에서 내 순위 보기</button>'+
+   (god?'<p style="margin:0 0 8px;padding:12px;border-radius:10px;font-size:13px;line-height:1.6;text-align:center;color:var(--text-secondary);border:1px dashed var(--border)">⚡ 데우스 엑스 마키나의 판은 명예의 전당과 이 기기의 기록에 남지 않는다.</p>':
+   '<button id="lbMine" style="display:block;width:100%;margin-bottom:8px;padding:13px;border-radius:10px;font-size:14px;font-weight:600;color:#8f6a12;border:1px solid rgba(143,106,18,.45);background:rgba(143,106,18,.08)">명예의 전당에서 내 순위 보기</button>')+
    '<button id="cp" style="width:100%;font-size:13px">결과 복사하기</button></div>';
   // 두루마리 펼침과 점수 올라가기(처음 그릴 때만)
   const openChr=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{const c=document.getElementById('chr');if(c)c.classList.add('open');}));
@@ -5643,7 +5657,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   if(!first)document.getElementById('scn').textContent=csc;
   if(first){openChr();runScore();}
   document.getElementById('again').onclick=()=>{SFX.click();home();};
-  document.getElementById('lbMine').onclick=()=>{SFX.click();openBoard({back:()=>show(false),id:RUN.id,nick:NICK});};
+  if(!god)document.getElementById('lbMine').onclick=()=>{SFX.click();openBoard({back:()=>show(false),id:RUN.id,nick:NICK});};
   document.getElementById('cp').onclick=function(){copyText(summary,this);};};
   show(false);
   // 화면을 꽉 채운 엔딩 장면: 결말 → 닮은 지도자 → 연대기 → 커리어 점수. 마지막 버튼을 누르면 자세한 결과 화면이 보인다.
@@ -5751,7 +5765,8 @@ addEventListener('online',()=>obFlush());
 setTimeout(obFlush,4000);
 function sendArcade(game,o){if(!SHEET_URL||IN_ART)return;const id=Date.now().toString(36)+Math.random().toString(36).slice(2,7),k='arc:'+id;
   obPush([{k:k,b:JSON.stringify({k:k,kind:'arcade',v:GAME_VER,rec:Object.assign({id:id,game:game,nickname:NICK||'익명',school:(PF&&PF.school)||'',gv:GAME_VER,pid:pidGet()},o)})}]);obFlush();}
-function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.length)return;RUN.sent=1;
+function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.length||godRun())return;   // 조성민(데우스 엑스 마키나) 판은 보내지 않는다
+  RUN.sent=1;
   const l=LOG[LOG.length-1];if(l&&!l.after)l.after=stNow();peak();
   x=x||{};const terms=CAR.terms.slice(),yrs=CAR.yrs.slice();
   if(CAR.tEval!==CAR.term){const pt=evalTerm('done');pt.decision=exitLabel;terms.push(pt);const py=partialYear();if(py)yrs.push(yearSnap(py,[],0));}
@@ -5836,6 +5851,7 @@ const PF_KEY='pandemic_pf_v1';
 // 인적사항 다음 화면: 가이드북과 게임 시작
 // 이스터에그: 특별한 닉네임을 넣으면 인사말이 바뀐다(일부는 비밀 무대를 연다)
 const EGGN=[
+ [/^조성민\s*잘생겼다$/,'⚡ 하늘이 갈라지고 기계 장치를 탄 신이 내려온다. <b>지도자 명단 맨 끝에 「조성민」이 섰어요.</b> 모든 지표가 최고에서 시작하고, 이 판은 기록에 남지 않아요.'],
  [/좀비|zombie/i,'🧟 …으어어. 어디선가 신음 소리가 들린다. <b>미니게임 「방역선」이 열렸어요.</b>',()=>eggSet('zombie')],
  [/^세종(대왕)?$/,'어서 오시옵소서, 전하. 스물여덟 글자는 준비되어 있사옵니다.'],
  [/^이순신$/,'신에게는 아직 열두 척의 배가 있사옵니다.'],
@@ -5846,7 +5862,7 @@ const EGGN=[
  [/^(대통령|president)$/i,'이미 대통령이시군요. 그래도 선거는 치러야 합니다.'],
  [/^(admin|관리자|개발자|developer)$/i,'개발자 모드는 없습니다. 대신 힌트: 게임 제목은 생각보다 많이 눌러 볼 만해요.'],
  [/^claude$/i,'AI가 나라를 이끈다고요? 흥미롭군요. 판정 주사위는 공정합니다.']];
-function hub(){window.scrollTo(0,0);document.documentElement.dataset.camp='kr';
+function hub(){window.scrollTo(0,0);document.documentElement.dataset.camp='kr';godSync();
   const eg=EGGN.find(x=>x[0].test(NICK||''));if(eg&&eg[2])eg[2]();
   HUB_MSG=(PF.name||NICK)+'님, 준비됐어요.'+(NICK&&NICK!=='익명'?' 명예의 전당에는 <b style="color:#f1d589">'+NICK+'</b>(으)로 올라가요.':'')+(eg?'<div class="cs-fx" style="margin-top:12px">✨ '+eg[1]+'</div>':'');
   home();}

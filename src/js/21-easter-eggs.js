@@ -8,6 +8,19 @@ function bgLock(q){if(!q.sec)return null;
   if(q.once&&MEM.secUsed&&MEM.secUsed[q.sec])return {used:1,h:'이미 한 번 함께했다. 단 한 번뿐인 만남이었다.'};
   if(q.sec==='jyw')return /hafs/i.test(String((PF&&PF.school)||''))?null:{h:q.hint};
   return MEM.sec&&MEM.sec[q.sec]?null:{h:q.hint};}
+// 데우스 엑스 마키나: 닉네임을 '조성민잘생겼다'로 넣으면 대한민국 · 조선 · 미국 지도자 명단 맨 끝에 조성민이 선다(지도자 고르기에서 처음부터 골라져 있다).
+// 좋은 지표(지지율 · 경제 · 방역 · 군사 · 권력 · 견제 · 투명성 · 안전망)는 100, 나쁜 지표(위기 · 갈등 · 부패)는 0에서 시작한다.
+// 이 판은 기록 시트 · 명예의 전당 · 이 기기의 기록(최고 점수 · 결말 · 닮은 지도자 · 비밀 인물 해금)에 남지 않는다. 도감에도 나오지 않는다
+const GOD_NICK='조성민잘생겼다';
+const GOD={id:'csm',n:'조성민',k:'데우스 엑스 마키나',god:1,al:'강림',age:18,t:5,x:'조성민의 길',
+  s:'막이 내리기 직전, 기계 장치를 타고 무대 위로 내려온 신. 풀리지 않던 모든 문제가 그가 서는 순간 풀린다.',
+  d:'지지율 · 경제 · 방역 · 군사 100, 혼란 0에서 시작한다(권력과 견제도 모두 100이라 권력 칸은 60). 운명 개입 +5. 이 판은 어떤 기록에도 남지 않는다.',
+  f:s=>{Object.assign(s,{a:100,e:100,m:100,saf:100,mil:100,p:100,chk:100,trn:100,i:0,u:0,c:0});}};
+const godNick=()=>String(NICK||'').replace(/\s/g,'')===GOD_NICK;
+const godRun=()=>!!(CAR&&CAR.bgid===GOD.id);
+// 닉네임이 바뀔 때(시작 화면 · 불러오기) 명단에 넣거나 뺀다. 맨 끝에 두어 다른 지도자의 번호(저장 파일의 bg)는 그대로다
+function godSync(){['kr','joseon','usa'].forEach(c=>{const B=CAMPS[c]&&CAMPS[c].bg;if(!B)return;const i=B.indexOf(GOD);
+  if(godNick()){if(i<0)B.push(GOD);}else if(i>=0)B.splice(i,1);});}
 // 커리어가 끝날 때 비밀 인물 해금 조건을 확인한다
 function secCheck(kind){const H=MEM.sec=MEM.sec||{},nw=[],un=id=>{if(!H[id]){H[id]=1;nw.push(id);}};
   if(CAR.camp==='joseon'&&kind==='deposed')un('hong');

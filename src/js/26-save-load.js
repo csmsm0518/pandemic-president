@@ -154,7 +154,7 @@ function lbDet(r,rk){const d=r.det,dv=v=>v==null||v===''?'–':Number(v).toLocal
     L('대성공 · 성공',dv(D[0])+' · '+dv(D[1]))+L('실패 · 대실패',dv(D[2])+' · '+dv(D[3]))+L('권력 집중 선택',dv(R[0]))+L('견제·분산 선택',dv(R[1]))+L('업적 · 불명예',dv(T[0])+' · '+dv(T[1]))+L('내린 결정',dv(d.n)+'번')+'</dl>'+
     (d.camp||d.scen?'<p class="lbd-p"><b>겪은 위기</b>'+lbEsc([d.camp,d.scen].filter(Boolean).join(' · '))+'</p>':'')+(d.titles?'<p class="lbd-p"><b>임기 평가</b>'+lbEsc(d.titles)+'</p>':'')+'</div>';}function svLoad(id){const d=svList().find(x=>x.id===id);
   if(!d||d.v!==1||!CAMPS[d.camp]){svDrop(id);return home();}
-  try{camp=d.camp;bg=d.bg;mode=d.mode;dif=d.dif;NICK=d.nick||NICK;if(d.pf)PF=Object.assign({school:'',name:'',phone:'',agree:false},d.pf);PINH=d.pin||'';
+  try{camp=d.camp;bg=d.bg;mode=d.mode;dif=d.dif;NICK=d.nick||NICK;godSync();if(d.pf)PF=Object.assign({school:'',name:'',phone:'',agree:false},d.pf);PINH=d.pin||'';
     cineClose();cfgApply();
     ({S,pool,cur,last,tally,chron,queue,base,deaths,yd,MOD,tok,streak,lastT,lastO,peakI,hist,adv,CAR,TH,SEEN,YS,yTally,cDeaths,covD,SEENT,SEENN,banner,pendingNews,LOG,RUN}=svDec(d.g));
     prev=null;snap=null;T0=Date.now()-(d.el||0);SHOWN=0;tfLast=null;alLast=null;lastFit={q:0,why:[]};lastS=1;

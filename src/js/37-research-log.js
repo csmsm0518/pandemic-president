@@ -59,7 +59,8 @@ addEventListener('online',()=>obFlush());
 setTimeout(obFlush,4000);
 function sendArcade(game,o){if(!SHEET_URL||IN_ART)return;const id=Date.now().toString(36)+Math.random().toString(36).slice(2,7),k='arc:'+id;
   obPush([{k:k,b:JSON.stringify({k:k,kind:'arcade',v:GAME_VER,rec:Object.assign({id:id,game:game,nickname:NICK||'익명',school:(PF&&PF.school)||'',gv:GAME_VER,pid:pidGet()},o)})}]);obFlush();}
-function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.length)return;RUN.sent=1;
+function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.length||godRun())return;   // 조성민(데우스 엑스 마키나) 판은 보내지 않는다
+  RUN.sent=1;
   const l=LOG[LOG.length-1];if(l&&!l.after)l.after=stNow();peak();
   x=x||{};const terms=CAR.terms.slice(),yrs=CAR.yrs.slice();
   if(CAR.tEval!==CAR.term){const pt=evalTerm('done');pt.decision=exitLabel;terms.push(pt);const py=partialYear();if(py)yrs.push(yearSnap(py,[],0));}
@@ -144,6 +145,7 @@ const PF_KEY='pandemic_pf_v1';
 // 인적사항 다음 화면: 가이드북과 게임 시작
 // 이스터에그: 특별한 닉네임을 넣으면 인사말이 바뀐다(일부는 비밀 무대를 연다)
 const EGGN=[
+ [/^조성민\s*잘생겼다$/,'⚡ 하늘이 갈라지고 기계 장치를 탄 신이 내려온다. <b>지도자 명단 맨 끝에 「조성민」이 섰어요.</b> 모든 지표가 최고에서 시작하고, 이 판은 기록에 남지 않아요.'],
  [/좀비|zombie/i,'🧟 …으어어. 어디선가 신음 소리가 들린다. <b>미니게임 「방역선」이 열렸어요.</b>',()=>eggSet('zombie')],
  [/^세종(대왕)?$/,'어서 오시옵소서, 전하. 스물여덟 글자는 준비되어 있사옵니다.'],
  [/^이순신$/,'신에게는 아직 열두 척의 배가 있사옵니다.'],
@@ -154,7 +156,7 @@ const EGGN=[
  [/^(대통령|president)$/i,'이미 대통령이시군요. 그래도 선거는 치러야 합니다.'],
  [/^(admin|관리자|개발자|developer)$/i,'개발자 모드는 없습니다. 대신 힌트: 게임 제목은 생각보다 많이 눌러 볼 만해요.'],
  [/^claude$/i,'AI가 나라를 이끈다고요? 흥미롭군요. 판정 주사위는 공정합니다.']];
-function hub(){window.scrollTo(0,0);document.documentElement.dataset.camp='kr';
+function hub(){window.scrollTo(0,0);document.documentElement.dataset.camp='kr';godSync();
   const eg=EGGN.find(x=>x[0].test(NICK||''));if(eg&&eg[2])eg[2]();
   HUB_MSG=(PF.name||NICK)+'님, 준비됐어요.'+(NICK&&NICK!=='익명'?' 명예의 전당에는 <b style="color:#f1d589">'+NICK+'</b>(으)로 올라가요.':'')+(eg?'<div class="cs-fx" style="margin-top:12px">✨ '+eg[1]+'</div>':'');
   home();}
