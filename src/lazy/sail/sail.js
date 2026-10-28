@@ -56,7 +56,7 @@ function sailOpen(){if(document.getElementById('sl'))return;try{if(CINE)cineClos
     $('slGo').onclick=()=>{try{aInit();SFX.click();}catch(e){}ov('');st='sail';tip('모항 출항 · 붉은 깃발 섬마을 셋을 찾아라',3);try{[392,523,659].forEach((f,i)=>tone(f,'triangle',.35,.08,i*.12));}catch(e){}};};
   const medal=s=>s<=Wd.par*1.05?0:s<=Wd.par*1.35?1:s<=Wd.par*1.8?2:3;
   const end=win=>{st='end';const s=slRec(t,bonus),m=win?medal(s):3,M=MEM.sail=MEM.sail||{best:0,runs:0,gold:0};M.runs++;let nb=false;
-    if(win){if(!M.best||s<M.best){M.best=s;nb=true;}if(m===0)M.gold=(M.gold||0)+1;}msave();try{SFX.medal(m);}catch(e){}
+    if(win){if(!M.best||s<M.best){M.best=s;nb=true;}if(m===0)M.gold=(M.gold||0)+1;sendArcade('sail',{score:Math.round(s*10)/10,sec:Math.round(s*10)/10,win:true,detail:['금메달','은메달','동메달','메달 없음'][m]+' · 기준 '+slTime(Wd.par)});}msave();try{SFX.medal(m);}catch(e){}
     ov('<div class="sl-card"><span class="sl-k">'+(win?(nb?'최고 기록!':'귀항'):'침몰')+'</span><h2>'+(win?['금메달 항해','은메달 항해','동메달 항해','늦은 귀항'][m]:'수송선이 가라앉았다')+'</h2>'+
       '<p class="sl-s">'+(win?'백신 세 상자를 모두 내려 주고 모항으로 돌아왔다.':'배송 '+S0.dl+'곳 · 선원들은 구명정으로 무사히 돌아왔다.')+'</p>'+
       '<div class="sl-b"><span>기록 <b>'+(win?slTime(s):'—')+'</b></span><span>기준 <b>'+slTime(Wd.par)+'</b></span><span>최고 <b>'+(M.best?slTime(M.best):'—')+'</b></span></div>'+

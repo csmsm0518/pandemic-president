@@ -38,6 +38,10 @@ function logSpecial(choice,ds,dl){const w=where();w.turn=YRS*PY;w.year=YRS;w.cye
     priority:'',effects:'',dice:'',rerolls:0,decideSec:SHOWN?Math.round((Date.now()-SHOWN)/100)/10:'',after:stNow()}));}
 function logTier(t){const l=LOG[LOG.length-1];if(l){l.dice=TIER[t].n;l.after=null;}}
 function logAfter(){const l=LOG[LOG.length-1];if(l)l.after=stNow();peak();}
+// 비밀 게임(방역선·대항해) 점수: 한 판에 한 번, 닉네임·학교·점수만 보낸다. 명예의 전당 오른쪽 두 칸 순위에 쓰인다
+function sendArcade(game,o){if(!SHEET_URL||IN_ART)return;
+  const body=JSON.stringify({kind:'arcade',v:GAME_VER,rec:Object.assign({id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),game:game,nickname:NICK||'익명',school:(PF&&PF.school)||'',gv:GAME_VER},o)});
+  try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'text/plain'},body:body}).catch(()=>{});}catch(e){}}
 function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.length)return;RUN.sent=1;
   const l=LOG[LOG.length-1];if(l&&!l.after)l.after=stNow();peak();
   x=x||{};const terms=CAR.terms.slice(),yrs=CAR.yrs.slice();

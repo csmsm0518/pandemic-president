@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"fa1dc1ab5c","h":"bbff77d8d79a9539"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"b0fc23ca22","h":"30c6ccf18792f5c6"},"guide":{"v":"6e340774ec","h":"f9cc624808514a7e"},"sail":{"v":"33e797d643","h":"7cc32f4d21c86591"},"slash":{"v":"91b6243685","h":"9a753ed1fed964a5"},"sports":{"v":"b0afee4c6b","h":"002ce537ad523cf9"}};
+const LZ_M={"board":{"v":"402bd7d832","h":"dcfefba4da578e88"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"b0fc23ca22","h":"30c6ccf18792f5c6"},"guide":{"v":"6e340774ec","h":"f9cc624808514a7e"},"sail":{"v":"8d16b0f379","h":"4c848ffd0045bfae"},"slash":{"v":"91b6243685","h":"9a753ed1fed964a5"},"sports":{"v":"b0afee4c6b","h":"002ce537ad523cf9"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
 function mgWar(){return lzCall('games','mgWar',arguments);}
 function simWar(){return lzCall('games','simWar',arguments);}
@@ -5445,7 +5445,8 @@ function zgOpen(){if(ZG)return;try{if(CINE)cineClose();}catch(e){}window.scrollT
   try{eggSet('zombie');}catch(e){}}
 function zgClose(){if(!ZG)return;ZG.el.remove();ZG=null;document.body.style.overflow='';home();}
 addEventListener('message',e=>{if(!ZG||!e.data||!e.data.zg)return;const fr=ZG.el.querySelector('iframe');if(!fr||e.source!==fr.contentWindow)return;
-  if(e.data.zg==='result'){const r=e.data;try{MEM.zg=MEM.zg||{best:0,runs:0,wins:0};MEM.zg.runs++;if(r.win)MEM.zg.wins++;if((+r.score||0)>MEM.zg.best)MEM.zg.best=+r.score||0;msave();}catch(x){}}
+  if(e.data.zg==='result'){const r=e.data;try{MEM.zg=MEM.zg||{best:0,runs:0,wins:0};MEM.zg.runs++;if(r.win)MEM.zg.wins++;if((+r.score||0)>MEM.zg.best)MEM.zg.best=+r.score||0;msave();}catch(x){}
+    sendArcade('zg',{score:Math.round(+r.score||0),sec:Math.round(+r.time||0),win:!!r.win,detail:'처치 '+(+r.kills||0)+' · Lv '+(+r.level||0)+(r.win?' · 새벽 맞이':'')});}
   else if(e.data.zg==='close'){try{SFX.back();}catch(x){}zgClose();}});
 /* ---------- 홈 아이콘 ---------- */
 const ICO2={lock:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',stamp:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6v5l-1 3h-4L9 8z"/><path d="M4 15h16v3H4z"/><path d="M6 21h12"/><path d="M8 11h8l1 4H7z"/></svg>',book:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M8 7h8M8 11h6"/></svg>',
@@ -5490,6 +5491,10 @@ function logSpecial(choice,ds,dl){const w=where();w.turn=YRS*PY;w.year=YRS;w.cye
     priority:'',effects:'',dice:'',rerolls:0,decideSec:SHOWN?Math.round((Date.now()-SHOWN)/100)/10:'',after:stNow()}));}
 function logTier(t){const l=LOG[LOG.length-1];if(l){l.dice=TIER[t].n;l.after=null;}}
 function logAfter(){const l=LOG[LOG.length-1];if(l)l.after=stNow();peak();}
+// 비밀 게임(방역선·대항해) 점수: 한 판에 한 번, 닉네임·학교·점수만 보낸다. 명예의 전당 오른쪽 두 칸 순위에 쓰인다
+function sendArcade(game,o){if(!SHEET_URL||IN_ART)return;
+  const body=JSON.stringify({kind:'arcade',v:GAME_VER,rec:Object.assign({id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),game:game,nickname:NICK||'익명',school:(PF&&PF.school)||'',gv:GAME_VER},o)});
+  try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'text/plain'},body:body}).catch(()=>{});}catch(e){}}
 function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.length)return;RUN.sent=1;
   const l=LOG[LOG.length-1];if(l&&!l.after)l.after=stNow();peak();
   x=x||{};const terms=CAR.terms.slice(),yrs=CAR.yrs.slice();

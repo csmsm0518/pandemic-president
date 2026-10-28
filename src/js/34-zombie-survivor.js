@@ -10,5 +10,6 @@ function zgOpen(){if(ZG)return;try{if(CINE)cineClose();}catch(e){}window.scrollT
   try{eggSet('zombie');}catch(e){}}
 function zgClose(){if(!ZG)return;ZG.el.remove();ZG=null;document.body.style.overflow='';home();}
 addEventListener('message',e=>{if(!ZG||!e.data||!e.data.zg)return;const fr=ZG.el.querySelector('iframe');if(!fr||e.source!==fr.contentWindow)return;
-  if(e.data.zg==='result'){const r=e.data;try{MEM.zg=MEM.zg||{best:0,runs:0,wins:0};MEM.zg.runs++;if(r.win)MEM.zg.wins++;if((+r.score||0)>MEM.zg.best)MEM.zg.best=+r.score||0;msave();}catch(x){}}
+  if(e.data.zg==='result'){const r=e.data;try{MEM.zg=MEM.zg||{best:0,runs:0,wins:0};MEM.zg.runs++;if(r.win)MEM.zg.wins++;if((+r.score||0)>MEM.zg.best)MEM.zg.best=+r.score||0;msave();}catch(x){}
+    sendArcade('zg',{score:Math.round(+r.score||0),sec:Math.round(+r.time||0),win:!!r.win,detail:'처치 '+(+r.kills||0)+' · Lv '+(+r.level||0)+(r.win?' · 새벽 맞이':'')});}
   else if(e.data.zg==='close'){try{SFX.back();}catch(x){}zgClose();}});

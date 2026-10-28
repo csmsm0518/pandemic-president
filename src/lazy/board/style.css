@@ -151,6 +151,7 @@
 .hof-tiles b{font:800 15px var(--font-voice);color:#e9dfc8;font-variant-numeric:tabular-nums}
 .hof-g{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.32fr) minmax(0,1fr);gap:16px;align-items:start}
 .hof-side{display:grid;gap:16px;min-width:0}
+.hof-mid{display:grid;gap:16px;min-width:0}.hof-sub{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
 .hof-g.still .hc{animation:none}
 .hc-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:13px 16px 0}
 .hc-h b{font:800 15px var(--font-voice);color:#f1e6c8;letter-spacing:.02em}
@@ -200,7 +201,7 @@
 .hc-sk.big{min-height:560px}
 @media (max-width:1000px){.hof-g{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 .hof-main{grid-column:1/-1;order:-1}
-.hof-side{display:contents}}
+.hof-side,.hof-mid,.hof-sub{display:contents}}
 @media (max-width:600px){.hof-g{grid-template-columns:minmax(0,1fr);gap:12px}
 .hof-top{grid-template-columns:auto 1fr}
 .hof-ttl{text-align:right}

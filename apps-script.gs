@@ -1,4 +1,4 @@
-// 팬데믹 대통령 - 연구용 기록 + 자동 분석 스크립트 (v9: 게임 v3.1 — 계엄·영구집권 기록, 명예의 전당에 스크립트 버전 표시)
+// 팬데믹 대통령 - 연구용 기록 + 자동 분석 스크립트 (v13: 비밀 게임(방역선·대항해) 점수 기록과 명예의 전당 순위)
 //
 // [기록 시트] 게임이 끝날 때마다 자동으로 쌓인다
 //   "요약"       : 인생(커리어) 1개 = 1줄. 난이도·배경·결정 빈도·시대 조건, 임기 수, 퇴장 방식, 개헌, 닮은 지도자,
@@ -22,7 +22,10 @@
 //
 // 열은 항상 예전 버전 뒤에 이어 붙이므로, 이미 쌓인 기록과 줄이 어긋나지 않는다. 머리글(1행)은 자동으로 새 버전으로 바뀐다.
 
-const SCRIPT_VER = 'v12';
+const SCRIPT_VER = 'v13';
+// [비밀 게임 기록] v13: 좀비 서바이벌 「방역선」과 비밀 모드 「대항해」의 점수가 "비밀 게임 기록" 탭에 쌓이고, 명예의 전당 오른쪽 두 칸에 순위가 나온다.
+const ARCADE = [['판ID', 'id'], ['게임', 'game'], ['닉네임', 'nickname'], ['학교', 'school'], ['점수', 'score'], ['시간(초)', 'sec'], ['성공', 'win'], ['세부', 'detail'], ['게임 버전', 'gv']];
+const ARCADE_GAMES = {zg: '방역선', sail: '대항해'};
 
 const SUMMARY = [
   ['판ID', 'id'], ['시작 시각', 'startedAt'], ['닉네임', 'nickname'],
@@ -168,6 +171,14 @@ function doPost(e) {
     const d = JSON.parse(e.postData.contents);
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const now = new Date();
+    // 비밀 게임 점수: 한 판 = 한 줄. 닉네임·학교·점수만 받는다(이름·전화번호는 오지 않는다)
+    if (d.kind === 'arcade') {
+      const a = d.rec || {};
+      if (!ARCADE_GAMES[a.game]) return ContentService.createTextOutput('bad game');
+      appendRows_(ss, '비밀 게임 기록', ARCADE, [{id: String(a.id || '').slice(0, 40), game: a.game, nickname: String(a.nickname || '익명').slice(0, 20), school: String(a.school || '').slice(0, 30),
+        score: Number(a.score) || 0, sec: Math.round((Number(a.sec) || 0) * 10) / 10, win: a.win ? '예' : '', detail: String(a.detail || '').slice(0, 80), gv: String(a.gv || '').slice(0, 20)}], now);
+      return ContentService.createTextOutput('ok');
+    }
     const run = d.run || {};
     run.nickname = String(run.nickname || '익명').slice(0, 20);
     run.v = d.v || '';
@@ -210,7 +221,7 @@ function onOpen() {
 }
 // 지금까지의 기록을 통째로 사본(내 드라이브)으로 떠 둔 뒤, 이 시트는 머리글만 남기고 비운다.
 // 기록 탭은 머리글 줄을 남기고 지우고, 분석 탭은 내용과 차트를 지워 다음 기록이 들어오면 다시 계산되게 한다.
-const RESET_DATA = ['참가자(비공개)', '요약', '선택 상세', '임기별 결과', '연간 결산'];
+const RESET_DATA = ['참가자(비공개)', '요약', '선택 상세', '임기별 결과', '연간 결산', '비밀 게임 기록'];
 const RESET_ANA = ['분석', '선택 분석', '분석 차트'];
 function archiveAndReset() {
   const ui = SpreadsheetApp.getUi();
@@ -242,7 +253,7 @@ function archiveAndReset() {
   } finally {
     lock.releaseLock();
   }
-  try { CacheService.getScriptCache().remove('board_v12_n'); } catch (e) {}   // 명예의 전당 캐시도 바로 비운다
+  try { CacheService.getScriptCache().remove('board_v13_n'); } catch (e) {}   // 명예의 전당 캐시도 바로 비운다
   ui.alert('완료', '백업 사본: ' + copy.getName() + '\n' + copy.getUrl() + '\n\n이 시트는 새 기록부터 다시 쌓입니다.', ui.ButtonSet.OK);
 }
 function refreshAnalysis() {
@@ -604,10 +615,10 @@ function doGet(e) {
   const p = (e && e.parameter) || {};
   const cache = CacheService.getScriptCache();
   let json = null;
-  try { json = cacheGet_(cache, 'board_v12'); } catch (err) {}
+  try { json = cacheGet_(cache, 'board_v13'); } catch (err) {}
   if (!json) {
     json = JSON.stringify(buildBoard_());
-    try { cachePut_(cache, 'board_v12', json, 15); } catch (err) {}
+    try { cachePut_(cache, 'board_v13', json, 15); } catch (err) {}
     try { if (PropertiesService.getDocumentProperties().getProperty('anaDirty')) maybeAnalyze_(); } catch (err) {}
   }
   const cb = p.callback;
@@ -619,7 +630,7 @@ function doGet(e) {
 
 function buildBoard_() {
   // script: 게임이 이 값으로 새 스크립트인지 확인한다(없으면 명예의 전당에 '예전 코드' 경고)
-  const out = {script: SCRIPT_VER, updated: new Date().toISOString(), careers: 0, players: 0, top: [], longest: [], recent: [], order: [], stats: {}};
+  const out = {script: SCRIPT_VER, updated: new Date().toISOString(), careers: 0, players: 0, top: [], longest: [], recent: [], order: [], stats: {}, arcade: arcadeBoard_()};
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('요약');
   if (!sh || sh.getLastRow() < 2) return out;
   const v = sh.getDataRange().getValues();
@@ -736,6 +747,21 @@ function schoolRank_(rows) {
     const L = by[s].sort((a, b) => b.score - a.score);
     return {school: s, avg: Math.round(L.reduce((t, r) => t + r.score, 0) / L.length), n: L.length, best: {nick: L[0].nick, score: L[0].score, leader: L[0].leader}};
   }).sort((a, b) => b.avg - a.avg || b.n - a.n);
+}
+// 비밀 게임 순위: 방역선은 점수가 높은 순, 대항해는 귀항한 판만 시간이 짧은 순. 한 사람은 가장 좋은 기록 하나만, 5명씩
+function arcadeBoard_() {
+  const out = {zg: [], sail: []};
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('비밀 게임 기록');
+  if (!sh || sh.getLastRow() < 2) return out;
+  const v = sh.getDataRange().getValues(), ix = {};
+  v[0].forEach((n, i) => { ix[n] = i; });
+  const g = (r, n) => (ix[n] === undefined ? '' : r[ix[n]]);
+  const rows = v.slice(1).filter(r => String(g(r, '판ID')) !== 'test').map(r => ({game: String(g(r, '게임')), nick: String(g(r, '닉네임') || '익명').replace(/^'/, '').slice(0, 20),
+    school: schoolName_(g(r, '학교')), score: Number(g(r, '점수')) || 0, sec: Number(g(r, '시간(초)')) || 0, win: String(g(r, '성공')) === '예', detail: String(g(r, '세부') || '')}));
+  const best = (L, better) => { const m = {}; L.forEach(r => { if (!m[r.nick] || better(r, m[r.nick])) m[r.nick] = r; }); return Object.keys(m).map(k => m[k]); };
+  out.zg = best(rows.filter(r => r.game === 'zg'), (a, b) => a.score > b.score).sort((a, b) => b.score - a.score).slice(0, 5);
+  out.sail = best(rows.filter(r => r.game === 'sail' && r.win && r.sec > 0), (a, b) => a.sec < b.sec).sort((a, b) => a.sec - b.sec).slice(0, 5);
+  return out;
 }
 // 무대마다 가장 높은 커리어 하나
 function campBest_(rows) {
