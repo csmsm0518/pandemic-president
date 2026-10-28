@@ -422,6 +422,9 @@ const store = {
 // 화면 흔들림: 2 = 켜짐, 1 = 약하게, 0 = 끔
 const settings = Object.assign({ sfx: true, music: true, dmgNums: true, shake: REDUCED ? 1 : 2, muted: false }, store.get('settings', {}));
 const saveSettings = () => store.set('settings', settings);
+// 팬데믹 대통령 안에 들어 있을 때는 그 게임의 소리 설정(음소거 · 효과음 크기 · 음악 크기)을 따른다(같은 사이트라 저장소를 함께 읽는다)
+const PSND = (() => { if (!EMBED) return null; try { const m = (JSON.parse(localStorage.getItem('pandemic_pres_v1') || '{}') || {}).snd || {}; return { fx: m.fx == null ? 1 : Math.max(0, Math.min(1, +m.fx || 0)), mu: m.mu == null ? 1 : Math.max(0, Math.min(1, +m.mu || 0)), mute: !!m.mute }; } catch (e) { return null; } })();
+if (PSND && PSND.mute) settings.muted = true;
 
 // 부모 창(팬데믹 대통령)과 주고받기
 function postParent(msg) { if (!EMBED) return; try { if (window.parent && window.parent !== window) window.parent.postMessage(msg, '*'); } catch (e) { } }
@@ -438,7 +441,7 @@ const SFX = (() => {
     if (ac) { if (ac.state === 'suspended') ac.resume().catch(() => { }); return; }
     try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { ac = null; return; }
     const comp = ac.createDynamicsCompressor(); comp.threshold.value = -16; comp.ratio.value = 5; comp.connect(ac.destination);
-    out = ac.createGain(); out.gain.value = .55; out.connect(comp);
+    out = ac.createGain(); out.gain.value = .55 * (PSND ? PSND.fx : 1); out.connect(comp);
     noiseBuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
     const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
   }
@@ -488,11 +491,17 @@ const SFX = (() => {
   }
   // 배경 음악: 같은 폴더의 mp3. 없거나 막혀도 게임은 계속된다.
   function music(want) {
-    const should = want && settings.music && !settings.muted;
+    const should = want && settings.music && !settings.muted && !(PSND && PSND.mu <= 0);
     if (!should) { if (bgm) bgm.pause(); return; }
     if (bgmFailed) return;
     if (!bgm) {
-      try { bgm = new Audio('zombie_bgm.mp3'); bgm.loop = true; bgm.volume = .3; bgm.addEventListener('error', () => { bgmFailed = true; bgm = null; }); }
+      try {
+        bgm = new Audio('zombie_bgm.mp3'); bgm.loop = true; bgm.addEventListener('error', () => { bgmFailed = true; bgm = null; });
+        // 아이폰·아이패드는 audio.volume을 무시하므로, 사이트에서는 Web Audio 게인으로 크기를 줄인다
+        const mv = .3 * (PSND ? PSND.mu : 1); let routed = false;
+        if (ac && /^https?:$/.test(location.protocol)) { try { const s = ac.createMediaElementSource(bgm), g = ac.createGain(); g.gain.value = mv; s.connect(g); g.connect(ac.destination); routed = true; } catch (e) { } }
+        if (!routed) bgm.volume = mv;
+      }
       catch (e) { bgmFailed = true; bgm = null; return; }
     }
     const p = bgm.play(); if (p && p.catch) p.catch(() => { });
@@ -2520,6 +2529,8 @@ function init() {
   resize(); setupDemo(); renderBest(); renderSettings(); updateMuteIcon();
   requestAnimationFrame(t => { last = t; requestAnimationFrame(frame); });
   debugBoot();
+  // 부모 창(팬데믹 대통령)에 준비됐다고 알린다(알리지 않으면 부모가 비상 닫기 단추를 띄운다)
+  postParent({ zg: 'ready' });
 }
 init();
 </script>

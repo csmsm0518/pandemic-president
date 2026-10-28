@@ -26,16 +26,18 @@ function lbView(){const d=LB.data;if(!d||LB.diff==='전체')return d;
 function lbAgo(t){const d=(Date.now()-new Date(t).getTime())/1000;if(!isFinite(d))return '';if(d<60)return '방금';if(d<3600)return Math.floor(d/60)+'분 전';if(d<86400)return Math.floor(d/3600)+'시간 전';
   const x=new Date(t);return (x.getMonth()+1)+'월 '+x.getDate()+'일';}
 function lbJsonp(){return new Promise((res,rej)=>{const cb='__lbg'+Date.now()+Math.floor(Math.random()*1e4),s=document.createElement('script');
-  const done=()=>{clearTimeout(to);try{delete window[cb];}catch(e){window[cb]=undefined;}s.remove();};
+  // 늦게 온 응답이 없는 함수를 불러 오류가 나지 않게, 끝나면 빈 함수로 바꿔 두었다가 1분 뒤에 지운다
+  const done=()=>{clearTimeout(to);window[cb]=()=>{};setTimeout(()=>{try{delete window[cb];}catch(e){window[cb]=undefined;}},60000);s.remove();};
   const to=setTimeout(()=>{done();rej(new Error('시간 초과'));},25000);
   window[cb]=d=>{done();res(d);};s.onerror=()=>{done();rej(new Error('연결 실패'));};
   s.src=SHEET_URL+'?callback='+cb+'&t='+Date.now();document.head.appendChild(s);});}
-function lbFetch(){return fetch(SHEET_URL+'?t='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).catch(()=>lbJsonp());}
+function lbFetch(){let ab=null,tm=0;try{ab=new AbortController();tm=setTimeout(()=>ab.abort(),12000);}catch(e){}
+  return fetch(SHEET_URL+'?t='+Date.now(),{cache:'no-store',signal:ab?ab.signal:undefined}).then(r=>{clearTimeout(tm);if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).catch(()=>{clearTimeout(tm);return lbJsonp();});}
 
 /* ---------- 게임 안 명예의 전당: 스포츠 기록실 형식 ----------
    가운데 큰 카드가 커리어 점수 순위(1위는 메달·초상·닉네임·학교·지도자·점수를 크게, 2위부터는 한 줄씩),
    양옆 카드는 부문별 순위(최장 집권·최다 연임·학교 평균·최다 업적·최고 지지율·무대별 최고). 웹 리더보드(leaderboard.html)는 '전체 순위'로 따로 연다. */
-const HOF={d:null,diff:'',timer:0,back:null,id:'',nick:'',busy:false,err:'',sig:''};
+const HOF={d:null,diff:'',timer:0,back:null,id:'',nick:'',busy:false,err:'',sig:'',arc:0,arcT:0,arcHold:0};
 function openBoard(o){o=o||{};if(IN_ART)return artBoard(o);hofClose();lbeClose();window.scrollTo(0,0);
   HOF.back=o.back||home;HOF.id=o.id||'';HOF.nick=o.nick||'';HOF.diff=o.diff||(DIFF[dif]&&DIFF[dif].n)||'보통';HOF.sig='';
   const w=document.createElement('div');w.id='hof';w.className='lbfs hof';w.setAttribute('role','dialog');w.setAttribute('aria-label','명예의 전당');
@@ -53,12 +55,12 @@ function openBoard(o){o=o||{};if(IN_ART)return artBoard(o);hofClose();lbeClose()
     document.querySelectorAll('#hofDif button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));all();HOF.sig='';hofRender();};
   setTimeout(()=>{const b=document.getElementById('hofBack');if(b)b.focus({preventScroll:true});},50);
   if(HOF.d)hofRender();hofLoad();}
-function hofClose(){clearTimeout(HOF.timer);const w=document.getElementById('hof');if(w){w.remove();document.body.style.overflow='';}}
+function hofClose(){clearTimeout(HOF.timer);clearTimeout(HOF.arcT);const w=document.getElementById('hof');if(w){w.remove();document.body.style.overflow='';}}
 function hofLoad(){if(HOF.busy||!document.getElementById('hof'))return;HOF.busy=true;
   lbFetch().then(d=>{if(!d||!Array.isArray(d.top))throw new Error('형식이 다른 응답');HOF.err='';HOF.d=d;hofRender();})
   .catch(e=>{HOF.err=(e&&e.message)||String(e);hofLive();if(!HOF.d){const b=document.getElementById('hofBody');if(b)b.innerHTML='<div class="hc hof-main hc-empty" style="grid-column:1/-1">기록을 불러오지 못했어요.<br><small>인터넷 연결을 확인해 주세요. ('+lbEsc(HOF.err)+')</small><br><button id="hofRetry" class="hof-back" style="margin-top:12px">다시 시도</button></div>';
       const r=document.getElementById('hofRetry');if(r)r.onclick=()=>{SFX.click();hofLoad();};}})
-  .finally(()=>{HOF.busy=false;clearTimeout(HOF.timer);if(document.getElementById('hof')){const wait=HOF.id&&HOF.d&&(HOF.d.order||[]).indexOf(HOF.id)<0;HOF.timer=setTimeout(()=>{if(!document.hidden)hofLoad();else HOF.timer=setTimeout(hofLoad,5000);},wait?5000:15000);}});}
+  .finally(()=>{HOF.busy=false;clearTimeout(HOF.timer);if(document.getElementById('hof')){const wait=HOF.id&&HOF.d&&(HOF.d.order||[]).indexOf(HOF.id)<0;const poll=()=>{if(!document.getElementById('hof'))return;if(document.hidden){HOF.timer=setTimeout(poll,5000);return;}hofLoad();};HOF.timer=setTimeout(poll,wait?5000:15000);}});}
 function hofLive(){const el=document.getElementById('hofLive');if(!el)return;
   if(HOF.err)el.innerHTML='<i class="off"></i>'+(HOF.d?'다시 연결하는 중':'연결이 안 돼요');
   else{const u=HOF.d&&HOF.d.updated?new Date(HOF.d.updated):new Date();el.innerHTML='<i></i>LIVE · '+u.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});}}
@@ -76,7 +78,7 @@ const hofAv=(name,px)=>portrait(name,px)||HOF_SH;
 // 부문 카드 하나. it(r)은 {n 이름, s 둘째 줄, v 기록, a 초상 자리 HTML, me 내 기록인지}
 // 커리어 점수(main)만 1위를 크게 띄우고, 나머지 부문은 작은 순위표(1~5위)로만 보여 준다. ga는 화면 격자의 자리 이름
 function hofCard(o){const L=o.list||[],main=!!o.main;
-  let h='<section class="hc'+(main?' hof-main':' cp')+'" style="--i:'+(o.i||0)+(o.ga?';grid-area:'+o.ga:'')+'"><div class="hc-h"><b>'+o.t+'</b><span>'+(o.u||'')+'</span></div>';
+  let h='<section class="hc'+(main?' hof-main':' cp')+(o.cls?' '+o.cls:'')+'"'+(o.id?' id="'+o.id+'"':'')+' style="--i:'+(o.i||0)+(o.ga?';grid-area:'+o.ga:'')+'"><div class="hc-h"><b>'+o.t+'</b><span>'+(o.u||'')+'</span></div>'+(o.tabs?'<div class="hc-tabs" role="tablist">'+o.tabs+'</div>':'');
   if(o.me)h+=o.me;
   if(!L.length)return h+'<div class="hc-empty">'+(o.empty||'아직 기록이 없어요')+'</div></section>';
   const f=L.map(o.it),one=f[0],row=(x,k)=>'<div class="hc-r'+(x.me?' me':'')+(k<=3?' r'+k:'')+'"><span class="k">'+k+'</span><span class="a">'+x.a+'</span><span class="t"><b>'+x.n+'</b><small>'+x.s+'</small></span><span class="v">'+x.v+'</span></div>';
@@ -86,7 +88,7 @@ function hofCard(o){const L=o.list||[],main=!!o.main;
   if(o.more)h+='<a class="hc-more" href="'+o.more+'" target="_blank" rel="noopener">더보기</a>';
   return h+'</section>';}
 function hofRender(){const v=hofView(),body=document.getElementById('hofBody');hofLive();if(!v||!body)return;
-  const sig=HOF.diff+'|'+JSON.stringify(v);if(sig===HOF.sig)return;const first=!HOF.sig;HOF.sig=sig;
+  const sig=HOF.diff+'|'+JSON.stringify(v)+'|'+JSON.stringify((HOF.d&&HOF.d.arcade)||{});if(sig===HOF.sig)return;const first=!HOF.sig;HOF.sig=sig;
   const C=v.cards||{},E=lbEsc,num=x=>Number(x||0).toLocaleString('ko-KR');
   const who=r=>[r.school,r.leader].filter(Boolean).map(E).join(' · ')||'&nbsp;';
   const P=(r,val,s)=>({n:E(r.nick),s:s!=null?s:who(r),v:val,a:hofAv(r.leader,main?120:40),me:!!HOF.id&&r.id===HOF.id});let main=false;
@@ -98,17 +100,26 @@ function hofRender(){const v=hofView(),body=document.getElementById('hofBody');h
   const dq=encodeURIComponent(HOF.diff);
   main=true;const mainCard=hofCard({main:true,i:0,ga:'M',t:'커리어 점수',u:(HOF.diff==='전체'?'전체':HOF.diff)+' · 상위 10',list:v.top,me:me,n:10,more:'leaderboard.html?diff='+dq,empty:'아직 기록이 없어요. 첫 번째 대통령이 되어 보세요.',it:r=>P(r,num(r.score)+'<small>점</small>')});
   main=false;
-  // 화면 격자: 넓으면 [최장 집권 · 최다 연임 | 커리어 점수 | 최고 지지율 · 방역선] / [학교 · 최다 업적 | 〃 | 무대별 · 대항해] — 오른쪽 끝 칸이 비밀 게임 둘
+  // 화면 격자: 넓으면 [최장 집권 · 최다 연임 | 커리어 점수 | 최고 지지율 · 미니게임 순위] / [학교 · 최다 업적 | 〃 | 무대별 · 〃] — 오른쪽 끝 칸이 미니게임 순위(두 줄 높이)
   const left=hofCard({i:1,ga:'a',t:'최장 집권',u:'재임 기간',list:v.longest,it:r=>P(r,r.years+'<small>년</small>')})+
     hofCard({i:2,ga:'b',t:'최다 연임',u:'임기 수',list:C.terms,it:r=>P(r,r.terms+'<small>선</small>')})+
-    hofCard({i:3,ga:'c',t:'학교 평균 점수',u:'한 사람당 최고 기록',list:C.school,empty:'학교를 적은 기록이 아직 없어요',it:x=>({n:E(x.school),s:x.n+'명 · 최고 '+E(x.best&&x.best.nick||''),v:num(x.avg)+'<small>점</small>',a:'<span class="hc-ini sc">'+E(String(x.school).slice(0,1))+'</span>',me:false})});
-  // 오른쪽 끝 두 칸은 비밀 게임 순위(난이도와 상관없이 하나). 서버가 예전 버전이라 arcade가 없으면 빈 칸 안내만 보인다
-  const A=(HOF.d&&HOF.d.arcade)||{},ini=r=>hofAnon(r.nick)?HOF_SH:'<span class="hc-ini">'+E(String(r.nick).slice(0,1))+'</span>',mmss=s=>Math.floor(s/60)+':'+(s%60).toFixed(1).padStart(4,'0');
-  const right=hofCard({i:4,ga:'d',t:'최다 업적',u:'한 커리어의 업적 수',list:C.tro,it:r=>P(r,r.tro+'<small>개</small>')})+
-    hofCard({i:6,ga:'f',t:'방역선 최고 점수',u:'비밀 무대 · 좀비 서바이벌',list:A.zg,empty:'아직 해가 뜬 기록이 없어요',it:r=>({n:E(r.nick),s:[r.school,r.detail].filter(Boolean).map(E).join(' · ')||'&nbsp;',v:num(r.score)+'<small>점</small>',a:ini(r),me:false})})+
-    hofCard({i:8,ga:'h',t:'대항해 최단 기록',u:'비밀 모드 · 폭풍 해협 질주',list:A.sail,empty:'아직 돌아온 배가 없어요',it:r=>({n:E(r.nick),s:[r.school,r.detail].filter(Boolean).map(E).join(' · ')||'&nbsp;',v:mmss(r.sec),a:ini(r),me:false})});
+    // 학교 평균: 순위를 매긴 값(인원 보정 평균 adj)을 그대로 보여 준다(인원 수는 보여 주지 않는다). 예전 서버(adj 없음)면 평균
+    hofCard({i:3,ga:'c',t:'학교 평균 점수',u:'사람마다 최고 기록 · 인원 보정 평균',list:C.school,empty:'학교를 적은 기록이 아직 없어요',it:x=>({n:E(x.school),s:x.best&&x.best.nick?'최고 기록 · '+E(x.best.nick):'&nbsp;',v:num(x.adj!=null?x.adj:x.avg)+'<small>점</small>',a:'<span class="hc-ini sc">'+E(String(x.school).slice(0,1))+'</span>',me:false})});
+  const right=hofCard({i:4,ga:'d',t:'최다 업적',u:'한 커리어의 업적 수',list:C.tro,it:r=>P(r,r.tro+'<small>개</small>')})+hofArcCard();
   // 지지율·무대별 최고는 가운데 큰 순위 아래 두 칸으로
   const sub=hofCard({i:5,ga:'e',t:'최고 지지율',u:'물러날 때 지지율',list:C.appr,it:r=>P(r,Math.round(r.appr)+'<small>%</small>')})+
     hofCard({i:7,ga:'g',t:'무대별 최고',u:'무대마다 1위',list:C.camp,it:r=>P(r,num(r.score)+'<small>점</small>',E(hofCampN(r.camp))+(r.school?' · '+E(r.school):''))});
   body.classList.toggle('still',!first);
-  body.innerHTML=mainCard+left+right+sub;}
+  body.innerHTML=mainCard+left+right+sub;hofArcBind();}
+// 오른쪽 끝 한 칸(넓은 화면에서는 위아래 두 줄 높이): 미니게임 순위. 방역선 · 대항해 · 별똥별을 탭으로 넘겨 보고,
+// 가만히 두면 9초마다 다음 게임으로 넘어간다(탭을 누르면 그 게임에 머문다). 순위는 난이도와 상관없이 하나다
+const HOF_ARC=[{k:'zg',t:'방역선',u:'좀비 서바이벌 · 최고 점수',empty:'아직 해가 뜬 기록이 없어요'},{k:'sail',t:'대항해',u:'폭풍 해협 · 최단 기록',empty:'아직 돌아온 배가 없어요'},{k:'star',t:'별똥별',u:'밤하늘 서바이벌 · 최고 점수',empty:'아직 하늘을 난 별이 없어요'}];
+function hofArcCard(){const A=(HOF.d&&HOF.d.arcade)||{},E=lbEsc,num=x=>Number(x||0).toLocaleString('ko-KR'),k=HOF.arc%HOF_ARC.length,X=HOF_ARC[k];
+  const ini=r=>hofAnon(r.nick)?HOF_SH:'<span class="hc-ini">'+E(String(r.nick).slice(0,1))+'</span>',mmss=s=>Math.floor(s/60)+':'+(s%60).toFixed(1).padStart(4,'0');
+  return hofCard({i:6,ga:'f',id:'hofArc',cls:'arc',t:'미니게임 순위',u:X.u,list:A[X.k]||[],empty:X.empty,
+    tabs:HOF_ARC.map((x,i)=>'<button type="button" role="tab" class="hc-tab'+(i===k?' on':'')+'" aria-selected="'+(i===k)+'" data-arc="'+i+'">'+x.t+'</button>').join(''),
+    it:r=>({n:E(r.nick),s:[r.school,r.detail].filter(Boolean).map(E).join(' · ')||'&nbsp;',v:X.k==='sail'?mmss(r.sec):num(r.score)+'<small>점</small>',a:ini(r),me:false})});}
+function hofArcBind(){const s=document.getElementById('hofArc');if(!s)return;clearTimeout(HOF.arcT);
+  s.querySelectorAll('[data-arc]').forEach(b=>b.onclick=()=>{try{SFX.click();}catch(e){}HOF.arc=+b.dataset.arc;HOF.arcHold=1;hofArcSwap();});
+  if(!HOF.arcHold)HOF.arcT=setTimeout(()=>{if(!document.getElementById('hofArc'))return;if(!document.hidden)HOF.arc=(HOF.arc+1)%HOF_ARC.length;hofArcSwap();},9000);}
+function hofArcSwap(){const s=document.getElementById('hofArc');if(!s)return;const t=document.createElement('div');t.innerHTML=hofArcCard();const n=t.firstChild;n.classList.add('swap');s.replaceWith(n);hofArcBind();}

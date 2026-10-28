@@ -47,7 +47,7 @@ document.body.insertAdjacentHTML('beforeend','<div class="rotq" role="alert"><sv
 document.querySelectorAll('.rotq [data-o]').forEach(b=>b.onclick=()=>setView('ori',b.dataset.o));
 
 // 라이트 모드의 메인 화면: 예전 버전처럼 종이 한 장에 무대·출발 인물·결정 빈도·난이도를 두고 바로 취임한다
-function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp))camp='kr';document.documentElement.dataset.camp=camp;
+function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp)||camp==='zombie')camp='kr';document.documentElement.dataset.camp=camp;
   const msg=HUB_MSG;HUB_MSG='';const C=CAMPS[camp],BGS=C.bg;
   // 출발 인물은 드롭다운으로 고른다. 처음엔 '인물을 선택하세요'이고, 고르기 전에는 취임할 수 없다.
   if(bg>=BGS.length||(bg>=0&&bgLock(BGS[bg])))bg=-1;const B=bg>=0?BGS[bg]:null;
@@ -56,7 +56,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   const chip=(on,col,inner,pad)=>'<span style="display:inline-flex;align-items:center;gap:6px;vertical-align:middle;font-size:12px;padding:'+(pad||'4px 10px')+';border-radius:999px;margin:0 6px 6px 0;'+(on?'background:color-mix(in srgb,'+col+' 18%,var(--surface-1));border:1px solid color-mix(in srgb,'+col+' 45%,transparent);color:var(--text-primary);font-weight:600':'border:1px dashed var(--border-strong);color:var(--text-muted)')+'">'+inner+'</span>';
   const dex=ENDC.map(e=>{const on=MEM.ends[e[0]];return chip(on,'#2f4a6b',on?(HNAME[e[0]]||e[1]):(HNAME[e[0]]?'???':e[1]));}).join('');
   const ldex=LEADK.map(id=>{const on=MEM.leaders&&MEM.leaders[id],L=LEAD[id];return chip(on,L.col,on?portrait(L.n,22)+L.n:'???',on?'3px 10px 3px 3px':'');}).join('');
-  const cmb=Object.keys(CAMPS).filter(campOn).map(id=>{const X=CAMPS[id];return '<button class="cmb'+(camp===id?' on':'')+'" data-c="'+id+'"><span class="cmb-t"><b>'+X.n+'</b><span class="cmb-tag'+(X.tag==='DLC'?' dlc':'')+'">'+X.tag+'</span></span><span class="cmb-s">'+X.sub+'</span></button>';}).join('');
+  const cmb=Object.keys(CAMPS).filter(id=>campOn(id)&&id!=='zombie').map(id=>{const X=CAMPS[id];return '<button class="cmb'+(camp===id?' on':'')+'" data-c="'+id+'"><span class="cmb-t"><b>'+X.n+'</b><span class="cmb-tag'+(X.tag==='DLC'?' dlc':'')+'">'+X.tag+'</span></span><span class="cmb-s">'+X.sub+'</span></button>';}).join('');
   const lockd=BGS.map(q=>[q,bgLock(q)]).filter(x=>x[1]);
   const opts='<option value=""'+(B?'':' selected')+' disabled>인물을 선택하세요</option><option value="r">🎲 랜덤 — 고를 수 있는 인물 중 무작위로</option>'+BGS.map((q,k)=>{const L=bgLock(q);
     return '<option value="'+k+'"'+(L?' disabled':'')+(bg===k?' selected':'')+'>'+(L?(L.used?q.n+' · 이미 함께한 비밀 인물':'??? · 잠긴 비밀 인물'):q.n+' — '+(q.k||''))+'</option>';}).join('');
@@ -83,6 +83,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   '<div class="hm-row"><button id="tutBtn" class="tgl" role="switch" aria-checked="'+tutOn()+'"><span class="tgl-k"></span><span>튜토리얼 '+(tutOn()?'켜짐':'꺼짐')+'</span></button></div>'+
   '<button id="ldBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>불러오기</b><span>'+gEsc(svMenuTxt()||'저장된 게임이 없다')+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="lbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>명예의 전당</b><span>모두의 최고 기록</span></span><span class="hm-go">'+CHEV+'</span></button>'+
+  '<button id="miBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>미니게임</b><span>'+miniSub()+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="gbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>가이드북</b><span>판정 규칙, 지표, 대선, 점수 계산까지 한 번에</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<div style="height:16px"></div>'+vwHTML()+
   lab('지도자 도감 '+lg+' / '+LEADK.length)+'<div style="margin-bottom:22px">'+ldex+'</div>'+
@@ -100,6 +101,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   $('st').onclick=()=>{try{aInit();SFX.start();}catch(e){}start();};
   $('tutBtn').onclick=()=>{SFX.click();MEM.tut=!tutOn();msave();homeLite();};
   $('lbBtn').onclick=()=>{SFX.click();openBoard({back:home});};
+  $('miBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();stepMini();};
   if($('ldBtn'))$('ldBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();svPicker();};   // 라이트 모드 메인 화면은 작은 창으로 연다
   $('gbBtn').onclick=()=>{SFX.click();guide(home);};
   $('edBtn').onclick=()=>{SFX.click();intro();};
@@ -107,8 +109,10 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   // 이스터에그: 제목을 3초 안에 7번 누르면 좀비 무대가 열린다
   $('ttl').onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];
     if(eggOn('zombie')){eggToast('🧟 좀비 무대는 이미 열려 있어요.');return;}
-    eggSet('zombie');try{SFX.zombie();}catch(e){}vib([60,40,60,40,200]);camp='zombie';bg=-1;eggToast('🧟 <b>어디선가 신음 소리가 들린다…</b><br>비밀 무대 「좀비 아포칼립스」가 열렸어요.');homeLite();};
+    eggSet('zombie');try{SFX.zombie();}catch(e){}vib([60,40,60,40,200]);eggToast('🧟 <b>어디선가 신음 소리가 들린다…</b><br>미니게임 「방역선」이 열렸어요. 미니게임에서 할 수 있어요.');homeLite();};
   if(SEC_NEW.length){const nm=SEC_NEW.map(id=>{for(const c in CAMPS){const q=CAMPS[c].bg.find(b=>b.sec===id);if(q)return q.n;}return id;});SEC_NEW=[];SFX.unlock();eggToast('🔓 비밀 인물 해금: <b>'+nm.join(', ')+'</b>');}
+  // 수영 금메달 선물: 라이트 화면에는 로고 나침반이 없어서 튜토리얼 창 안에 나침반을 띄운다(sailTut(null))
+  if(MEM.sailHint===1&&!eggOn('sail'))setTimeout(()=>{if(MEM.sailHint===1&&!eggOn('sail')&&viewGet().lite&&!CINE&&R.querySelector('.hl'))sailTut(null);},700);
 }
 
 // 이 기기 기록 초기화: 이 브라우저에 저장된 것(기록·도감·저장한 게임·인적사항·설정·이스터에그·좀비 게임 기록)을 지우고 처음처럼 다시 연다.
@@ -130,10 +134,10 @@ function resetAsk(){const o=document.getElementById('rsAsk');if(o)o.remove();
     location.reload();};
   setTimeout(()=>{const b=document.getElementById('rsNo');if(b)b.focus();},30);}
 function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
-  window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp))camp='kr';document.documentElement.dataset.camp='kr';
+  window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp)||camp==='zombie')camp='kr';document.documentElement.dataset.camp='kr';
   R.innerHTML='<div style="min-height:70vh"></div>';
   const msg=HUB_MSG;HUB_MSG='';
-  const sv=svMenuTxt(),M=[].concat([['mmNew','새 게임','한 번의 인생을 시작한다','new'],['mmLoad','불러오기',sv||'저장된 게임이 없다','guide']],[['mmBoard','명예의 전당','모두의 최고 기록','board'],['mmDex','도감','만난 지도자와 임기 평가','dex'],['mmGuide','가이드북','처음이라면 여기부터','guide']]);
+  const sv=svMenuTxt(),M=[].concat([['mmNew','새 게임','한 번의 인생을 시작한다','new'],['mmLoad','불러오기',sv||'저장된 게임이 없다','guide']],[['mmBoard','명예의 전당','모두의 최고 기록','board'],['mmDex','도감','만난 지도자와 임기 평가','dex'],['mmMini','미니게임',miniSub(),'mini'],['mmGuide','가이드북','처음이라면 여기부터','guide']]);
   // 기록 카드: 닉네임, 최고 기록, 도감 진행도
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
   const st=(l,v,u)=>'<div><span>'+l+'</span><b>'+v+'</b>'+(u&&v!=='—'?'<small>'+u+'</small>':'')+'</div>';
@@ -142,9 +146,11 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
     '<div class="gx-pc-g">'+st('최고 커리어 점수',MEM.best100?MEM.best100.toLocaleString('ko-KR'):'—','점')+st('최장 재임',MEM.longest||'—','년')+st('지나온 인생',MEM.careers||0,'번')+'</div>'+
     pb('지도자 도감',Object.keys(MEM.leaders||{}).length,LEADK.length)+pb('임기 평가 도감',Object.keys(MEM.ends||{}).length,ENDC.length)+
     (MEM.zg&&MEM.zg.runs?'<div class="gx-pc-z"><span>방역선 최고</span><b>'+MEM.zg.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+MEM.zg.wins+'번</span></div>':'')+
-    (MEM.sail&&MEM.sail.v===2&&MEM.sail.best?'<div class="gx-pc-z"><span>대항해 최고</span><b>'+Math.floor(MEM.sail.best/60)+':'+(MEM.sail.best%60).toFixed(1).padStart(4,'0')+'</b><span>금메달 '+(MEM.sail.gold||0)+'번</span></div>':'')+'</aside>';
+    (MEM.sail&&MEM.sail.v===2&&MEM.sail.best?'<div class="gx-pc-z"><span>대항해 최고</span><b>'+Math.floor(MEM.sail.best/60)+':'+(MEM.sail.best%60).toFixed(1).padStart(4,'0')+'</b><span>금메달 '+(MEM.sail.gold||0)+'번</span></div>':'')+
+    (MEM.star&&MEM.star.v===1&&MEM.star.best?'<div class="gx-pc-z st"><span>별똥별 최고</span><b>'+MEM.star.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+(MEM.star.dawn||0)+'번</span></div>':'')+'</aside>';
   let sel=0;
-  cine([{t:'메인 메뉴',h:'<div class="gx gx-title"><canvas class="gx-bg" aria-hidden="true"></canvas><div class="gx-seal" aria-hidden="true">'+emblemSvg('embgS')+'</div>'+
+  cine([{t:'메인 메뉴',h:'<div class="gx gx-title"><canvas class="gx-bg" aria-hidden="true"></canvas><div class="gx-seal" aria-hidden="true">'+emblemSvg('embgS',1)+
+    '<span class="gx-sstar" hidden><svg viewBox="-12 -12 24 24"><path d="M0-10.5L2.7-3.4 10-3.2 4.3 1.3 6.3 8.5 0 4.3-6.3 8.5-4.3 1.3-10-3.2-2.7-3.4Z"/></svg></span></div>'+
     '<div class="gx-tl"><div class="emb go gx-logo">'+emblemSvg()+'<div><h1 class="emb-t"><span>팬데믹</span> <span>대통령</span></h1><p class="emb-s">한 번의 인생, 한 나라의 운명</p></div></div>'+
     (msg?'<div class="gx-msg">'+msg+'</div>':'')+
     '<div class="gx-row2"><nav class="gx-menu" aria-label="메인 메뉴">'+M.map((m,i)=>'<button class="gx-mi" id="'+m[0]+'" style="--i:'+i+'"><span class="gx-ic" aria-hidden="true">'+GX_IC[m[3]]+'</span><span class="gx-mt"><b>'+m[1]+'</b><small>'+m[2]+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>').join('')+
@@ -163,18 +169,25 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   $('mmBoard').onclick=()=>{gxSfx('click');cineClose();openBoard({back:home});};
   $('mmDex').onclick=()=>{gxSfx('click');dexScene();};
   $('mmGuide').onclick=()=>{gxSfx('click');cineClose();guide(home);};
+  $('mmMini').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');stepMini();};
   $('mmEdit').onclick=()=>{gxSfx('click');cineClose();intro();};
   $('mmView').onclick=()=>{gxSfx('click');viewPage(home);};
   // 이스터에그: 로고의 나침반을 다섯 바퀴 돌리면 비밀 모드 「대항해」가 새 게임의 무대 고르기에 생긴다
   compassSpin(document.querySelector('.cine .gx-logo svg'),()=>{
-    if(eggOn('sail')){eggToast('⚓ 대항해는 이미 열려 있어요. 새 게임에서 고르세요.');return;}
-    eggSet('sail');try{SFX.unlock();}catch(e){}vib([40,30,40,30,160]);
-    eggToast('⚓ <b>나침반 바늘이 바다를 가리킨다…</b><br>비밀 모드 「대항해」가 열렸어요. 새 게임에서 고를 수 있어요.');});
+    if(eggOn('sail')){eggToast('⚓ 대항해는 이미 열려 있어요. 메인 메뉴의 미니게임에서 고르세요.');return;}
+    eggSet('sail');delete MEM.sailHint;msave();try{SFX.unlock();}catch(e){}vib([40,30,40,30,160]);
+    // 잠금 해제 튜토리얼 중이면 튜토리얼 창이 축하를 맡는다
+    if(!document.querySelector('#stut:not(.out)'))eggToast('⚓ <b>나침반 바늘이 바다를 가리킨다…</b><br>미니게임 「대항해」가 열렸어요. 메인 메뉴의 미니게임에서 할 수 있어요.');});
+  // 수영 금메달 선물: 대항해를 아직 못 열었으면 로고가 다 그려지고 메뉴가 들어온 뒤에 나침반 돌리는 법을 차근차근 보여 준다
+  if(MEM.sailHint===1&&!eggOn('sail'))setTimeout(()=>{const s=document.querySelector('.cine .gx-logo svg');if(s&&s.isConnected&&MEM.sailHint===1&&!eggOn('sail'))sailTut(s);},2400);
+  // 이스터에그: 뒤의 큰 나침반을 돌려 하얀 바늘 끝이 원 밖의 별을 3초 동안 가리키면 「별똥별을 피해라」가 열리고 바로 시작한다
+  sealSpin(document.querySelector('.cine .gx-seal'),()=>{const first=!eggOn('star');eggSet('star');try{SFX.unlock();[1319,1568,2093].forEach((f,i)=>tone(f,'sine',.6,.08,.15+i*.12));}catch(e){}
+    if(first)eggToast('🌠 <b>하얀 바늘이 별을 가리키자 하늘이 열린다…</b><br>미니게임 「별똥별을 피해라」가 열렸어요.');setTimeout(()=>starOpen(home),first?1400:700);});
   // 이스터에그: 제목을 3초 안에 7번 누르면(터치·클릭 모두) 좀비 무대가 열린다
   const tt=document.querySelector('.cine .emb-t');tt.id='ttl';tt.style.cursor='default';tt.style.userSelect='none';
   tt.onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];
     if(eggOn('zombie')){eggToast('🧟 좀비 무대는 이미 열려 있어요.');return;}
-    eggSet('zombie');try{SFX.zombie();}catch(e){}vib([60,40,60,40,200]);camp='zombie';bg=-1;eggToast('🧟 <b>어디선가 신음 소리가 들린다…</b><br>비밀 무대 「좀비 아포칼립스」가 열렸어요. 새 게임에서 고를 수 있어요.');};
+    eggSet('zombie');try{SFX.zombie();}catch(e){}vib([60,40,60,40,200]);eggToast('🧟 <b>어디선가 신음 소리가 들린다…</b><br>미니게임 「방역선」이 열렸어요. 메인 메뉴의 미니게임에서 할 수 있어요.');};
   if(SEC_NEW.length){const nm=SEC_NEW.map(id=>{for(const c in CAMPS){const q=CAMPS[c].bg.find(b=>b.sec===id);if(q)return q.n;}return id;});SEC_NEW=[];SFX.unlock();eggToast('🔓 비밀 인물 해금: <b>'+nm.join(', ')+'</b>');}
 }
 // 1단계: 무대. 비스듬한 깃발 판 중 하나를 고르면 그 판이 넓게 펼쳐진다. 고른 판을 한 번 더 누르면(또는 Enter) 지도자 고르기로.
@@ -219,10 +232,17 @@ const CP_ART=(()=>{const sv=(id,b,w)=>'<svg viewBox="0 0 '+(w||300)+' 600" prese
     '<g transform="translate(0 16)"><g class="cp-ship"><path d="M95 318h110l-18 30h-74z" fill="#6b3f22"/><path d="M95 318h110l-4 8h-102z" fill="#8a5a33"/><rect x="146" y="196" width="6" height="124" fill="#3b2416"/>'+
     '<path d="M152 204q48 40 2 104z" fill="#f4eee0"/><path d="M146 214q-40 34 -2 92z" fill="#e8dfc8"/><path d="M149 192l22 8-22 8z" fill="#c0392b"/><rect x="128" y="324" width="10" height="8" fill="#f4eee0"/><rect x="162" y="324" width="10" height="8" fill="#f4eee0"/></g></g>'+
     wv(340,'#225e8c',12)+wv(390,'#1b4f78',14)+wv(450,'#164265',16)+wv(520,'#11354f',18)+fold('s'));
-  return {kr:kr,usa:usa,joseon:jo,zombie:zb,sail:sa};})();
+  // 별똥별: 밤하늘 깃발에 나침반의 금빛 별 하나와 비스듬히 쏟아지는 별똥별 줄기
+  const ms=(x,y,l,w,c)=>'<path d="M'+x+' '+y+'l'+(-l*.62).toFixed(1)+' '+(-l*.78).toFixed(1)+'" stroke="'+c+'" stroke-width="'+w+'" stroke-linecap="round" opacity=".85"/><circle cx="'+x+'" cy="'+y+'" r="'+(w*.9).toFixed(1)+'" fill="#fff8e6"/>';
+  let dots='';for(let i=0;i<26;i++){const x=(i*73)%300,y=(i*131)%560+10;dots+='<circle cx="'+x+'" cy="'+y+'" r="'+(i%3?1.2:2)+'" fill="#e8ecff" opacity="'+(i%4?.5:.85)+'"/>';}
+  const st=sv('t','<rect width="300" height="600" fill="#13204a"/><rect y="430" width="300" height="170" fill="#1d2c5e"/>'+dots+
+    ms(250,150,120,4,'#f4e3b0')+ms(120,90,90,3,'#bfe3ff')+ms(70,380,110,3.5,'#f4e3b0')+ms(280,420,80,3,'#ffb08a')+
+    '<path d="M150 214 L164 286 L236 300 L164 314 L150 386 L136 314 L64 300 L136 286Z" fill="#e8c45a" stroke="#8a6a24" stroke-width="2"/><path d="M150 214 L155.5 242 L144.5 242Z" fill="#fff8e6"/><circle cx="150" cy="300" r="12" fill="#13204a" stroke="#f1d589" stroke-width="2.5"/>'+
+    '<path d="M0 560 h40 v-30 h22 v18 h30 v-42 h26 v54 h34 v-24 h30 v36 h28 v-48 h24 v40 h30 v-22 h36 V600 H0Z" fill="#0a1230"/>'+fold('t'));
+  return {kr:kr,usa:usa,joseon:jo,zombie:zb,sail:sa,star:st};})();
 // 비밀 모드 「대항해」: 나라가 아니라 따로 노는 레이스라 CAMPS에 넣지 않고, 열렸으면 무대 고르기 맨 끝에 판 하나로 붙인다
 const SAIL_CP={tag:'비밀 모드',n:'대항해',sub:'폭풍을 뚫고 섬마을로 · 시간과의 레이스',intro:'백신이 상하기 전에 폭풍 해협을 뚫고 섬마을 세 곳을 지나 달려라. 암초를 스치면 시간이 붙고, 부딪히면 배가 상한다.'};
-function stepCamp(){const ids=Object.keys(CAMPS).filter(campOn).concat(eggOn('sail')?['sail']:[]);let k=Math.max(0,ids.indexOf(camp));
+function stepCamp(){const ids=Object.keys(CAMPS).filter(id=>id!=='zombie');let k=Math.max(0,ids.indexOf(camp));
   cine([{t:'무대 선택',h:'<div class="gx gx-camp">'+gxTop(0)+'<h2 class="gx-q">어느 나라를 이끌 것인가</h2><div class="gx-cpw">'+
     ids.map((id,i)=>{const C=CAMPS[id]||SAIL_CP;return '<button class="gx-cp" data-c="'+id+'" style="--i:'+i+'"><span class="gx-cp-art" aria-hidden="true">'+(CP_ART[id]||'')+'</span>'+
       '<span class="gx-cp-tx"><span class="gx-cp-tag">'+C.tag+'</span><b>'+C.n+'</b><span class="gx-cp-sub">'+C.sub+'</span><span class="gx-cp-in">'+C.intro+'</span>'+
@@ -233,7 +253,34 @@ function stepCamp(){const ids=Object.keys(CAMPS).filter(campOn).concat(eggOn('sa
       if(gxEnter(e)){go();return true;}}});
   const P=[...document.querySelectorAll('.gx-cp')],hov=matchMedia('(hover:hover)').matches;
   const pick=(i,snd)=>{if(snd&&i!==k)gxSfx('tick',i);k=i;P.forEach((p,j)=>p.classList.toggle('on',j===i));};
-  const go=()=>{const id=ids[k];gxSfx('click');if(id==='sail')return sailOpen();if(camp!==id){camp=id;bg=-1;}stepLeader();};
+  const go=()=>{const id=ids[k];gxSfx('click');if(camp!==id){camp=id;bg=-1;}stepLeader();};
+  P.forEach((p,i)=>{if(hov)p.onmouseenter=()=>pick(i,1);p.onclick=()=>{if(i===k)go();else pick(i,1);};});
+  pick(k);}
+// 미니게임: 비밀을 찾아 연 작은 게임 셋. 새 게임의 무대 고르기와 같은 판 모양이고, 잠긴 판은 그림이 어둡고 수수께끼 같은 힌트만 보인다.
+// 판을 고르고(한 번) 한 번 더 누르면(또는 Enter) 그 게임을 연다. 게임을 마치고 나오면 이 화면으로 돌아온다.
+const MINI=[
+  {id:'zombie',tag:'좀비 서바이벌',n:'방역선',sub:'밀려드는 감염자 사이에서 새벽까지',intro:'10분 동안 사방에서 몰려오는 감염자를 막아 내며 무기를 키운다. 해가 뜰 때까지 버티면 <b>새벽 맞이</b>.',
+   h:'제목을 거듭 두드리는 사람에게 문이 열린다.',rec:()=>MEM.zg&&MEM.zg.runs?'최고 '+Number(MEM.zg.best||0).toLocaleString('ko-KR')+'점 · 새벽 맞이 '+(MEM.zg.wins||0)+'번':'',open:()=>zgOpen(stepMini)},
+  {id:'sail',tag:'폭풍 해협 레이스',n:'대항해',sub:'백신을 싣고 섬마을 세 곳으로',intro:'백신이 상하기 전에 폭풍 해협을 뚫고 섬마을 세 곳을 지나 달린다. 암초를 스치면 시간이 붙고, 부딪히면 배가 상한다.',
+   h:'나침반은 한 바퀴만으로는 길을 보여 주지 않는다.',rec:()=>MEM.sail&&MEM.sail.v===2&&MEM.sail.best?'최고 '+Math.floor(MEM.sail.best/60)+':'+(MEM.sail.best%60).toFixed(1).padStart(4,'0')+' · 금메달 '+(MEM.sail.gold||0)+'번':'',open:()=>sailOpen(stepMini)},
+  {id:'star',tag:'밤하늘 서바이벌',n:'별똥별을 피해라',sub:'쏟아지는 별똥별 사이를 날아라',intro:'나침반의 금빛 별을 끌어 별똥별을 피하고 소원 조각을 모은다. <b>150초</b>를 버티면 새벽이 온다.',
+   h:'큰 나침반의 하얀 바늘 끝이 별을 오래 바라보면 하늘이 열린다.',rec:()=>MEM.star&&MEM.star.v===1&&MEM.star.best?'최고 '+MEM.star.best.toLocaleString('ko-KR')+'점 · 새벽 맞이 '+(MEM.star.dawn||0)+'번':'',open:()=>starOpen(stepMini)}];
+const miniSub=()=>{const n=MINI.filter(x=>eggOn(x.id)).length;return n?n+' / '+MINI.length+' 열림 · 비밀을 찾으면 하나씩 열린다':'숨겨진 게임 셋 · 비밀을 찾으면 열린다';};
+// 수영 금메달 선물을 받았는데 아직 대항해를 못 열었으면, 잠긴 대항해 칸에 여는 법을 그대로 적고 그 칸을 고르면 튜토리얼을 다시 연다
+const miniGift=x=>x.id==='sail'&&!!MEM.sailHint&&!eggOn('sail');
+function stepMini(){let k=Math.max(0,MINI.findIndex(x=>eggOn(x.id)));const n=MINI.filter(x=>eggOn(x.id)).length;
+  cine([{t:'미니게임',h:'<div class="gx gx-camp gx-mini"><div class="gx-top"><span class="gx-tag">미니게임 · '+n+' / '+MINI.length+' 열림</span></div><h2 class="gx-q">어떤 게임을 할까</h2><div class="gx-cpw">'+
+    MINI.map((x,i)=>{const on=eggOn(x.id),r=on&&x.rec(),gf=miniGift(x);return '<button class="gx-cp'+(on?'':' lk')+(gf?' gift':'')+'" data-c="'+x.id+'" style="--i:'+i+'"><span class="gx-cp-art" aria-hidden="true">'+(CP_ART[x.id]||'')+'</span>'+
+      '<span class="gx-cp-tx"><span class="gx-cp-tag">'+(on?x.tag:gf?'금메달 선물':'잠김')+'</span><b>'+(on?x.n:'???')+'</b><span class="gx-cp-sub">'+(on?x.sub:gf?'로고의 금빛 나침반을 다섯 바퀴 돌려라':x.h)+'</span>'+
+      (on?'<span class="gx-cp-in">'+x.intro+(r?'<br><span class="gx-cp-rec">'+r+'</span>':'')+'</span><span class="gx-cp-go">이 게임으로 ▶ <kbd class="gx-keys">Enter</kbd></span>':
+       gf?'<span class="gx-cp-in">메인 메뉴 로고의 나침반을 손가락으로 잡고 원을 그리며 돌려 보세요.</span><span class="gx-cp-go">튜토리얼 다시 보기 ▶</span>':'<span class="gx-cp-in">아직 비밀을 찾지 못했다.</span>')+'</span></button>';}).join('')+'</div></div>'}],
+    {nav:false,cls:'gm',back:home,key:e=>{const L=MINI.length;
+      if(e.key==='ArrowRight'||e.key==='ArrowDown'){pick((k+1)%L,1);return true;}
+      if(e.key==='ArrowLeft'||e.key==='ArrowUp'){pick((k-1+L)%L,1);return true;}
+      if(gxEnter(e)){go();return true;}}});
+  const P=[...document.querySelectorAll('.gx-mini .gx-cp')],hov=matchMedia('(hover:hover)').matches;
+  const pick=(i,snd)=>{if(snd&&i!==k)gxSfx('tick',i);k=i;P.forEach((p,j)=>p.classList.toggle('on',j===i));};
+  const go=()=>{const x=MINI[k];if(!eggOn(x.id)){if(miniGift(x)){gxSfx('click');MEM.sailHint=1;msave();home();return;}gxSfx('lock');return;}gxSfx('click');try{aInit();}catch(e){}x.open();};
   P.forEach((p,i)=>{if(hov)p.onmouseenter=()=>pick(i,1);p.onclick=()=>{if(i===k)go();else pick(i,1);};});
   pick(k);}
 // 지도자 능력치: 기본 지표에 주는 보정을 가운데 0선 기준 막대로

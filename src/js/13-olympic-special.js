@@ -82,11 +82,24 @@ function olySteps(open,close){const ST=[
  const U=SP.usa.find(s=>s.id==='olym_u');if(U){const st=U.steps;U.steps=olySteps(st[0],st[st.length-1]);}}
 // 판의 6칸과 조건. 조건 하나 = [화면 지표, 비교, 기준] 또는 특별한 조건 이름
 const BOARD={kr:['amend','olym','expo','peace','war_k','pand_k'],joseon:['jikgye','envoy','gwageo','compile','war_j','pand_j'],usa:['amend22','moon','war_u','pand_u','olym_u','newdeal']};
-const NEED={amend:[['P','>=',50]],olym:[['E','>=',57],['A','>=',52],['H','>=',55]],expo:[['E','>=',53],['X','<=',30]],peace:[['X','<=',30],['NOWAR']],war_k:[['M','>=',70]],pand_k:[['COV'],['I','>=',20]],
- jikgye:[['P','>=',50]],envoy:[['A','>=',45],['E','>=',47]],gwageo:[['X','<=',30],['P','<=',50]],compile:[['E','>=',55],['X','<=',30]],war_j:[['M','>=',70]],pand_j:[['I','>=',25]],
- amend22:[['T2'],['P','>=',50]],moon:[['E','>=',58],['X','<=',30]],war_u:[['M','>=',70]],pand_u:[['I','>=',25]],olym_u:[['E','>=',55],['A','>=',50]],newdeal:[['E','<=',45]]};
+// 2기(두 번째 치세)부터는 임기마다 판을 다시 짠다: 첫 칸은 권력 과제(대한민국은 연임 개헌이 통과된 뒤로 비상계엄), 나머지 다섯은 아래 묶음에서
+// 지난 임기에 하지 않은 것을 먼저, 그다음 해 본 것을(임기마다 다시 할 수 있다) 고른다. 같은 임기 안에서는 판이 그대로다(임기 번호로 순서를 정한다)
+const BOARD_POOL={kr:['olym','expo','peace','war_k','pand_k','g20'],joseon:['envoy','gwageo','compile','war_j','pand_j'],usa:['moon','war_u','pand_u','olym_u','newdeal']};
+function boardIds(){const C=CP.id,base=BOARD[C]||[];let pw=base[0];
+  if(C==='kr'&&CAR.amendPerm)pw='coup';   // 연임 개헌을 한 번 이룬 뒤에는 권력 칸이 비상계엄으로 바뀐다
+  if(CAR.term<=1)return [pw].concat(base.slice(1));
+  // 대한민국 방역 총력전은 코로나(1기) 과제라 2기부터는 판에 올리지 않는다(그 자리에 G20 정상회의가 들어온다)
+  const P=(BOARD_POOL[C]||base.slice(1)).filter(id=>id!=='pand_k'||isCov()),prev=CAR.term-1,did=id=>!!(CAR.spDone&&CAR.spDone[id+'_'+prev]),seed=CAR.term*7+3;
+  // 임기 번호로 섞는다(같은 임기에는 같은 판)
+  P.sort((a,b)=>((a.charCodeAt(0)*31+a.length*7+seed)%11)-((b.charCodeAt(0)*31+b.length*7+seed)%11));
+  const fresh=P.filter(id=>!did(id)),old=P.filter(id=>did(id));
+  return [pw].concat(fresh.concat(old).slice(0,5));}
+const NEED={amend:[['P','>=',50]],coup:[['P','>=',70],['M','>=',65],['NODICT']],g20:[['A','>=',50],['E','>=',50],['P','<=',50]],olym:[['E','>=',57],['A','>=',52],['H','>=',55]],expo:[['E','>=',53],['X','<=',30]],peace:[['X','<=',30],['NOWAR']],war_k:[['M','>=',65]],pand_k:[['COV'],['I','>=',20]],
+ jikgye:[['P','>=',50]],envoy:[['A','>=',45],['E','>=',47]],gwageo:[['X','<=',30],['P','<=',50]],compile:[['E','>=',55],['X','<=',30]],war_j:[['M','>=',65]],pand_j:[['I','>=',25]],
+ amend22:[['T2'],['P','>=',50]],moon:[['E','>=',58],['X','<=',30]],war_u:[['M','>=',65]],pand_u:[['I','>=',25]],olym_u:[['E','>=',55],['A','>=',50]],newdeal:[['E','<=',45]]};
 function needEval(n){if(n[0]==='NOWAR')return {ok:SCX().id!=='war',txt:'전쟁 위기가 아닐 때'};
   if(n[0]==='COV')return {ok:isCov(),txt:'코로나 위기 중(1기)'};
+  if(n[0]==='NODICT')return {ok:!CAR.dict,txt:'아직 영구집권하지 않았다'};
   if(n[0]==='T2')return {ok:CAR.term>=2,txt:'2기 임기 중'};
   const v=Math.round(n[0]==='I'?S.i:vVal(n[0])),nm=n[0]==='I'?'위기 지수':vName(n[0]),ok=n[1]==='>='?v>=n[2]:v<=n[2];
   return {ok:ok,txt:nm+' '+n[2]+(n[1]==='>='?' 이상':' 이하'),cur:v};}
@@ -94,17 +107,18 @@ function startSpecial(sp,key,y){CAR.spDone[key]=1;CAR.spLog=CAR.spLog||[];CAR.sp
   CAR.spRun={id:sp.id,n:sp.n,k:sp.k,tro:sp.tro,ok:0,done:0,total:sp.steps.length,ctx:{}};
   sp.steps.forEach((f,i)=>queue.splice(i,0,{sg:[sp.id,i]}));pendingNews=Object.assign({},sp.bn);bgmGame();}
 function spBoard(go){const y=Math.round(S.turn/PY);if(y>=YRS)return go();CAR.spDone=CAR.spDone||{};window.scrollTo(0,0);
-  const L=(BOARD[CP.id]||[]).map(id=>{const sp=(SP[CP.id]||[]).find(s=>s.id===id);if(!sp)return null;const key=sp.id+(sp.perTerm?'_'+CAR.term:''),nd=(NEED[id]||[]).map(needEval);
+  // 판의 과제는 임기마다 다시 할 수 있다(이 임기에 이미 치른 것만 막힌다)
+  const L=boardIds().map(id=>{const sp=(SP[CP.id]||[]).find(s=>s.id===id);if(!sp)return null;const key=sp.id+'_'+CAR.term,nd=(NEED[id]||[]).map(needEval);
     return {sp:sp,key:key,done:!!CAR.spDone[key],nd:nd,ok:nd.every(x=>x.ok)};}).filter(Boolean);
   let sel=-1;
   const draw=()=>{R.innerHTML='<div class="spw" style="animation:fdIn .35s ease-out"><div style="font-size:12px;font-weight:600;color:var(--text-muted)">'+(CP.id==='joseon'?CAR.term+'번째 치세':CAR.term+'기')+' '+(y+1)+'년차를 앞두고</div>'+
-     '<div class="hd" style="font-size:26px;margin:2px 0 4px">특별 국정 과제</div><div style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px">올해 벌일 큰일을 하나 고를 수 있다. 조건을 채운 과제만 색이 들어온다. 하지 않고 넘어가도 된다.</div>'+tip('board')+
+     '<div class="hd" style="font-size:26px;margin:2px 0 4px">특별 국정 과제</div><div style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px">올해 벌일 큰일을 하나 고를 수 있다. 조건을 채운 과제만 색이 들어온다. 하지 않고 넘어가도 된다.'+(CAR.term>1?' <b>'+(CP.id==='joseon'?'치세':'임기')+'가 바뀌어 과제 판도 새로 짜였다.</b>':'')+'</div>'+tip('board')+
      '<div class="spb-g">'+L.map((x,j)=>{const X=SPX[x.sp.id]||SPX.g20,on=x.ok&&!x.done;
        return '<button class="spb'+(on?' on':'')+(sel===j?' sel':'')+'" data-j="'+j+'"'+(on?'':' disabled')+' style="--sb:'+X.bg+';--sa:'+X.ac+'">'+
         '<svg class="spb-art" viewBox="0 0 120 120" aria-hidden="true">'+SPX_ART[X.art]+(X.ch?'<text x="60" y="76" text-anchor="middle" font-size="44" font-weight="800" stroke="none" fill="currentColor">'+X.ch+'</text>':'')+'</svg>'+
         '<span class="spb-k">'+(x.sp.k==='power'?'권력':'국정')+'</span><b class="spb-n">'+x.sp.n+'</b>'+
         '<span class="spb-c">'+x.nd.map(n=>'<i class="'+(n.ok?'y':'n')+'">'+(n.ok?'✓':'✗')+' '+n.txt+(n.cur!=null?' <small>(지금 '+n.cur+')</small>':'')+'</i>').join('')+'</span>'+
-        (x.done?'<span class="spb-st">이미 치렀다</span>':'')+'</button>';}).join('')+'</div><div class="spw-bt">'+
+        (x.done?'<span class="spb-st">'+(CAR.term>1||CP.id==='joseon'?'이번 '+(CP.id==='joseon'?'치세':'임기')+'에 치렀다':'이미 치렀다')+'</span>':'')+'</button>';}).join('')+'</div><div class="spw-bt">'+
      '<button id="spGo" class="pri" style="width:100%;padding:15px;font-size:15px;margin-top:14px"'+(sel<0?' disabled':'')+'>'+(sel<0?'과제를 고르세요':L[sel].sp.n+' 시작')+'</button>'+
      '<button id="spSkip" style="width:100%;padding:13px;font-size:14px;margin-top:8px">올해는 넘어간다</button></div></div>';
     bindTips();

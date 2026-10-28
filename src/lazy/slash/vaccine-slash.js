@@ -14,7 +14,8 @@ function mini(back,mission){mgStop();window.scrollTo(0,0);
   const box=document.getElementById('mgBox'),cv=document.getElementById('mgC'),ov=document.getElementById('mgOv'),ctx=cv.getContext('2d');
   
   const FF=getComputedStyle(document.body).fontFamily;
-  const W=box.clientWidth,H=Math.round(Math.min(Math.max(440,window.innerHeight*.66),640));box.style.height=H+'px';
+  // 높이: 보통은 화면의 2/3(440~640), 낮은 가로 화면에서는 보이는 높이 안에서(바깥 여백을 빼고)
+  const W=box.clientWidth,ih=window.innerHeight,H=Math.round(Math.min(Math.max(Math.min(440,ih-24),ih*.66),640));box.style.height=H+'px';
   const D=Math.min(2,window.devicePixelRatio||1);cv.width=W*D;cv.height=H*D;cv.style.width=W+'px';cv.style.height=H+'px';ctx.setTransform(D,0,0,D,0,0);
   MG={run:false,raf:0,W:W,H:H,back:back||home,mission:mission||null,state:'intro'};
   const G=MG;

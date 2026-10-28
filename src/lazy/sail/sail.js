@@ -18,7 +18,7 @@ const srMedal=s=>s<=SR_PAR?0:s<=SR_PAR*1.12?1:s<=SR_PAR*1.3?2:3;
 // wf: 해협 폭 배율. 가로 화면은 해협이 화면을 꽉 채우도록 넓힌다(굽이도 그만큼 크게)
 function srTrack(wf){const p=[Math.random()*6,Math.random()*6,Math.random()*6];wf=wf||1;
   return {wf:wf,cx:d=>wf*(150*Math.sin(d/1500+p[0])+60*Math.sin(d/560+p[1])),hw:d=>wf*Math.max(150,215+50*Math.sin(d/900+p[2])-55*Math.min(1,d/SR_TOTAL))};}
-function sailOpen(){if(document.getElementById('sl'))return;try{if(CINE)cineClose();}catch(e){}window.scrollTo(0,0);
+function sailOpen(back){if(document.getElementById('sl'))return;back=typeof back==='function'?back:home;try{if(CINE)cineClose();}catch(e){}window.scrollTo(0,0);
   const w=document.createElement('div');w.id='sl';w.className='sl';
   w.innerHTML='<canvas id="slC"></canvas><div class="sl-hud"><button type="button" class="sl-x" id="slX" aria-label="메인 메뉴로">✕</button>'+
     '<span class="sl-h"><small>배송</small><b id="slD">0 / 3</b></span><span class="sl-h"><small>선체</small><b id="slHp"></b></span>'+
@@ -58,7 +58,7 @@ function sailOpen(){if(document.getElementById('sl'))return;try{if(CINE)cineClos
       (full?'<div class="sl-med">'+['금 · 기준 안','은 · 1.12배 안','동 · 1.3배 안','메달 없음'].map((x,i)=>'<span class="'+(i===m?'on':'')+'">'+x+'</span>').join('')+'</div>':'')+
       '<button type="button" class="pri" id="slAg">다시 출항</button><button type="button" id="slOut">메인 메뉴로</button></div>');
       $('slAg').onclick=()=>{try{SFX.click();}catch(e){}reset();brief();};$('slOut').onclick=close;},win?400:900);};
-  const close=()=>{try{SFX.back();}catch(e){}live=false;w.remove();document.body.style.overflow='';document.removeEventListener('keydown',kd);document.removeEventListener('keyup',ku);removeEventListener('resize',fit);home();};
+  const close=()=>{try{SFX.back();}catch(e){}live=false;w.remove();document.body.style.overflow='';document.removeEventListener('keydown',kd);document.removeEventListener('keyup',ku);removeEventListener('resize',fit);back();};
   $('slX').onclick=close;
   // 키: 누를 때마다 45°씩(누르고 있어도 한 번). 순풍 돛만 누르고 있는 동안 켜진다
   // 뱃머리: ◀ 또는 ▶를 누르고 있는 동안만 그쪽으로 45°, 떼면 다시 곧장(둘 다 누르면 곧장)

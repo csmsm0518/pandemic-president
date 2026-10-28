@@ -155,12 +155,15 @@ function lbDet(r,rk){const d=r.det,dv=v=>v==null||v===''?'–':Number(v).toLocal
     (d.camp||d.scen?'<p class="lbd-p"><b>겪은 위기</b>'+lbEsc([d.camp,d.scen].filter(Boolean).join(' · '))+'</p>':'')+(d.titles?'<p class="lbd-p"><b>임기 평가</b>'+lbEsc(d.titles)+'</p>':'')+'</div>';}function svLoad(id){const d=svList().find(x=>x.id===id);
   if(!d||d.v!==1||!CAMPS[d.camp]){svDrop(id);return home();}
   try{camp=d.camp;bg=d.bg;mode=d.mode;dif=d.dif;NICK=d.nick||NICK;if(d.pf)PF=Object.assign({school:'',name:'',phone:'',agree:false},d.pf);PINH=d.pin||'';
-    cineClose();cfgApply();bgmGame();
+    cineClose();cfgApply();
     ({S,pool,cur,last,tally,chron,queue,base,deaths,yd,MOD,tok,streak,lastT,lastO,peakI,hist,adv,CAR,TH,SEEN,YS,yTally,cDeaths,covD,SEENT,SEENN,banner,pendingNews,LOG,RUN}=svDec(d.g));
     prev=null;snap=null;T0=Date.now()-(d.el||0);SHOWN=0;tfLast=null;alLast=null;lastFit={q:0,why:[]};lastS=1;
     setTroName();mapReset();MAP.tgt=S.i;MAP.dtgt=d.dt||0;mapStart();window.scrollTo(0,0);}
   catch(e){svDrop(id);HUB_MSG='저장된 게임을 불러오지 못했어요. 새 게임을 시작해 주세요.';return home();}
-  if(d.at==='nx')return goNext();   // 결과를 본 뒤 저장했으면 '계속'을 누른 것처럼 이어 간다
-  bnSeen=d.bn?cur:null;ev();}// 무대·결정 빈도에 따라 정해지는 값(새 게임과 불러오기가 함께 쓴다)
+  bgmGame();histArm();
+  // 게임이 바뀐 뒤(사건 표 등) 예전 저장본이 첫 화면에서 깨지면, 같은 오류가 되풀이되지 않게 그 저장본을 지우고 안내한다
+  try{if(d.at==='nx')return goNext();   // 결과를 본 뒤 저장했으면 '계속'을 누른 것처럼 이어 간다
+    bnSeen=d.bn?cur:null;ev();}
+  catch(e){svDrop(id);HUB_MSG='이 저장본은 예전 게임 버전에서 만들어져 이어 할 수 없어요. 새 게임을 시작해 주세요.';return home();}}// 무대·결정 빈도에 따라 정해지는 값(새 게임과 불러오기가 함께 쓴다)
 function cfgApply(){CP=CAMPS[camp];document.documentElement.dataset.camp=CP.id;YRS=CP.yrs;MAXT=CP.maxT;KN=Object.assign({},KN0,CP.lbl);PY=MODE[mode].py;TPT=12/PY;EVS=MODE[mode].evs;}
 

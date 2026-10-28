@@ -772,9 +772,12 @@ function buildBoard_() {
   v[0].forEach((n, i) => { ix[n] = i; });
   const g = (r, n) => (ix[n] === undefined ? '' : r[ix[n]]);
   const num = x => (x === '' || x === null || isNaN(Number(x)) ? null : Number(x));
+  const PS = privSchools_();
   const rows = [];
   for (let i = 1; i < v.length; i++) {
     const r = v[i], sc = num(g(r, '커리어 점수')), id = String(g(r, '판ID'));
+    // 학교: 관리자가 '참가자(비공개)' 탭에서 고친 학교가 있으면 그것을 쓴다(요약 탭의 학교는 처음 받은 그대로)
+    const sch = Object.prototype.hasOwnProperty.call(PS, id) ? PS[id] : g(r, '학교');
     if (sc === null || id === 'test') continue;          // 중도 이탈·테스트 줄은 제외
     if (String(g(r, '숨김') || '').trim()) continue;      // 관리자가 가린 줄 · 서버가 이상하다고 적은 줄
     if (Math.abs(sc) > SCORE_MAX) continue;
@@ -783,7 +786,7 @@ function buildBoard_() {
     rows.push({
       id: id,
       nick: pubNick_(g(r, '닉네임')),
-      who: personKey_(g(r, '플레이어ID'), g(r, '닉네임'), g(r, '학교'), id),
+      who: personKey_(g(r, '플레이어ID'), g(r, '닉네임'), sch, id),
       score: sc,
       terms: num(g(r, '임기 수(선)')) || 1,
       years: num(g(r, '총 재임(년)')) || 0,
@@ -792,7 +795,7 @@ function buildBoard_() {
       lid: String(g(r, '닮은 지도자ID')),
       bg: String(g(r, '출신 배경')),
       diff: String(g(r, '난이도')),
-      school: schoolName_(g(r, '학교')),
+      school: schoolName_(sch),
       tro: num(g(r, '업적 수')) || 0,
       appr: num(g(r, '최종 지지율')),
       camp: String(g(r, '무대') || ''),
@@ -951,8 +954,37 @@ function personKey_(pid, nick, school, id) {
   if (pid) return 'p:' + pid + (anon ? '' : '|' + nk);
   return anon ? 'r:' + id : 'n:' + schoolName_(school) + '|' + nk;
 }
+// 관리자가 '참가자(비공개)' 탭의 학교 칸을 고치면(잘못 적은 학교 이름 등) 명예의 전당은 그 판의 학교를 고친 값으로 본다.
+// 판ID → 그 탭의 학교. 같은 판이 두 줄이면 관리자가 고친 줄(학교가 '학교(적은 그대로)'와 다른 줄)을, 그다음 아래 줄을 쓴다.
+// 고친 이름도 schoolName_으로 다듬고 '학교 이름 합치기' 표를 거친다. 학교 칸을 비우거나 X를 적으면 그 판은 학교 순위에서 빠진다.
+// 이 탭에서는 판ID · 학교 · 학교(적은 그대로) 세 칸만 읽는다(이름 · 전화번호는 읽지 않는다). 순위에는 다음 갱신 때(30초 안에) 반영된다.
+const PRIV_SHEET = '참가자(비공개)';
+function privSchools_() {
+  const m = {}, fixed = {};
+  try {
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(PRIV_SHEET);
+    if (!sh || sh.getLastRow() < 2) return m;
+    const H = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(x => String(x).trim());
+    const ci = H.indexOf('판ID'), cs = H.indexOf('학교'), cr = H.indexOf('학교(적은 그대로)'), n = sh.getLastRow() - 1;
+    if (ci < 0 || cs < 0) return m;
+    const col = c => sh.getRange(2, c + 1, n, 1).getValues();
+    const ids = col(ci), sch = col(cs), raw = cr >= 0 ? col(cr) : null;
+    for (let i = 0; i < n; i++) {
+      const id = String(ids[i][0] || '').replace(/^'/, '').trim();
+      if (!id) continue;
+      const s = String(sch[i][0] === null || sch[i][0] === undefined ? '' : sch[i][0]).trim();
+      const r = raw ? String(raw[i][0] || '').trim() : '';
+      const edited = !!r && schoolName_(r) !== schoolName_(s);
+      if (fixed[id] && !edited) continue;
+      m[id] = s;
+      if (edited) fixed[id] = 1;
+    }
+  } catch (e) {}
+  return m;
+}
 // 학교 평균 점수: 사람마다 가장 좋은 기록 하나로 학교 평균을 낸다. 순위는 인원이 적은 학교가 한 판의 운으로 맨 위에 서지 않게,
-// 평균을 전체 평균 쪽으로 조금 당긴 값(베이지안 평균: 가상의 '보통 학생' SCHOOL_M명을 더한 셈)으로 매긴다. 화면에는 실제 평균과 인원을 보여 준다
+// 평균을 전체 평균 쪽으로 조금 당긴 값(베이지안 평균: 가상의 '보통 학생' SCHOOL_M명을 더한 셈)으로 매긴다.
+// 화면에는 순위를 매긴 그 값(adj, 인원 보정 평균)을 보여 준다(인원 수는 보여 주지 않는다). avg · n은 예전 게임 화면이 쓰던 값이라 그대로 둔다
 const SCHOOL_M = 3;
 function schoolRank_(rows) {
   const best = {};

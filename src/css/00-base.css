@@ -8,14 +8,18 @@
   --radius:8px;
   --font-ui:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic","Segoe UI",sans-serif;
   --font-voice:"Noto Serif KR","Apple Myungjo","Batang",Georgia,serif;
-  color-scheme:light;
+  color-scheme:only light;
 }
 *{box-sizing:border-box}
+/* 아래로 당겨 새로고침(안드로이드 크롬·삼성 인터넷·iOS)이 게임 중에 일어나지 않게, 가로로 돌려도 아이폰이 글자를 멋대로 키우지 않게,
+   빠르게 두 번 누를 때 화면이 확대되지 않게(미니게임 연타 · 제목 일곱 번 누르기) */
+html{overscroll-behavior-y:none;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
+body{overscroll-behavior-y:none}
 html,body{margin:0;background:var(--bg);color:var(--text-primary);font-family:var(--font-ui);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;word-break:keep-all;overflow-wrap:break-word;caret-color:var(--accent)}
 ::selection{background:rgba(179,38,30,.2);color:var(--ink)}
 html{scrollbar-color:#c9bfab var(--bg)}
 ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:#c9bfab;border-radius:10px;border:2px solid var(--bg)}
-#app{max-width:440px;margin:0 auto;padding:24px 16px 56px;min-height:100vh}
+#app{max-width:440px;margin:0 auto;padding:24px 16px 56px;min-height:100vh;min-height:100svh}
 .hd{font-family:var(--font-voice);font-weight:800;letter-spacing:-.02em}
 button{font:inherit;color:var(--text-primary);background:var(--surface-0);border:1px solid var(--border-strong);border-radius:10px;padding:10px 14px;cursor:pointer;line-height:1.4;transition:background .15s,border-color .15s,transform .08s}
 button:hover{background:#fbf8f2;border-color:rgba(29,27,24,.42)}

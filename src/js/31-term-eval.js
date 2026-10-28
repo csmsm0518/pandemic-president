@@ -115,15 +115,22 @@ function lastShot(te,p,n){CAR.lastShot=1;const ok=Math.random()<p,us=CP.id==='us
       '<button id="lsOut" style="width:100%;padding:13px;font-size:14px">'+(pct>0?'개헌만 남기고 물러난다':'커리어 결산 보기')+'</button></div>';
     const r=document.getElementById('lsRun');if(r)r.onclick=()=>{SFX.click();te.decision='임기 말 개헌 후 '+n+'선 도전';election(true,pct,te);};
     document.getElementById('lsOut').onclick=()=>{SFX.click();te.decision+=pct>0?' 후 퇴임':' 후 출마 불가';careerEnd(pct>0?'retire':'lost');};});}
-// 조선: 치세가 끝날 때마다 민심의 심판. 35 미만이면 반정 위험, 20 미만이면 반정.
-function reignEnd(te){const av=Math.round(cl(S.a)),isLast=CAR.term>=MAXT,risk=av>=35?0:av<20?100:Math.round((35-av)*100/15),n=CAR.term+1;
+// 조선: 치세가 끝날 때마다 민심의 심판. 민심 60 이상이면 민심 탓의 위험은 없고, 30~60은 반정 위험이 비례해서 오르며, 30 미만이면 반정.
+// 여기에 조정의 불안이 더해진다: 세 번째 치세부터 오래 앉은 임금을 끌어내리려는 움직임(3번째 +10% · 4번째 +20%),
+// 당쟁이 45를 넘으면 넘은 만큼 ×0.8, 세도가 35를 넘으면 넘은 만큼 ×0.6. 모두 합쳐 95%까지(민심 30 미만은 100%).
+const RG_SAFE=60,RG_DEAD=30;
+function rgRisk(n){const av=Math.round(cl(S.a));if(av<RG_DEAD)return {r:100,base:100,old:0,fac:0};
+  const base=av>=RG_SAFE?0:Math.round((RG_SAFE-av)*100/(RG_SAFE-RG_DEAD)),old=Math.max(0,n-2)*10,fac=Math.round(Math.max(0,S.u-45)*.8+Math.max(0,S.c-35)*.6);
+  return {r:Math.min(95,base+old+fac),base:base,old:old,fac:fac};}
+function reignEnd(te){const av=Math.round(cl(S.a)),isLast=CAR.term>=MAXT,n=CAR.term+1,RK=rgRisk(n),risk=isLast?0:RK.r;
   te.winP=isLast?'':100-risk;
-  const acol=av>=65?'#2e7d55':av>=35?'#9a6400':'#b3261e';
+  const acol=av>=RG_SAFE?'#2e7d55':av>=RG_DEAD?'#9a6400':'#b3261e';
   const opt=(id,t,sub,col)=>'<button id="'+id+'" style="width:100%;text-align:left;padding:14px 15px;margin-bottom:8px;'+(col?'border-color:'+col+'99;':'')+'"><span style="display:block;font-size:15px;font-weight:600">'+t+'</span><span style="display:block;font-size:12px;color:var(--text-muted);margin-top:3px">'+sub+'</span></button>';
   let msg,btns;
   if(isLast){msg='옥좌에 오른 지 '+(CAR.term*YRS)+'년. <b>이제 세자에게 자리를 물려줄 때다.</b>';btns=opt('fin','세자에게 선위한다','치세를 마친다','#2f5f99');}
   else if(risk>=100){msg='민심이 완전히 떠났다. <b>반정의 칼날이 대궐 문 앞에 와 있다.</b>';btns=opt('dep','운명을 맞는다','반정이 일어난다','#b3261e');}
-  else{msg=risk?'민심이 흔들린다. 치세를 이어 가면 <b>반정이 일어날 가능성 '+risk+'%</b>.':'민심이 안정돼 있다. <b>치세를 이어 갈 수 있다.</b>';
+  else{const why=[RK.base?'민심 '+RK.base+'%':'',RK.old?'오래된 치세 '+RK.old+'%':'',RK.fac?'당쟁 · 세도 '+RK.fac+'%':''].filter(Boolean).join(' · ');
+    msg=risk?(RK.base?'민심이 흔들린다':'민심은 버티지만 조정이 술렁인다')+'. 치세를 이어 가면 <b>반정이 일어날 가능성 '+risk+'%</b>.'+(why?'<br><span style="font-size:12.5px;color:var(--text-muted)">'+why+'</span>':''):'민심이 안정돼 있다. <b>치세를 이어 갈 수 있다.</b>';
     btns=opt('run',n+'번째 치세를 이어 간다',risk?'반정 위험 '+risk+'% · 다음 치세에는 새로운 시련이 온다':'다음 치세에는 새로운 시련이 온다','#2f4a6b')+opt('retire','세자에게 선위한다','스스로 물러나 상왕이 된다','#2f5f99');}
   R.innerHTML='<div style="animation:fdIn .4s ease-out">'+lab(CAR.term+'번째 치세 · '+YRS+'년의 끝 · '+ageNow()+'세')+
    '<div class="cd sealhit" style="position:relative;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;overflow:hidden">'+
@@ -131,8 +138,8 @@ function reignEnd(te){const av=Math.round(cl(S.a)),isLast=CAR.term>=MAXT,risk=av
    '<div style="font-size:11px;color:var(--text-muted);margin-bottom:6px">이번 치세의 평가 · '+te.scenario+'</div>'+
    '<div style="font-size:22px;font-weight:600;color:'+te.col+';line-height:1.3;margin-bottom:8px;padding-right:80px">'+te.ti+'</div>'+
    '<div style="font-size:14px;color:var(--text-secondary);line-height:1.75">'+words(te.ds,200)+'</div></div>'+
-   card(lab('치세 끝의 민심')+'<div style="position:relative;height:16px;border-radius:8px;background:linear-gradient(90deg,rgba(179,38,30,.14) 0 20%,rgba(179,38,30,.08) 20% 35%,rgba(46,125,85,.10) 35% 100%);margin:4px 0 8px"><span style="position:absolute;left:0;top:0;bottom:0;width:'+av+'%;border-radius:8px;background:'+acol+';animation:barG 1.3s cubic-bezier(.2,.8,.2,1) both"></span></div>'+
-     '<div style="position:relative;height:14px;font-size:11px;color:var(--text-muted)"><span style="position:absolute;left:20%;transform:translateX(-50%)">20 반정</span><span style="position:absolute;left:35%;transform:translateX(-50%);color:var(--text-secondary);font-weight:600">35 안전</span><span style="position:absolute;right:0">100</span></div>'+
+   card(lab('치세 끝의 민심')+'<div style="position:relative;height:16px;border-radius:8px;background:linear-gradient(90deg,rgba(179,38,30,.14) 0 '+RG_DEAD+'%,rgba(179,38,30,.08) '+RG_DEAD+'% '+RG_SAFE+'%,rgba(46,125,85,.10) '+RG_SAFE+'% 100%);margin:4px 0 8px"><span style="position:absolute;left:0;top:0;bottom:0;width:'+av+'%;border-radius:8px;background:'+acol+';animation:barG 1.3s cubic-bezier(.2,.8,.2,1) both"></span></div>'+
+     '<div style="position:relative;height:14px;font-size:11px;color:var(--text-muted)"><span style="position:absolute;left:'+RG_DEAD+'%;transform:translateX(-50%)">'+RG_DEAD+' 반정</span><span style="position:absolute;left:'+RG_SAFE+'%;transform:translateX(-50%);color:var(--text-secondary);font-weight:600">'+RG_SAFE+' 안전</span><span style="position:absolute;right:0">100</span></div>'+
      '<div style="font-size:14px;margin-top:10px;line-height:1.7">'+msg+'</div>')+btns+'</div>';
   SFX.stamp(.78);SFX.grade(te.g,.78);termCine(te);
   const b=id=>document.getElementById(id);

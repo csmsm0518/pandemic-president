@@ -43,7 +43,9 @@
 .yrfx-h.b::after{top:6px}
 .yrfx.in .yrfx-h{transform:none}
 .yrfx.open .yrfx-h.t{transform:translateY(-101%)}.yrfx.open .yrfx-h.b{transform:translateY(101%)}
-.yrfx-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px;opacity:0}
+.yrfx-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding:24px 24px 28px;opacity:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+.yrfx-c::-webkit-scrollbar{display:none}
+.yrfx-c>:first-child{margin-top:auto}.yrfx-c>:last-child{margin-bottom:auto}
 .yrfx-c b{font-family:var(--font-voice);font-weight:800;font-size:38px;color:#f1d589;letter-spacing:.08em;margin-bottom:14px}
 .yrfx-c i{display:block;width:min(320px,70vw);height:1px;background:linear-gradient(90deg,transparent,#f1d589,transparent);transform:scaleX(0);position:relative}
 .yrfx-c i::after{content:"◆";position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);font-size:10px;color:#f1d589;font-style:normal}
@@ -55,9 +57,9 @@
 .yrfx.open .yrfx-c{opacity:0;transition:opacity .25s}
 .yrfx.open{pointer-events:none}
 /* 인용구 카드 */
-.qfx{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse at 50% 30%,#2c2418,#0e0c09 75%);cursor:pointer;animation:dkFade .5s both}
+.qfx{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:24px;overflow-y:auto;overscroll-behavior:contain;background:radial-gradient(ellipse at 50% 30%,#2c2418,#0e0c09 75%);cursor:pointer;animation:dkFade .5s both}
 .qfx.out{opacity:0;transition:opacity .5s ease}
-.qfx-in{max-width:520px;text-align:center}
+.qfx-in{max-width:520px;text-align:center;margin:auto 0}
 .qfx-l{font-size:12px;letter-spacing:.3em;color:#c9a24a;font-weight:700;animation:dkFade .6s .2s both}
 .qfx-r{height:1px;width:180px;margin:14px auto 18px;background:linear-gradient(90deg,transparent,#f1d589,transparent);transform:scaleX(0);animation:qfxGrow .9s .35s cubic-bezier(.2,.8,.2,1) forwards}
 @keyframes qfxGrow{to{transform:scaleX(1)}}

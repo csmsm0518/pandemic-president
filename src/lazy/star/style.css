@@ -1,0 +1,40 @@
+/* ---------- 별똥별을 피해라: 화면 가득 밤하늘. 위 점수 띠, 가운데 안내 카드(게임의 금장 결) ---------- */
+.ss{position:fixed;inset:0;z-index:120;overflow:hidden;background:#03050c;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.ss canvas{display:block;touch-action:none}
+.ss-hud{position:absolute;left:0;right:0;top:0;display:grid;grid-template-columns:1fr auto 1fr;align-items:start;padding:max(10px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 10px max(12px,env(safe-area-inset-left));
+  background:linear-gradient(180deg,rgba(3,5,12,.7),rgba(3,5,12,0));color:#dfe6ff;pointer-events:none}
+.ss-hud button{pointer-events:auto}
+.ss-x,.ss-p{width:40px;height:40px;padding:0;border-radius:50%;font-size:15px;color:#f3ead7;background:rgba(255,255,255,.08);border:1px solid rgba(241,213,137,.32);display:inline-flex;align-items:center;justify-content:center;gap:3px}
+.ss-x:hover,.ss-p:hover{background:rgba(255,255,255,.16);border-color:rgba(241,213,137,.6)}
+.ss-p i{display:block;width:4px;height:13px;border-radius:1px;background:#f1d589}
+.ss-sc{display:flex;flex-direction:column;align-items:center;pointer-events:none}
+.ss-sc b{font:800 32px/1 var(--font-ui);color:#fff6d8;font-variant-numeric:tabular-nums;text-shadow:0 2px 12px rgba(0,0,0,.6),0 0 18px rgba(255,214,120,.25)}
+.ss-sc small{margin-top:4px;font-size:12px;font-weight:700;letter-spacing:.08em;color:#9fb0d8;font-variant-numeric:tabular-nums}
+.ss-r{justify-self:end;display:flex;align-items:center;gap:10px}
+.ss-hp{display:inline-flex;align-items:center;gap:5px}
+.ss-hp i{width:13px;height:13px;transform:rotate(45deg);border-radius:2px;background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.ss-hp i.on{background:linear-gradient(135deg,#fff3c4,#e8c45a 55%,#a8822c);box-shadow:0 0 10px rgba(255,214,120,.55)}
+.ss-hp em{margin-left:3px;padding:2px 7px;border-radius:999px;font:800 10.5px var(--font-ui);font-style:normal;color:#0b1430;background:linear-gradient(180deg,#d6e6ff,#8fb4ff)}
+/* 단계 · 유성우 · 새벽 알림 */
+.ss-ban{position:absolute;left:50%;top:34%;display:flex;flex-direction:column;align-items:center;gap:6px;transform:translate(-50%,-50%) scale(.92);opacity:0;pointer-events:none;text-align:center;transition:opacity .35s,transform .35s}
+.ss-ban.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.ss-ban b{font:800 clamp(26px,6vw,40px)/1.15 var(--font-voice);color:#fff4d6;letter-spacing:.04em;text-shadow:0 3px 18px rgba(0,0,0,.7),0 0 24px rgba(255,214,120,.25)}
+.ss-ban span{font-size:13px;font-weight:700;letter-spacing:.14em;color:#c9d6ff}
+/* 안내 · 결과 카드 */
+.ss-ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(3,5,12,.5);overflow-y:auto}
+.ss-card{width:min(440px,100%);max-height:calc(100% - 8px);overflow-y:auto;margin:auto;padding:22px 20px;border-radius:16px;text-align:center;color:#f3ead7;background:linear-gradient(180deg,#141a2e,#0b0f1d);border:1px solid rgba(201,162,74,.45);
+  box-shadow:inset 0 0 0 4px #0b0f1d,inset 0 0 0 5px rgba(201,162,74,.25),0 20px 50px rgba(0,0,0,.55)}
+.ss-card.sm{width:min(340px,100%)}
+.ss-k{font-size:11.5px;font-weight:800;letter-spacing:.2em;color:#c9a24a}
+.ss-card h2{margin:6px 0 8px;font:800 30px/1.2 var(--font-voice);color:#fff4d6}
+.ss-s{margin:0 0 12px;font-size:14px;line-height:1.65;color:#d6d2c4}
+.ss-card ul{margin:0 0 14px;padding:0;list-style:none;text-align:left;font-size:12.5px;line-height:1.6;color:#c4c2b8}
+.ss-card li{position:relative;padding-left:14px;margin-bottom:5px}.ss-card li::before{content:"";position:absolute;left:2px;top:.6em;width:5px;height:5px;transform:rotate(45deg);background:#c9a24a}
+.ss-card li b{color:#ffe08a}
+.ss-big{margin:2px 0 12px;font:800 46px/1 var(--font-ui);color:#fff6d8;font-variant-numeric:tabular-nums;text-shadow:0 0 22px rgba(255,214,120,.3)}
+.ss-big small{margin-left:4px;font-size:16px;color:#c9a24a}
+.ss-b{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin-bottom:14px;font-size:12.5px;color:#a7a596}.ss-b b{margin-left:4px;font-size:16px;color:#fff;font-variant-numeric:tabular-nums}
+.ss-card button{width:100%;padding:14px;font-size:15px;margin-top:6px}
+@media (max-height:460px){.ss-card{padding:14px 16px}.ss-card h2{font-size:24px;margin:2px 0 4px}.ss-s{margin-bottom:6px;font-size:13px}.ss-card ul{font-size:12px;margin-bottom:8px}.ss-card li{margin-bottom:2px}.ss-big{font-size:36px;margin-bottom:8px}.ss-card button{padding:11px;font-size:14px}}
+@media (max-width:420px){.ss-sc b{font-size:28px}.ss-x,.ss-p{width:38px;height:38px}}
+@media (prefers-reduced-motion:reduce){.ss-ban{transition:none}}

@@ -1,0 +1,73 @@
+
+/* ---------- 대항해 잠금 해제 튜토리얼(수영 금메달 선물) ---------- */
+.stut{position:fixed;inset:0;z-index:88;font-family:var(--font-ui);color:#eadfc6;-webkit-tap-highlight-color:transparent;animation:stutIn .45s ease-out both}
+.stut.out{opacity:0;transition:opacity .25s}
+@keyframes stutIn{from{opacity:0}}
+/* 나침반 자리만 밝게 남기고 둘레를 덮는다(뒤의 메뉴는 눌리지 않는다) */
+.stut-dim{position:absolute;inset:0;background:radial-gradient(circle at var(--cx,50%) var(--cy,50%),rgba(6,5,4,0) calc(var(--r,90px) - 4px),rgba(6,5,4,.55) calc(var(--r,90px) + 10px),rgba(6,5,4,.86) calc(var(--r,90px) + 80px))}
+/* 둘레 고리 = 손잡이. 다섯 칸이 한 바퀴마다 하나씩 찬다 */
+.stut-ring{position:absolute;border-radius:50%;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.stut-ring.dn{cursor:grabbing}
+.stut-ring svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.stut-ring .tr,.stut-ring .fl{fill:none;stroke-width:var(--sw,3);stroke-linecap:round}
+.stut-ring .tr{stroke:rgba(241,213,137,.24)}
+.stut-ring .fl{stroke:#f1d589;stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 4px rgba(255,214,120,.75))}
+.stut-ring .fl.full{stroke:#fff4d6}
+/* 손끝 표시: 나침반 위를 시계 방향으로 돌며 꼬리를 남긴다. 돌리는 동안은 숨는다 */
+.stut-orb{position:absolute;inset:calc(50% - var(--or,30%));border-radius:50%;pointer-events:none;animation:stutOrb 2.6s linear infinite;transition:opacity .35s}
+.stut-orb::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(rgba(255,244,214,0) 0 58%,rgba(255,244,214,.62) 100%);
+  -webkit-mask:radial-gradient(circle closest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));mask:radial-gradient(circle closest-side,transparent calc(100% - 5px),#000 calc(100% - 4px))}
+.stut-orb i{position:absolute;left:50%;top:0;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;background:radial-gradient(circle,#fff 0 28%,rgba(255,236,190,.95) 42%,rgba(241,213,137,0) 72%);filter:drop-shadow(0 0 8px rgba(255,220,140,.85))}
+.stut-orb i::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1.5px solid rgba(255,244,214,.75);animation:stutTap 1.3s ease-out infinite}
+.stut.busy .stut-orb,.stut.ok .stut-orb{opacity:0}
+@keyframes stutOrb{to{transform:rotate(360deg)}}
+@keyframes stutTap{from{transform:scale(.5);opacity:1}to{transform:scale(1.7);opacity:0}}
+.stut.ok .stut-ring{cursor:default;animation:stutWin .9s ease-out}
+@keyframes stutWin{30%{transform:scale(1.07);filter:brightness(1.6) drop-shadow(0 0 16px rgba(255,226,150,.9))}}
+/* 안내 카드 */
+.stut-card{position:absolute;box-sizing:border-box;width:min(372px,calc(100vw - 32px));max-height:calc(100% - 32px);overflow-y:auto;overscroll-behavior:contain;padding:18px 20px 16px;outline:0;
+  background:linear-gradient(180deg,rgba(30,25,17,.97),rgba(15,13,10,.97));border:1px solid rgba(201,162,74,.42);border-left:3px solid #c9a24a;box-shadow:0 24px 60px -18px rgba(0,0,0,.9);
+  animation:stutUp .5s .2s cubic-bezier(.2,.8,.2,1) both}
+@keyframes stutUp{from{opacity:0;transform:translateY(10px)}}
+.stut-k{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.14em;line-height:1.4;color:#c9a24a}
+.stut-k svg{flex:none;width:16px;height:16px}
+.stut-h{margin:7px 0 8px;font:800 22px/1.3 var(--font-voice);letter-spacing:.01em;color:#fff4d6}
+.stut-p{margin:0 0 12px;font-size:13.5px;line-height:1.7;color:#d8c9a6;word-break:keep-all}
+.stut-p b{font-weight:700;color:#f1d589}
+.stut-ck{display:grid;gap:7px;margin:0 0 14px;padding:12px 0 0;list-style:none;border-top:1px solid rgba(201,162,74,.2)}
+.stut-ck li{display:grid;grid-template-columns:22px minmax(0,1fr) auto;align-items:center;gap:10px;font-size:13px;font-weight:600;color:#7d725d;transition:color .25s}
+.stut-ck li i{display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:22px;height:22px;border:1px solid currentColor;font:800 11px/1 var(--font-ui);font-style:normal;transition:background .25s,color .25s,border-color .25s}
+.stut-ck li.on{color:#fff4d6}.stut-ck li.on i{border-color:#f1d589;color:#f1d589;box-shadow:0 0 0 3px rgba(241,213,137,.14)}
+.stut-ck li.ok{color:#b9ab8d}.stut-ck li.ok i{border-color:#c9a24a;background:#c9a24a;color:transparent}
+.stut-ck li.ok i::before{content:"";position:absolute;width:9px;height:5px;border:solid #15120e;border-width:0 0 2px 2px;transform:translateY(-1px) rotate(-45deg)}
+.stut-ck li i{position:relative}
+.stut-ck em{font-style:normal;font-weight:800;font-variant-numeric:tabular-nums;color:#f1d589}
+.stut-n{margin:-4px 0 14px;font-size:12px;line-height:1.6;color:#8a7e68;word-break:keep-all}
+.stut-bt{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.stut-no{min-height:40px;padding:9px 14px;border-radius:0;border:1px solid rgba(201,162,74,.32);background:rgba(255,244,214,.04);color:#cbbd9c;font:600 13px var(--font-ui)}
+.stut-no:hover{border-color:rgba(241,213,137,.6);background:rgba(255,244,214,.08);color:#fff4d6}
+.stut-go{padding:12px 34px 12px 22px;font-size:16px}
+.stut-kb{margin-left:auto;font-size:11.5px;color:#7d725d}
+.stut kbd{display:inline-block;min-width:20px;padding:0 5px;margin:0 2px;font:700 11px/1.7 var(--font-ui);color:inherit;border:1px solid currentColor;border-bottom-width:2px;border-radius:3px;text-align:center}
+.stut button:focus-visible{outline:2px solid #f1d589;outline-offset:2px}
+/* 라이트 화면: 가운데 창 안에 나침반을 띄운다 */
+.stut.lt{display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(10,9,7,.8)}
+.stut.lt .stut-card{position:relative;max-height:calc(100% - 8px)}
+.stut-cmp{position:relative;width:min(40vw,150px);height:min(40vw,150px);margin:8px auto 22px}
+.stut-cmp>svg{display:block;width:100%;height:100%}
+.stut-cmp .d{fill:none;stroke:#c9a24a;stroke-width:1.4}.stut-cmp .d.thin{stroke-width:.8;stroke:#8a6a24}
+.stut-cmp .stut-ring{inset:-16%;--sw:2.6;--or:30%}
+@media (orientation:landscape) and (max-height:540px){
+  .stut.lt .stut-card{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:22px;width:min(640px,calc(100vw - 32px))}
+  .stut.lt .stut-cmp{grid-row:1/span 5;align-self:center;width:min(30vh,130px);height:min(30vh,130px);margin:10px 14px}
+  .stut-card{padding:14px 18px 12px}.stut-h{font-size:19px;margin:5px 0 6px}.stut-p{font-size:13px;margin-bottom:8px}.stut-ck{gap:5px;padding-top:8px;margin-bottom:10px}}
+/* 휴대폰 가로(높이 280~420px): 카드를 넓고 낮게. 세 단계는 한 줄로 늘어놓는다 */
+@media (orientation:landscape) and (max-height:420px){
+  .stut-card{width:min(540px,calc(100vw - 32px));padding:10px 16px 10px}
+  .stut-k{font-size:10.5px}.stut-h{font-size:17px;margin:3px 0 4px}.stut-p{font-size:12.5px;line-height:1.55;margin-bottom:6px}
+  .stut-ck{grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px;padding-top:6px;margin-bottom:8px}
+  .stut-ck li{grid-template-columns:18px minmax(0,1fr) auto;gap:6px;font-size:12px}.stut-ck li i{width:18px;height:18px;font-size:10px}
+  .stut-ck li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .stut-n{display:none}.stut-no{min-height:36px;padding:6px 12px}.stut-go{padding:9px 30px 9px 18px;font-size:15px}
+  .stut.lt{padding:8px 16px}.stut.lt .stut-card{width:min(640px,calc(100vw - 32px))}
+  .stut.lt .stut-cmp{width:min(42vh,120px);height:min(42vh,120px);margin:8px 12px}}

@@ -1,7 +1,7 @@
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
-// 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 구글 시트에는 이 이름의 탭에 따로 쌓인다.
-const GAME_VER='v3.1';
+// 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
+const GAME_VER='v3.2';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 이 창을 닫으면 사라진다(같은 기기를 여러 사람이 쓰므로 브라우저에 저장하지 않는다)
 let PF={school:'',name:'',phone:'',agree:false};
@@ -39,9 +39,26 @@ function logSpecial(choice,ds,dl){const w=where();w.turn=YRS*PY;w.year=YRS;w.cye
 function logTier(t){const l=LOG[LOG.length-1];if(l){l.dice=TIER[t].n;l.after=null;}}
 function logAfter(){const l=LOG[LOG.length-1];if(l)l.after=stNow();peak();}
 // 비밀 게임(방역선·대항해) 점수: 한 판에 한 번, 닉네임·학교·점수만 보낸다. 명예의 전당 오른쪽 두 칸 순위에 쓰인다
-function sendArcade(game,o){if(!SHEET_URL||IN_ART)return;
-  const body=JSON.stringify({kind:'arcade',v:GAME_VER,rec:Object.assign({id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),game:game,nickname:NICK||'익명',school:(PF&&PF.school)||'',gv:GAME_VER},o)});
-  try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'text/plain'},body:body}).catch(()=>{});}catch(e){}}
+// 보낼 기록 상자: 기록은 먼저 이 기기에 넣어 두고, 하나씩 차례로 보낸 뒤 서버에 닿으면 지운다.
+// 보내다 끊기면(오프라인 · 창 닫힘) 다음에 접속했을 때 다시 보낸다. 조각마다 k(판ID · 조각 번호)를 붙여, 다시 보내도 서버가 한 번만 쓴다.
+// (창을 닫을 때 쓰는 keepalive는 한 페이지에서 동시에 64KB까지라, 조각을 한꺼번에 보내면 뒤 조각이 버려진다)
+const OB_KEY='pandemic_outbox_v1',OB_MAX=1200000;
+// 이 기기의 플레이어 표시(무작위): 서버가 같은 사람의 여러 판을 '한 사람'으로 묶을 때만 쓴다(명예의 전당 인원 · 학교 평균).
+// 이름 · 닉네임과 상관없고 공개 순위에는 나가지 않는다. '이 기기 기록 초기화'를 하면 새로 만든다
+const PID_KEY='pandemic_pid_v1';
+function pidGet(){try{let p=localStorage.getItem(PID_KEY);if(!p||!/^[0-9a-z]{8,24}$/.test(p)){p=(Date.now().toString(36)+Math.random().toString(36).slice(2,12)).slice(0,20);localStorage.setItem(PID_KEY,p);}return p;}catch(e){return '';}}
+let OB_BUSY=false;
+function obGet(){try{const L=JSON.parse(localStorage.getItem(OB_KEY)||'[]');return Array.isArray(L)?L:[];}catch(e){return [];}}
+function obSet(L){try{let n=0;const K=[];for(let i=L.length-1;i>=0;i--){n+=L[i].b.length;if(n>OB_MAX)break;K.unshift(L[i]);}
+  if(K.length)localStorage.setItem(OB_KEY,JSON.stringify(K));else localStorage.removeItem(OB_KEY);}catch(e){}}
+function obPush(items){const ks=new Set(items.map(x=>x.k));obSet(obGet().filter(x=>!ks.has(x.k)).concat(items));}
+function obFlush(){if(OB_BUSY||!SHEET_URL||IN_ART)return;const it=obGet()[0];if(!it)return;OB_BUSY=true;
+  const done=()=>{obSet(obGet().filter(x=>x.k!==it.k));OB_BUSY=false;obFlush();};
+  try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:it.b}).then(done,()=>{OB_BUSY=false;});}catch(e){OB_BUSY=false;}}
+addEventListener('online',()=>obFlush());
+setTimeout(obFlush,4000);
+function sendArcade(game,o){if(!SHEET_URL||IN_ART)return;const id=Date.now().toString(36)+Math.random().toString(36).slice(2,7),k='arc:'+id;
+  obPush([{k:k,b:JSON.stringify({k:k,kind:'arcade',v:GAME_VER,rec:Object.assign({id:id,game:game,nickname:NICK||'익명',school:(PF&&PF.school)||'',gv:GAME_VER,pid:pidGet()},o)})}]);obFlush();}
 function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.length)return;RUN.sent=1;
   const l=LOG[LOG.length-1];if(l&&!l.after)l.after=stNow();peak();
   x=x||{};const terms=CAR.terms.slice(),yrs=CAR.yrs.slice();
@@ -53,7 +70,7 @@ function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.len
   const yr=y=>avg(N.filter(z=>z.year===y).map(z=>z.dirScore)),tr=t=>avg(N.filter(z=>z.term===t).map(z=>z.dirScore));
   const fc=N.find(z=>z.direction==='권력 집중'),f=stNow(),good=CAR.tro.filter(t=>t.g).length;
   const years=x.years||((CAR.term-1)*YRS+Math.max(1,Math.ceil(S.turn/PY)));
-  const run={id:RUN.id,startedAt:RUN.st,nickname:NICK,school:PF.school,realName:PF.name,phone:PF.phone,consent:PF.agree?'동의':'',difficulty:DIFF[dif].n,perk:CAR.bg,era:MOD.n,
+  const run={id:RUN.id,pid:pidGet(),startedAt:RUN.st,nickname:NICK,school:PF.school,realName:PF.name,phone:PF.phone,consent:PF.agree?'동의':'',difficulty:DIFF[dif].n,perk:CAR.bg,era:MOD.n,
     endingId:lt.eid,ending:lt.ti,score:Math.round(lt.sc),grade:lt.g,playSeconds:Math.round((Date.now()-T0)/1000),months:years*12,
     a:f.a,i:f.i,peakI:lt.peakI,deaths:Math.round(cDeaths),m:f.m,e:f.e,p:f.p,c:f.c,u:f.u,chk:f.chk,trn:f.trn,saf:f.saf,
     ins:Math.round(lt.ins),peakP:Math.round(RUN.pkP),peakC:Math.round(RUN.pkC),auth:lt.auth?'예':'아니오',
@@ -83,10 +100,22 @@ function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.len
   const parts=[];let curC=[],room=LIM-size(JSON.stringify({v:12,gv:GAME_VER,run:run,choices:[],terms:termsOut,years:yrs}));
   choices.forEach(c=>{const z=size(JSON.stringify(c))+1;if(z>room&&curC.length){parts.push(curC);curC=[];room=LIM-size(JSON.stringify({v:12,gv:GAME_VER,part:'more',run:head,choices:[]}));}curC.push(c);room-=z;});
   parts.push(curC);
-  const bodies=parts.map((p,k)=>JSON.stringify(k===0?{v:12,gv:GAME_VER,run:run,choices:p,terms:termsOut,years:yrs}:{v:12,gv:GAME_VER,part:'more',run:head,choices:p}));
-  bodies.forEach(t=>{try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',keepalive:size(t)<63000,headers:{'Content-Type':'text/plain'},body:t}).catch(()=>{});}catch(e){}});}
-// 커리어 도중에 창을 닫아도 그때까지의 기록을 보낸다
+  const ab=exitLabel==='중도 이탈',tag=run.id+':'+(ab?'a':'f')+':';
+  const items=parts.map((p,k)=>({k:tag+k,id:run.id,a:ab?1:0,b:JSON.stringify(k===0?{k:tag+k,v:12,gv:GAME_VER,run:run,choices:p,terms:termsOut,years:yrs}:{k:tag+k,v:12,gv:GAME_VER,part:'more',run:head,choices:p})}));
+  // 끝난 기록이 나가면, 아직 못 보낸 같은 판의 '중도 이탈' 조각은 버린다(서버는 먼저 온 중도 이탈 줄을 지우고 끝난 기록으로 대신한다)
+  if(!ab)obSet(obGet().filter(x=>!(x.id===run.id&&x.a)));
+  obPush(items);
+  if(ab){OB_BUSY=true;try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',keepalive:size(items[0].b)<63000,headers:{'Content-Type':'text/plain'},body:items[0].b}).catch(()=>{});}catch(e){}}
+  else obFlush();}
+// 커리어 도중에 창을 닫아도 그때까지의 기록을 보낸다(첫 조각은 바로, 나머지는 다음 접속 때)
 window.addEventListener('pagehide',()=>{try{if(RUN&&!RUN.sent&&LOG.length&&CAR&&!CAR.done)sendCareer('중도 이탈');}catch(e){}});
+// 뒤로 가기 캐시(bfcache)로 페이지가 돌아오면 같은 판을 이어 하므로, 끝났을 때 끝난 기록을 다시 보낼 수 있게 한다
+window.addEventListener('pageshow',e=>{if(!e.persisted)return;OB_BUSY=false;if(RUN&&CAR&&!CAR.done)RUN.sent=0;obFlush();});
+// 게임 중 휴대폰의 '뒤로'(안드로이드 뒤로 단추 · 아이폰 가장자리 밀기)로 페이지를 떠나 진행을 잃지 않게, 기록 한 칸을 쌓아 두었다가 막는다
+let HIST_ON=false;
+function histArm(){if(HIST_ON)return;try{history.pushState({pp:1},'');HIST_ON=true;}catch(e){}}
+addEventListener('popstate',()=>{if(!HIST_ON)return;HIST_ON=false;
+  if(RUN&&CAR&&!CAR.done){histArm();try{eggToast('게임 중에는 뒤로 가기로 나가지 않아요.<br>나가려면 메뉴의 <b>저장하고 나가기</b>를 쓰세요.');}catch(e){}}});
 mload();applyView();sndApply();
 const INTRO=R.innerHTML;
 function pfPhone(v){const d=String(v||'').replace(/\D/g,'');if(!d)return '';if(!/^01[016789]\d{7,8}$/.test(d))return null;return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4);}
@@ -102,18 +131,20 @@ function bindIntro(){const $=id=>document.getElementById(id),err=$('pfErr');
       PF={school:school,name:name,phone:phone,agree:true};}
     err.style.display='none';NICK=nick||'익명';PINH='';   // 저장 비밀번호는 판마다 게임 안에서 건다
     // 같은 기기에서는 다음 판부터 인적사항을 그대로 채워 둔다
-    try{localStorage.setItem(PF_KEY,JSON.stringify({school:PF.school,name:PF.name,phone:PF.phone,nick:nick,agree:PF.agree}));}catch(e){}
+    try{localStorage.setItem(PF_KEY,JSON.stringify({school:PF.school,nick:nick}));}catch(e){}
     try{aInit();SFX.coin();}catch(e){}viewSetup(hub);};
   // 지난번 인적사항 채우기
   let mem=null;try{mem=JSON.parse(localStorage.getItem(PF_KEY)||'null');}catch(e){}
-  if(mem){if($('pfSchool'))$('pfSchool').value=mem.school||'';if($('pfName'))$('pfName').value=mem.name||'';if($('pfPhone'))$('pfPhone').value=mem.phone||'';$('nick').value=mem.nick||'';if($('pfAgree'))$('pfAgree').checked=!!mem.agree;
-    const box=$('pfMem');box.style.display='flex';box.innerHTML='<span>지난번에 적은 정보를 채워 두었어요. 바꿀 곳만 고치면 돼요.</span><button id="pfClear">내가 아니에요 · 지우기</button>';
+  // 예전 판이 이름·전화번호까지 남겨 두었으면 지금 지운다
+  if(mem&&(mem.name||mem.phone||mem.agree)){try{localStorage.setItem(PF_KEY,JSON.stringify({school:mem.school||'',nick:mem.nick||''}));}catch(e){}}
+  if(mem&&(mem.school||mem.nick)){if($('pfSchool'))$('pfSchool').value=mem.school||'';$('nick').value=mem.nick||'';
+    const box=$('pfMem');box.style.display='flex';box.innerHTML='<span>지난번에 적은 학교와 닉네임을 채워 두었어요. 이름과 동의는 같은 기기를 쓰는 다른 사람을 위해 매번 새로 받아요.</span><button id="pfClear">내가 아니에요 · 지우기</button>';
     $('pfClear').onclick=()=>{try{localStorage.removeItem(PF_KEY);}catch(e){}['pfSchool','pfName','pfPhone','nick'].forEach(id=>{if($(id))$(id).value='';});if($('pfAgree'))$('pfAgree').checked=false;box.style.display='none';};}}
 const PF_KEY='pandemic_pf_v1';
 // 인적사항 다음 화면: 가이드북과 게임 시작
 // 이스터에그: 특별한 닉네임을 넣으면 인사말이 바뀐다(일부는 비밀 무대를 연다)
 const EGGN=[
- [/좀비|zombie/i,'🧟 …으어어. 어디선가 신음 소리가 들린다. <b>비밀 무대 「좀비 아포칼립스」가 열렸어요.</b>',()=>eggSet('zombie')],
+ [/좀비|zombie/i,'🧟 …으어어. 어디선가 신음 소리가 들린다. <b>미니게임 「방역선」이 열렸어요.</b>',()=>eggSet('zombie')],
  [/^세종(대왕)?$/,'어서 오시옵소서, 전하. 스물여덟 글자는 준비되어 있사옵니다.'],
  [/^이순신$/,'신에게는 아직 열두 척의 배가 있사옵니다.'],
  [/^홍길동$/,'아버지를 아버지라 부르지 못하고… 오늘은 대통령을 대통령이라 부르셔도 됩니다.'],

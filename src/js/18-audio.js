@@ -1,8 +1,9 @@
 /* ---------- AUDIO ---------- */
 // 위기 지수에 따라 깔리던 배경 웅웅거림과 심장 박동은 뺐다. 위기는 화면 가장자리의 붉은 기운(vign)으로만 보여 준다.
 const AU={ac:null,m:null,on:true};
-function aInit(){if(AU.ac){try{if(AU.ac.state==='suspended')AU.ac.resume();}catch(e){}return;}
-  try{AU.ac=new (window.AudioContext||window.webkitAudioContext)();AU.m=AU.ac.createGain();AU.m.gain.value=.7*sndGet().fx;AU.m.connect(AU.ac.destination);doorPrep();}catch(e){AU.ac=null;}}
+function aInit(){if(AU.ac){try{if(AU.ac.state!=='running'&&!document.hidden)AU.ac.resume();}catch(e){}return;}
+  // 새로고침한 뒤에도 음소거가 효과음에 바로 걸리게, 만들 때부터 설정(음소거 · 크기)을 쓴다
+  try{AU.ac=new (window.AudioContext||window.webkitAudioContext)();AU.m=AU.ac.createGain();const s=sndGet();AU.m.gain.value=s.mute?0:.7*s.fx;AU.m.connect(AU.ac.destination);doorPrep();}catch(e){AU.ac=null;}}
 function tone(f,type,dur,vol,when,slide){if(!AU.ac)return;try{when=when||0;const t0=AU.ac.currentTime+when,o=AU.ac.createOscillator(),g=AU.ac.createGain();
   o.type=type;o.frequency.setValueAtTime(f,t0);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t0+dur);
   g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(vol,t0+.012);g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
@@ -44,7 +45,7 @@ const SFX={
  swoosh:()=>sweep(.55,.06,300,1500,0,.6),                    // 새 사건 띠가 화면을 가로지를 때
  shutIn:()=>{sweep(.6,.035,1700,260,0,.6);if(!door(.75,.09)){tone(62,'sine',.34,.26,.56,44);noise(.14,.05,.56,320);}},   // 연차 셔터가 닫히며 맞물림: 셔터가 맞닿는 0.56초에 걸쇠 소리가 나게 맞춘 문 소리
  shutOut:()=>{sweep(.6,.035,260,1500,0,.6);door(.75);},      // 연차 셔터가 열림: 닫힐 때와 같은 문 소리
- tick:(k)=>tone(1200+k*40,'square',.025,.05),
+ tick:(k=0)=>tone(1200+(+k||0)*40,'square',.025,.05),
  tier:t=>{if(t===0){[523,659,784,1047].forEach((f,k)=>tone(f,'triangle',.5,.22,k*.09));noise(.6,.06,.2,4000);}
   else if(t===1){tone(587,'sine',.16,.14);tone(784,'sine',.28,.12,.11);}
   else if(t===2){tone(330,'sawtooth',.28,.1);tone(233,'sawtooth',.42,.11,.16);}
@@ -195,23 +196,34 @@ function bgmInfo(){let el=document.getElementById('npl');const I=BGM_INFO[BGM.tr
 // 띠의 글자는 기차처럼 오른쪽 끝에서 천천히(초당 24px) 들어와 왼쪽으로 빠져나가고, 한 칸(제목+간격) 뒤에 같은 제목이 줄지어 따라온다.
 // 띠를 다 채울 만큼 같은 칸을 이어 붙이고, 한 칸만큼 지나가면 제자리로 돌려 끊김 없이 이어지게 한다(글꼴이 늦게 들어와 칸 폭이 바뀔 수 있어 돌릴 때마다 다시 잰다).
 const NPL={s:'',x:null,u:0,t:0,raf:0};
-function nplRun(){if(NPL.raf)return;const step=now=>{NPL.raf=0;const el=document.getElementById('npl');if(!el||!el.classList.contains('on'))return;
+function nplRun(){if(NPL.raf)return;const step=now=>{NPL.raf=0;const el=document.getElementById('npl');if(!el||!el.classList.contains('on')||document.hidden)return;
+    if(now-NPL.t<30&&NPL.x!==null){NPL.raf=requestAnimationFrame(step);return;}
     const w=el.querySelector('.npl-w'),m=el.querySelector('.npl-m'),W=w.clientWidth;
     if(NPL.x===null||m.dataset.w!==String(W)){const one=document.createElement('span');one.innerHTML=NPL.s;m.innerHTML='';m.appendChild(one.firstChild);
       NPL.u=m.firstChild.offsetWidth||1;m.innerHTML=NPL.s.repeat(Math.ceil(W/NPL.u)+2);m.dataset.w=W;if(NPL.x===null)NPL.x=W;NPL.t=now;}
     if(matchMedia('(prefers-reduced-motion: reduce)').matches)NPL.x=0;
     else if(!el.classList.contains('hold'))NPL.x-=Math.min(.1,(now-NPL.t)/1000)*24;
-    NPL.t=now;if(NPL.x<=-NPL.u){NPL.u=m.firstChild&&m.firstChild.offsetWidth||NPL.u;NPL.x+=NPL.u;}m.style.transform='translateX('+NPL.x.toFixed(1)+'px)';NPL.raf=requestAnimationFrame(step);};
+    NPL.t=now;if(NPL.x<=-NPL.u){NPL.u=m.firstChild&&m.firstChild.offsetWidth||NPL.u;NPL.x+=NPL.u;}m.style.transform='translateX('+NPL.x.toFixed(1)+'px)';
+    // 멈춰 있으면(일시정지 · 동작 줄이기) 글자가 움직이지 않으니 고리를 쉰다. 다시 틀면 bgmInfo가 nplRun을 다시 부른다
+    if(el.classList.contains('hold')||matchMedia('(prefers-reduced-motion: reduce)').matches)return;NPL.raf=requestAnimationFrame(step);};
   NPL.raf=requestAnimationFrame(step);}
 // 이전/다음 곡: 지금 무대의 곡 목록(한 곡뿐이면 그 곡을 처음부터) 안에서 옮겨 간다. 멈춰 있었으면 새 곡부터 다시 튼다.
 function bgmSkip(d){const L=BGM.list||[BGM.trk],i=Math.max(0,L.indexOf(BGM.trk)),nx=L[(i+d+L.length)%L.length],a=BGM.el;BGM.hold=false;
   if(nx===BGM.trk){if(a)try{a.currentTime=0;}catch(e){}return bgmSync();}
-  const sw=()=>{BGM.trk=nx;if(BGM.el){try{BGM.el.src=nx;BGM.el.load();}catch(e){}}bgmSync();};
-  if(a&&!a.paused)bgmRamp(0,300,()=>{a.pause();sw();});else sw();}
-const BGM={el:null,trk:BGM_MENU[Math.floor(Math.random()*BGM_MENU.length)],list:BGM_MENU,want:false,t:0,to:0,vol:.45,ac:null,g:null,gx:false};
-function bgmEl(){if(!BGM.el){try{BGM.el=new Audio(BGM.trk);
+  BGM.next=nx;
+  if(a&&!a.paused)bgmRamp(0,300,()=>{if(BGM.next===nx)bgmSync();});else bgmSync();}
+// cur: 지금 오디오에 실제로 걸린 곡(곡 파일은 틀 때만 받는다) · next: 바꾸기를 기다리는 곡 · own: 게임이 스스로 멈춘 중인지
+const BGM={el:null,trk:BGM_MENU[Math.floor(Math.random()*BGM_MENU.length)],list:BGM_MENU,want:false,t:0,to:0,vol:.45,ac:null,g:null,gx:false,cur:'',next:null,own:0,visT:0};
+function bgmEl(){if(!BGM.el){try{BGM.el=new Audio();BGM.el.preload='none';
     // 곡 목록이 있으면 끝난 곡 다음 곡을 이어서 튼다
-    BGM.el.addEventListener('ended',()=>{if(!BGM.list)return;const L=BGM.list,nx=L[(L.indexOf(BGM.trk)+1)%L.length];BGM.trk=nx;try{BGM.el.src=nx;BGM.el.load();}catch(e){}bgmSync();});BGM.el.loop=true;BGM.el.preload='auto';}catch(e){}}return BGM.el;}
+    BGM.el.addEventListener('ended',()=>{if(!BGM.list)return;const L=BGM.list;BGM.next=L[(L.indexOf(BGM.trk)+1)%L.length];bgmSync();});
+    // 게임이 멈추지 않았는데 멈췄으면(미디어 키 · 이어폰 뽑기 · 다른 앱의 소리) 사람이 멈춘 것으로 보고, 다음 터치에 저절로 다시 틀지 않는다
+    BGM.el.addEventListener('pause',()=>{if(BGM.own){BGM.own=0;return;}const a=BGM.el;if(!a||a.ended||document.hidden||Date.now()-BGM.visT<1500)return;
+      if(BGM.want&&!BGM.hold){BGM.hold=true;try{bgmCue();bgmInfo();}catch(e){}}});
+    BGM.el.loop=true;}catch(e){}}return BGM.el;}
+function bgmPause(a){if(!a||a.paused)return;BGM.own=1;try{a.pause();}catch(e){BGM.own=0;}}
+// 곡 파일은 실제로 틀 때 건다(음악을 꺼 둔 사람은 파일을 받지 않는다)
+function bgmLoad(a){if(BGM.cur===BGM.trk)return;BGM.cur=BGM.trk;try{a.src=BGM.trk;a.loop=!BGM.list;a.load();}catch(e){}}
 // 사이트(http/https)에서는 Web Audio 게인으로 음량을 다룬다(아이폰·아이패드는 audio.volume을 바꿀 수 없어서 이렇게 해야 페이드가 된다).
 // 파일로 직접 연 경우에는 브라우저가 이 연결의 소리를 막을 수 있어 audio.volume을 쓴다.
 function bgmGain(a){if(BGM.gx)return BGM.g;BGM.gx=true;if(!/^https?:$/.test(location.protocol))return null;
@@ -225,17 +237,20 @@ function bgmRamp(v,ms,done){const a=BGM.el,g=BGM.g;clearInterval(BGM.t);clearTim
   const v0=a.volume,n=Math.max(1,Math.round(ms/50));let k=0;
   BGM.t=setInterval(()=>{k++;try{a.volume=Math.max(0,Math.min(1,v0+(v-v0)*k/n));}catch(e){}if(k>=n){clearInterval(BGM.t);if(done)done();}},50);}
 function bgmSync(){const a=bgmEl();if(!a)return;
-  if(BGM.want&&BGM.vol>0&&!document.hidden&&!BGM.hold){const g=bgmGain(a);if(BGM.ac&&BGM.ac.state!=='running')try{BGM.ac.resume();}catch(e){}
+  // 바꿀 곡이 기다리고 있으면 지금 바꾼다(줄어드는 사이 탭 숨김 · 소리 막대 같은 일이 끼어들어도 곡 바꾸기가 사라지지 않게)
+  if(BGM.next){const nx=BGM.next;BGM.next=null;if(nx!==BGM.cur){clearInterval(BGM.t);clearTimeout(BGM.t);bgmPause(a);BGM.trk=nx;}}
+  if(BGM.want&&BGM.vol>0&&!document.hidden&&!BGM.hold){bgmLoad(a);const g=bgmGain(a);if(BGM.ac&&BGM.ac.state!=='running')try{BGM.ac.resume();}catch(e){}
     if(a.paused){if(g)g.gain.value=0;else a.volume=0;const p=a.play();if(p&&p.then)p.then(()=>{BGM.blocked=false;bgmCue();},()=>{BGM.blocked=true;bgmCue();});bgmRamp(bgmLv(),1000);}
     else if(BGM.to!==bgmLv())bgmRamp(bgmLv(),300);}   // 이미 원래 크기로 가는 중이면 그대로 둔다(1초 페이드가 끊기지 않게)
-  else if(!a.paused){clearInterval(BGM.t);clearTimeout(BGM.t);BGM.to=0;a.pause();}bgmInfo();}
+  else if(!a.paused){clearInterval(BGM.t);clearTimeout(BGM.t);BGM.to=0;bgmPause(a);}bgmInfo();}
 // 게임이 시작되면 1.2초 동안 줄이다가 멈춘다
 // src 곡을 틀거나(on) 지금 곡을 1.2초 동안 줄이며 끈다
 function bgmSet(src,on){BGM.want=on;bgmInfo();
   if(BGM.el)BGM.el.loop=!BGM.list;
-  if(on&&BGM.trk!==src){const a=BGM.el,sw=()=>{BGM.trk=src;if(BGM.el){try{BGM.el.src=src;BGM.el.loop=!BGM.list;BGM.el.load();}catch(e){}}bgmSync();};
-    if(a&&!a.paused)bgmRamp(0,600,()=>{a.pause();sw();});else sw();return;}
-  if(on)return bgmSync();const a=BGM.el;if(!a||a.paused)return;bgmRamp(0,1200,()=>a.pause());}
+  if(on&&(BGM.next||BGM.trk)!==src){const a=BGM.el;BGM.next=src;
+    if(a&&!a.paused)bgmRamp(0,600,()=>{if(BGM.next===src)bgmSync();});else bgmSync();return;}
+  if(on){if(BGM.next===BGM.trk)BGM.next=null;return bgmSync();}
+  BGM.next=null;const a=BGM.el;if(!a||a.paused)return;bgmRamp(0,1200,()=>bgmPause(a));}
 // 이스터에그: 인적사항 학교에 용인외대부고·외대부고·HAFS를 적은 사람에게만 교가가 목록 끝에 한 곡 더 끼어든다.
 // 시작 곡은 늘 원래 목록에서 고르므로 교가가 첫 곡으로 나오지는 않고, 두 번째 곡부터 한 바퀴에 한 번씩 나온다.
 const BGM_HAFS='hafs_anthem.mp3';
@@ -249,7 +264,10 @@ const BGM_OLY=['olympic_1.mp3','olympic_2.mp3','olympic_3.mp3','olympic_4.mp3','
 function bgmOly(){try{return !!(CP&&CP.id==='kr'&&CAR&&CAR.spRun&&OLY_SP.indexOf(CAR.spRun.id)>=0);}catch(e){return false;}}
 function bgmGame(){const s=bgmOly()?BGM_OLY:CP&&BGM_PLAY[CP.id];if(!s)return bgmIntro(false);const L=[].concat(s),F=bgmWith(L);
   BGM.list=F.length>1?F:null;bgmSet(BGM.list&&BGM.list.indexOf(BGM.trk)>=0&&BGM.trk!==BGM_HAFS?BGM.trk:L[Math.floor(Math.random()*L.length)],true);}
-['pointerdown','touchend','keydown'].forEach(t=>addEventListener(t,()=>{if(BGM.want&&BGM.vol>0&&!BGM.hold&&BGM.el&&(BGM.el.paused||(BGM.ac&&BGM.ac.state!=='running')))bgmSync();},true));
-document.addEventListener('visibilitychange',bgmSync);
+['pointerdown','touchend','keydown'].forEach(t=>addEventListener(t,()=>{if(AU.ac&&AU.ac.state!=='running')try{AU.ac.resume();}catch(e){}
+  if(BGM.want&&BGM.vol>0&&!BGM.hold&&BGM.el&&(BGM.el.paused||(BGM.ac&&BGM.ac.state!=='running')))bgmSync();},true));
+document.addEventListener('visibilitychange',()=>{BGM.visT=Date.now();
+  try{if(AU.ac){if(document.hidden)AU.ac.suspend();else if(AU.ac.state!=='running')AU.ac.resume();}}catch(e){}
+  try{if(BGM.ac&&document.hidden)BGM.ac.suspend();}catch(e){}bgmSync();});
 function vib(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
 

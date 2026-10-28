@@ -69,7 +69,8 @@ function mgPick(kind,box){if(!box||!box.isConnected)return;const G=MG_SPORT[kind
     '<div class="mg-2"><button id="mgPlay" class="pri"><b>직접 한다</b><small>'+G.how+'</small></button><button id="mgSim"><b>'+(G.simN||'시뮬레이션으로 진행')+'</b><small>'+(G.simS||'선수들에게 맡기고 결과만 본다')+'</small></button></div></div>';
   // 경기가 끝나면 시상대를 세우고(메달 집계에 더한 뒤) 판정으로 넘어간다
   const fin=t=>G.nc?mgResolve(t):olyCere(box,G.n,t,()=>mgResolve(t));
-  document.getElementById('mgPlay').onclick=()=>{try{aInit();SFX.click();}catch(e){}G.run(box,fin);};
+  // 수영 결승을 직접 헤엄쳐 금메달을 따면 대항해를 여는 법을 다음 메인 메뉴에서 알려 준다(시뮬레이션 금메달은 세지 않는다)
+  document.getElementById('mgPlay').onclick=()=>{try{aInit();SFX.click();}catch(e){}G.run(box,kind==='swim'?t=>{if(t===0)sailGift();fin(t);}:fin);};
   document.getElementById('mgSim').onclick=()=>{try{aInit();SFX.click();}catch(e){}mgSimShow(box,G.n,G.sim(),fin);};}
 /* 시상식: 종목이 끝날 때마다 시상대(2위·1위·3위)를 세우고 우리 자리를 금빛으로 비춘다. 메달을 못 따면 우리는 시상대 아래에서 박수를 친다.
    올림픽 특집 중이면 메달을 집계(ctx.med)에 더한다. */
@@ -80,6 +81,7 @@ function olyCere(box,n,t,go){const R0=CAR&&CAR.spRun;if(R0&&OLY_IDS.indexOf(R0.i
   box.innerHTML='<div class="mgx oc"><div class="oc-h"><span class="oc-rings" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><b>'+n+' 시상식</b></div>'+
     '<div class="oc-pod">'+blk(1)+blk(0)+blk(2)+'</div>'+
     '<div class="oc-msg">'+(t<3?'<b>'+MEDAL[t]+'</b> · 시상대 '+(t+1)+'번째 칸에 '+home+' 국기가 오른다':'메달은 놓쳤다. 우리 선수가 시상대 아래에서 박수를 쳤다')+'</div>'+
+    (t===0&&n===MG_SPORT.swim.n&&MEM.sailHint===1&&!eggOn('sail')?'<div class="oc-gift"><b>금메달 선물</b> 다음에 메인 메뉴로 돌아가면 바다로 가는 비밀 하나를 알려 드릴게요.</div>':'')+
     (m?'<div class="oc-tally">'+olyTally(m)+'</div>':'')+'<button id="ocGo" class="pri" style="width:100%;padding:14px;margin-top:12px">계속</button></div>';
   document.getElementById('ocGo').onclick=()=>{SFX.click();go();};}
 // r: {lines:[html], head:'결과 한 줄', t:0~3}. 줄이 하나씩 올라오고 마지막에 결과가 도장처럼 찍힌다.

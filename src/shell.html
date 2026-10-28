@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <script>
 // 큰 태블릿(아이패드 프로 12.9 등)에서는 글자와 버튼이 휴대폰 크기 그대로라 화면이 휑하다. 짧은 변 700px 이상인 터치 기기면
 // 뷰포트 폭을 세로 680px · 가로 1100px로 좁혀 화면 전체를 비례해서 키운다. 휴대폰과 PC는 그대로.
@@ -11,11 +11,13 @@
     s=Math.min(screen.width,screen.height),l=Math.max(screen.width,screen.height);
   function fit(){var o=screen.orientation&&screen.orientation.type,port=o?o.indexOf('portrait')===0:matchMedia('(orientation:portrait)').matches,
       touch=navigator.maxTouchPoints>1||matchMedia('(pointer:coarse)').matches,dw=port?s:l,tw=port?680:1100,
-      c=touch&&s>=700&&dw>tw?'width='+tw+',viewport-fit=cover':base;
+      c=touch&&s>=700&&dw>tw?'width='+tw:base;
     if(m.getAttribute('content')!==c)m.setAttribute('content',c);}
   fit();addEventListener('orientationchange',function(){setTimeout(fit,60);});addEventListener('resize',fit);})();
 </script>
 <meta name="theme-color" content="#efe9dd">
+<!-- 삼성 인터넷 · 크롬의 '다크 모드 강제'가 종이 화면 색을 뒤집지 않게(이 게임은 화면마다 밝기를 스스로 정한다) -->
+<meta name="color-scheme" content="only light">
 <title>팬데믹 대통령</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;800&family=UnifrakturMaguntia&display=swap">

@@ -19,7 +19,10 @@ function mgSwim(box,done){const D=SW_D,riv=swRivals();
   const $=id=>document.getElementById(id);
   const stroke=s=>{if(!live)return;if(s===last){SFX.gulp();v*=.5;$('swMsg').textContent='물을 먹었다! 번갈아 눌러야 한다';}else{SFX.stroke(s);v+=.55;$('swMsg').textContent='';}last=s;};
   const key=e=>{if(e.key==='ArrowLeft'||e.key==='a')stroke('L');if(e.key==='ArrowRight'||e.key==='d')stroke('R');};
-  $('swL').onclick=()=>stroke('L');$('swR').onclick=()=>stroke('R');document.addEventListener('keydown',key);
+  // 클릭은 손을 뗄 때 오고, 두 손가락이 겹치면 아예 안 오기도 한다. 그래서 닿는 순간 젓는다(키보드·접근성 클릭은 click으로)
+  ['swL','swR'].forEach(id=>{const b=$(id),s=id==='swL'?'L':'R';let pd=0;
+    b.addEventListener('pointerdown',e=>{if(b.disabled)return;e.preventDefault();pd=Date.now();stroke(s);});
+    b.addEventListener('click',()=>{if(Date.now()-pd>600)stroke(s);});b.style.touchAction='none';});document.addEventListener('keydown',key);
   let simT=0;const step=()=>{if(!live)return;if(!box.isConnected){live=false;clearInterval(raf);document.removeEventListener('keydown',key);return;}
     const dt=1/60;simT+=dt;const el=simT;v*=Math.pow(.404,dt);if(x<D)x=Math.min(D,x+v*dt);
     riv.forEach((r,i)=>{if(swStep(r,el,dt))ft(i+1,el);});

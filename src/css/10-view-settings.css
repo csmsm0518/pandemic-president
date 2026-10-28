@@ -51,7 +51,7 @@ body:has(.vset) .rotq{display:none!important}
 /* 라이트 모드 출발 인물: 드롭다운 + 소개 카드 */
 .bgsel{position:relative;display:block;margin-bottom:10px}
 .bgsel::after{content:"";position:absolute;right:18px;top:50%;width:9px;height:9px;margin-top:-7px;border-right:2px solid var(--text-secondary);border-bottom:2px solid var(--text-secondary);transform:rotate(45deg);pointer-events:none}
-.bgsel select{width:100%;padding:14px 44px 14px 14px;font:600 15px/1.4 var(--font-ui);color:var(--text-primary);background:var(--surface-2);border:1.5px solid var(--border-strong);border-radius:12px;-webkit-appearance:none;appearance:none;cursor:pointer}
+.bgsel select{width:100%;padding:14px 44px 14px 14px;font:600 16px/1.4 var(--font-ui);color:var(--text-primary);background:var(--surface-2);border:1.5px solid var(--border-strong);border-radius:12px;-webkit-appearance:none;appearance:none;cursor:pointer}
 .bgsel select:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(29,27,24,.08)}
 .bgsel.ph select{color:var(--text-muted);border-style:dashed}
 .bgcard{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;padding:14px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;animation:fdIn .25s ease-out}
@@ -97,4 +97,4 @@ body:has(.vset) .rotq{display:none!important}
 .rs-b{display:grid;grid-template-columns:1fr 1.4fr;gap:8px;margin-top:12px}
 .rs-b button{padding:12px;font-size:14px;font-weight:700;border-radius:10px;color:#eadfc6;background:transparent;border:1px solid rgba(255,255,255,.22)}
 .rs-b .rs-yes{color:#fff;background:#b3261e;border-color:#b3261e}
-.pf-rs{padding:0;border:0;background:none;font:inherit;font-weight:700;color:var(--text-muted);text-decoration:underline;text-underline-offset:2px;cursor:pointer}.pf-rs:hover{color:#b3261e}
+.pf-rs{padding:10px 6px;margin:-10px -6px;border:0;background:none;font:inherit;font-weight:700;color:var(--text-muted);text-decoration:underline;text-underline-offset:2px;cursor:pointer}.pf-rs:hover{color:#b3261e}

@@ -7,11 +7,12 @@ function afterFx(cb){const busy=()=>document.querySelector('.yrfx,.qfx,.turnfx')
 // 시작 엠블럼: 금선이 그려지며 문장이 완성되고 제목이 떠오른다
 // bare: 전체 화면 장면 안에 넣을 때(어두운 카드 테두리 없이)
 // gid: 한 화면에 엠블럼이 둘 이상일 때 그라디언트 id가 겹치지 않게
-function emblemSvg(gid){gid=gid||'embg';const rays=Array.from({length:24},(_,i)=>{const a=i*15*Math.PI/180,r1=58,r2=i%2?70:76;
+// tip: 북쪽 바늘 끝을 하얗게 칠한다(메인 화면 뒤의 큰 나침반 — 그 끝이 원 밖의 별을 가리키게 하는 이스터에그)
+function emblemSvg(gid,tip){gid=gid||'embg';const rays=Array.from({length:24},(_,i)=>{const a=i*15*Math.PI/180,r1=58,r2=i%2?70:76;
     return '<line class="d ray" pathLength="1" style="--i:'+i+'" x1="'+(100+r1*Math.cos(a)).toFixed(1)+'" y1="'+(100+r1*Math.sin(a)).toFixed(1)+'" x2="'+(100+r2*Math.cos(a)).toFixed(1)+'" y2="'+(100+r2*Math.sin(a)).toFixed(1)+'"/>';}).join('');
   return '<svg viewBox="0 0 200 200" aria-hidden="true" style="position:relative"><defs><radialGradient id="'+gid+'" cx="40%" cy="35%"><stop offset="0" stop-color="#fff3c4"/><stop offset=".5" stop-color="#d8b45c"/><stop offset="1" stop-color="#8a6a24"/></radialGradient></defs>'+
     '<circle class="d" pathLength="1" cx="100" cy="100" r="90"/><circle class="d thin" pathLength="1" cx="100" cy="100" r="80"/>'+rays+
-    '<path class="star" d="M100 46 L111 89 L154 100 L111 111 L100 154 L89 111 L46 100 L89 89Z" fill="url(#'+gid+')" stroke="#5d4515" stroke-width="1"/><circle class="star" cx="100" cy="100" r="9" fill="#15120e" stroke="#f1d589" stroke-width="1.4"/></svg>';}
+    '<path class="star" d="M100 46 L111 89 L154 100 L111 111 L100 154 L89 111 L46 100 L89 89Z" fill="url(#'+gid+')" stroke="#5d4515" stroke-width="1"/>'+(tip?'<path class="tip" d="M100 46 L104.9 65.2 L95.1 65.2Z"/>':'')+'<circle class="star" cx="100" cy="100" r="9" fill="#15120e" stroke="#f1d589" stroke-width="1.4"/></svg>';}
 function emblemHTML(bare){
   return '<div class="'+(bare?'':'dk ')+'emb go">'+(bare?'':'<div class="dk-rays"></div>')+emblemSvg()+
     '<div class="emb-t" style="position:relative">팬데믹 대통령</div><p class="emb-s" style="position:relative">한 번의 인생, 한 나라의 운명</p></div>';}

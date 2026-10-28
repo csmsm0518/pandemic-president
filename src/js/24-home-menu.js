@@ -14,13 +14,15 @@ const GX_IC={new:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v1
   board:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></svg>',
   dex:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/></svg>',
   guide:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>',
-  sail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3v13M12 4l7 10h-7M12 6L6 14h6M3 17h18l-2.5 4h-13z"/></svg>'};
+  sail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3v13M12 4l7 10h-7M12 6L6 14h6M3 17h18l-2.5 4h-13z"/></svg>',
+  mini:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5l2.3 5.4 5.8.5-4.4 3.8 1.3 5.7-5-3-5 3 1.3-5.7-4.4-3.8 5.8-.5z"/></svg>'};
 function gxTop(n,right){return '<div class="gx-top"><ol class="gx-steps">'+GX_STEP.map((t,i)=>'<li class="'+(i<n?'done':i===n?'on':'')+'"><i>'+(i+1)+'</i>'+t+'</li>').join('')+'</ol>'+(right?'<span class="gx-tag">'+right+'</span>':'')+'</div>';}
 // 타이틀 배경: 화면 가득 깔린 점들 사이로 감염이 번지고, 지나간 자리는 잠시 어두워졌다가 다시 살아난다
 function gxLattice(cv){const ctx=cv.getContext&&cv.getContext('2d');if(!ctx)return;
-  let W=0,H=0,N=[],sp=36,lastSeed=0,tm=0;
+  // 화면 가득한 캔버스라 배율은 2까지만(배율 3~3.75인 휴대폰에서 픽셀이 너무 많아진다), 그리기는 초당 30번이면 충분하다
+  let W=0,H=0,N=[],sp=36,lastSeed=0,tm=0,lastDraw=0;const D=Math.min(2,DPR);
   const fit=()=>{const r=cv.getBoundingClientRect();W=r.width;H=r.height;if(!W||!H)return;
-    cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);
+    cv.width=Math.round(W*D);cv.height=Math.round(H*D);ctx.setTransform(D,0,0,D,0,0);
     sp=Math.max(26,Math.min(46,Math.sqrt(W*H/950)));N=[];
     const cols=Math.ceil(W/sp)+2,rows=Math.ceil(H/(sp*.87))+2,G={};
     for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){const n={x:(x-.5)*sp+(y%2?sp/2:0)+(Math.random()-.5)*sp*.45,y:(y-.5)*sp*.87+(Math.random()-.5)*sp*.45,s:0,t:0,f:null,nb:[]};
@@ -49,5 +51,5 @@ function gxLattice(cv){const ctx=cv.getContext&&cv.getContext('2d');if(!ctx)retu
   if(reduceFx()){let t=0;for(let i=0;i<240;i++){t+=33;step(t,33);}draw(t);window.removeEventListener('resize',onR);return;}
   let prev=performance.now();
   (function loop(now){if(!cv.isConnected){window.removeEventListener('resize',onR);return;}
-    const dt=Math.min(64,now-prev);prev=now;step(now,dt);draw(now);requestAnimationFrame(loop);})(prev);}
+    if(now-lastDraw>=32&&!document.hidden){const dt=Math.min(64,now-prev);prev=now;lastDraw=now;step(now,dt);draw(now);}requestAnimationFrame(loop);})(prev);}
 

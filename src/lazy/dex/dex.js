@@ -55,13 +55,16 @@ const DX_IC=(()=>{const s=b=>'<svg viewBox="0 0 24 24" fill="none" stroke="curre
     clean:s('<path d="M12 3c3 4.5 6 8 6 11a6 6 0 0 1-12 0c0-3 3-6.5 6-11z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/>'),
     zb:s('<circle cx="12" cy="12" r="2"/><path d="M12 10V4.5a4 4 0 0 0-3.5 6M12 10a4 4 0 0 1 3.5-5.5M10.3 13L5.5 15.8a4 4 0 0 0 6.2 2.8M13.7 13l4.8 2.8a4 4 0 0 1-6.2 2.8"/>'),
     sail:s('<path d="M12 3v13M12 4l6 10h-6M11 6l-5 8h5M3 17h18l-2.5 3.5h-13z"/>'),
+    star:s('<path d="M15 9l1.4 3.2 3.4.3-2.6 2.3.8 3.4L15 16.4l-3 1.8.8-3.4-2.6-2.3 3.4-.3zM3 4l6.5 5.5M2.5 9.5l4 3M7 2.5l4 4.5"/>'),
     storm:s('<path d="M7 16a4 4 0 0 1-.5-8A5.5 5.5 0 0 1 17 8.5 3.5 3.5 0 0 1 17 16"/><path d="M12 13l-2 4h3l-2 4"/>')};})();
 function dexScene(){dexClose();window.scrollTo(0,0);try{if(CINE)cineClose();}catch(e){}
   const E=lbEsc,n=x=>+x||0,cnt=o=>Object.keys(o||{}).filter(k=>o[k]).length;
   const SEC=[];Object.keys(CAMPS).forEach(c=>(CAMPS[c].bg||[]).forEach(q=>{if(q.sec)SEC.push({q:q,camp:CAMPS[c].n,cid:c});}));
   const secOn=x=>{const L=bgLock(x.q);return !L||!!L.used;};
   const ARC=[{id:'zombie',n:'방역선 · 좀비 서바이벌',on:eggOn('zombie'),h:'제목을 빠르게 여러 번 두드려 보라',rec:MEM.zg&&MEM.zg.runs?['최고 '+Number(MEM.zg.best||0).toLocaleString('ko-KR')+'점','새벽 맞이 '+(MEM.zg.wins||0)+'번','출격 '+MEM.zg.runs+'번']:null},
-    {id:'sail',n:'대항해 · 폭풍 해협',on:eggOn('sail'),h:'나침반은 돌라고 있는 것이다',rec:MEM.sail&&MEM.sail.v===2&&MEM.sail.runs?[MEM.sail.best?'최고 '+Math.floor(MEM.sail.best/60)+':'+(MEM.sail.best%60).toFixed(1).padStart(4,'0'):'아직 완주 못 함','금메달 '+(MEM.sail.gold||0)+'번','출항 '+MEM.sail.runs+'번']:null}];
+    {id:'sail',n:'대항해 · 폭풍 해협',on:eggOn('sail'),h:'나침반은 돌라고 있는 것이다',rec:MEM.sail&&MEM.sail.v===2&&MEM.sail.runs?[MEM.sail.best?'최고 '+Math.floor(MEM.sail.best/60)+':'+(MEM.sail.best%60).toFixed(1).padStart(4,'0'):'아직 완주 못 함','금메달 '+(MEM.sail.gold||0)+'번','출항 '+MEM.sail.runs+'번']:null},
+    {id:'star',n:'별똥별을 피해라 · 밤하늘 서바이벌',on:eggOn('star'),h:'큰 바늘 끝이 별을 오래 바라보게 하라',rec:MEM.star&&MEM.star.v===1&&MEM.star.runs?['최고 '+Number(MEM.star.best||0).toLocaleString('ko-KR')+'점','새벽 맞이 '+(MEM.star.dawn||0)+'번','비행 '+MEM.star.runs+'번']:null}];
+  const AIC={zombie:'zb',sail:'sail',star:'star'},ACOL={zombie:'#7a9a4a',sail:'#3d8fd6',star:'#8fb4ff'};
   const T=[{k:'lead',n:'닮은 지도자',a:LEADK.filter(id=>MEM.leaders&&MEM.leaders[id]).length,b:LEADK.length},{k:'end',n:'임기 평가',a:ENDC.filter(e=>MEM.ends[e[0]]).length,b:ENDC.length},
     {k:'sec',n:'비밀 인물',a:SEC.filter(secOn).length,b:SEC.length},{k:'arc',n:'비밀 기록',a:ARC.filter(x=>x.on).length,b:ARC.length}];
   const all=T.reduce((s,x)=>s+x.a,0),tot=T.reduce((s,x)=>s+x.b,0),pct=Math.round(all/tot*100);
@@ -84,8 +87,8 @@ function dexScene(){dexClose();window.scrollTo(0,0);try{if(CINE)cineClose();}cat
       D[key]=on?'<b>'+E(q.n)+'</b> · '+E(x.camp)+'<p>'+E(q.s)+'</p><small>'+(bgLock(q)&&bgLock(q).used?'단 한 번뿐인 만남을 이미 함께했다':'새 게임의 지도자 고르기에서 고를 수 있다')+'</small>':'<b>잠긴 비밀 인물</b> · '+E(x.camp)+'<p>'+E(DX_SH[q.id]||'아직은 아무것도 알 수 없다.')+'</p>';
       return card({i:i,key:key,on:on,c:'#c9a24a',av:av(q.n,78),n:on?E(q.n):'???',s:on?E(q.k||''):E(DX_SH[q.id]||''),top:'<span class="dx-era">'+E(x.camp)+'</span>'});}).join(''),
     arc:()=>ARC.map((x,i)=>{const key='a'+x.id;
-      D[key]=x.on?'<b>'+E(x.n)+'</b><p>'+(x.rec?x.rec.map(E).join(' · '):'열렸지만 아직 한 번도 해 보지 않았다.')+'</p><small>'+(x.id==='zombie'?'새 게임 → 무대 고르기의 「좀비 아포칼립스」':'새 게임 → 무대 고르기 끝의 「대항해」')+'</small>':'<b>잠긴 비밀 기록</b><p>힌트: '+E(x.h)+'</p>';
-      return card({i:i,key:key,on:x.on,c:x.id==='zombie'?'#7a9a4a':'#3d8fd6',lav:1,av:'<span class="dx-seal">'+(x.on?DX_IC[x.id==='zombie'?'zb':'sail']:'<i class="dx-q">?</i>')+'</span>',n:x.on?E(x.n.split(' · ')[0]):'???',s:x.on?(x.rec?E(x.rec[0]):'아직 기록 없음'):'비밀 모드'});}).join('')};
+      D[key]=x.on?'<b>'+E(x.n)+'</b><p>'+(x.rec?x.rec.map(E).join(' · '):'열렸지만 아직 한 번도 해 보지 않았다.')+'</p><small>메인 메뉴 → 미니게임에서 할 수 있다</small>':'<b>잠긴 비밀 기록</b><p>힌트: '+E(x.h)+'</p>';
+      return card({i:i,key:key,on:x.on,c:ACOL[x.id],lav:1,av:'<span class="dx-seal">'+(x.on?DX_IC[AIC[x.id]]:'<i class="dx-q">?</i>')+'</span>',n:x.on?E(x.n.split(' · ')[0]):'???',s:x.on?(x.rec?E(x.rec[0]):'아직 기록 없음'):'미니게임'});}).join('')};
   const ring='<svg class="dx-ring" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52"/><circle class="v" cx="60" cy="60" r="52" style="stroke-dasharray:'+(326.7*pct/100).toFixed(1)+' 400"/></svg>';
   const w=document.createElement('div');w.id='dex';w.className='dexs';
   w.innerHTML='<div class="dx-in"><header class="dx-hd"><button type="button" class="dx-bk" id="dxBk">← 돌아가기</button>'+

@@ -1,5 +1,5 @@
 /* ---------- MAP ---------- */
-const MAP={d:[],nb:[],inf:new Set(),dead:new Set(),tgt:10,dtgt:0,last:0,run:false};
+const MAP={d:[],nb:[],inf:new Set(),dead:new Set(),tgt:10,dtgt:0,last:0,dr:0,run:false};
 (function(){const C=30,Rw=11;for(let r=0;r<Rw;r++)for(let c=0;c<C;c++){MAP.d.push({x:(c+.5)/C+(Math.random()-.5)*.02,y:(r+.5)/Rw+(Math.random()-.5)*.05,ph:Math.random()*6.28});}
  for(let r=0;r<Rw;r++)for(let c=0;c<C;c++){const a=[];for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){if(!dr&&!dc)continue;const rr=r+dr,cc=c+dc;if(rr>=0&&rr<Rw&&cc>=0&&cc<C)a.push(rr*C+cc);}MAP.nb.push(a);}})();
 function mapReset(){MAP.inf.clear();MAP.dead.clear();MAP.tgt=INIT.i;MAP.dtgt=0;}
@@ -9,14 +9,17 @@ function mapUpdate(){const N=MAP.d.length,want=Math.round(MAP.tgt/100*N);
    else if(MAP.inf.size>want){const arr=[...MAP.inf];MAP.inf.delete(arr[Math.floor(Math.random()*arr.length)]);}else break;}
   const wd=Math.min(Math.round(N*.4),Math.round(MAP.dtgt/4));
   if(MAP.dead.size<wd){let cand=[...MAP.inf];if(!cand.length){cand=[];for(let k=0;k<N;k++)if(!MAP.dead.has(k))cand.push(k);}if(cand.length){const k=cand[Math.floor(Math.random()*cand.length)];MAP.inf.delete(k);MAP.dead.add(k);}}}
-function mapDraw(){const c=document.getElementById('map');if(!c)return;const w=c.clientWidth||320,h=118;
-  if(c.width!==Math.round(w*DPR)){c.width=Math.round(w*DPR);c.height=Math.round(h*DPR);}
-  const x=c.getContext('2d');x.setTransform(DPR,0,0,DPR,0,0);x.clearRect(0,0,w,h);const t=performance.now()/1000;
+function mapDraw(c){c=c||document.getElementById('map');if(!c)return;const w=c.clientWidth||320,h=c.clientHeight||118,D=Math.min(2,DPR);
+  if(c.width!==Math.round(w*D)||c.height!==Math.round(h*D)){c.width=Math.round(w*D);c.height=Math.round(h*D);}
+  const x=c.getContext('2d');x.setTransform(D,0,0,D,0,0);x.clearRect(0,0,w,h);const t=performance.now()/1000;
   for(let k=0;k<MAP.d.length;k++){const d=MAP.d[k],px=d.x*w,py=d.y*h;
     if(MAP.dead.has(k)){x.fillStyle='rgba(70,52,56,.95)';x.beginPath();x.arc(px,py,1.5,0,6.283);x.fill();}
     else if(MAP.inf.has(k)){const p=.7+.3*Math.sin(t*4.2+d.ph);x.shadowColor='#e34948';x.shadowBlur=8;x.fillStyle='rgba(227,73,72,'+p+')';x.beginPath();x.arc(px,py,2.5,0,6.283);x.fill();x.shadowBlur=0;}
     else{x.fillStyle='rgba(160,168,178,.32)';x.beginPath();x.arc(px,py,1.7,0,6.283);x.fill();}}}
-function mapLoop(){if(!MAP.run)return;const t=performance.now();if(t-MAP.last>70){MAP.last=t;mapUpdate();}mapDraw();requestAnimationFrame(mapLoop);}
+// 지도가 화면에 없거나 접혀 있으면(세로 화면은 기본으로 접혀 있다) 그리지 않고 0.5초마다 다시 본다(메뉴 · 라이트 모드에서 쉬지 않고 그리던 것을 멈춘다)
+function mapLoop(){if(!MAP.run)return;const c=document.getElementById('map');
+  if(!c||!c.offsetParent||document.hidden){setTimeout(()=>requestAnimationFrame(mapLoop),500);return;}
+  const t=performance.now();if(t-MAP.last>70){MAP.last=t;mapUpdate();}if(t-MAP.dr>=32){MAP.dr=t;mapDraw(c);}requestAnimationFrame(mapLoop);}
 function mapStart(){if(MAP.run)return;MAP.run=true;requestAnimationFrame(mapLoop);}
 
 

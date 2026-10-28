@@ -36,7 +36,20 @@
 .gx-title{background:#0b0a08}
 .gx-bg{position:absolute;inset:0;width:100%;height:100%;display:block}
 .gx-seal{position:absolute;z-index:1;top:50%;right:-16vh;width:min(122vh,74vw);aspect-ratio:1;transform:translateY(-50%);pointer-events:none;opacity:.55}
-.gx-seal svg{display:block;width:100%;height:100%;animation:dkSpin 300s linear infinite}
+.gx-seal svg{display:block;width:100%;height:100%;animation:dkSpin 300s linear infinite;pointer-events:auto;touch-action:none;cursor:grab;-webkit-tap-highlight-color:transparent}
+/* 북쪽 바늘의 하얀 끝 */
+.gx-seal .tip{fill:#fff8e6;fill-opacity:.92;opacity:0;animation:dkFade 2.4s 2s forwards}
+/* 원 밖에 떠 있는 별: 바늘 끝이 가리키는 동안 둘레의 고리가 차고(--p) 밝아진다 */
+.gx-sstar{position:absolute;z-index:2;width:30px;height:30px;margin:-15px 0 0 -15px;pointer-events:none;opacity:0;animation:dkFade 1.6s 2.4s forwards}
+.gx-sstar[hidden]{display:none}
+.gx-sstar svg{position:absolute;inset:6px;width:18px;height:18px;fill:#f1d589;filter:drop-shadow(0 0 6px rgba(255,214,120,.65));animation:gxTw 2.8s ease-in-out infinite}
+.gx-sstar::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(#fff4d6 calc(var(--p,0)*360deg),transparent 0);-webkit-mask:radial-gradient(circle,transparent 11px,#000 12px,#000 14px,transparent 15px);mask:radial-gradient(circle,transparent 11px,#000 12px,#000 14px,transparent 15px);opacity:0;transition:opacity .2s}
+.gx-sstar.lock::before{opacity:1}.gx-sstar.lock svg{fill:#fff8e6;filter:drop-shadow(0 0 calc(6px + var(--p,0)*14px) rgba(255,236,190,.95))}
+.gx-sstar.go svg{animation:gxBurst .9s ease-out forwards}
+@keyframes gxTw{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.15);opacity:1}}
+@keyframes gxBurst{0%{transform:scale(1)}40%{transform:scale(2.4);opacity:1}100%{transform:scale(3.2);opacity:0}}
+/* 메뉴 기둥의 빈 곳은 누름이 뒤의 나침반으로 내려간다(제목 · 메뉴 · 기록 카드는 그대로 눌린다) */
+.gx-tl{pointer-events:none}.gx-tl>*{pointer-events:auto}
 .gx-seal .d{fill:none;stroke:#c9a24a;stroke-width:.6;stroke-dasharray:1;stroke-dashoffset:1;animation:dkDraw 2.6s .2s cubic-bezier(.6,.1,.3,1) forwards}
 .gx-seal .d.thin{stroke-width:.35;stroke:#8a6a24}
 .gx-seal .d.ray{animation-delay:calc(1s + var(--i) * 45ms)}
@@ -103,6 +116,25 @@
   .gx-pb{padding-top:2px;font-size:11px}
   .gx-msg{font-size:12.5px}.gx-msg .cs-fx{display:none}
   .gx-foot{bottom:10px}}
+/* 노트북(1366×768 화면의 브라우저 ≈ 625px) · 가로 아이패드처럼 높이가 어중간한 가로 화면: 메뉴가 여섯 칸이 되며 위아래가 잘렸다.
+   제목을 한 줄로 · 로고를 조금 작게 · 메뉴 칸을 조금 낮게 해서 한 화면에 담는다(세로 모드를 고른 넓은 화면은 아래 세로 규칙을 따른다) */
+@media (orientation:landscape) and (min-height:541px) and (max-height:900px){
+  html:not([data-ori="p"]) .gx-tl{padding:46px 0 28px;gap:clamp(10px,2.2vh,22px)}
+  html:not([data-ori="p"]) .gx-logo{--fs:clamp(40px,min(6vw,9.5vh),86px)}
+  html:not([data-ori="p"]) .cs .gx-logo svg{width:calc(var(--fs) * 1.5);height:calc(var(--fs) * 1.5)}
+  html:not([data-ori="p"]) .gx-logo .emb-t span{display:inline}
+  html:not([data-ori="p"]) .cs .gx-logo .emb-s{margin-top:8px}
+  html:not([data-ori="p"]) .gx-mi{padding:clamp(6px,1.15vh,12px) 18px}
+  html:not([data-ori="p"]) .gx-mi.sub{padding:7px 18px 5px}}
+/* 휴대폰 가로(브라우저 막대까지 빼면 높이 280~420px): 메뉴를 두 줄로 나란히 놓고, 기록 카드는 숫자만 남긴다 */
+@media (orientation:landscape) and (max-height:420px){
+  html:not([data-ori="p"]) .gx-tl{padding:40px 0 10px;gap:8px}
+  html:not([data-ori="p"]) .gx-logo{--fs:clamp(26px,9vh,40px)}
+  html:not([data-ori="p"]) .gx-menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:min(430px,56vw)}
+  html:not([data-ori="p"]) .gx-mi{padding:5px 10px;border-right:1px solid rgba(201,162,74,.1)}
+  html:not([data-ori="p"]) .gx-mi.sub{padding:6px 10px 5px;font-size:12px}
+  html:not([data-ori="p"]) .gx-pc{width:min(230px,30vw)}
+  html:not([data-ori="p"]) .gx-pc .gx-pb,html:not([data-ori="p"]) .gx-pc .gx-pc-z{display:none}}
 /* 세로 모드를 골랐을 때 */
   /* 넓은 화면에서 세로 모드를 고르면 메뉴를 휴대폰 폭의 가운데 기둥에 담는다 */
   html[data-ori="p"] .cine.gm .cs .cs-in{max-width:560px;margin:0 auto}
@@ -145,29 +177,41 @@
 @keyframes cpWv{to{transform:translateX(60px)}}
 .gx-cp-art .cp-ship{transform-box:fill-box;transform-origin:50% 90%;animation:cpBob 3.2s ease-in-out infinite}
 @keyframes cpBob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(7px) rotate(3deg)}}
+.gx-cp:not(.on) .gx-cp-art .cp-fold,.gx-cp:not(.on) .gx-cp-art .cp-wv,.gx-cp:not(.on) .gx-cp-art .cp-ship{animation-play-state:paused}
 @media (prefers-reduced-motion:reduce){.gx-cp-art .cp-fold,.gx-cp-art .cp-wv,.gx-cp-art .cp-ship{animation:none}}
 .gx-cp-tx{position:absolute;z-index:1;left:clamp(18px,2.4vw,40px);right:calc(var(--sk) + 12px);bottom:clamp(22px,5vh,56px);display:flex;flex-direction:column;align-items:flex-start;gap:8px}
 .gx-cp-tag{font-size:11px;font-weight:800;letter-spacing:.16em;color:#15120e;background:#c9a24a;padding:2px 8px}
-.gx-cp-tx b{font:800 clamp(26px,5.4vh,52px)/1.1 var(--font-voice);color:#fff4d6;white-space:nowrap}
+.gx-cp-tx>b{font:800 clamp(26px,5.4vh,52px)/1.1 var(--font-voice);color:#fff4d6;white-space:nowrap}
 .gx-cp-sub{font-size:13px;font-weight:700;line-height:1.5;color:#d8c9a6}
 .gx-cp-in{max-width:440px;font-size:13.5px;line-height:1.7;color:#cbbd9c;max-height:0;opacity:0;overflow:hidden;transition:max-height .5s,opacity .4s}
 .gx-cp-in b{font:inherit;font-weight:700;color:#fff4d6}
-.gx-cp.on .gx-cp-in{max-height:9em;opacity:1;transition-delay:.15s}
+.gx-cp.on .gx-cp-in{max-height:14em;opacity:1;transition-delay:.15s}
 .gx-cp-go{display:inline-flex;align-items:center;gap:8px;margin-top:6px;padding:8px 16px;font:800 14px var(--font-voice);color:#15120e;background:#f1d589;opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s}
 .gx-cp.on .gx-cp-go{opacity:1;transform:none;transition-delay:.25s}
 .gx-cp[data-c="kr"]{--cp-bg:radial-gradient(120% 70% at 50% 18%,#2b3c5e 0%,#141b2c 55%,#090c13 100%);--cp-bar:linear-gradient(90deg,#c9a24a,#f1d589,#c9a24a)}
 .gx-cp[data-c="joseon"]{--cp-bg:radial-gradient(120% 70% at 50% 18%,#225249 0%,#10221e 55%,#070d0b 100%);--cp-bar:repeating-linear-gradient(90deg,#2c6e63 0 18px,#a8321f 18px 28px,#d9a441 28px 34px,#2a6e4b 34px 46px)}
 .gx-cp[data-c="usa"]{--cp-bg:radial-gradient(circle,rgba(255,255,255,.07) 1.2px,transparent 1.6px) 0 0/26px 26px,radial-gradient(120% 70% at 50% 18%,#3a2430 0%,#151a2e 55%,#080a12 100%);--cp-bar:linear-gradient(90deg,#1f3a5f 0 30%,#b22234 30% 40%,#f8f7f2 40% 50%,#b22234 50% 60%,#f8f7f2 60% 70%,#b22234 70%)}
 .gx-cp[data-c="sail"]{--cp-bg:repeating-linear-gradient(170deg,rgba(143,199,255,.06) 0 3px,transparent 3px 22px),radial-gradient(120% 70% at 50% 18%,#1d4a6b 0%,#0c2236 55%,#050c14 100%);--cp-bar:repeating-linear-gradient(90deg,#f7f3ea 0 12px,#b3261e 12px 24px)}
+.gx-cp[data-c="star"]{--cp-bg:radial-gradient(120% 70% at 50% 18%,#22306a 0%,#0e1430 55%,#05070f 100%);--cp-bar:linear-gradient(90deg,#8fb4ff,#f1d589,#8fb4ff)}
+.gx-cp.lk .gx-cp-art{filter:grayscale(1) brightness(.32) contrast(.9)}.gx-cp.lk .gx-cp-tag{background:#6b6150;color:#15120e}.gx-cp.lk .gx-cp-tx>b{color:#b8ad95;letter-spacing:.12em}
+.gx-cp.lk .gx-cp-sub{font-style:italic;color:#c9bd9f}.gx-cp.lk.on{filter:saturate(.6) brightness(.8)}
+/* 수영 금메달 선물을 받은 잠긴 대항해 칸: 잠겨 있어도 여는 법이 금빛으로 보인다 */
+.gx-cp.lk.gift .gx-cp-art{filter:grayscale(.55) brightness(.5) contrast(.92)}.gx-cp.lk.gift .gx-cp-tag{background:#f1d589}
+.gx-cp.lk.gift .gx-cp-sub{font-style:normal;color:#f1d589}.gx-cp.lk.gift.on{filter:none}
+.gx-cp-rec{display:inline-block;margin-top:6px;font-size:12.5px;font-weight:800;color:#f1d589}
+.gx-mini .gx-top{justify-content:center}
 .gx-cp[data-c="zombie"]{--cp-bg:repeating-linear-gradient(135deg,rgba(217,164,65,.05) 0 14px,transparent 14px 28px),radial-gradient(120% 70% at 50% 18%,#34402a 0%,#141a10 55%,#070906 100%);--cp-bar:repeating-linear-gradient(135deg,#1c231b 0 10px,#d9a441 10px 20px)}
 /* 세로 모드를 골랐을 때 */
   html[data-ori="p"] .gx-q{top:58px}
-  html[data-ori="p"] .gx-cpw{flex-direction:column;padding-top:112px}
-  html[data-ori="p"] .gx-cp,html[data-ori="p"] .gx-cp:first-child,html[data-ori="p"] .gx-cp:last-child{margin:0 0 3px;clip-path:none}
-  html[data-ori="p"] .gx-cp-tx{right:18px;bottom:16px;gap:6px}
+  html[data-ori="p"] .gx-cpw{flex-direction:column;padding-top:112px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+  html[data-ori="p"] .gx-cpw::-webkit-scrollbar{display:none}
+  html[data-ori="p"] .gx-cp,html[data-ori="p"] .gx-cp:first-child,html[data-ori="p"] .gx-cp:last-child{margin:0 0 3px;clip-path:none;flex:1 0 auto;display:flex;flex-direction:column;justify-content:flex-end}
+  html[data-ori="p"] .gx-cp.on{flex-grow:2.1}
+  html[data-ori="p"] .gx-cp-tx{position:relative;left:auto;right:auto;bottom:auto;padding:16px 18px 14px;gap:6px}
+  html[data-ori="p"] .gx-cp:not(.on) .gx-cp-go{display:none}
   html[data-ori="p"] .gx-cp::after{background:linear-gradient(90deg,rgba(6,5,4,.9) 0%,rgba(6,5,4,.66) 45%,rgba(6,5,4,.12) 100%)}
   html[data-ori="p"] .gx-cp-art svg{opacity:.9}
-  html[data-ori="p"] .gx-cp-tx b{font-size:clamp(24px,7vw,34px)}
+  html[data-ori="p"] .gx-cp-tx>b{font-size:clamp(24px,7vw,34px)}
 
 /* 지도자 고르기: 큰 인물 + 정보 + 아래 명단 */
 .gx-ld,.gx-su{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);grid-template-rows:60px minmax(0,1fr) auto;grid-template-areas:"top top" "stage info" "roster roster";

@@ -141,7 +141,7 @@
 .hof-live{display:inline-flex;align-items:center;gap:6px}
 .hof-live i{width:7px;height:7px;border-radius:50%;background:#3fc38f;box-shadow:0 0 0 3px rgba(63,195,143,.18);animation:nplB 1.6s ease-in-out infinite}
 .hof-live i.off{background:#e0604f;box-shadow:0 0 0 3px rgba(224,96,79,.18);animation:none}
-.hof-all{color:#f1d589;text-decoration:none;font-weight:700}
+.hof-all{color:#f1d589;text-decoration:none;font-weight:700;display:inline-block;padding:10px 6px;margin:-10px -6px}
 .hof-all:hover{text-decoration:underline}
 .hof-dif{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:14px 0 12px}
 .hof-dif button{padding:6px 15px;border-radius:999px;font-size:12.5px;font-weight:700;color:#cbbd9c;background:rgba(14,12,9,.6);border:1px solid rgba(201,162,74,.28)}
@@ -167,7 +167,7 @@
 .hc-n{font:700 16px/1.3 var(--font-ui);color:#fff4d6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hc-s{margin-top:2px;font-size:11.5px;color:#a39678;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hc-v{margin-top:5px;font:800 27px/1.1 var(--font-voice);color:#f1d589;font-variant-numeric:tabular-nums}
-.hc-v small,.hc-r .v small{margin-left:2px;font:600 .5em var(--font-ui);color:#a39678}
+.hc-v small,.hc-r .v small{margin-left:2px;font:600 max(10px,.5em) var(--font-ui);color:#a39678}
 .hc-r{display:grid;grid-template-columns:20px 36px minmax(0,1fr) auto;align-items:center;gap:10px;padding:8px 16px;border-top:1px solid rgba(201,162,74,.1)}
 .hc-r .k{font:800 15px var(--font-voice);color:#8a7e68;text-align:center}
 .hc-r .a{width:36px;height:36px;border-radius:50%;overflow:hidden;display:flex;background:#2a2116;border:1px solid rgba(201,162,74,.3)}
@@ -218,7 +218,7 @@
 /* ---------- 한 화면 배치: 커리어 점수(M)만 1위를 크게, 나머지 여덟 부문은 작은 순위표(1~5위). 줄 높이는 화면 높이에 맞춰 줄었다 늘었다 한다 ---------- */
 #hof .hof-in{display:flex;flex-direction:column;min-height:100vh;padding-top:max(38px,calc(env(safe-area-inset-top) + 32px));padding-bottom:16px}
 #hof .hof-dif{margin:8px 0 6px}#hof .hof-tiles{margin:0 0 10px}
-#hof .hof-g{--rh:clamp(26px,3.8vh,40px);grid-template-columns:repeat(2,minmax(0,1fr)) minmax(0,1.7fr) repeat(2,minmax(0,1fr));grid-template-areas:"a b M e f" "c d M g h";gap:12px;align-items:stretch}
+#hof .hof-g{--rh:clamp(26px,3.8vh,40px);grid-template-columns:repeat(2,minmax(0,1fr)) minmax(0,1.7fr) repeat(2,minmax(0,1fr));grid-template-areas:"a b M e f" "c d M g f";gap:12px;align-items:stretch}
 #hof .hc{display:flex;flex-direction:column}
 #hof .hc-h{padding:10px 12px 6px}#hof .hc-h b{font-size:14px;white-space:nowrap}#hof .hc-h span{overflow:hidden;text-overflow:ellipsis}
 #hof .hc.cp .hc-r{grid-template-columns:16px 24px minmax(0,1fr) auto;gap:8px;height:var(--rh);padding:0 12px}
@@ -241,8 +241,18 @@
 #hof .hc-sk{min-height:150px}#hof .hc-sk.big{min-height:380px}
 /* 중간 너비: 커리어 점수가 왼쪽 두 칸, 나머지는 네 칸씩 / 좁은 화면은 두 칸 · 한 칸으로 내려가며 넘치면 스크롤 */
 @media (max-width:1180px){#hof .hc.cp .hc-r{gap:6px;padding:0 9px}#hof .hc-h{padding:9px 10px 5px}#hof .hc-h span{font-size:10px}}
-@media (max-width:980px){#hof .hc.cp .hc-r .t small{display:none}#hof .hof-main .hc-r{height:calc(var(--rh) + 9px)}#hof .hof-g{--rh:clamp(22px,3vh,30px);grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"M M a b" "M M c d" "e f g h"}}
-@media (max-width:760px){#hof .hof-g{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"M M" "a b" "c d" "e f" "g h"}}
-@media (max-width:440px){#hof .hof-g{grid-template-columns:minmax(0,1fr);grid-template-areas:"M" "a" "b" "c" "d" "e" "f" "g" "h"}}
+@media (max-width:980px){#hof .hc.cp .hc-r .t small{display:none}#hof .hof-main .hc-r{height:calc(var(--rh) + 9px)}#hof .hof-g{--rh:clamp(22px,3vh,30px);grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"M M a b" "M M c d" "e g f f"}}
+@media (max-width:760px){#hof .hof-g{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"M M" "a b" "c d" "e g" "f f"}}
+@media (max-width:440px){#hof .hof-g{grid-template-columns:minmax(0,1fr);grid-template-areas:"M" "a" "b" "c" "d" "e" "g" "f"}}
 /* 익명 · 초상 없음: 그림자 사람 */
 .hc-ini.sh{align-items:flex-end;background:radial-gradient(circle at 50% 35%,#3a2f20,#15110c)}.hc-ini.sh svg{width:88%;height:88%;fill:rgba(241,213,137,.32)}
+
+/* 미니게임 순위: 머리 아래 탭 셋(방역선 · 대항해 · 별똥별). 넘어갈 때 살짝 떠오른다 */
+#hof .hc.arc .hc-tabs{display:flex;gap:4px;margin:-2px 0 6px}
+#hof .hc-tab{flex:1 1 0;min-width:0;padding:5px 4px;border-radius:999px;font:700 11.5px var(--font-ui);color:#a39678;background:rgba(255,255,255,.04);border:1px solid rgba(201,162,74,.22);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#hof .hc-tab:hover{color:#f1d589;border-color:rgba(201,162,74,.5);background:rgba(255,255,255,.06)}
+#hof .hc-tab.on{color:#15120e;background:linear-gradient(180deg,#f1d589,#c9a24a);border-color:#c9a24a}
+#hof .hc.arc.swap{animation:hcSwap .45s cubic-bezier(.2,.8,.2,1) both}
+@keyframes hcSwap{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (pointer:coarse){#hof .hc-tab{padding:8px 4px}}
+@media (prefers-reduced-motion:reduce){#hof .hc.arc.swap{animation:none}}
