@@ -89,7 +89,7 @@ function mini(back,mission){mgStop();window.scrollTo(0,0);
   function over(){if(G.state==='over')return;G.state='over';snd.over();
     const acc=G.spawned?Math.min(100,Math.round(G.sliced/G.spawned*100)):0,sc=Math.round(G.score),nb=sc>(MEM.mgBest||0);
     if(nb){MEM.mgBest=sc;msave();}MEM.mgPlays=(MEM.mgPlays||0)+1;msave();
-    const gr=sc>=2800?'S':sc>=1600?'A':sc>=700?'B':sc>=250?'C':'D';
+    const gr=sc>=2800?'S':sc>=1600?'A':sc>=600?'B':sc>=200?'C':'D';
     const st=(a,b)=>'<div class="mg-st"><span>'+a+'</span><b>'+b+'</b></div>';
     setTimeout(()=>{if(!MG||G.state!=='over')return;overlay('<div class="mg-card"><div class="mg-k">'+(nb?'최고 기록!':'게임 끝')+'</div><div class="mg-gr" style="color:'+GCOL[gr]+'">'+gr+'</div>'+
       '<div class="mg-score">'+sc.toLocaleString('ko-KR')+'<span>점</span></div>'+

@@ -22,7 +22,7 @@
 //
 // 열은 항상 예전 버전 뒤에 이어 붙이므로, 이미 쌓인 기록과 줄이 어긋나지 않는다. 머리글(1행)은 자동으로 새 버전으로 바뀐다.
 
-const SCRIPT_VER = 'v15';
+const SCRIPT_VER = 'v16';
 // [비밀 게임 기록] v13: 좀비 서바이벌 「방역선」과 비밀 모드 「대항해」의 점수가 "비밀 게임 기록" 탭에 쌓이고, 명예의 전당 오른쪽 두 칸에 순위가 나온다.
 const ARCADE = [['판ID', 'id'], ['게임', 'game'], ['닉네임', 'nickname'], ['학교', 'school'], ['점수', 'score'], ['시간(초)', 'sec'], ['성공', 'win'], ['세부', 'detail'], ['게임 버전', 'gv'],
   // ----- v15: 숨김(관리자가 아무 글자나 적으면 그 줄은 순위에서 빠진다. 서버가 말이 안 되는 기록을 받으면 스스로 사유를 적는다) -----
@@ -876,12 +876,12 @@ function boardOf_(rows, nTop, nList) {
 //   · 학교 종류를 흔히 쓰는 줄임말로: 과학고등학교·과학고·과고→과학고, 외국어고등학교·외고→외고, 국제고등학교→국제고,
 //     예술고등학교·예고→예고, 체육고등학교→체고, 여자고등학교·여고→여고, 사범대학부설고등학교·사대부고→사대부고, 그 밖의 고등학교→고, 중학교→중, 초등학교→초
 //   예) 경기도과학고등학교 · 경기과고 → 경기과학고 / 세종과고 · 세종과학고 → 세종과학고 / 대원외국어고등학교 → 대원외고
-//   · 외대부고 · 한국외대부고 · 용인한국외국어대학교부설고등학교 · HAFS → 용인외대부고, 영어 약칭 몇 개(KSA · KMLA · GSHS · SSHS)도 한국어 이름으로
+//   · 외대부고 · 한국외대부고 · 용인한국외국어대학교부설고등학교 · HAFS → 외대부고, 영어 약칭 몇 개(KSA · KMLA · GSHS · SSHS · NLCS)도 한국어 이름으로
 //   비었거나 'X' 같은 값, 욕설이 섞인 값은 빈칸.
-const SCHOOL_AC_ = {hafs: '용인외대부고', ksa: '한국과학영재학교', kmla: '민족사관고', gshs: '경기과학고', sshs: '서울과학고', dshs: '대구과학고', kshs: '경남과학고'};
+const SCHOOL_AC_ = {hafs: '외대부고', nlcs: 'NLCS 제주', nlcsjeju: 'NLCS 제주', 'nlcs제주': 'NLCS 제주', ksa: '한국과학영재학교', kmla: '민족사관고', gshs: '경기과학고', sshs: '서울과학고', dshs: '대구과학고', kshs: '경남과학고'};
 // 관리자가 직접 고치는 학교 이름 합치기 표(시트 '학교 이름 합치기'): 왼쪽 칸에 적힌 이름은 오른쪽 칸 이름으로 합친다.
 // 오타(예: 경가외국어고 → 경기외고)처럼 규칙으로 알 수 없는 것을 여기에 적는다. 새 기록에는 5분 안에, 순위에는 다음 갱신 때 반영된다.
-// 이 탭은 '기록 백업 후 새로 시작'으로도 지워지지 않는다.
+// 이 탭은 '기록 백업 후 새로 시작'으로도 지워지지 않는다. 영문 대소문자는 가리지 않는다(NLCS JEJU · nlcs jeju는 같은 줄로 본다).
 const ALIAS_SHEET = '학교 이름 합치기';
 const ALIAS_SEED = [['경가외국어고등학교', '경기외고']];
 let ALIAS_ = null;
@@ -889,7 +889,7 @@ function schoolAlias_() {
   if (ALIAS_) return ALIAS_;
   ALIAS_ = {};
   try {
-    const c = CacheService.getScriptCache(), hit = c.get('alias_v1');
+    const c = CacheService.getScriptCache(), hit = c.get('alias_v2');
     if (hit) { ALIAS_ = JSON.parse(hit); return ALIAS_; }
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     let sh = ss.getSheetByName(ALIAS_SHEET);
@@ -903,11 +903,11 @@ function schoolAlias_() {
     sh.getDataRange().getValues().slice(1).forEach(r => {
       const from = schoolBase_(r[0]), to = clean_(String(r[1] || '').replace(/^'/, '').trim()).slice(0, 20);
       if (!from || !to) return;
-      if (from !== to) ALIAS_[from] = to;
+      if (from !== to) ALIAS_[from.toLowerCase()] = to;
       const tb = schoolBase_(to);
-      if (tb && tb !== to) ALIAS_[tb] = to;
+      if (tb && tb !== to) ALIAS_[tb.toLowerCase()] = to;
     });
-    c.put('alias_v1', JSON.stringify(ALIAS_), 300);
+    c.put('alias_v2', JSON.stringify(ALIAS_), 300);
   } catch (e) {}
   return ALIAS_;
 }
@@ -915,14 +915,14 @@ function schoolName_(v) {
   const s = schoolBase_(v);
   if (!s) return '';
   const A = schoolAlias_();
-  return A[s] || s;
+  return A[s.toLowerCase()] || s;
 }
 // 규칙으로 하는 학교 이름 다듬기(합치기 표는 보지 않는다)
 function schoolBase_(v) {
   let s = clean_(String(v || '').replace(/^'/, '').trim());
   if (!s) return '';
   s = s.replace(/[\s\u200b-\u200d\ufeff·.,\-_~()\[\]{}'"`!?/\\|:;<>@#$%^&*+=]/g, '').slice(0, 30);
-  if (/외대부고|외대부속고|외대부설고|외국어대학교부설|외국어대부설|외대부고등학교|^hafs$/i.test(s)) return '용인외대부고';
+  if (/외대부고|외대부속고|외대부설고|외국어대학교부설|외국어대부설|외대부고등학교|^hafs$/i.test(s)) return '외대부고';
   const ac = SCHOOL_AC_[s.toLowerCase()];
   if (ac) return ac;
   if (s.length < 2 || /^[xX]+$/.test(s)) return '';

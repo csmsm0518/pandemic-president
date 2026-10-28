@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"bd9735212d","h":"f87737383d4b62a2"},"dex":{"v":"8b442c1f40","h":"51b7861bc0db4378"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"b0fc23ca22","h":"30c6ccf18792f5c6"},"guide":{"v":"deab14752c","h":"ac7c3a9277794ad0"},"sail":{"v":"f189ce3af2","h":"76407ef9a4732b7e"},"slash":{"v":"98ada3ddf7","h":"ff9637ad9b7c5fbc"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"5d853ed9c9","h":"9494196eed521f86"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
+const LZ_M={"board":{"v":"bd9735212d","h":"f87737383d4b62a2"},"dex":{"v":"8b442c1f40","h":"51b7861bc0db4378"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"b0fc23ca22","h":"30c6ccf18792f5c6"},"guide":{"v":"ad9c17b828","h":"eba55cee8be0cbe1"},"sail":{"v":"f189ce3af2","h":"76407ef9a4732b7e"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"5d853ed9c9","h":"9494196eed521f86"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
 function dexScene(){return lzCall('dex','dexScene',arguments);}
 function mgWar(){return lzCall('games','mgWar',arguments);}
@@ -6698,7 +6698,7 @@ const ICO2={lock:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" st
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v3.4';
+const GAME_VER='v3.5';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 이 창을 닫으면 사라진다(같은 기기를 여러 사람이 쓰므로 브라우저에 저장하지 않는다)
 let PF={school:'',name:'',phone:'',agree:false};
