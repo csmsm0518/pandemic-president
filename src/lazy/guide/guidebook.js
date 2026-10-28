@@ -142,7 +142,7 @@ function guideText(back){window.scrollTo(0,0);
    '<p>홈 화면 아래에서 할 수 있는 반사신경 게임이다. 손가락이나 마우스로 화면을 <b>빠르게 그어</b> 바이러스를 벤다.</p>'+
    '<table class="gb-t">'+row('<span class="mg-dot" style="background:#b3261e"></span>바이러스','벤다. 놓쳐서 아래로 떨어지면 병상 하나를 잃는다.')+row('<span class="mg-dot" style="background:#4a3d7a"></span>변이','베면 작은 바이러스 둘로 갈라진다.')+row('<span class="mg-dot" style="background:#b8541e"></span>내성 바이러스','두 번 베어야 한다.')+
    row('<span class="mg-dot" style="background:#2f5f99"></span>시민','베면 안 된다. 베면 병상을 잃는다.')+row('<span class="mg-dot" style="background:#1f7a72"></span>백신','베면 잠시 시간이 느려진다.')+row('<span class="mg-dot" style="background:#f4f4f4"></span>마스크','베면 실수 한 번을 막아 준다.')+row('<span class="mg-dot" style="background:#2e7d55"></span>치료제','베면 화면의 바이러스가 모두 사라진다.')+'</table>'+
-   '<p>한 번 그을 때 3마리 이상 베면 연속 보너스, 놓치지 않고 계속 베면 배율이 x2(10마리), x3(25마리), x4(45마리)로 오른다. 첫 10초는 연습 구간이라 놓쳐도 괜찮다. 그 뒤로는 갈수록 빨라지고 시민이 많아진다. 병상 3개를 모두 잃으면 끝난다.</p><p class="gb-n">등급: S 3,500점 · A 2,200점 · B 1,200점 · C 500점 이상</p>');
+   '<p>한 번 그을 때 3마리 이상 베면 연속 보너스, 놓치지 않고 계속 베면 배율이 x2(10마리), x3(25마리), x4(45마리)로 오른다. 첫 10초는 연습 구간이라 놓쳐도 괜찮다. 그 뒤로는 갈수록 빨라지고 시민이 많아진다. 병상 5개를 모두 잃으면 끝난다.</p><p class="gb-n">등급: S 2,800점 · A 1,600점 · B 700점 · C 250점 이상</p>');
   const S13=sec('cns','13. 참모 · 중신 · 각료',
    '<p>사건마다 곁에서 조언하는 사람은 둘이다. 대한민국은 <b>참모</b>, 조선은 <b>중신</b>, 미국은 <b>각료</b>라고 부른다. 해마다 연간 결산이 끝나면 <b>'+(ROLE.kr.meet)+' · 도목정사 · 내각 개편</b>이 열리고, 찾아온 후보 가운데 누구를 앉힐지 직접 고른다. 역사 속 인물과 지금 살아 있는 인물이 모두 후보로 나온다.</p>'+
    '<table class="gb-t">'+row('분야','의료·방역, 경제, 군사, 행정(지지율), 통합(갈등), 감찰(부패), 책략(권력) 일곱 가지')+

@@ -31,19 +31,19 @@ function mini(back,mission){mgStop();window.scrollTo(0,0);
     miss:()=>{noise(.25,.18,0,500);tone(90,'sine',.25,.22);},pow:()=>[660,880,1100,1320].forEach((f,k)=>tone(f,'triangle',.18,.1,k*.05)),
     combo:n=>[523,659,784,1047].slice(0,Math.min(4,n-1)).forEach((f,k)=>tone(f,'triangle',.22,.12,k*.06)),wave:()=>{tone(392,'square',.12,.07);tone(523,'square',.18,.07,.12);},over:()=>[392,330,262,196].forEach((f,k)=>tone(f,'triangle',.35,.15,k*.14))};
   // ----- 상태 -----
-  function reset(){Object.assign(G,{t:0,last:0,score:0,lives:3,shield:0,slow:0,mult:1,streak:0,maxStreak:0,bestCombo:0,sliced:0,spawned:0,missed:0,civHit:0,civSeen:0,
+  function reset(){Object.assign(G,{t:0,last:0,score:0,lives:5,shield:0,slow:0,mult:1,streak:0,maxStreak:0,bestCombo:0,sliced:0,spawned:0,missed:0,civHit:0,civSeen:0,
     ents:[],parts:[],texts:[],trail:[],next:.6,wave:-1,banner:null,shake:0,flash:0,flashC:'#f0605f',stroke:null,count:3});}
   // ----- 생성 -----
-  function lvl(){return Math.min(1.45,G.t/90);}
-  function launch(type,x0){const L=lvl(),T=MGT[type],h=G.H*(.48+Math.random()*.32),g=G.H*(1.05+.55*L);
+  function lvl(){return Math.min(1.3,G.t/110);}
+  function launch(type,x0){const L=lvl(),T=MGT[type],h=G.H*(.48+Math.random()*.32),g=G.H*(.9+.4*L);
     const x=x0!=null?x0:G.W*(.14+Math.random()*.72),tx=G.W*(.25+Math.random()*.5),tUp=Math.sqrt(2*h/g);
     const e={type:type,x:x,y:G.H+T.r+4,vx:(tx-x)/(tUp*2.1)*(0.7+Math.random()*.6),vy:-Math.sqrt(2*g*h),g:g,r:T.r,rot:Math.random()*6.3,vr:(Math.random()-.5)*3,hp:T.hp||1,inv:0,dead:false,hitC:0};
     G.ents.push(e);if(type==='v'||type==='x'||type==='a')G.spawned++;if(type==='civ')G.civSeen++;}
   function spawnGroup(){const L=lvl(),n=G.t<12?1:1+Math.floor(Math.random()*(1.3+L*2.6)),pw=G.t>16?Math.random():1;
     if(pw<.035)launch('vac');else if(pw<.065)launch('mask');else if(pw<.08)launch('cure');
-    for(let k=0;k<n;k++){const r=Math.random(),pc=G.t<8?0:.07+.2*Math.min(1,L),px=G.t>18?.08+.16*Math.min(1,L):0,pa=G.t>38?.06+.12*Math.min(1,L):0;
+    for(let k=0;k<n;k++){const r=Math.random(),pc=G.t<8?0:.06+.14*Math.min(1,L),px=G.t>18?.08+.16*Math.min(1,L):0,pa=G.t>38?.06+.12*Math.min(1,L):0;
       const ty=r<pc?'civ':r<pc+px?'x':r<pc+px+pa?'a':'v';setTimeout(()=>{if(G.run&&G.state==='play')launch(ty);},k*110);}
-    G.next=(G.t<12?1.35:Math.max(.42,1.2-.62*Math.min(1,L)-.1*Math.max(0,L-1)))*(0.75+Math.random()*.5);}
+    G.next=(G.t<12?1.35:Math.max(.5,1.2-.58*Math.min(1,L)-.1*Math.max(0,L-1)))*(0.75+Math.random()*.5);}
   // ----- 효과 -----
   function burst(x,y,c,n,sp){for(let k=0;k<n;k++){const a=Math.random()*6.3,v=(sp||1)*(60+Math.random()*220);G.parts.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-60,r:2+Math.random()*3.5,c:c,life:.5+Math.random()*.4,t:0});}}
   function halves(e,ang){const T=MGT[e.type];for(const sd of [-1,1])G.parts.push({half:1,x:e.x,y:e.y,vx:e.vx*.4+Math.cos(ang+Math.PI/2)*sd*120,vy:e.vy*.3+Math.sin(ang+Math.PI/2)*sd*120-80,r:e.r,c:T.c,ang:ang,sd:sd,rot:0,vr:sd*4,life:.9,t:0,type:e.type});}
@@ -66,10 +66,10 @@ function mini(back,mission){mgStop();window.scrollTo(0,0);
     return 1;}
   // ----- 입력 -----
   const pos=ev=>{const r=cv.getBoundingClientRect();return {x:ev.clientX-r.left,y:ev.clientY-r.top,t:performance.now()};};
-  function segHit(p0,p1){const dx=p1.x-p0.x,dy=p1.y-p0.y,len=Math.hypot(dx,dy),dt=Math.max(1,p1.t-p0.t);if(len<4||len/dt<.32)return;if(G.stroke&&!G.stroke.sw){G.stroke.sw=1;SFX.swing();}
+  function segHit(p0,p1){const dx=p1.x-p0.x,dy=p1.y-p0.y,len=Math.hypot(dx,dy),dt=Math.max(1,p1.t-p0.t);if(len<4||len/dt<.25)return;if(G.stroke&&!G.stroke.sw){G.stroke.sw=1;SFX.swing();}
     const ang=Math.atan2(dy,dx);let n=0;
     for(const e of G.ents){if(e.dead||e.inv>0&&e.type!=='a')continue;const t=Math.max(0,Math.min(1,((e.x-p0.x)*dx+(e.y-p0.y)*dy)/(len*len))),cx=p0.x+dx*t,cy=p0.y+dy*t;
-      if(Math.hypot(e.x-cx,e.y-cy)<=e.r+4){const k=hit(e,ang);if(k>0){n+=k;G.stroke.hits+=k;snd.slice(G.stroke.hits);}}}}
+      if(Math.hypot(e.x-cx,e.y-cy)<=e.r+(e.type==='civ'?2:9)){const k=hit(e,ang);if(k>0){n+=k;G.stroke.hits+=k;snd.slice(G.stroke.hits);}}}}
   cv.addEventListener('pointerdown',ev=>{if(G.state!=='play')return;ev.preventDefault();try{cv.setPointerCapture(ev.pointerId);}catch(e){}const p=pos(ev);G.stroke={hits:0,last:p};G.trail=[p];});
   cv.addEventListener('pointermove',ev=>{if(G.state!=='play'||!G.stroke)return;ev.preventDefault();const p=pos(ev);segHit(G.stroke.last,p);G.stroke.last=p;G.trail.push(p);if(G.trail.length>24)G.trail.shift();});
   const up=()=>{if(!G.stroke)return;const n=G.stroke.hits;if(n>=3){const b=n*n*5;G.score+=b;G.bestCombo=Math.max(G.bestCombo,n);txt(G.W/2,G.H*.42,n+'연속 베기! +'+b,'#ffd166',true);snd.combo(n);}else G.bestCombo=Math.max(G.bestCombo,n);G.stroke=null;};
@@ -80,7 +80,7 @@ function mini(back,mission){mgStop();window.scrollTo(0,0);
     '<div class="mg-rules"><div><span class="mg-dot" style="background:#e5484d"></span><b>바이러스</b>를 그어서 벤다. 놓치면 병상 −1</div><div><span class="mg-dot" style="background:#5aa9ff"></span><b>시민</b>은 베면 안 된다. 베면 병상 −1</div>'+
     '<div><span class="mg-dot" style="background:#9b6bff"></span>변이는 둘로 갈라지고, <span class="mg-dot" style="background:#f08c2e"></span>내성 바이러스는 두 번 벤다</div><div><span class="mg-dot" style="background:#4fe0d0"></span>백신 <span class="mg-dot" style="background:#f4f4f4"></span>마스크 <span class="mg-dot" style="background:#3fc38f"></span>치료제는 베면 도움이 된다</div>'+
     '<div>한 번에 3마리 이상 베면 보너스, 놓치지 않고 이어 베면 배율 x2·x3·x4</div></div>'+
-    '<button id="mgGo" class="mg-btn">시작</button><div class="mg-sub">첫 10초는 연습 구간 · 병상 3개를 모두 잃으면 끝난다 · 손가락이나 마우스로 빠르게 긋기</div></div>');
+    '<button id="mgGo" class="mg-btn">시작</button><div class="mg-sub">첫 10초는 연습 구간 · 병상 5개를 모두 잃으면 끝난다 · 손가락이나 마우스로 빠르게 긋기</div></div>');
     document.getElementById('mgGo').onclick=()=>{aInit();SFX.coin();start();};}
   function start(){cancelAnimationFrame(G.raf);reset();overlay('');G.state='count';G.cd=2.4;[3,2,1].forEach((n,k)=>SFX.beep(n,k*.8));SFX.beep(0,2.4);G.run=true;G.last=performance.now();G.raf=requestAnimationFrame(loop);}
   function pause(){if(G.state!=='play')return;G.state='pause';overlay('<div class="mg-card"><div class="mg-h">일시정지</div><button id="mgRes" class="mg-btn">계속하기</button><button id="mgQuit" class="mg-btn2">그만하기</button></div>');
@@ -89,7 +89,7 @@ function mini(back,mission){mgStop();window.scrollTo(0,0);
   function over(){if(G.state==='over')return;G.state='over';snd.over();
     const acc=G.spawned?Math.min(100,Math.round(G.sliced/G.spawned*100)):0,sc=Math.round(G.score),nb=sc>(MEM.mgBest||0);
     if(nb){MEM.mgBest=sc;msave();}MEM.mgPlays=(MEM.mgPlays||0)+1;msave();
-    const gr=sc>=3500?'S':sc>=2200?'A':sc>=1200?'B':sc>=500?'C':'D';
+    const gr=sc>=2800?'S':sc>=1600?'A':sc>=700?'B':sc>=250?'C':'D';
     const st=(a,b)=>'<div class="mg-st"><span>'+a+'</span><b>'+b+'</b></div>';
     setTimeout(()=>{if(!MG||G.state!=='over')return;overlay('<div class="mg-card"><div class="mg-k">'+(nb?'최고 기록!':'게임 끝')+'</div><div class="mg-gr" style="color:'+GCOL[gr]+'">'+gr+'</div>'+
       '<div class="mg-score">'+sc.toLocaleString('ko-KR')+'<span>점</span></div>'+
@@ -165,7 +165,7 @@ function mini(back,mission){mgStop();window.scrollTo(0,0);
     // 위쪽 정보
     const ff=FF;ctx.textAlign='left';ctx.fillStyle='#fff';ctx.font='800 26px '+ff;ctx.fillText(Math.round(G.score||0).toLocaleString('ko-KR'),14,36);
     if(G.mult>1){ctx.fillStyle='#ffd166';ctx.font='800 15px '+ff;ctx.fillText('x'+G.mult+' 배율',14,56);}
-    ctx.textAlign='right';for(let k=0;k<3;k++){const on=k<G.lives;ctx.fillStyle=on?'#f0605f':'rgba(255,255,255,.15)';const x=W-16-k*26,y=22;
+    ctx.textAlign='right';for(let k=0;k<5;k++){const on=k<G.lives;ctx.fillStyle=on?'#f0605f':'rgba(255,255,255,.15)';const x=W-16-k*26,y=22;
       ctx.beginPath();ctx.roundRect?ctx.roundRect(x-18,y-8,18,12,3):ctx.rect(x-18,y-8,18,12);ctx.fill();ctx.fillRect(x-20,y+4,3,6);ctx.fillRect(x-1,y+4,3,6);}
     ctx.font='600 11px '+ff;ctx.fillStyle='rgba(255,255,255,.55)';ctx.fillText('병상',W-16,48);
     if(G.shield>0){ctx.fillStyle='#f4f4f4';ctx.fillText('마스크 '+G.shield,W-16,64);}
