@@ -70,7 +70,9 @@ function hofView(){const d=HOF.d;if(!d)return null;const f=a=>(a||[]).filter(r=>
   const L=Object.keys(pool).map(k=>pool[k]),srt=f=>L.slice().sort(f).slice(0,5);
   return Object.assign({},v,{cards:{terms:srt((a,b)=>b.terms-a.terms||b.score-a.score),tro:srt((a,b)=>(b.tro||0)-(a.tro||0)||b.score-a.score).filter(r=>r.tro>0),appr:L.filter(r=>r.appr!=null).sort((a,b)=>b.appr-a.appr).slice(0,5),school:[],camp:[]}});}
 const hofCampN=c=>{const k=Object.keys(CAMPS).find(k=>CAMPS[k].id===c||CAMPS[k].n===c);return k?CAMPS[k].n:(c||'');};
-const hofAv=(name,px)=>portrait(name,px)||'<span class="hc-ini">'+lbEsc(String(name||'?').slice(0,1))+'</span>';
+// 초상이 없으면(닮은 지도자 미상) 이니셜 대신 그림자 사람
+const HOF_SH='<span class="hc-ini sh">'+'<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M9 64c2-12 11-19 23-19s21 7 23 19z"/><ellipse cx="32" cy="28" rx="11.5" ry="13.5"/></svg>'+'</span>',hofAnon=n=>!n||/^\s*(익명|anonymous)?\s*$/i.test(String(n));
+const hofAv=(name,px)=>portrait(name,px)||HOF_SH;
 // 부문 카드 하나. it(r)은 {n 이름, s 둘째 줄, v 기록, a 초상 자리 HTML, me 내 기록인지}
 // 커리어 점수(main)만 1위를 크게 띄우고, 나머지 부문은 작은 순위표(1~5위)로만 보여 준다. ga는 화면 격자의 자리 이름
 function hofCard(o){const L=o.list||[],main=!!o.main;
@@ -101,7 +103,7 @@ function hofRender(){const v=hofView(),body=document.getElementById('hofBody');h
     hofCard({i:2,ga:'b',t:'최다 연임',u:'임기 수',list:C.terms,it:r=>P(r,r.terms+'<small>선</small>')})+
     hofCard({i:3,ga:'c',t:'학교 평균 점수',u:'한 사람당 최고 기록',list:C.school,empty:'학교를 적은 기록이 아직 없어요',it:x=>({n:E(x.school),s:x.n+'명 · 최고 '+E(x.best&&x.best.nick||''),v:num(x.avg)+'<small>점</small>',a:'<span class="hc-ini sc">'+E(String(x.school).slice(0,1))+'</span>',me:false})});
   // 오른쪽 끝 두 칸은 비밀 게임 순위(난이도와 상관없이 하나). 서버가 예전 버전이라 arcade가 없으면 빈 칸 안내만 보인다
-  const A=(HOF.d&&HOF.d.arcade)||{},ini=r=>'<span class="hc-ini">'+E(String(r.nick||'?').slice(0,1))+'</span>',mmss=s=>Math.floor(s/60)+':'+(s%60).toFixed(1).padStart(4,'0');
+  const A=(HOF.d&&HOF.d.arcade)||{},ini=r=>hofAnon(r.nick)?HOF_SH:'<span class="hc-ini">'+E(String(r.nick).slice(0,1))+'</span>',mmss=s=>Math.floor(s/60)+':'+(s%60).toFixed(1).padStart(4,'0');
   const right=hofCard({i:4,ga:'d',t:'최다 업적',u:'한 커리어의 업적 수',list:C.tro,it:r=>P(r,r.tro+'<small>개</small>')})+
     hofCard({i:6,ga:'f',t:'방역선 최고 점수',u:'비밀 무대 · 좀비 서바이벌',list:A.zg,empty:'아직 해가 뜬 기록이 없어요',it:r=>({n:E(r.nick),s:[r.school,r.detail].filter(Boolean).map(E).join(' · ')||'&nbsp;',v:num(r.score)+'<small>점</small>',a:ini(r),me:false})})+
     hofCard({i:8,ga:'h',t:'대항해 최단 기록',u:'비밀 모드 · 폭풍 해협 질주',list:A.sail,empty:'아직 돌아온 배가 없어요',it:r=>({n:E(r.nick),s:[r.school,r.detail].filter(Boolean).map(E).join(' · ')||'&nbsp;',v:mmss(r.sec),a:ini(r),me:false})});

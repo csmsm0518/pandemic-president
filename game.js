@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"c036b4f3a2","h":"4b7ae29bcd86bce7"},"dex":{"v":"c765cb1913","h":"6576c1542ccf56b4"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"b0fc23ca22","h":"30c6ccf18792f5c6"},"guide":{"v":"6e340774ec","h":"f9cc624808514a7e"},"sail":{"v":"e171c74b86","h":"721ff3d23e62e61f"},"slash":{"v":"91b6243685","h":"9a753ed1fed964a5"},"sports":{"v":"b0afee4c6b","h":"002ce537ad523cf9"}};
+const LZ_M={"board":{"v":"f4bd2d33f7","h":"9cd1ef3b9950f004"},"dex":{"v":"69486334a4","h":"8ebb6e39e792d7fe"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"b0fc23ca22","h":"30c6ccf18792f5c6"},"guide":{"v":"6e340774ec","h":"f9cc624808514a7e"},"sail":{"v":"e171c74b86","h":"721ff3d23e62e61f"},"slash":{"v":"91b6243685","h":"9a753ed1fed964a5"},"sports":{"v":"b0afee4c6b","h":"002ce537ad523cf9"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
 function dexScene(){return lzCall('dex','dexScene',arguments);}
 function mgWar(){return lzCall('games','mgWar',arguments);}
@@ -4294,6 +4294,15 @@ function stepLeader(){if(camp==='zombie')return zgOpen();const C=CAMPS[camp],BGS
       if(e.key==='ArrowDown'||e.key==='ArrowUp'){const D=[...root.querySelectorAll('.gx-t')],cols=D.filter(t=>t.offsetTop===D[0].offsetTop).length||n,j=p+(e.key==='ArrowDown'?cols:-cols);if(j>=0&&j<n)draw(VO[j],1);return true;}
       if(gxEnter(e)){ok();return true;}}});
   const root=document.querySelector('.gx-ld'),T=[...root.querySelectorAll('.gx-t')].sort((a,b)=>a.dataset.i-b.dataset.i),wm=root.querySelector('.gx-wm'),fig=root.querySelector('.gx-fig'),info=root.querySelector('.gx-info');
+  // 명단: 한 줄에 다 들어가면 한 줄(조금 빡빡하면 칸을 줄여서라도), 아니면 위아래가 고르게 찬 두 줄. 칸 하나만 아랫줄로 떨어지는 일이 없게 한다
+  const RO=root.querySelector('.gx-roster');
+  const fitR=()=>{if(!RO.isConnected){removeEventListener('resize',fitR);return;}RO.style.removeProperty('--tile');RO.style.paddingLeft=RO.style.paddingRight='';
+    if(getComputedStyle(RO).flexWrap!=='wrap')return;const t0=RO.querySelector('.gx-t');if(!t0)return;
+    const n=RO.children.length,g=parseFloat(getComputedStyle(RO).columnGap)||6,tw=t0.getBoundingClientRect().width,base=tw/1.16,W=RO.clientWidth-32,one=n*(tw+g)-g;
+    if(one<=W)return;if(W/one>=.8){RO.style.setProperty('--tile',(base*(W-n*g)/(n*tw)*1).toFixed(2)*1+'px');return;}
+    const cols=Math.ceil(n/2),s=Math.min(1,(W-(cols-1)*g)/(cols*tw));RO.style.setProperty('--tile',(base*s).toFixed(2)+'px');
+    const rowW=cols*tw*s+(cols-1)*g;RO.style.paddingLeft=RO.style.paddingRight=Math.max(16,(RO.clientWidth-rowW)/2-1)+'px';};
+  fitR();addEventListener('resize',fitR);
   const ok=()=>{if(spin)return;if(k===RI)return roll();if(bgLock(BGS[k]))return gxSfx('lock');gxSfx('coin');bg=k;stepSetup();};
   // 금테가 명단 순서대로 한 칸씩 돌며 점점 느려지다가, 미리 뽑아 둔 사람의 칸에서 정확히 멈춘다(마지막에 건너뛰지 않는다)
   const roll=()=>{if(!pool.length)return;spin=true;root.classList.add('spin');const L=pool.length,fi=Math.floor(Math.random()*L),s0=Math.floor(Math.random()*L),

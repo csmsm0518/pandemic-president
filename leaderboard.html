@@ -411,7 +411,10 @@ function renderTick(){const V=view(),L=(V&&V.recent||[]).slice(0,10),el=$('tick'
   $('tickM').innerHTML=s+'<span class="dup" aria-hidden="true">'+s+'</span>';el.hidden=false;}   // 이어 붙인 사본은 낭독하지 않는다
 function renderDifs(){$('difs').innerHTML=DIFS.map(k=>'<button data-d="'+k+'" aria-pressed="'+(diff===k)+'">'+
   k+'</button>').join('');}
-const medal=(r,px)=>'<span class="med" style="--m:'+px+'px">'+(portrait(r.leader,'100%')||'<b>'+esc(String(r.nick||'?').slice(0,1))+'</b>')+'</span>';
+// 초상이 없으면: 익명은 그림자 사람, 아니면 닉네임 첫 글자
+const SHADOW='<svg viewBox="0 0 64 64" aria-hidden="true" style="display:block;width:88%;height:88%;margin:12% auto 0;fill:rgba(241,213,137,.34)"><path d="M9 64c2-12 11-19 23-19s21 7 23 19z"/><ellipse cx="32" cy="28" rx="11.5" ry="13.5"/></svg>';
+const anon=n=>!n||/^\s*(익명|anonymous)?\s*$/i.test(String(n));
+const medal=(r,px)=>'<span class="med" style="--m:'+px+'px">'+(portrait(r.leader,'100%')||(anon(r.nick)?SHADOW:'<b>'+esc(String(r.nick).slice(0,1))+'</b>'))+'</span>';
 let ME='';const flags=r=>(fresh.has(r.id)?' fresh':'')+(ME&&r.id===ME?' mine':'');
 // 1위: 초상 메달이 달린 큰 금 명판. 2·3위: 은·동 명판.
 const MORE='<button class="more">세부 수치 보기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>';

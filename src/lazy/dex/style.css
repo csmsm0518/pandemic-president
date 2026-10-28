@@ -34,7 +34,7 @@
 .dx-ini,.dx-seal{display:flex;align-items:center;justify-content:center;width:78px;height:78px;border-radius:50%;font:800 32px var(--font-voice);color:#fff4d6}
 .dx-seal{background:radial-gradient(circle at 40% 35%,color-mix(in srgb,var(--c) 70%,#fff),var(--c) 60%,color-mix(in srgb,var(--c) 60%,#000));box-shadow:inset 0 0 0 3px rgba(255,255,255,.18)}
 .dx-c:not(.on) .dx-seal{background:rgba(255,255,255,.04);color:rgba(241,213,137,.35);box-shadow:none}
-.dx-n{font:800 16px/1.3 var(--font-voice);color:inherit;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}.dx-c.on .dx-n{color:#fff4d6}
+.dx-n{font:800 15px/1.3 var(--font-voice);color:inherit;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:keep-all}.dx-c.on .dx-n{color:#fff4d6}
 .dx-s{font-size:11.5px;line-height:1.45;color:#a89b7e;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .dx-c:not(.on) .dx-s{color:#6f6656}
 .dx-x{position:absolute;right:10px;top:8px;font-style:normal;font:800 12px var(--font-ui);color:#f1d589}
@@ -44,3 +44,8 @@
 @media (max-width:640px){.dx-in{padding-top:max(58px,calc(env(safe-area-inset-top) + 46px))}.dx-hd{grid-template-columns:auto 1fr auto}.dx-tt h1{font-size:30px}.dx-pc{width:66px;height:66px}.dx-pc b{font-size:19px}
   .dx-st{grid-template-columns:repeat(2,minmax(0,1fr))}.dx-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.dx-g{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
   .dx-av{width:68px;height:68px}.dx-av svg,.dx-ini,.dx-seal{width:62px;height:62px}}
+/* 임기 평가 · 비밀 기록의 상징 그림(흰 선). 못 받은 평가는 흐린 선으로 */
+.dx-seal svg{width:46%;height:46%;color:#fff4d6}.dx-c:not(.on) .dx-seal svg{color:rgba(241,213,137,.4)}
+.dx-q{font-style:normal;font:800 30px var(--font-voice);color:rgba(241,213,137,.45)}
+.dx-d .dx-rn{font:700 14px var(--font-ui);color:#f1d589}
+.dx-ini.sh{align-items:flex-end;background:radial-gradient(circle at 50% 35%,#3a2f20,#15110c)}.dx-ini.sh svg{width:86%;height:86%;fill:rgba(241,213,137,.3)}
