@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"58ccd837a1","h":"34a8bacb4a83d616"},"dex":{"v":"26cfda6042","h":"6576c1542ccf56b4"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"b0fc23ca22","h":"30c6ccf18792f5c6"},"guide":{"v":"6e340774ec","h":"f9cc624808514a7e"},"sail":{"v":"a030839df5","h":"01634b3d6493b2d8"},"slash":{"v":"91b6243685","h":"9a753ed1fed964a5"},"sports":{"v":"b0afee4c6b","h":"002ce537ad523cf9"}};
+const LZ_M={"board":{"v":"58ccd837a1","h":"34a8bacb4a83d616"},"dex":{"v":"c765cb1913","h":"6576c1542ccf56b4"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"b0fc23ca22","h":"30c6ccf18792f5c6"},"guide":{"v":"6e340774ec","h":"f9cc624808514a7e"},"sail":{"v":"a030839df5","h":"01634b3d6493b2d8"},"slash":{"v":"91b6243685","h":"9a753ed1fed964a5"},"sports":{"v":"b0afee4c6b","h":"002ce537ad523cf9"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
 function dexScene(){return lzCall('dex','dexScene',arguments);}
 function mgWar(){return lzCall('games','mgWar',arguments);}
