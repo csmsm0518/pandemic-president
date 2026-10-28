@@ -917,7 +917,8 @@ html:has(.cine:not(.out)),html:has(.cine:not(.out)) body,html:has(.lbfs),html:ha
 .gx-cp::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:var(--cp-bar)}
 .gx-cp::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,rgba(6,5,4,.94) 0%,rgba(6,5,4,.62) 30%,rgba(6,5,4,.18) 55%,rgba(6,5,4,0) 72%)}
 /* 판 전체를 채우는 포스터(CP_ART). 골라진 판은 살짝 다가온다. 천 주름은 일렁이고, 대항해의 물결은 흐르고 배는 출렁인다 */
-.gx-cp-art{position:absolute;inset:0;transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+/* 색은 쨍하지 않게 한 톤 죽이고(채도·밝기를 낮추고 누런 종이 빛을 살짝 얹는다) */
+.gx-cp-art{position:absolute;inset:0;filter:saturate(.62) brightness(.86) contrast(.94) sepia(.12);transition:transform .8s cubic-bezier(.2,.8,.2,1)}
 .gx-cp-art svg{display:block;width:100%;height:100%}
 .gx-cp.on .gx-cp-art{transform:scale(1.03)}
 .gx-cp-art .cp-fold{animation:cpFold 9s ease-in-out infinite alternate}
