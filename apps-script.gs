@@ -1,4 +1,4 @@
-// 팬데믹 대통령 - 연구용 기록 + 자동 분석 스크립트 (v13: 비밀 게임(방역선·대항해) 점수 기록과 명예의 전당 순위)
+// 팬데믹 대통령 - 연구용 기록 + 자동 분석 스크립트 (v14: 기록 버전 11로 잘못 적힌 새 체계 판도 순위에, 불가능한 대항해 기록 제외)
 //
 // [기록 시트] 게임이 끝날 때마다 자동으로 쌓인다
 //   "요약"       : 인생(커리어) 1개 = 1줄. 난이도·배경·결정 빈도·시대 조건, 임기 수, 퇴장 방식, 개헌, 닮은 지도자,
@@ -22,7 +22,7 @@
 //
 // 열은 항상 예전 버전 뒤에 이어 붙이므로, 이미 쌓인 기록과 줄이 어긋나지 않는다. 머리글(1행)은 자동으로 새 버전으로 바뀐다.
 
-const SCRIPT_VER = 'v13';
+const SCRIPT_VER = 'v14';
 // [비밀 게임 기록] v13: 좀비 서바이벌 「방역선」과 비밀 모드 「대항해」의 점수가 "비밀 게임 기록" 탭에 쌓이고, 명예의 전당 오른쪽 두 칸에 순위가 나온다.
 const ARCADE = [['판ID', 'id'], ['게임', 'game'], ['닉네임', 'nickname'], ['학교', 'school'], ['점수', 'score'], ['시간(초)', 'sec'], ['성공', 'win'], ['세부', 'detail'], ['게임 버전', 'gv']];
 const ARCADE_GAMES = {zg: '방역선', sail: '대항해'};
@@ -253,7 +253,7 @@ function archiveAndReset() {
   } finally {
     lock.releaseLock();
   }
-  try { CacheService.getScriptCache().remove('board_v13_n'); } catch (e) {}   // 명예의 전당 캐시도 바로 비운다
+  try { CacheService.getScriptCache().remove('board_v14_n'); } catch (e) {}   // 명예의 전당 캐시도 바로 비운다
   ui.alert('완료', '백업 사본: ' + copy.getName() + '\n' + copy.getUrl() + '\n\n이 시트는 새 기록부터 다시 쌓입니다.', ui.ButtonSet.OK);
 }
 function refreshAnalysis() {
@@ -300,6 +300,16 @@ function table_(ss, name, cols) {
 }
 const DIFFS = ['쉬움', '보통', '어려움', '지옥'];
 const BOARD_MIN_VER = 12;   // 이 기록 버전보다 오래된 판(100점 체계, 예전 난이도 이름)은 순위에서 뺀다
+// 게임이 새 점수 체계로 바뀐 뒤에도 한동안 기록 버전을 11로 보냈다. 그 시각(2026-10-28 04:24 KST) 뒤의 11은 새 체계 판이다
+const BOARD_V11_FROM = Date.parse('2026-10-27T19:24:00Z');
+function boardVerOk_(ver, t) {
+  if (ver >= BOARD_MIN_VER) return true;
+  if (ver !== 11) return false;
+  const ms = t instanceof Date ? t.getTime() : Date.parse(String(t));
+  return !isNaN(ms) && ms >= BOARD_V11_FROM;
+}
+// 대항해는 해협 22,200을 최고 속도(순풍 돛)로 내달려도 30초가 넘게 걸린다. 그보다 짧은 기록은 시험 판이나 조작으로 보고 뺀다
+const SAIL_MIN_SEC = 25;
 const BGS = ['감염병 학자', '기업인', '인권 변호사', '군 장성', '정치 명문가'];
 const MODES = ['표준', '속전속결'];
 const ERAS = ['고령화 사회', '언론 불신의 시대', '저금리 호황', '온건한 야당', '콘크리트 지지층', '교통 허브 국가', '정치 양극화', '재정 취약국'];
@@ -615,10 +625,10 @@ function doGet(e) {
   const p = (e && e.parameter) || {};
   const cache = CacheService.getScriptCache();
   let json = null;
-  try { json = cacheGet_(cache, 'board_v13'); } catch (err) {}
+  try { json = cacheGet_(cache, 'board_v14'); } catch (err) {}
   if (!json) {
     json = JSON.stringify(buildBoard_());
-    try { cachePut_(cache, 'board_v13', json, 15); } catch (err) {}
+    try { cachePut_(cache, 'board_v14', json, 15); } catch (err) {}
     try { if (PropertiesService.getDocumentProperties().getProperty('anaDirty')) maybeAnalyze_(); } catch (err) {}
   }
   const cb = p.callback;
@@ -642,8 +652,8 @@ function buildBoard_() {
   for (let i = 1; i < v.length; i++) {
     const r = v[i], sc = num(g(r, '커리어 점수')), id = String(g(r, '판ID'));
     if (sc === null || id === 'test') continue;          // 중도 이탈·테스트 줄은 제외
-    if ((num(g(r, '기록 버전')) || 0) < BOARD_MIN_VER) continue;   // 예전 점수 체계·난이도 이름의 기록은 순위에서 제외
     const t = g(r, '기록 시각');
+    if (!boardVerOk_(num(g(r, '기록 버전')) || 0, t)) continue;   // 예전 점수 체계·난이도 이름의 기록은 순위에서 제외
     rows.push({
       id: id,
       nick: String(g(r, '닉네임') || '익명').replace(/^'/, '').slice(0, 20),
@@ -760,7 +770,7 @@ function arcadeBoard_() {
     school: schoolName_(g(r, '학교')), score: Number(g(r, '점수')) || 0, sec: Number(g(r, '시간(초)')) || 0, win: String(g(r, '성공')) === '예', detail: String(g(r, '세부') || '')}));
   const best = (L, better) => { const m = {}; L.forEach(r => { if (!m[r.nick] || better(r, m[r.nick])) m[r.nick] = r; }); return Object.keys(m).map(k => m[k]); };
   out.zg = best(rows.filter(r => r.game === 'zg'), (a, b) => a.score > b.score).sort((a, b) => b.score - a.score).slice(0, 5);
-  out.sail = best(rows.filter(r => r.game === 'sail' && r.win && r.sec > 0), (a, b) => a.sec < b.sec).sort((a, b) => a.sec - b.sec).slice(0, 5);
+  out.sail = best(rows.filter(r => r.game === 'sail' && r.win && r.sec >= SAIL_MIN_SEC), (a, b) => a.sec < b.sec).sort((a, b) => a.sec - b.sec).slice(0, 5);
   return out;
 }
 // 무대마다 가장 높은 커리어 하나

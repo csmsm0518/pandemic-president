@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"f4bd2d33f7","h":"9cd1ef3b9950f004"},"dex":{"v":"69486334a4","h":"8ebb6e39e792d7fe"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"b0fc23ca22","h":"30c6ccf18792f5c6"},"guide":{"v":"6e340774ec","h":"f9cc624808514a7e"},"sail":{"v":"0e38b097c1","h":"1b03401271a9c6e9"},"slash":{"v":"91b6243685","h":"9a753ed1fed964a5"},"sports":{"v":"b0afee4c6b","h":"002ce537ad523cf9"}};
+const LZ_M={"board":{"v":"f4bd2d33f7","h":"9cd1ef3b9950f004"},"dex":{"v":"69486334a4","h":"8ebb6e39e792d7fe"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"b0fc23ca22","h":"30c6ccf18792f5c6"},"guide":{"v":"6e340774ec","h":"f9cc624808514a7e"},"sail":{"v":"fcca374d54","h":"d37ec444fe181594"},"slash":{"v":"91b6243685","h":"9a753ed1fed964a5"},"sports":{"v":"b0afee4c6b","h":"002ce537ad523cf9"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
 function dexScene(){return lzCall('dex','dexScene',arguments);}
 function mgWar(){return lzCall('games','mgWar',arguments);}
@@ -4114,7 +4114,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   lab('출발 인물')+bgSel+(P?'<div style="height:12px"></div>':bgHint)+
   lab('결정 빈도')+'<div class="hl-mode" style="display:flex;gap:8px;margin-bottom:22px">'+mdb+'</div>'+
   lab('난이도')+'<div class="hl-dif" style="display:flex;gap:8px;margin-bottom:24px">'+dfb+'</div>'+
-  '<div class="hl-go"><button id="st" class="pri"'+(B?'':' disabled')+' style="width:100%;padding:16px;font-size:16.5px;margin-bottom:12px">'+(!B?'인물을 선택하세요':camp==='joseon'?'즉위한다':camp==='zombie'?'지휘를 맡는다':'취임한다')+'</button></div>'+(P?bgHint+intro:'')+
+  '<div class="hl-go"><button id="st" class="pri"'+(B?'':' disabled')+' style="width:100%;padding:16px;font-size:16.5px;margin-bottom:12px">'+(!B?'인물을 선택하세요':camp==='joseon'?'즉위한다':camp==='zombie'?'지휘를 맡는다':'취임한다')+'</button></div>'+(P?bgHint+introH:'')+
   '<div class="hm-row"><button id="tutBtn" class="tgl" role="switch" aria-checked="'+tutOn()+'"><span class="tgl-k"></span><span>튜토리얼 '+(tutOn()?'켜짐':'꺼짐')+'</span></button></div>'+
   '<button id="ldBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>불러오기</b><span>'+gEsc(svMenuTxt()||'저장된 게임이 없다')+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="lbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>명예의 전당</b><span>모두의 최고 기록</span></span><span class="hm-go">'+CHEV+'</span></button>'+
@@ -5614,7 +5614,7 @@ function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.len
   const parts=[];let curC=[],room=LIM-size(JSON.stringify({v:12,gv:GAME_VER,run:run,choices:[],terms:termsOut,years:yrs}));
   choices.forEach(c=>{const z=size(JSON.stringify(c))+1;if(z>room&&curC.length){parts.push(curC);curC=[];room=LIM-size(JSON.stringify({v:12,gv:GAME_VER,part:'more',run:head,choices:[]}));}curC.push(c);room-=z;});
   parts.push(curC);
-  const bodies=parts.map((p,k)=>JSON.stringify(k===0?{v:11,gv:GAME_VER,run:run,choices:p,terms:termsOut,years:yrs}:{v:11,gv:GAME_VER,part:'more',run:head,choices:p}));
+  const bodies=parts.map((p,k)=>JSON.stringify(k===0?{v:12,gv:GAME_VER,run:run,choices:p,terms:termsOut,years:yrs}:{v:12,gv:GAME_VER,part:'more',run:head,choices:p}));
   bodies.forEach(t=>{try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',keepalive:size(t)<63000,headers:{'Content-Type':'text/plain'},body:t}).catch(()=>{});}catch(e){}});}
 // 커리어 도중에 창을 닫아도 그때까지의 기록을 보낸다
 window.addEventListener('pagehide',()=>{try{if(RUN&&!RUN.sent&&LOG.length&&CAR&&!CAR.done)sendCareer('중도 이탈');}catch(e){}});

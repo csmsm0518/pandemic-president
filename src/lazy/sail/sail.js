@@ -49,7 +49,8 @@ function sailOpen(){if(document.getElementById('sl'))return;try{if(CINE)cineClos
     $('slGo').onclick=()=>{try{aInit();SFX.click();}catch(e){}ov('');st='cd';cd=3;[3,2,1].forEach((n,k)=>{try{SFX.beep(n,k*.8);}catch(e){}});};};
   const end=win=>{if(st==='end')return;st='end';const M=M0(),full=win&&S.dl>=3,m=full?srMedal(t):3;M.runs++;let nb=false;
     if(full){if(!M.best||t<M.best){M.best=Math.round(t*10)/10;nb=true;}if(m===0)M.gold=(M.gold||0)+1;
-      sendArcade('sail',{score:Math.round(t*10)/10,sec:Math.round(t*10)/10,win:true,detail:['금메달','은메달','동메달','메달 없음'][m]+' · 선체 '+S.hp+'/3'});}
+      // 시험(window.__slDbg)으로 돈 판은 명예의 전당에 보내지 않는다
+      if(!window.__slDbg)sendArcade('sail',{score:Math.round(t*10)/10,sec:Math.round(t*10)/10,win:true,detail:['금메달','은메달','동메달','메달 없음'][m]+' · 선체 '+S.hp+'/3'});}
     msave();try{SFX.medal(m);}catch(e){}
     const why=win?(full?'백신 세 상자를 모두 전하고 모항에 들어왔다.':'모항에는 닿았지만 섬마을 '+(3-S.dl)+'곳을 지나쳤다. 모두 전해야 기록에 오른다.'):S.hp<=0?'배가 부서졌다. 선원들은 구명정으로 무사히 돌아왔다.':'시간이 다 됐다. 백신이 상했다.';
     setTimeout(()=>{if(!live)return;ov('<div class="sl-card"><span class="sl-k">'+(full?(nb?'최고 기록!':'귀항'):'실패')+'</span><h2>'+(full?['금메달 항해','은메달 항해','동메달 항해','늦은 귀항'][m]:win?'배송 '+S.dl+' / 3':S.hp<=0?'난파':'시간 초과')+'</h2><p class="sl-s">'+why+'</p>'+

@@ -83,7 +83,7 @@ function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.len
   const parts=[];let curC=[],room=LIM-size(JSON.stringify({v:12,gv:GAME_VER,run:run,choices:[],terms:termsOut,years:yrs}));
   choices.forEach(c=>{const z=size(JSON.stringify(c))+1;if(z>room&&curC.length){parts.push(curC);curC=[];room=LIM-size(JSON.stringify({v:12,gv:GAME_VER,part:'more',run:head,choices:[]}));}curC.push(c);room-=z;});
   parts.push(curC);
-  const bodies=parts.map((p,k)=>JSON.stringify(k===0?{v:11,gv:GAME_VER,run:run,choices:p,terms:termsOut,years:yrs}:{v:11,gv:GAME_VER,part:'more',run:head,choices:p}));
+  const bodies=parts.map((p,k)=>JSON.stringify(k===0?{v:12,gv:GAME_VER,run:run,choices:p,terms:termsOut,years:yrs}:{v:12,gv:GAME_VER,part:'more',run:head,choices:p}));
   bodies.forEach(t=>{try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',keepalive:size(t)<63000,headers:{'Content-Type':'text/plain'},body:t}).catch(()=>{});}catch(e){}});}
 // 커리어 도중에 창을 닫아도 그때까지의 기록을 보낸다
 window.addEventListener('pagehide',()=>{try{if(RUN&&!RUN.sent&&LOG.length&&CAR&&!CAR.done)sendCareer('중도 이탈');}catch(e){}});

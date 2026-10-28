@@ -79,7 +79,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   lab('출발 인물')+bgSel+(P?'<div style="height:12px"></div>':bgHint)+
   lab('결정 빈도')+'<div class="hl-mode" style="display:flex;gap:8px;margin-bottom:22px">'+mdb+'</div>'+
   lab('난이도')+'<div class="hl-dif" style="display:flex;gap:8px;margin-bottom:24px">'+dfb+'</div>'+
-  '<div class="hl-go"><button id="st" class="pri"'+(B?'':' disabled')+' style="width:100%;padding:16px;font-size:16.5px;margin-bottom:12px">'+(!B?'인물을 선택하세요':camp==='joseon'?'즉위한다':camp==='zombie'?'지휘를 맡는다':'취임한다')+'</button></div>'+(P?bgHint+intro:'')+
+  '<div class="hl-go"><button id="st" class="pri"'+(B?'':' disabled')+' style="width:100%;padding:16px;font-size:16.5px;margin-bottom:12px">'+(!B?'인물을 선택하세요':camp==='joseon'?'즉위한다':camp==='zombie'?'지휘를 맡는다':'취임한다')+'</button></div>'+(P?bgHint+introH:'')+
   '<div class="hm-row"><button id="tutBtn" class="tgl" role="switch" aria-checked="'+tutOn()+'"><span class="tgl-k"></span><span>튜토리얼 '+(tutOn()?'켜짐':'꺼짐')+'</span></button></div>'+
   '<button id="ldBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>불러오기</b><span>'+gEsc(svMenuTxt()||'저장된 게임이 없다')+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="lbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>명예의 전당</b><span>모두의 최고 기록</span></span><span class="hm-go">'+CHEV+'</span></button>'+
