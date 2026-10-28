@@ -1,7 +1,3 @@
-/* ---------- 홈 아이콘 ---------- */
-const ICO2={lock:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',stamp:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6v5l-1 3h-4L9 8z"/><path d="M4 15h16v3H4z"/><path d="M6 21h12"/><path d="M8 11h8l1 4H7z"/></svg>',book:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M8 7h8M8 11h6"/></svg>',
- syr:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3a2.4 2.4 0 0 1-3.4 0l-.6-.6a2.4 2.4 0 0 1 0-3.4L15 5"/><path d="m9 11 4 4"/><path d="m5 19-3 3"/><path d="m14 4 6 6"/></svg>'};
-
 /* ---------- 가이드북 ---------- */
 // 숫자와 목록은 게임 데이터에서 바로 읽어 와서, 규칙이 바뀌어도 가이드북이 어긋나지 않게 했다.
 // 가이드북: 실제 게임 화면 캡처 위에 번호를 얹어 설명하는 화면 투어. 글로 된 규칙은 마지막 장의 "자세한 규칙"에서 본다.
@@ -167,4 +163,3 @@ function guideText(back){window.scrollTo(0,0);
   const go=()=>{SFX.click();(back||home)();};
   document.getElementById('gbBack').onclick=go;document.getElementById('gbBack2').onclick=go;
   document.querySelectorAll('.gb-toc button').forEach(b=>b.onclick=()=>{const d=document.getElementById('gb-'+b.dataset.g);if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'});}});}
-

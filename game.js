@@ -1,4 +1,18 @@
 (function(){
+// ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
+const LZ_M={"board":{"v":"fa1dc1ab5c","h":"bbff77d8d79a9539"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"guide":{"v":"02c61fb7d7","h":"52a30991e0d54409"},"slash":{"v":"91b6243685","h":"9a753ed1fed964a5"},"sports":{"v":"02c3edd7d7","h":"57d705b1ae5d3a60"}};
+function openBoard(){return lzCall('board','openBoard',arguments);}
+function guide(){return lzCall('guide','guide',arguments);}
+function mini(){return lzCall('slash','mini',arguments);}
+function mgTkd(){return lzCall('sports','mgTkd',arguments);}
+function simTkd(){return lzCall('sports','simTkd',arguments);}
+function mgPick(){return lzCall('sports','mgPick',arguments);}
+function mgPK(){return lzCall('sports','mgPK',arguments);}
+function simPK(){return lzCall('sports','simPK',arguments);}
+function mgSwim(){return lzCall('sports','mgSwim',arguments);}
+function simSwim(){return lzCall('sports','simSwim',arguments);}
+function mgArch(){return lzCall('sports','mgArch',arguments);}
+function simArch(){return lzCall('sports','simArch',arguments);}
 const R=document.getElementById('root'),cl=v=>Math.max(0,Math.min(100,v)),DPR=window.devicePixelRatio||1;
 const BAD={i:1,c:1,u:1};let YRS=5,MAXT=5,PY=6,EVS=.78,TPT=2;
 const INIT={i:12,m:62,a:58,e:64,p:32,c:10,u:22,chk:76,trn:68,saf:52,mil:50};
@@ -333,6 +347,50 @@ p:['대통령의 지시가 부처에서 겉돕니다.','행정 권한이 평시 
 c:['조달과 예산 집행에 흠잡을 곳이 없습니다.','일부 계약에 잡음이 있으나 확인된 바는 없습니다.','방역 예산을 둘러싼 유착 의혹이 공공연합니다.','주요 계약마다 특정 인맥이 등장한다는 보도가 이어집니다.','이 정부의 방역 사업은 이제 다른 목적으로 운영되고 있습니다.'],
 dth:['인명 피해는 다른 나라에 비해 현저히 적었습니다.','희생이 있었지만 통제된 수준이었습니다.','사망자가 누적되고 있습니다. 유가족 단체가 결성됐습니다.','장례식장이 감당하지 못한다는 보도가 반복됐습니다.','사망자 집계를 매일 발표하는 것 자체를 중단하자는 논의가 나옵니다.']};
 
+/* ---------- 나중에 불러오는 조각(src/lazy) ----------
+   가이드북·체육 미니게임·백신 슬래시·명예의 전당·문 소리는 첫 화면에서 받지 않는다. 처음 쓸 때, 또는 첫 화면이 뜨고 쉬는 틈에 받는다.
+   조각 파일(lazy/이름.js)은 window.__ppLZ(이름, 코드, 디자인)를 부르기만 한다. 코드는 아래 lzRun 안에서 eval하므로
+   예전 한 파일일 때처럼 이 큰 함수 안의 변수를 그대로 쓴다. 조각 목록·버전·지문(LZ_M)과, 조각 밖에서 부르는 함수의
+   대신 부르기 함수(불러온 뒤 진짜를 부른다)는 build.py가 만들어 이 파일 앞에 붙인다.
+---------- */
+const LZ={x:{},p:{}};
+function lzRun(__lzCode){return eval(__lzCode);}
+const lzHex=b=>Array.from(new Uint8Array(b),v=>v.toString(16).padStart(2,'0')).join('');
+// 조각이 스스로 자기를 등록한다. 지금 기다리는 조각이고 지문(SHA-256 앞 16자)이 맞을 때만 실행한다
+window.__ppLZ=function(n,js,css){const P=LZ.p[n];if(!P||P.got||!LZ_M[n])return;P.got=1;
+  const run=()=>{try{if(css){const st=document.createElement('style');st.dataset.lz=n;st.textContent=css;document.head.appendChild(st);}
+      LZ.x[n]=lzRun(js)||{};P.res(LZ.x[n]);}catch(e){P.rej(e);}};
+  let sub=null;try{sub=window.crypto&&crypto.subtle;}catch(e){}
+  if(!sub||!window.TextEncoder)return run();
+  sub.digest('SHA-256',new TextEncoder().encode(js)).then(b=>{if(lzHex(b).slice(0,16)===LZ_M[n].h)run();else{const e=new Error('lazy-ver');e.lzVer=1;P.rej(e);}},()=>run());};
+// 한 파일 빌드(python build.py --single)는 조각을 <script id="lzd" type="application/json">에 넣어 둔다. 있으면 받지 않고 바로 쓴다
+let LZ_D;
+function lzInline(n){if(LZ_D===undefined){const el=document.getElementById('lzd');try{LZ_D=el?JSON.parse(el.textContent):null;}catch(e){LZ_D=null;}}return LZ_D&&LZ_D[n];}
+function lzLoad(n){if(LZ.x[n])return Promise.resolve(LZ.x[n]);if(LZ.p[n])return LZ.p[n].pr;
+  if(!LZ_M[n])return Promise.reject(new Error('no lazy '+n));
+  const d=lzInline(n);
+  if(d){try{if(d.css){const st=document.createElement('style');st.dataset.lz=n;st.textContent=d.css;document.head.appendChild(st);}
+      LZ.x[n]=lzRun(d.js)||{};return Promise.resolve(LZ.x[n]);}catch(e){return Promise.reject(e);}}
+  const P=LZ.p[n]={};P.pr=new Promise((res,rej)=>{P.res=res;P.rej=rej;});
+  const s=document.createElement('script');s.src='lazy/'+n+'.js?v='+LZ_M[n].v;
+  s.onerror=()=>P.rej(new Error('lazy-net'));s.onload=()=>{if(!P.got)P.rej(new Error('lazy-net'));};
+  document.head.appendChild(s);
+  // 실패하면 다음 부를 때 처음부터 다시 받는다
+  P.pr.then(()=>s.remove(),()=>{s.remove();if(LZ.p[n]===P)delete LZ.p[n];});
+  return P.pr;}
+// 받는 동안 0.3초가 넘으면 아래에 '불러오는 중'을 띄우고, 실패하면 다시 시도(또는 새로고침) 단추를 보여 준다
+function lzNote(h,btn,fn){let el=document.getElementById('lzNote');if(!h){if(el)el.remove();return;}
+  if(!el){el=document.createElement('div');el.id='lzNote';el.className='lz-note';el.setAttribute('role','status');document.body.appendChild(el);}
+  el.innerHTML='<span>'+h+'</span>'+(btn?'<button type="button">'+btn+'</button>':'');if(btn)el.querySelector('button').onclick=fn;}
+function lzCall(n,f,a){const X=LZ.x[n];if(X)return X[f].apply(null,a);
+  const tm=setTimeout(()=>lzNote('불러오는 중…'),300);
+  // 받은 뒤 진짜 함수에서 난 오류는 예전처럼 화면 아래 오류 안내(window.onerror)로 보낸다
+  return lzLoad(n).then(X=>{clearTimeout(tm);lzNote('');try{return X[f].apply(null,a);}catch(e){setTimeout(()=>{throw e;});}},e=>{clearTimeout(tm);
+    if(e&&e.lzVer)lzNote('게임이 새 버전으로 바뀌었어요.','새로고침',()=>location.reload());
+    else lzNote('불러오지 못했어요. 인터넷 연결을 확인해 주세요.','다시 시도',()=>{lzNote('');lzCall(n,f,a);});});}
+// 첫 화면이 뜨고 2.5초 뒤부터 쉬는 틈에 하나씩 미리 받아 둔다(문 소리는 소리를 켤 때 받는다)
+addEventListener('load',()=>setTimeout(function pre(){const n=Object.keys(LZ_M).find(k=>k!=='door'&&!LZ.x[k]&&!LZ.p[k]);if(!n)return;
+  const go=()=>lzLoad(n).then(()=>setTimeout(pre,200),()=>{});window.requestIdleCallback?requestIdleCallback(go,{timeout:4000}):go();},2500));
 /* ---------- CAREER DATA ---------- */
 // k: 드롭다운에 보이는 한 줄 별명 · ageQ: 정확한 입문 나이를 알 수 없음(age는 게임 속 계산용) · sec: 비밀 인물(해금 조건은 bgLock) · once: 한 번만 고를 수 있음
 const BG=[
@@ -3246,303 +3304,9 @@ const MG_SPORT={
   swim:{n:'수영 50m 결승',how:'왼팔·오른팔을 번갈아 빠르게 눌러 헤엄친다',run:(b,d)=>mgSwim(b,d),sim:()=>simSwim()},
   pk:{n:'축구 결승 승부차기',how:'우리 차례엔 직접 차고, 상대 차례엔 직접 막는다',run:(b,d)=>mgPK(b,d),sim:()=>simPK()},
   tkd:{n:'태권도 결승',how:'상대의 발차기를 막고 반격해 점수를 딴다',run:(b,d)=>mgTkd(b,d),sim:()=>simTkd()}};
-
-/* ---------- 태권도 결승 ----------
-   20초씩 세 라운드. 상대는 잠깐 숨을 고르다가 몸통이나 머리를 노리고 발을 든다(둘레의 원이 줄어든다).
-   원이 초록일 때 막기를 누르면 막아 내고, 그 뒤 0.7초 안에 차면 반격으로 꽂힌다. 너무 일찍 막거나 못 막으면 상대 점수.
-   상대가 숨을 고를 때 먼저 차도 되지만 빗나가면 받아차기를 당할 수 있다. 몸통 2점, 머리 3점. 비기면 골든 라운드(먼저 따면 승). */
-const TK_R=3,TK_T=20,TK_WIN=.34;   // 라운드 수, 라운드 길이(초), 막기 창(초)
-function tkRival(){const n=MG_NAT()[0];return {n:n,sk:.9+Math.random()*.25};}
-function mgTkd(box,done){const R=tkRival(),$=id=>document.getElementById(id);
-  let me=0,op=0,rd=1,tl=TK_T,ph='ready',st='idle',tw=0,tt=0,ok='b',cool=0,ctr=0,gold=false,live=false,last=0,raf=0;
-  box.innerHTML='<div class="mgx tk"><div class="tk-sb"><div class="tk-p me"><span>'+OLY_HOME()+'</span><b id="tkMe">0</b></div><div class="tk-mid"><b id="tkRd">1라운드</b><i id="tkT">'+TK_T.toFixed(1)+'</i></div><div class="tk-p op"><b id="tkOp">0</b><span>'+R.n+'</span></div></div>'+
-    '<div class="tk-mat" id="tkMat"><div class="tk-f me" id="tkF0">'+tkFig('#2f5f99')+'</div><div class="tk-cue" id="tkCue"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="tk-g" cx="50" cy="50" r="22"/><circle id="tkRing" class="tk-ring" cx="50" cy="50" r="46"/></svg><b id="tkCueT"></b></div><div class="tk-f op" id="tkF1">'+tkFig('#c0392b')+'</div></div>'+
-    '<div class="pk-msg" id="tkMsg">상대가 발을 들면 원이 줄어든다. 초록일 때 막아라.</div>'+
-    '<div class="tk-btns"><button id="tkB" disabled>막기<small>Space</small></button><button id="tkK" disabled>몸통 차기<small>← · A</small></button><button id="tkH" disabled>머리 차기<small>→ · D</small></button></div>'+
-    '<button id="tkGo" class="pri" style="width:100%;padding:14px;margin-top:8px">경기 시작</button></div>';
-  const f0=$('tkF0'),f1=$('tkF1'),cue=$('tkCue'),ring=$('tkRing'),msg=t=>{$('tkMsg').textContent=t;};
-  const anim=(el,c)=>{el.classList.remove('kb','kh','hit','blk');void el.offsetWidth;el.classList.add(c);};
-  const sb=()=>{$('tkMe').textContent=me;$('tkOp').textContent=op;};
-  // ok: 상대가 노리는 곳(b 몸통·h 머리). 점수 크기(3점은 머리)로 누가 어느 발차기를 했는지 그린다
-  const score=(who,p,why)=>{if(who===0){me+=p;anim(f0,p===3?'kh':'kb');anim(f1,'hit');}else{op+=p;anim(f1,p===3?'kh':'kb');anim(f0,'hit');}
-    sb();msg(why);try{SFX.tkHit(p);}catch(e){}const el=$(who===0?'tkMe':'tkOp');el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
-    if(gold){live=false;setTimeout(end,700);}};
-  // 상대: 숨 고르기 → 발 들기(원이 줄어든다) → 차기
-  const idle=()=>{st='idle';tw=1+Math.random()*1.3/R.sk;cue.className='tk-cue';$('tkCueT').textContent='';};
-  const wind=()=>{st='wind';ok=Math.random()<.38*R.sk?'h':'b';tt=.95/R.sk;tw=tt;cue.className='tk-cue on '+ok;$('tkCueT').textContent=ok==='h'?'머리':'몸통';try{SFX.tkWind();}catch(e){}};
-  const act=a=>{if(!live)return;
-    if(a==='B'){if(st==='wind'){if(tw<=TK_WIN){st='ctr';ctr=.7;anim(f0,'blk');cue.className='tk-cue';try{SFX.tkBlock();}catch(e){}msg('막았다! 지금 차면 반격이다');}
-        else{st='idle';tw=.25;score(1,ok==='h'?3:2,'너무 일찍 막았다');idle();}}
-      return;}
-    if(cool>0)return;const kind=a==='H'?'h':'b',p=kind==='h'?3:2;cool=kind==='h'?1:.6;try{SFX.tkWhiff();}catch(e){}
-    if(st==='ctr'){score(0,p,'반격 성공! '+(p===3?'머리':'몸통')+' '+p+'점');idle();return;}
-    if(st==='wind'){if(Math.random()<.4){score(0,p,'먼저 꽂았다! '+p+'점');idle();}else{score(1,ok==='h'?3:2,'부딪쳤다. 상대 발이 먼저였다');idle();}return;}
-    const hit=Math.random()<(kind==='h'?.3:.55)/R.sk;anim(f0,kind==='h'?'kh':'kb');
-    if(hit)score(0,p,(kind==='h'?'머리':'몸통')+' 적중! '+p+'점');
-    else if(Math.random()<(kind==='h'?.5:.35)*R.sk){score(1,2,'빗나갔다. 받아차기를 당했다');idle();}
-    else msg('빗나갔다');};
-  const key=e=>{if(!live)return;const k=e.key;if(k===' '||k==='s'||k==='S'||k==='ArrowDown'){e.preventDefault();act('B');}
-    else if(k==='ArrowLeft'||k==='a'||k==='A'){e.preventDefault();act('K');}else if(k==='ArrowRight'||k==='ArrowUp'||k==='d'||k==='D'||k==='w'||k==='W'){e.preventDefault();act('H');}};
-  $('tkB').onclick=()=>act('B');$('tkK').onclick=()=>act('K');$('tkH').onclick=()=>act('H');document.addEventListener('keydown',key);
-  const stop=()=>{live=false;clearInterval(raf);document.removeEventListener('keydown',key);['tkB','tkK','tkH'].forEach(i=>{const b=$(i);if(b)b.disabled=true;});};
-  // 수영처럼 1/60초마다 돈다(시계는 실제 흐른 시간으로 잰다)
-  const loop=()=>{if(!box.isConnected){stop();return;}const now=performance.now(),dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;if(!live)return;
-    tl-=dt;cool=Math.max(0,cool-dt);$('tkT').textContent=Math.max(0,tl).toFixed(1);
-    if(st==='idle'){tw-=dt;if(tw<=0)wind();}
-    else if(st==='wind'){tw-=dt;const k=Math.max(0,tw/tt);ring.setAttribute('r',(22+24*k).toFixed(1));cue.classList.toggle('g',tw<=TK_WIN);
-      if(tw<=0){score(1,ok==='h'?3:2,'못 막았다. '+(ok==='h'?'머리 3점':'몸통 2점'));idle();}}
-    else if(st==='ctr'){ctr-=dt;if(ctr<=0){msg('반격 기회를 놓쳤다');idle();}}
-    if(tl<=0&&live){live=false;cue.className='tk-cue';
-      if(rd<TK_R){try{SFX.beep(0);}catch(e){}msg(rd+'라운드 끝 · '+me+' : '+op);setTimeout(()=>{rd++;tl=TK_T;$('tkRd').textContent=rd+'라운드';idle();live=true;},1400);}
-      else if(me===op&&!gold){gold=true;try{SFX.beep(0);}catch(e){}msg('동점! 골든 라운드 — 먼저 점수를 따면 이긴다');setTimeout(()=>{tl=15;$('tkRd').textContent='골든 라운드';idle();live=true;},1600);}
-      else end();}};
-  const end=()=>{stop();const win=me>op||(me===op&&Math.random()<.5),t=win?0:1;SFX.medal(t);
-    msg(me+' : '+op+' · '+(win?'금메달!':'은메달'));anim(win?f0:f1,'kh');$('tkGo').style.display='';$('tkGo').textContent='결과 보기';$('tkGo').onclick=()=>done(t);};
-  $('tkGo').onclick=()=>{$('tkGo').style.display='none';let c=3;msg('준비 · '+c);SFX.beep(3);const iv=setInterval(()=>{c--;if(c>0){msg('준비 · '+c);SFX.beep(c);}
-    else{clearInterval(iv);msg('시작!');SFX.beep(0);['tkB','tkK','tkH'].forEach(i=>$(i).disabled=false);idle();live=true;}},700);};
-  last=performance.now();raf=setInterval(loop,1000/60);}
-// 도복을 입은 선수 한 명(호구 색만 다르다). 차기·맞기·막기는 CSS로 움직인다.
-function tkFig(c){return '<svg viewBox="0 0 60 90" aria-hidden="true"><circle cx="30" cy="12" r="8" fill="#f2d7b6" stroke="#3a2a1c" stroke-width="1.4"/><path d="M22 8a8 8 0 0 1 16 0" fill="'+c+'"/>'+
-  '<path d="M18 24h24l-3 30H21z" fill="#fbfaf6" stroke="#3a2a1c" stroke-width="1.4"/><path d="M20 26h20l-2 18H22z" fill="'+c+'" opacity=".92"/><path d="M19 47h22" stroke="#1d1b18" stroke-width="3"/>'+
-  '<path class="tk-arm" d="M18 27l-8 12 6 4M42 27l8 12-6 4" fill="none" stroke="#fbfaf6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>'+
-  '<path class="tk-lg1" d="M24 54l-3 32" stroke="#fbfaf6" stroke-width="7" stroke-linecap="round"/><path class="tk-lg2" d="M36 54l3 32" stroke="#fbfaf6" stroke-width="7" stroke-linecap="round"/></svg>';}
-// 시뮬레이션: 라운드마다 주고받기 여러 번. 우리 선수 실력은 상대와 비슷하게(이길 확률 절반 남짓)
-function simTkd(){const R=tkRival(),m=.95+Math.random()*.25,L=[];let me=0,op=0;
-  for(let r=1;r<=TK_R;r++){let a=0,b=0;for(let x=0;x<6;x++){const p=Math.random()<.35?3:2;if(Math.random()<m/(m+R.sk))a+=Math.random()<.55?p:0;else b+=Math.random()<.55?p:0;}
-    me+=a;op+=b;L.push('<span class="k">'+r+'R</span>'+OLY_HOME()+' '+a+' : '+b+' '+R.n);}
-  let win=me>op;if(me===op){win=Math.random()<.5;L.push('<span class="k">골든</span>'+(win?OLY_HOME()+'이 먼저 땄다':R.n+'이 먼저 땄다'));}
-  return {lines:L,head:me+' : '+op+' · '+(win?'금메달':'은메달'),t:win?0:1};}
-function mgPick(kind,box){const G=MG_SPORT[kind];
-  box.innerHTML='<div class="mgx mg-pick"><div class="mgx-h">'+G.n+'</div><div class="mgx-t">직접 치르면 실력만큼 결과가 나온다. 시뮬레이션으로 맡기면 선수들이 알아서 치르고, 결과만 빠르게 본다.</div>'+
-    '<div class="mg-2"><button id="mgPlay" class="pri"><b>직접 한다</b><small>'+G.how+'</small></button><button id="mgSim"><b>시뮬레이션으로 진행</b><small>선수들에게 맡기고 결과만 본다</small></button></div></div>';
-  // 경기가 끝나면 시상대를 세우고(메달 집계에 더한 뒤) 판정으로 넘어간다
-  const fin=t=>olyCere(box,G.n,t,()=>mgResolve(t));
-  document.getElementById('mgPlay').onclick=()=>{try{aInit();SFX.click();}catch(e){}G.run(box,fin);};
-  document.getElementById('mgSim').onclick=()=>{try{aInit();SFX.click();}catch(e){}mgSimShow(box,G.n,G.sim(),fin);};}
-/* 시상식: 종목이 끝날 때마다 시상대(2위·1위·3위)를 세우고 우리 자리를 금빛으로 비춘다. 메달을 못 따면 우리는 시상대 아래에서 박수를 친다.
-   올림픽 특집 중이면 메달을 집계(ctx.med)에 더한다. */
-function olyCere(box,n,t,go){const R0=CAR&&CAR.spRun;if(R0&&OLY_IDS.indexOf(R0.id)>=0&&t<3){R0.ctx.med=R0.ctx.med||[0,0,0];R0.ctx.med[t]++;}
-  const nat=MG_NAT(),home=OLY_HOME(),P=[0,1,2].map(k=>k===t?{n:home,me:1}:{n:nat.shift()}),col=['#e9c46a','#c9d1d9','#d08a54'],lab=['금','은','동'];
-  const blk=k=>'<div class="oc-s s'+k+(P[k].me?' me':'')+'" style="--d:'+[.5,.2,.8][k]+'s"><div class="oc-who"><i style="background:'+col[k]+'">'+lab[k]+'</i><b>'+(P[k].me?'우리 선수':P[k].n)+'</b><small>'+(P[k].me?home:'')+'</small></div><div class="oc-b"><span>'+(k+1)+'</span></div></div>';
-  const m=R0&&R0.ctx&&R0.ctx.med;
-  box.innerHTML='<div class="mgx oc"><div class="oc-h"><span class="oc-rings" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><b>'+n+' 시상식</b></div>'+
-    '<div class="oc-pod">'+blk(1)+blk(0)+blk(2)+'</div>'+
-    '<div class="oc-msg">'+(t<3?'<b>'+MEDAL[t]+'</b> · 시상대 '+(t+1)+'번째 칸에 '+home+' 국기가 오른다':'메달은 놓쳤다. 우리 선수가 시상대 아래에서 박수를 쳤다')+'</div>'+
-    (m?'<div class="oc-tally">'+olyTally(m)+'</div>':'')+'<button id="ocGo" class="pri" style="width:100%;padding:14px;margin-top:12px">계속</button></div>';
-  document.getElementById('ocGo').onclick=()=>{SFX.click();go();};}
+// 메달 집계 한 줄(상황판·특집 머리에서도 쓴다)
 const olyTally=m=>'<span>메달 집계</span>'+['금','은','동'].map((x,k)=>'<i class="m'+k+'">'+x+'</i><b>'+m[k]+'</b>').join('');
-// r: {lines:[html], head:'결과 한 줄', t:0~3}. 줄이 하나씩 올라오고 마지막에 결과가 도장처럼 찍힌다.
-function mgSimShow(box,n,r,done){box.innerHTML='<div class="mgx mg-sim"><div class="mgx-h">'+n+' · 시뮬레이션</div><div class="mg-sl">'+
-    r.lines.map((l,i)=>'<div style="animation-delay:'+(i*220)+'ms">'+l+'</div>').join('')+'</div>'+
-    '<div class="mg-res" style="animation-delay:'+(r.lines.length*220+150)+'ms">'+r.head+'</div><button id="mgSimOk" class="pri" style="width:100%;padding:14px;margin-top:12px">결과 보기</button></div>';
-  try{SFX.simRes(r.lines.length,r.t);}catch(e){}
-  document.getElementById('mgSimOk').onclick=()=>done(r.t);}
-const mgGauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
-const MG_NAT=()=>['호주','미국','중국','일본','영국','프랑스','캐나다','이탈리아','헝가리','브라질','독일','스웨덴','튀르키예','멕시코'].filter(n=>!(CP.id==='usa'&&n==='미국')).sort(()=>Math.random()-.5);
-const MEDAL=['금메달','은메달','동메달','메달을 놓쳤다'];
-
-/* ---------- 승부차기 ----------
-   우리가 찰 때는 골문을 눌러 노릴 곳을 고르고 힘 게이지를 멈춘다. 상대가 찰 때는 키커의 시선을 읽고 몸을 날린다.
-   다섯 번씩 번갈아 차고, 승부가 갈리면 일찍 끝난다. 같으면 서든데스(최대 5라운드, 그래도 같으면 추첨). */
-const PK_ZN=['왼쪽 위','가운데 위','오른쪽 위','왼쪽 아래','가운데 아래','오른쪽 아래'],PK_N=5;
-const PK_SW=r=>r?[.5,.8]:[.63,.79];   // 힘 게이지의 초록 칸. 위쪽 구석은 막기 어려운 대신 좁다
-const PK_FIG=(c,up)=>'<svg viewBox="0 0 40 60" aria-hidden="true"><path d="'+(up?'M12 19L3 8M28 19l9-11':'M12 19L8 35M28 19l4 16')+'" stroke="'+c+'" stroke-width="5" stroke-linecap="round" fill="none"/>'+
-  (up?'<circle cx="3" cy="8" r="3.4" fill="#fff" stroke="#1d1b18"/><circle cx="37" cy="8" r="3.4" fill="#fff" stroke="#1d1b18"/>':'')+
-  '<rect x="13" y="37" width="6" height="21" rx="2" fill="#1d1b18"/><rect x="21" y="37" width="6" height="21" rx="2" fill="#1d1b18"/><rect x="11" y="15" width="18" height="24" rx="5" fill="'+c+'" stroke="#1d1b18" stroke-width="1.2"/><circle cx="20" cy="9" r="6.5" fill="#f0d2b0" stroke="#1d1b18" stroke-width="1.2"/></svg>';
-// 우리 슛: tgt 칸(0~5), p 힘(0~1). 너무 세면 위쪽은 크로스바를 넘기고, 아래쪽은 떠서 위로 가거나(65%) 빗나간다.
-function pkShot(tgt,p){const r=tgt/3|0,c=tgt%3,[lo,hi]=PK_SW(r),weak=p<lo;let miss='',ty=r;
-  if(p>hi){if(r===0||Math.random()<.35)miss=c===1||r===0?'over':'wide';else ty=0;}
-  const kc=Math.random()<.22?c:(Math.random()<.18?1:Math.random()<.5?0:2);
-  let save=false;if(!miss){if(kc===c)save=Math.random()<Math.min(.96,(ty===0?(c===1?.6:.4):(c===1?.88:.72))+(weak?.3:0));else if(weak&&c===1)save=Math.random()<.45;}
-  return {r:r,c:c,ty:ty,miss:miss,weak:weak,kc:kc,save:save,goal:!miss&&!save};}
-// 상대 키커: 찰 곳과, 70%만 맞는 시선
-function pkOpp(){const oc=Math.random()<.2?1:Math.random()<.5?0:2;return {oc:oc,orow:Math.random()<.38?0:1,tl:Math.random()<.7?oc:Math.floor(Math.random()*3)};}
-function pkKeep(d,o){const miss=Math.random()<.07,save=!miss&&d===o.oc&&Math.random()<(o.orow===0?(o.oc===1?.7:.5):(o.oc===1?.92:.82));return {miss:miss,save:save,goal:!miss&&!save};}
-const pkScore=a=>a.filter(Boolean).length;
-function pkDecided(me,op){const a=pkScore(me),b=pkScore(op);
-  if(!(me.length>=PK_N&&op.length>=PK_N))return a+(PK_N-me.length)<b||b+(PK_N-op.length)<a;
-  return me.length===op.length&&a!==b;}
-const pkOver=(me,op)=>pkDecided(me,op)||(me.length>=PK_N+5&&me.length===op.length);
-function pkEnd(me,op){let a=pkScore(me),b=pkScore(op),lot='';if(a===b){lot=' (끝내 가리지 못해 추첨)';if(Math.random()<.5)a++;else b++;}
-  const d=a-b;return {a:a,b:b,t:d>=2?0:d>=1?1:d>=-1?2:3,txt:'최종 '+a+' : '+b+(d>0?' 승리!':' 패배')+lot};}
-function mgPK(box,done){const me=[],op=[];let ph='',tgt=-1,pw=0,pd=1,tm=0,tmax=1.5,O=null,dive=-1,live=true,last=performance.now();
-  box.innerHTML='<div class="mgx pq">'+
-   '<div class="pq-sb"><div><span>우리</span><b id="pqMe"></b></div><div class="c"><strong id="pqSc">0 : 0</strong><em id="pqRd"></em></div><div class="r"><span>상대</span><b id="pqOp"></b></div></div>'+
-   '<div class="pq-fd" id="pqFd"><div class="pq-cr" aria-hidden="true"></div><div class="pq-ad" aria-hidden="true"><span>PANDEMIC CUP · 결승 · 승부차기 · PANDEMIC CUP · 결승 · 승부차기 · PANDEMIC CUP · 결승 · 승부차기</span></div><div class="pq-gl"><div class="pq-net" id="pqNet"></div><div class="pq-zs">'+PK_ZN.map((n,z)=>'<button class="pq-z" data-z="'+z+'" aria-label="'+n+'"></button>').join('')+'</div>'+
-    '<div class="pq-kp" id="pqKp">'+PK_FIG('#e3a72f',1)+'</div></div>'+
-    '<div class="pq-tg" id="pqTg"></div><div class="pq-kk" id="pqKk">'+PK_FIG('#b3261e',0)+'<i class="pq-tell" id="pqTell"></i></div><div class="pq-ball" id="pqBall"></div><div class="pq-fx" id="pqFx"></div></div>'+
-   '<div class="pq-ctl"><div class="pq-pow" id="pqPow"><i class="pq-sw" id="pqSw"></i><b class="pq-nd" id="pqNd"></b><span>약하게</span><span>강하게</span></div>'+
-    '<div class="pq-ti" id="pqTi"><i id="pqTf"></i></div>'+
-    '<div class="pq-dv" id="pqDv"><button data-d="0">← 왼쪽</button><button data-d="1">가운데</button><button data-d="2">오른쪽 →</button></div></div>'+
-   '<div class="pk-msg" id="pqMsg"></div><button id="pqGo" class="pri" style="width:100%;padding:15px;font-size:17px">찬다!</button></div>';
-  const $=id=>document.getElementById(id),fd=$('pqFd');
-  const GT=16,GH=130,BALL0=[50,206];   // 골문 위 여백·높이(px), 공 놓는 자리(가로 %, 세로 px)
-  const zpos=(c,r)=>[10+80*(c+.5)/3,GT+GH*(r+.5)/2];
-  const sbar=()=>{const n=Math.max(PK_N,me.length,op.length),d=a=>Array.from({length:n},(_,i)=>i<a.length?'<i class="'+(a[i]?'g':'x')+'"></i>':'<i></i>').join('');
-    $('pqMe').innerHTML=d(me);$('pqOp').innerHTML=d(op);$('pqSc').textContent=me.filter(Boolean).length+' : '+op.filter(Boolean).length;const r=me.length+(me.length===op.length?1:0);
-    $('pqRd').textContent=r>PK_N?'서든데스':r+'번째 키커';};
-  const show=ids=>['pqPow','pqTi','pqDv','pqGo'].forEach(i=>{$(i).style.display=ids.indexOf(i)>=0?'':'none';});
-  const reset=()=>{const b=$('pqBall'),kp=$('pqKp');b.style.transition=kp.style.transition='none';
-    b.style.left=BALL0[0]+'%';b.style.top=BALL0[1]+'px';b.style.transform='translate(-50%,-50%)';kp.style.transform='translateX(-50%)';
-    void b.offsetWidth;b.style.transition=kp.style.transition='';$('pqTg').style.display='none';$('pqFx').className='pq-fx';$('pqTell').style.opacity=0;fd.classList.remove('aim','keep');};
-  // 공과 골키퍼를 움직인다. kc: 골키퍼가 날아간 쪽(0 왼쪽 1 가운데 2 오른쪽), kr: 높이(0 위 1 아래)
-  // 결과 글씨(골!·선방!)를 크게 찍고, 골이면 그물이 출렁인다
-  const fx=(s,c,net)=>{const f=$('pqFx');f.textContent=s;f.className='pq-fx '+c;void f.offsetWidth;f.classList.add('on');
-    if(net){const n=$('pqNet');n.classList.remove('hit');void n.offsetWidth;n.classList.add('hit');}};
-  const fly=(x,y,kc,kr)=>{const b=$('pqBall'),kp=$('pqKp');b.style.left=x+'%';b.style.top=y+'px';b.style.transform='translate(-50%,-50%) scale(.62) rotate(600deg)';
-    kp.style.transform=kc===1?(kr===0?'translateX(-50%) translateY(-24%)':'translateX(-50%) scaleY(.9)'):'translateX(-50%) translateX('+(kc===0?-115:115)+'%) rotate('+(kc===0?-1:1)*(kr===0?50:74)+'deg)';};
-  const next=()=>{if(!live)return;sbar();reset();
-    if(pkOver(me,op))return finish();
-    if(me.length===op.length){SFX.whistle();ph='aim';tgt=-1;fd.classList.add('aim');show([]);$('pqMsg').textContent='골문에서 노릴 곳을 누르세요';}
-    else{SFX.whistle();ph='keep';dive=-1;O=pkOpp();
-      fd.classList.add('keep');$('pqTell').style.transform='translateX(-50%) rotate('+[-40,0,40][O.tl]+'deg)';$('pqTell').style.opacity=1;
-      tmax=Math.max(.95,1.6-op.length*.1);tm=tmax;show(['pqTi','pqDv']);$('pqMsg').textContent='키커의 시선(흰 화살표)을 읽고 몸을 날려라';}};
-  fd.querySelectorAll('.pq-z').forEach(b=>b.onclick=()=>{if(ph!=='aim'&&ph!=='power')return;tgt=+b.dataset.z;
-    const r=tgt/3|0,[x,y]=zpos(tgt%3,r),t=$('pqTg');t.style.left=x+'%';t.style.top=y+'px';t.style.display='block';
-    if(ph==='aim'){ph='power';pw=0;pd=1;}
-    const sw=PK_SW(r);$('pqSw').style.left=sw[0]*100+'%';$('pqSw').style.width=(sw[1]-sw[0])*100+'%';
-    show(['pqPow','pqGo']);$('pqGo').textContent='찬다!';$('pqMsg').textContent=PK_ZN[tgt]+' · 바늘이 초록 칸에 왔을 때 차세요';try{SFX.click();}catch(e){}});
-  const shoot=()=>{if(ph!=='power')return;ph='fly';SFX.kick();show([]);fd.classList.remove('aim');
-    const s=pkShot(tgt,pw);me.push(s.goal);let [x,y]=zpos(s.c,s.ty);if(s.miss==='over')y=GT-20;if(s.miss==='wide')x=s.c===0?4:96;
-    fly(x,y,s.kc,s.kc===s.c?s.ty:1);
-    setTimeout(()=>{$('pqMsg').textContent=s.goal?'골!':s.miss==='over'?'크로스바 위로 떴다!':s.miss==='wide'?'골대를 벗어났다!':s.weak?'힘이 실리지 않았다. 막혔다!':'골키퍼가 막았다!';
-      if(s.goal)fx('골!','g',1);else fx(s.miss?'실축':'막혔다','x');
-      try{if(s.goal)SFX.goal();else SFX.miss();}catch(e){}sbar();},420);
-    setTimeout(next,1700);};
-  const kick=()=>{if(ph!=='keep')return;ph='fly';show([]);const d=dive<0?1:dive,k=pkKeep(d,O);op.push(k.goal);SFX.kick();if(d!==1)SFX.dive();
-    let [x,y]=zpos(O.oc,O.orow);if(k.miss)y=GT-20;fly(x,y,d,d===O.oc?O.orow:1);
-    setTimeout(()=>{$('pqMsg').textContent=k.miss?'상대가 실축했다!':k.save?'막아냈다!':'실점…';
-      if(k.save)fx('선방!','s');else if(k.miss)fx('실축!','s');else fx('실점','x',1);try{if(k.save)SFX.save();else if(!k.goal)SFX.goal();else SFX.concede();}catch(e){}sbar();},420);
-    setTimeout(next,1700);};
-  $('pqDv').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(ph!=='keep')return;dive=+b.dataset.d;kick();});
-  const key=e=>{if(!live)return;
-    if(ph==='keep'){const m={ArrowLeft:0,ArrowDown:1,ArrowUp:1,ArrowRight:2}[e.key];if(m!=null){e.preventDefault();dive=m;kick();}}
-    else if(ph==='power'&&(e.key===' '||e.key==='Enter')){e.preventDefault();shoot();}};
-  document.addEventListener('keydown',key);
-  const finish=()=>{live=false;document.removeEventListener('keydown',key);const E=pkEnd(me,op);SFX.medal(E.t);show(['pqGo']);
-    $('pqMsg').textContent=E.txt;$('pqGo').textContent='결과 보기';$('pqGo').onclick=()=>done(E.t);};
-  $('pqGo').onclick=shoot;
-  const loop=now=>{if(!live||!box.isConnected){live=false;document.removeEventListener('keydown',key);return;}
-    const dt=Math.min(.05,(now-last)/1000);last=now;
-    if(ph==='power'){pw+=pd*(1.05+me.length*.12)*dt;if(pw>1){pw=1;pd=-1;}if(pw<0){pw=0;pd=1;}$('pqNd').style.left=(pw*100)+'%';}
-    if(ph==='keep'){tm-=dt;$('pqTf').style.width=Math.max(0,tm/tmax*100)+'%';if(tm<=0)kick();}
-    requestAnimationFrame(loop);};
-  next();requestAnimationFrame(loop);}
-// 시뮬레이션: 우리 키커는 55% 확률로 초록 칸에 맞추고, 우리 골키퍼는 55% 확률로 키커의 시선을 따라 몸을 날린다
-function simPK(){const me=[],op=[],lines=[],mk=(g,w,ours)=>'<b class="'+(g===!!ours?'g':'x')+'">'+(g?'골':w)+'</b>';
-  while(!pkOver(me,op)){const rd=me.length+1,z=Math.random()<.65?[3,5][Math.floor(Math.random()*2)]:Math.floor(Math.random()*6),[lo,hi]=PK_SW(z/3|0),
-      p=Math.random()<.55?lo+Math.random()*(hi-lo):Math.random()<.5?Math.random()*lo:hi+Math.random()*(1-hi),s=pkShot(z,p);me.push(s.goal);
-    let ln='<span class="k">'+(rd>PK_N?'서든데스':rd+'번째')+'</span>우리 '+PK_ZN[z]+' '+mk(s.goal,s.miss?'실축':'선방에 막힘',1);
-    if(!pkOver(me,op)){const o=pkOpp(),d=Math.random()<.55?o.tl:Math.floor(Math.random()*3),k=pkKeep(d,o);op.push(k.goal);ln+=' · 상대 '+mk(k.goal,k.miss?'실축':'우리가 막음');}
-    lines.push(ln);}
-  const E=pkEnd(me,op);return {lines:lines,head:E.txt,t:E.t};}
-
-/* ---------- 수영 50m ----------
-   경쟁자 셋은 경기마다 나라·기량·경기 운영이 새로 정해진다(초반 돌격 / 막판 스퍼트 / 고른 페이스).
-   레이스 중에도 컨디션이 출렁이고 가끔 치고 나간다. 강한 선수 하나, 중간 하나, 약한 하나는 늘 섞여 있다. */
-const SW_D=50,SW_STY=[p=>1.13-.24*p,p=>.9+.24*p*p,()=>1];
-function swRivals(){const NAT=MG_NAT();return [4.95+Math.random()*.55,4.5+Math.random()*.5,4.05+Math.random()*.5].sort(()=>Math.random()-.5)
-  .map((v,i)=>({n:NAT[i],v:v,x:0,t:0,f:SW_STY[Math.floor(Math.random()*SW_STY.length)],rt:.1+Math.random()*.3,nz:0,sg:0}));}
-// 경쟁자 한 명을 dt초 움직인다. 막 들어왔으면 true
-function swStep(r,el,dt){if(r.x>=SW_D||el<r.rt)return false;
-  r.nz+=(Math.random()-.5)*dt*1.6-r.nz*dt*1.2;r.nz=Math.max(-.12,Math.min(.12,r.nz));
-  if(!r.sg&&Math.random()<dt*.18)r.sg=.6+Math.random()*.8;
-  let m=r.f(r.x/SW_D)*(1+r.nz);if(r.sg>0){m*=1.1;r.sg=Math.max(0,r.sg-dt);}
-  r.x=Math.min(SW_D,r.x+r.v*m*dt);if(r.x>=SW_D&&!r.t){r.t=el;return true;}return false;}
-function mgSwim(box,done){const D=SW_D,riv=swRivals();
-  let x=0,v=0,last='',live=false,raf=0,fin=0,fc=0;
-  const ft=(i,el)=>{fc++;const f=$('swf'+i);f.textContent=fc+'위 · '+el.toFixed(2)+'초';if(fc===1)f.classList.add('p1');};
-  box.innerHTML='<div class="mgx sw"><div class="sw-pool" id="swPool">'+['우리'].concat(riv.map(r=>r.n)).map((n,i)=>'<div class="sw-lane"><span>'+n+'</span><i id="sw'+i+'"></i><b class="sw-ft" id="swf'+i+'"></b></div>').join('')+'</div>'+
-   '<div class="sw-info"><b id="swT">0.00</b>초 · <span id="swD">0</span>m / '+D+'m</div><div class="pk-msg" id="swMsg">시작하면 왼팔·오른팔을 번갈아 누르세요</div>'+
-   '<div class="sw-btns"><button id="swL" disabled>왼팔</button><button id="swR" disabled>오른팔</button></div><button id="swGo" class="pri" style="width:100%;padding:14px;margin-top:8px">출발 준비</button></div>';
-  const $=id=>document.getElementById(id);
-  const stroke=s=>{if(!live)return;if(s===last){SFX.gulp();v*=.5;$('swMsg').textContent='물을 먹었다! 번갈아 눌러야 한다';}else{SFX.stroke(s);v+=.55;$('swMsg').textContent='';}last=s;};
-  const key=e=>{if(e.key==='ArrowLeft'||e.key==='a')stroke('L');if(e.key==='ArrowRight'||e.key==='d')stroke('R');};
-  $('swL').onclick=()=>stroke('L');$('swR').onclick=()=>stroke('R');document.addEventListener('keydown',key);
-  let simT=0;const step=()=>{if(!live)return;if(!box.isConnected){live=false;clearInterval(raf);document.removeEventListener('keydown',key);return;}
-    const dt=1/60;simT+=dt;const el=simT;v*=Math.pow(.404,dt);if(x<D)x=Math.min(D,x+v*dt);
-    riv.forEach((r,i)=>{if(swStep(r,el,dt))ft(i+1,el);});
-    $('sw0').style.left=(x/D*92)+'%';riv.forEach((r,i)=>{$('sw'+(i+1)).style.left=(r.x/D*92)+'%';});$('swT').textContent=el.toFixed(2);$('swD').textContent=Math.floor(x);
-    if(x>=D&&!fin){fin=el;ft(0,el);SFX.touch();}
-    if(fin&&riv.every(r=>r.t||r.x>=D)||el>25){live=false;clearInterval(raf);document.removeEventListener('keydown',key);const place=fin?1+riv.filter(r=>r.t&&r.t<fin).length:4,t=Math.min(3,place-1);
-      SFX.medal(t);$('swMsg').textContent=(fin?fin.toFixed(2)+'초 · ':'')+['금메달!','은메달','동메달','메달을 놓쳤다'][t];$('swL').disabled=$('swR').disabled=true;$('swGo').style.display='';$('swGo').textContent='결과 보기';$('swGo').onclick=()=>done(t);return;}
-    };
-  $('swGo').onclick=()=>{$('swGo').style.display='none';let c=3;$('swMsg').textContent=c;SFX.beep(3);const iv=setInterval(()=>{c--;if(c>0){$('swMsg').textContent=c;SFX.beep(c);}else{clearInterval(iv);$('swMsg').textContent='출발!';SFX.beep(0);SFX.splash(.15);$('swL').disabled=$('swR').disabled=false;live=true;raf=setInterval(step,1000/60);}},700);};}
-// 시뮬레이션: 우리 선수는 초당 7.6~9.8번 팔을 젓는다(직접 할 때 잘 누르는 사람과 비슷한 범위)
-function simSwim(){const riv=swRivals(),f=7.6+Math.random()*2.2,dt=1/60;let x=0,v=0,el=0,next=.25,fin=0;
-  while(el<25&&(!fin||riv.some(r=>!r.t))){el+=dt;if(el>=next){v+=.55;next+=1/f;}v*=Math.pow(.404,dt);x=Math.min(SW_D,x+v*dt);if(x>=SW_D&&!fin)fin=el;riv.forEach(r=>swStep(r,el,dt));}
-  const L=[{n:'우리',t:fin||99,me:1}].concat(riv.map(r=>({n:r.n,t:r.t||99}))).sort((a,b)=>a.t-b.t),place=L.findIndex(r=>r.me)+1;
-  return {lines:L.map((r,i)=>'<span class="k">'+(i+1)+'위</span>'+(r.me?'<b class="me">우리 선수</b>':r.n)+' · '+(r.t<99?r.t.toFixed(2)+'초':'기권')),
-    head:(fin?fin.toFixed(2)+'초 · ':'')+MEDAL[Math.min(3,place-1)],t:Math.min(3,place-1)};}
-
-/* ---------- 양궁 개인전 ----------
-   여섯 발을 쏴 합계로 메달을 가린다(같으면 10점 개수, 그래도 같으면 추첨). 화살마다 바람이 새로 분다.
-   과녁을 눌러 겨눌 곳을 정하면 조준점이 그 둘레를 흔들린다. 오래 당길수록 흔들림이 커진다.
-   바람 1m/s마다 화살이 과녁 반 칸쯤 밀린다. 경쟁자 셋은 강·중·약 실력이 섞여 있다. */
-const AR_R=120,AR_RW=12,AR_N=6,AR_DRIFT=6;   // 과녁 반지름, 한 칸 너비, 화살 수, 바람 1m/s당 밀림(과녁 단위)
-const AR_COL=s=>s>=9?'#f2c94c':s>=7?'#e0504a':s>=5?'#3d8fd6':s>=3?'#2a2a2a':'#f7f3ea';
-function arRivals(){const NAT=MG_NAT();return [9.05+Math.random()*.45,8.55+Math.random()*.45,7.9+Math.random()*.6].sort(()=>Math.random()-.5).map((m,i)=>({n:NAT[i],m:m,sc:[]}));}
-const arShot=m=>Math.max(5,Math.min(10,Math.round(m+mgGauss()*.9)));
-const arSum=a=>a.reduce((s,x)=>s+x,0),arTens=a=>a.filter(x=>x===10).length;
-function arPlace(mine,riv){const k=a=>arSum(a)*100+arTens(a);const me=k(mine);
-  return 1+riv.filter(r=>k(r.sc)>me||(k(r.sc)===me&&Math.random()<.5)).length;}
-function mgArch(box,done){const riv=arRivals(),mine=[];let live=true,ph='',ax=0,ay=0,rx=0,ry=0,t0=0,wind=0,last=performance.now();
-  let rings='';for(let s=1;s<=10;s++)rings+='<circle r="'+(11-s)*AR_RW+'" fill="'+AR_COL(s)+'" stroke="'+(s===3||s===4?'#f7f3ea':'#1d1b18')+'" stroke-opacity=".45" stroke-width=".8"/>';
-  box.innerHTML='<div class="mgx ar"><div class="ar-sb" id="arSb"></div>'+
-   '<div class="ar-rng"><div class="ar-wind"><i class="ar-flag" id="arFlag"></i><span>바람</span><b id="arWind"></b></div>'+
-    '<div class="ar-hr" id="arHrW"><i id="arHeart">♥</i><b id="arHr">72</b><span>bpm</span></div>'+
-    '<div class="ar-tgt" id="arTgt"><svg viewBox="'+(-AR_R)+' '+(-AR_R)+' '+2*AR_R+' '+2*AR_R+'" aria-hidden="true">'+rings+'<circle r="'+AR_RW/2+'" fill="none" stroke="#1d1b18" stroke-opacity=".35" stroke-width=".6"/><path d="M-3 0H3M0 -3V3" stroke="#1d1b18" stroke-width=".8"/></svg>'+
-    '<div class="ar-holes" id="arHoles"></div><i class="ar-aim" id="arAim"></i><i class="ar-ret" id="arRet"></i></div>'+
-    '<div class="ar-tip">70m · 바람 2m/s마다 과녁 한 칸쯤 밀린다 · 오래 당길수록 심장이 뛰고 흔들린다</div></div>'+
-   '<div class="pk-msg" id="arMsg"></div><button id="arGo" class="pri" style="width:100%;padding:15px;font-size:17px">쏜다!</button></div>';
-  const $=id=>document.getElementById(id),tg=$('arTgt'),pos=(el,x,y)=>{el.style.left=((x+AR_R)/(2*AR_R)*100)+'%';el.style.top=((y+AR_R)/(2*AR_R)*100)+'%';};
-  // 중계 화면 전광판: 칸 색은 맞힌 과녁 색, 이름 앞 숫자는 지금 순위
-  const sbar=()=>{const all=[mine].concat(riv.map(r=>r.sc)),rk=a=>1+all.filter(b=>arSum(b)>arSum(a)).length,
-    cell=s=>'<i class="s'+(s>=9?9:s>=7?7:s>=5?5:s>=3?3:s?1:0)+(s===10?' x':'')+'">'+(s||'M')+'</i>',
-    row=(n,a,me)=>'<span class="n'+(me?' me':'')+'"><em>'+rk(a)+'</em>'+n+'</span><span class="a">'+Array.from({length:AR_N},(_,i)=>i<a.length?cell(a[i]):'<i'+(me&&i===a.length&&live?' class="cur"':'')+'></i>').join('')+'</span><b'+(me?' class="me"':'')+'>'+arSum(a)+'</b>';
-    $('arSb').innerHTML=row('우리',mine,1)+riv.map(r=>row(r.n,r.sc)).join('');};
-  const next=()=>{if(!live)return;if(mine.length>=AR_N)return finish();
-    ph='aim';SFX.bow();t0=performance.now();ax=ay=0;wind=Math.round((Math.random()<.5?-1:1)*Math.random()*6*10)/10;
-    $('arWind').textContent=(wind<0?'← ':'→ ')+Math.abs(wind).toFixed(1)+' m/s';
-    $('arFlag').style.transform='scaleX('+(wind<0?-1:1)+') scaleY('+(.5+Math.min(1,Math.abs(wind)/6)*.5)+')';
-    $('arMsg').textContent=(mine.length+1)+'번째 화살 · 과녁을 눌러 겨누고, 조준점이 가라앉을 때 쏘세요';$('arGo').disabled=false;
-    tg.querySelectorAll('.new').forEach(h=>h.classList.remove('new'));};
-  const aimAt=e=>{if(ph!=='aim')return;const b=tg.getBoundingClientRect(),c=v=>Math.max(-AR_R*1.2,Math.min(AR_R*1.2,v));
-    ax=c(((e.clientX-b.left)/b.width*2-1)*AR_R);ay=c(((e.clientY-b.top)/b.height*2-1)*AR_R);};
-  tg.addEventListener('pointerdown',e=>{e.preventDefault();aimAt(e);});tg.addEventListener('pointermove',e=>{if(e.buttons)aimAt(e);});
-  const shoot=()=>{if(ph!=='aim')return;ph='fly';$('arGo').disabled=true;
-    const x=rx+wind*AR_DRIFT+mgGauss()*1.6,y=ry+mgGauss()*1.6,d=Math.hypot(x,y),s=d<=AR_R?Math.max(1,10-Math.floor(d/AR_RW)):0;
-    mine.push(s);riv.forEach(r=>r.sc.push(arShot(r.m)));
-    // 화살은 0.24초 날아가 꽂힌다. 꽂히면 과녁이 흔들리고 점수가 떠오른다
-    const h=document.createElement('i');h.className='new';pos(h,x,y);
-    setTimeout(()=>{if(!box.isConnected)return;$('arHoles').appendChild(h);tg.classList.remove('thk');void tg.offsetWidth;tg.classList.add('thk');
-      const pp=document.createElement('em');pp.className='ar-pop'+(s>=9?' g':'');pp.textContent=s===10&&Math.hypot(x,y)<=AR_RW/2?'X':s||'M';pos(pp,x,y);$('arHoles').appendChild(pp);setTimeout(()=>pp.remove(),1100);},240);
-    $('arMsg').textContent=s===10?'텐! 한가운데다':s?s+'점':'과녁을 벗어났다';try{SFX.release();setTimeout(()=>SFX.thunk(s),240);}catch(e){}
-    sbar();setTimeout(next,1300);};
-  const key=e=>{if(!live||ph!=='aim')return;const m={ArrowLeft:[-4,0],ArrowRight:[4,0],ArrowUp:[0,-4],ArrowDown:[0,4]}[e.key];
-    if(m){e.preventDefault();ax+=m[0];ay+=m[1];}else if(e.key===' '||e.key==='Enter'){e.preventDefault();shoot();}};
-  document.addEventListener('keydown',key);
-  const finish=()=>{live=false;document.removeEventListener('keydown',key);const place=arPlace(mine,riv),t=Math.min(3,place-1);
-    SFX.medal(t);$('arMsg').textContent='합계 '+arSum(mine)+'점 · '+place+'위 · '+MEDAL[t];$('arGo').disabled=false;$('arGo').textContent='결과 보기';$('arGo').onclick=()=>done(t);
-    $('arRet').style.display=$('arAim').style.display='none';};
-  $('arGo').onclick=shoot;
-  const loop=now=>{if(!live||!box.isConnected){live=false;document.removeEventListener('keydown',key);return;}last=now;
-    if(ph==='aim'){const t=(now-t0)/1000,A=3+9*Math.min(1,t/5);
-      rx=ax+A*(Math.sin(1.7*t)+.5*Math.sin(4.3*t+1.3))/1.5;ry=ay+A*(Math.cos(1.3*t+.4)+.5*Math.sin(3.7*t))/1.5;
-      pos($('arRet'),rx,ry);pos($('arAim'),ax,ay);}
-    // 심박수: 시위를 오래 당길수록 오르고(흔들림과 같은 곡선), 쏘고 나면 천천히 내려온다
-    if(now-hrT>400){hrT=now;const goal=(ph==='aim'?74+64*Math.min(1,(now-t0)/5000):72)+mine.length*2;bpm+=(goal-bpm)*.35+(Math.random()-.5)*2;
-      $('arHr').textContent=Math.round(bpm);$('arHeart').style.animationDuration=(60/bpm).toFixed(2)+'s';$('arHrW').classList.toggle('hi',bpm>118);}
-    requestAnimationFrame(loop);};
-  let hrT=0,bpm=72;
-  sbar();next();requestAnimationFrame(loop);}
-// 시뮬레이션: 우리 선수 실력은 화살당 평균 8.3~9.4점
-function simArch(){const riv=arRivals(),m=8.3+Math.random()*1.1,mine=[];for(let i=0;i<AR_N;i++){mine.push(arShot(m));riv.forEach(r=>r.sc.push(arShot(r.m)));}
-  const place=arPlace(mine,riv),t=Math.min(3,place-1),L=[{n:'우리 선수',sc:mine,me:1}].concat(riv).sort((a,b)=>arSum(b.sc)-arSum(a.sc)||(a.me?-1:b.me?1:0));
-  // 표의 순서는 판정 순위와 맞춘다(동점 처리 포함)
-  L.splice(L.findIndex(r=>r.me),1);L.splice(place-1,0,{n:'우리 선수',sc:mine,me:1});
-  return {lines:L.map((r,i)=>'<span class="k">'+(i+1)+'위</span>'+(r.me?'<b class="me">'+r.n+'</b>':r.n)+' · '+r.sc.join(' ')+' · <b>'+arSum(r.sc)+'점</b>'),
-    head:'합계 '+arSum(mine)+'점 · '+MEDAL[t],t:t};}
+/* ---------- 특별 과제 진행: 시작 시점, 단계 만들기, 선택의 뒷일, 개헌·계엄 ---------- */
 function checkSpecial(){const y=Math.round(S.turn/PY);if(y>=YRS)return false;CAR.spDone=CAR.spDone||{};
   const key=sp=>sp.id+(sp.perTerm?'_'+CAR.term:'');
   const L=(SP[CP.id]||[]).filter(sp=>!CAR.spDone[key(sp)]&&(()=>{try{return sp.cond(y);}catch(e){return false;}})());
@@ -3601,7 +3365,6 @@ function spFixed(o){return !!(cur&&cur.sp&&o&&o[4]&&(o[4].vote||o[4].coup));}
 // 계엄 성공 가능성: 지지율과는 상관없다. 권력·군사가 70에서 오를수록, 나라가 혼란할수록(혼란 30 기준) 높다
 function coupP(){return Math.round(Math.max(10,Math.min(90,35+(vVal('P')-70)*1.5+(vVal('M')-70)*1.5+(vVal('X')-30)+5*cnPow('S'))));}
 function spAmend(how){CAR.amendOK=CAR.term;CAR.amendPerm=1;CAR.amend=(CAR.amend||0)+1;CAR.amendHow=(CAR.amendHow?CAR.amendHow+' / ':'')+CAR.term+'기 '+how;}
-
 /* ---------- AUDIO ---------- */
 // 위기 지수에 따라 깔리던 배경 웅웅거림과 심장 박동은 뺐다. 위기는 화면 가장자리의 붉은 기운(vign)으로만 보여 준다.
 const AU={ac:null,m:null,on:true};
@@ -3626,8 +3389,10 @@ function clk(fr,vol,when){if(!AU.ac)return;try{when=when||0;const t0=AU.ac.curre
   const g=AU.ac.createGain();g.gain.value=vol;s.connect(f);f.connect(g);g.connect(AU.m);s.start(t0);}catch(e){}}
 // 문 소리: 녹음(문 소리 4.mp3)에서 앞쪽의 큰 구간(원본 0.2~1.2초, 손잡이가 덜컥하고 걸쇠가 철컥 걸리는 소리)만 잘라 품었다.
 // 따로 파일로 두면 file://에서 Web Audio로 읽지 못해 base64로 넣고, 처음 쓸 때 한 번 풀어 둔다(풀기 전에는 합성음으로 대신한다).
-const DOOR={b64:'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',buf:null,busy:false};
+const DOOR={b64:'',buf:null,busy:false};
 function doorPrep(){if(DOOR.buf||DOOR.busy||!AU.ac)return;DOOR.busy=true;const no=()=>{DOOR.busy=false;};
+  // 소리 데이터는 lazy/door에 따로 있다. 아직 안 왔으면 받아 온 뒤 다시 부른다
+  if(!DOOR.b64){lzLoad('door').then(()=>{DOOR.busy=false;doorPrep();},no);return;}
   try{const s=atob(DOOR.b64),u=new Uint8Array(s.length);for(let k=0;k<s.length;k++)u[k]=s.charCodeAt(k);
     const p=AU.ac.decodeAudioData(u.buffer,b=>{DOOR.buf=doorLoud(b);DOOR.busy=false;},no);if(p&&p.catch)p.catch(no);}catch(e){no();}}
 // 녹음이 작게(최대 -16dB) 들어 있어 풀자마자 키운다: 가장 큰 곳을 꽉 차게 맞춘 뒤 tanh로 눌러 작은 덜컥 소리까지 함께 끌어올린다
@@ -5597,114 +5362,10 @@ function copyText(t,btn){const orig=btn.textContent,done=()=>{btn.textContent='�
   function fb(){const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);done();}
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,fb);else fb();}
 
-/* ---------- 게임 안 명예의 전당 (리더보드) ---------- */
-// leaderboard.html과 같은 Apps Script 주소(doGet)에서 순위를 받아 온다. 화면이 열려 있는 동안 15초마다 갱신.
+/* ---------- 명예의 전당 공통: 사이트 주소, 글자 이스케이프 (명예의 전당 화면은 lazy/board) ---------- */
 // 아티팩트(아이패드용)로 빌드하면 true가 된다. 아티팩트는 외부 주소에 연결할 수 없어서 순위표 대신 게임 사이트 링크를 보여 준다.
 const IN_ART=false,SITE='https://csmsm0518.github.io/pandemic-president/';
-function artBoard(o){o=o||{};window.scrollTo(0,0);
-  R.innerHTML='<div style="animation:fdIn .3s ease-out">'+
-  '<button id="lbBack" style="font-size:13px;padding:7px 12px;margin-bottom:14px">← 돌아가기</button>'+
-  '<div style="font-size:27px;font-family:var(--font-voice);font-weight:800;margin:2px 0 14px">명예의 전당</div>'+
-  '<div style="background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;font-size:14px;line-height:1.75;color:var(--text-secondary)">'+
-  '이 화면(아이패드용 버전)에서는 실시간 순위표를 불러올 수 없어요. 여기서 한 플레이는 <b style="color:var(--text-primary)">순위와 연구 기록에 들어가지 않고</b>, 최고 기록과 도감만 이 기기에 남아요.</div>'+
-  '<a href="'+SITE+'leaderboard.html" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;padding:14px;border-radius:10px;font-size:15px;font-weight:600;color:#8f6a12;border:1px solid rgba(143,106,18,.45);background:rgba(143,106,18,.08);margin-bottom:12px">게임 사이트에서 명예의 전당 보기 ↗</a>'+
-  '<div style="font-size:12px;color:var(--text-muted);line-height:1.7">순위에 오르려면 아래 주소의 게임 사이트에서 플레이해 주세요.<div style="user-select:all;-webkit-user-select:all;color:var(--text-secondary);margin-top:4px;word-break:break-all">'+SITE+'</div></div></div>';
-  document.getElementById('lbBack').onclick=()=>{SFX.back();(o.back||home)();};}
-const LB={data:null,tab:'top',diff:'',open:null,seen:null,fresh:new Set(),sig:'',timer:0,back:null,id:'',nick:'',busy:false,err:'',t0:0,open:false};
-const LCOL={'킨키나투스':'#2f5f99','조지 워싱턴':'#2f5f99','루이 14세':'#b3261e','나폴레옹':'#b3261e','진시황':'#b3261e','루이 16세':'#6e675c',
-  '마르쿠스 아우렐리우스':'#2f4a6b','율리우스 카이사르':'#b8541e','에이브러햄 링컨':'#2e7d55','세종':'#2e7d55','페리클레스':'#6e675c',
-  '술라':'#b8541e','솔론':'#2f5f99','정조':'#2e7d55','프리드리히 2세':'#b8541e','표트르 대제':'#b3261e','오토 폰 비스마르크':'#b8541e','아우구스투스':'#b3261e',
-  '프랭클린 루스벨트':'#2f4a6b','광해군':'#6e675c','윈스턴 처칠':'#2f5f99','아소카':'#2e7d55','시몬 볼리바르':'#b8541e','함무라비':'#2f4a6b'};
-const LB_N=10;
-// 난이도별 순위: 처음에는 지금 고른 난이도로 열고, 전체 순위도 볼 수 있다. 색은 난이도 칸과 같다(지옥은 어두운 무대에서 보이게 밝게).
-const LB_DIFS=['쉬움','보통','어려움','지옥','전체'],LB_DCOL={'쉬움':'#3fc38f','보통':'#e3b341','어려움':'#e0604f','지옥':'#ff4d4d','전체':'#c9a24a'};
-const lbCol=n=>LCOL[n]||(LEADK.map(k=>LEAD[k]).find(L=>L.n===n)||{}).col||'#6e675c';
-const lbDiffTag=d=>d&&LB_DCOL[d]?'<span class="lb-dt" style="--dc:'+LB_DCOL[d]+'">'+lbEsc(d)+'</span>':'';
-// 지금 고른 난이도의 순위. 서버가 난이도별 순위(byDiff)를 아직 안 보내면 받은 목록에서 걸러 낸다.
-function lbView(){const d=LB.data;if(!d||LB.diff==='전체')return d;
-  if(d.byDiff)return d.byDiff[LB.diff]||{careers:0,players:0,top:[],longest:[],recent:[],order:[],stats:{}};
-  const f=a=>(a||[]).filter(r=>r.diff===LB.diff);return Object.assign({},d,{top:f(d.top),longest:f(d.longest),recent:f(d.recent)});}
 const lbEsc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function lbAgo(t){const d=(Date.now()-new Date(t).getTime())/1000;if(!isFinite(d))return '';if(d<60)return '방금';if(d<3600)return Math.floor(d/60)+'분 전';if(d<86400)return Math.floor(d/3600)+'시간 전';
-  const x=new Date(t);return (x.getMonth()+1)+'월 '+x.getDate()+'일';}
-function lbJsonp(){return new Promise((res,rej)=>{const cb='__lbg'+Date.now()+Math.floor(Math.random()*1e4),s=document.createElement('script');
-  const done=()=>{clearTimeout(to);try{delete window[cb];}catch(e){window[cb]=undefined;}s.remove();};
-  const to=setTimeout(()=>{done();rej(new Error('시간 초과'));},25000);
-  window[cb]=d=>{done();res(d);};s.onerror=()=>{done();rej(new Error('연결 실패'));};
-  s.src=SHEET_URL+'?callback='+cb+'&t='+Date.now();document.head.appendChild(s);});}
-function lbFetch(){return fetch(SHEET_URL+'?t='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).catch(()=>lbJsonp());}
-
-/* ---------- 게임 안 명예의 전당: 스포츠 기록실 형식 ----------
-   가운데 큰 카드가 커리어 점수 순위(1위는 메달·초상·닉네임·학교·지도자·점수를 크게, 2위부터는 한 줄씩),
-   양옆 카드는 부문별 순위(최장 집권·최다 연임·학교 평균·최다 업적·최고 지지율·무대별 최고). 웹 리더보드(leaderboard.html)는 '전체 순위'로 따로 연다. */
-const HOF={d:null,diff:'',timer:0,back:null,id:'',nick:'',busy:false,err:'',sig:''};
-function openBoard(o){o=o||{};if(IN_ART)return artBoard(o);hofClose();lbeClose();window.scrollTo(0,0);
-  HOF.back=o.back||home;HOF.id=o.id||'';HOF.nick=o.nick||'';HOF.diff=o.diff||(DIFF[dif]&&DIFF[dif].n)||'보통';HOF.sig='';
-  const w=document.createElement('div');w.id='hof';w.className='lbfs hof';w.setAttribute('role','dialog');w.setAttribute('aria-label','명예의 전당');
-  w.innerHTML='<canvas class="gx-bg" aria-hidden="true"></canvas><div class="hof-in">'+
-    '<header class="hof-top"><button class="hof-back" id="hofBack">← 돌아가기</button>'+
-    '<div class="hof-ttl"><span class="hof-k">HALL OF FAME</span><h1>명예의 전당</h1></div>'+
-    '<div class="hof-r"><span id="hofLive" class="hof-live"><i></i>불러오는 중</span><a id="hofAll" class="hof-all" target="_blank" rel="noopener">전체 순위 ↗</a></div></header>'+
-    '<div class="hof-dif" id="hofDif" role="group" aria-label="난이도">'+LB_DIFS.map(k=>'<button data-d="'+k+'" style="--dc:'+LB_DCOL[k]+'" aria-pressed="'+(HOF.diff===k)+'">'+k+'</button>').join('')+'</div>'+
-    '<div id="hofTiles" class="hof-tiles"></div><div id="hofBody" class="hof-g">'+hofSkel()+'</div></div>';
-  document.body.appendChild(w);document.body.style.overflow='hidden';gxLattice(w.querySelector('.gx-bg'));
-  const all=()=>{document.getElementById('hofAll').href='leaderboard.html?diff='+encodeURIComponent(HOF.diff)+(HOF.id?'&id='+encodeURIComponent(HOF.id)+'&me='+encodeURIComponent(HOF.nick):'');};all();
-  document.getElementById('hofBack').onclick=()=>{SFX.back();const b=HOF.back;hofClose();b();};
-  w.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();document.getElementById('hofBack').click();}});
-  document.getElementById('hofDif').onclick=e=>{const b=e.target.closest('button[data-d]');if(!b||b.dataset.d===HOF.diff)return;SFX.click();HOF.diff=b.dataset.d;
-    document.querySelectorAll('#hofDif button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));all();HOF.sig='';hofRender();};
-  setTimeout(()=>{const b=document.getElementById('hofBack');if(b)b.focus({preventScroll:true});},50);
-  if(HOF.d)hofRender();hofLoad();}
-function hofClose(){clearTimeout(HOF.timer);const w=document.getElementById('hof');if(w){w.remove();document.body.style.overflow='';}}
-function hofLoad(){if(HOF.busy||!document.getElementById('hof'))return;HOF.busy=true;
-  lbFetch().then(d=>{if(!d||!Array.isArray(d.top))throw new Error('형식이 다른 응답');HOF.err='';HOF.d=d;hofRender();})
-  .catch(e=>{HOF.err=(e&&e.message)||String(e);hofLive();if(!HOF.d){const b=document.getElementById('hofBody');if(b)b.innerHTML='<div class="hc hof-main hc-empty" style="grid-column:1/-1">기록을 불러오지 못했어요.<br><small>인터넷 연결을 확인해 주세요. ('+lbEsc(HOF.err)+')</small><br><button id="hofRetry" class="hof-back" style="margin-top:12px">다시 시도</button></div>';
-      const r=document.getElementById('hofRetry');if(r)r.onclick=()=>{SFX.click();hofLoad();};}})
-  .finally(()=>{HOF.busy=false;clearTimeout(HOF.timer);if(document.getElementById('hof')){const wait=HOF.id&&HOF.d&&(HOF.d.order||[]).indexOf(HOF.id)<0;HOF.timer=setTimeout(()=>{if(!document.hidden)hofLoad();else HOF.timer=setTimeout(hofLoad,5000);},wait?5000:15000);}});}
-function hofLive(){const el=document.getElementById('hofLive');if(!el)return;
-  if(HOF.err)el.innerHTML='<i class="off"></i>'+(HOF.d?'다시 연결하는 중':'연결이 안 돼요');
-  else{const u=HOF.d&&HOF.d.updated?new Date(HOF.d.updated):new Date();el.innerHTML='<i></i>LIVE · '+u.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});}}
-function hofSkel(){return '<div class="hof-side"><div class="hc hc-sk"></div><div class="hc hc-sk"></div></div><div class="hc hof-main hc-sk big"></div><div class="hof-side"><div class="hc hc-sk"></div><div class="hc hc-sk"></div></div>';}
-// 지금 난이도의 묶음. 예전 스크립트라 부문별 순위(cards)가 없으면 받은 목록으로 만든다.
-function hofView(){const d=HOF.d;if(!d)return null;const f=a=>(a||[]).filter(r=>r.diff===HOF.diff);
-  const v=HOF.diff==='전체'?d:d.byDiff?(d.byDiff[HOF.diff]||{careers:0,players:0,top:[],longest:[],recent:[],order:[],stats:{}}):Object.assign({},d,{top:f(d.top),longest:f(d.longest),recent:f(d.recent),cards:null});
-  if(v.cards)return v;const pool={};[].concat(v.top||[],v.longest||[],v.recent||[]).forEach(r=>{if(!pool[r.nick]||pool[r.nick].score<r.score)pool[r.nick]=r;});
-  const L=Object.keys(pool).map(k=>pool[k]),srt=f=>L.slice().sort(f).slice(0,5);
-  return Object.assign({},v,{cards:{terms:srt((a,b)=>b.terms-a.terms||b.score-a.score),tro:srt((a,b)=>(b.tro||0)-(a.tro||0)||b.score-a.score).filter(r=>r.tro>0),appr:L.filter(r=>r.appr!=null).sort((a,b)=>b.appr-a.appr).slice(0,5),school:[],camp:[]}});}
-const hofCampN=c=>{const k=Object.keys(CAMPS).find(k=>CAMPS[k].id===c||CAMPS[k].n===c);return k?CAMPS[k].n:(c||'');};
-const hofAv=(name,px)=>portrait(name,px)||'<span class="hc-ini">'+lbEsc(String(name||'?').slice(0,1))+'</span>';
-// 부문 카드 하나. it(r)은 {n 이름, s 둘째 줄, v 기록, a 초상 자리 HTML, me 내 기록인지}
-function hofCard(o){const L=o.list||[],main=!!o.main;
-  let h='<section class="hc'+(main?' hof-main':'')+'" style="--i:'+(o.i||0)+'"><div class="hc-h"><b>'+o.t+'</b><span>'+(o.u||'')+'</span></div>';
-  if(o.me)h+=o.me;
-  if(!L.length)return h+'<div class="hc-empty">'+(o.empty||'아직 기록이 없어요')+'</div></section>';
-  const f=L.map(o.it),one=f[0];
-  h+='<div class="hc-hero'+(one.me?' me':'')+'"><span class="hc-md" aria-label="1위">1</span><div class="hc-av">'+one.a+'</div><div class="hc-n">'+one.n+'</div><div class="hc-s">'+one.s+'</div><div class="hc-v">'+one.v+'</div></div>';
-  f.slice(1,o.n||(main?10:4)).forEach((x,i)=>{h+='<div class="hc-r'+(x.me?' me':'')+'"><span class="k">'+(i+2)+'</span><span class="a">'+x.a+'</span><span class="t"><b>'+x.n+'</b><small>'+x.s+'</small></span><span class="v">'+x.v+'</span></div>';});
-  if(o.more)h+='<a class="hc-more" href="'+o.more+'" target="_blank" rel="noopener">더보기</a>';
-  return h+'</section>';}
-function hofRender(){const v=hofView(),body=document.getElementById('hofBody');hofLive();if(!v||!body)return;
-  const sig=HOF.diff+'|'+JSON.stringify(v);if(sig===HOF.sig)return;const first=!HOF.sig;HOF.sig=sig;
-  const C=v.cards||{},E=lbEsc,num=x=>Number(x||0).toLocaleString('ko-KR');
-  const who=r=>[r.school,r.leader].filter(Boolean).map(E).join(' · ')||'&nbsp;';
-  const P=(r,val,s)=>({n:E(r.nick),s:s!=null?s:who(r),v:val,a:hofAv(r.leader,main?120:40),me:!!HOF.id&&r.id===HOF.id});let main=false;
-  const s=v.stats||{},tile=(k,x)=>'<div><span>'+k+'</span><b>'+x+'</b></div>';
-  document.getElementById('hofTiles').innerHTML=tile('지나간 인생',num(v.careers))+tile('참가자',num(v.players))+tile('평균 임기',(s.avgTerms||0)+'선')+tile('2선 이상',(s.reelectRate||0)+'%')+tile('개헌한 비율',(s.amendRate||0)+'%');
-  // 내 순위: 이번 커리어가 몇 위인지, 1위까지 몇 점 남았는지
-  let me='';if(HOF.id){const rk=(v.order||[]).indexOf(HOF.id)+1,top=(v.top||[])[0],mine=[].concat(v.top||[],v.recent||[]).find(r=>r.id===HOF.id);
-    me='<div class="hc-me">'+(rk?'<span>'+E(HOF.nick||'내')+' · 이번 커리어</span><b>'+rk+'위</b><span>'+(rk===1?'지금 1위':top&&mine?'1위까지 '+num(top.score-mine.score)+'점':'')+'</span>':'<span>방금 끝낸 커리어를 반영하는 중이에요</span>')+'</div>';}
-  const dq=encodeURIComponent(HOF.diff);
-  main=true;const mainCard=hofCard({main:true,i:0,t:'커리어 점수',u:(HOF.diff==='전체'?'전체':HOF.diff)+' · 상위 10',list:v.top,me:me,n:10,more:'leaderboard.html?diff='+dq,empty:'아직 기록이 없어요. 첫 번째 대통령이 되어 보세요.',it:r=>P(r,num(r.score)+'<small>점</small>')});
-  main=false;
-  const left=hofCard({i:1,t:'최장 집권',u:'재임 기간',list:v.longest,it:r=>P(r,r.years+'<small>년</small>')})+
-    hofCard({i:2,t:'최다 연임',u:'임기 수',list:C.terms,it:r=>P(r,r.terms+'<small>선</small>')})+
-    hofCard({i:3,t:'학교 평균 점수',u:'한 사람당 최고 기록',list:C.school,empty:'학교를 적은 기록이 아직 없어요',it:x=>({n:E(x.school),s:x.n+'명 · 최고 '+E(x.best&&x.best.nick||''),v:num(x.avg)+'<small>점</small>',a:'<span class="hc-ini sc">'+E(String(x.school).slice(0,1))+'</span>',me:false})});
-  const right=hofCard({i:4,t:'최다 업적',u:'한 커리어의 업적 수',list:C.tro,it:r=>P(r,r.tro+'<small>개</small>')})+
-    hofCard({i:5,t:'최고 지지율',u:'물러날 때 지지율',list:C.appr,it:r=>P(r,Math.round(r.appr)+'<small>%</small>')})+
-    hofCard({i:6,t:'무대별 최고',u:'무대마다 1위',list:C.camp,it:r=>P(r,num(r.score)+'<small>점</small>',E(hofCampN(r.camp))+(r.school?' · '+E(r.school):''))});
-  body.classList.toggle('still',!first);
-  body.innerHTML='<div class="hof-side">'+left+'</div>'+mainCard+'<div class="hof-side">'+right+'</div>';}
-
 /* ---------- 좀비 아포칼립스: 서바이벌 액션 「방역선」 ----------
    좀비 무대는 정치 시뮬레이션 대신 따로 만든 액션 게임(zombie.html)을 화면 가득 띄운다. 게임이 끝나면 결과를 postMessage로 알려 오고,
    최고 점수는 기록 보관소(MEM)에 남긴다. 게임 안 음악과 겹치지 않게 그동안 배경음악은 멈춘다. */
@@ -5719,465 +5380,9 @@ function zgClose(){if(!ZG)return;ZG.el.remove();ZG=null;document.body.style.over
 addEventListener('message',e=>{if(!ZG||!e.data||!e.data.zg)return;const fr=ZG.el.querySelector('iframe');if(!fr||e.source!==fr.contentWindow)return;
   if(e.data.zg==='result'){const r=e.data;try{MEM.zg=MEM.zg||{best:0,runs:0,wins:0};MEM.zg.runs++;if(r.win)MEM.zg.wins++;if((+r.score||0)>MEM.zg.best)MEM.zg.best=+r.score||0;msave();}catch(x){}}
   else if(e.data.zg==='close'){try{SFX.back();}catch(x){}zgClose();}});
-
-// 예전 명예의 전당(leaderboard.html을 화면 가득 띄우던 방식). 지금은 쓰지 않지만 postMessage 처리를 위해 남겨 둔다.
-let LBE=null;
-function openBoardEmbed(o){o=o||{};if(IN_ART)return artBoard(o);lbeClose();window.scrollTo(0,0);
-  const q='embed=1&diff='+encodeURIComponent(o.diff||(DIFF[dif]&&DIFF[dif].n)||'보통')+(o.id?'&id='+encodeURIComponent(o.id)+'&me='+encodeURIComponent(o.nick||''):'');
-  const w=document.createElement('div');w.className='lbe';w.setAttribute('role','dialog');w.setAttribute('aria-label','명예의 전당');
-  w.innerHTML='<iframe src="leaderboard.html?'+q+'" title="명예의 전당"></iframe>';document.body.appendChild(w);document.body.style.overflow='hidden';
-  LBE={el:w,back:o.back||home};const fr=w.querySelector('iframe');fr.onload=()=>{try{fr.contentWindow.focus();}catch(e){}};}
-function lbeClose(){if(!LBE)return;LBE.el.remove();document.body.style.overflow='';LBE=null;}
-addEventListener('message',e=>{if(!LBE||!e.data||!e.data.lb)return;const fr=LBE.el.querySelector('iframe');if(!fr||e.source!==fr.contentWindow)return;
-  const back=LBE.back;SFX.back();lbeClose();
-  if(e.data.lb==='play'){home();if(!viewGet().lite)setTimeout(()=>{try{stepCamp();}catch(x){}},0);}else back();});function lbClose(){LB.open=false;clearTimeout(LB.timer);const o=document.getElementById('lbFs');if(o)o.remove();document.body.style.overflow='';}
-function lbSchedule(){clearTimeout(LB.timer);if(!LB.open)return;
-  // 내 기록이 아직 시트에 안 들어왔으면 5초마다, 그 뒤로는 15초마다
-  const waiting=LB.id&&LB.data&&LB.data.order&&LB.data.order.indexOf(LB.id)<0;
-  LB.timer=setTimeout(()=>{if(!document.hidden)lbLoad();else lbSchedule();},waiting?5000:15000);}
-function lbLoad(){if(LB.busy||!LB.open)return;LB.busy=true;
-  lbFetch().then(d=>{if(!d||!Array.isArray(d.top))throw new Error('형식이 다른 응답');
-    LB.err='';const sig=JSON.stringify(Object.assign({},d,{updated:0}));LB.data=d;
-    if(!LB.open)return;
-    if(sig!==LB.sig){const ids=new Set((d.recent||[]).map(r=>r.id));LB.fresh=new Set();if(LB.seen)ids.forEach(id=>{if(!LB.seen.has(id))LB.fresh.add(id);});
-      const first=!LB.seen;LB.seen=ids;LB.sig=sig;lbRender(first);}
-    lbLive();
-  }).catch(e=>{LB.err=(e&&e.message)||String(e);if(LB.open){lbLive();if(!LB.data)lbBody('<div class="card-lb" style="text-align:center;padding:28px 12px;color:var(--text-secondary);font-size:14px;line-height:1.8">기록을 불러오지 못했어요.<div style="font-size:12px;color:var(--text-muted);margin-top:6px">인터넷 연결과 Apps Script 배포(새 버전, 모든 사용자)를 확인해 주세요.<br>('+lbEsc(LB.err)+')</div><button id="lbRetry" style="margin-top:14px">다시 시도</button></div>');
-      const r=document.getElementById('lbRetry');if(r)r.onclick=()=>{SFX.click();lbBody('<div class="lb-skel"></div><div class="lb-skel"></div>');lbLoad();};}})
-  .finally(()=>{LB.busy=false;lbSchedule();});}
-
-// 명예의 전당 머리: 월계관에 둘러싸인 트로피(가운데) — 잎은 반원 위에 비스듬히 놓는다
-// 잎은 원 둘레(왼쪽은 아래 100°→위 230°)를 따라 놓고, 둘레 방향(+90°)으로 눕힌다. 오른쪽은 좌우 대칭.
-const LBX_LAUREL=(()=>{let l='';for(let i=0;i<8;i++){const a=100+i*18.5,t=a*Math.PI/180,x=60+38*Math.cos(t),y=50+38*Math.sin(t),r=a+90-14;
-    [[x,r],[120-x,180-r]].forEach(([px,rr])=>{l+='<ellipse cx="'+px.toFixed(1)+'" cy="'+y.toFixed(1)+'" rx="7.5" ry="3.2" transform="rotate('+rr.toFixed(1)+' '+px.toFixed(1)+' '+y.toFixed(1)+')"/>';});}
-  return '<svg class="lbx-em" viewBox="0 0 120 100" aria-hidden="true"><defs><linearGradient id="lbxg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff3c4"/><stop offset=".5" stop-color="#e3b94f"/><stop offset="1" stop-color="#8a6a24"/></linearGradient></defs>'+
-    '<g fill="url(#lbxg)">'+l+'</g><path d="M44 30h32v10c0 12-7 20-16 20s-16-8-16-20z" fill="url(#lbxg)" stroke="#5d4515"/><path d="M44 34h-7c0 9 4 14 9 15M76 34h7c0 9-4 14-9 15" fill="none" stroke="url(#lbxg)" stroke-width="3"/>'+
-    '<path d="M56 60h8v8h-8zM48 68h24v6H48z" fill="url(#lbxg)" stroke="#5d4515" stroke-width=".8"/><path d="M60 36l2.4 5 5.4.6-4 3.7 1.1 5.3-4.9-2.7-4.9 2.7 1.1-5.3-4-3.7 5.4-.6z" fill="#15120e"/></svg>';})();
-const LBX_CROWN='<svg class="lbx-crown" viewBox="0 0 40 24" aria-hidden="true"><path d="M3 21L1 5l10 8 9-12 9 12 10-8-2 16z" fill="#f1d589" stroke="#7a5a1c" stroke-width="1.4" stroke-linejoin="round"/><circle cx="20" cy="15" r="2.4" fill="#b3261e"/></svg>';
-// 명예의 전당은 타이틀 화면처럼 화면 전체를 쓰는 어두운 무대에 띄운다(감염 배경 + 큰 금장 문장).
-// 넓은 화면은 왼쪽에 제목·내 순위·통계, 오른쪽에 탭·시상대·순위. 좁으면 위아래로 쌓고 통째로 스크롤한다.
-function lbFrame(){let o=document.getElementById('lbFs');if(o)o.remove();
-  o=document.createElement('div');o.id='lbFs';o.className='lbfs';o.setAttribute('role','dialog');o.setAttribute('aria-label','명예의 전당');
-  o.innerHTML='<canvas class="gx-bg" aria-hidden="true"></canvas><div class="gx-seal" aria-hidden="true">'+emblemSvg('embgL')+'</div><div id="lbRoot" class="lbx">'+
-  '<div class="lbx-top"><button id="lbBack">← 돌아가기</button><a id="lbAll" href="leaderboard.html?diff='+encodeURIComponent(LB.diff)+'" target="_blank" rel="noopener">전체 순위 ↗</a></div><div class="lbfs-grid"><div class="lbfs-l">'+
-  '<div class="lbx-hero"><div class="lbx-rays" aria-hidden="true"></div>'+LBX_LAUREL+'<div class="lbx-k">HALL OF FAME</div><h1 class="lbx-t">명예의 전당</h1>'+
-  '<div id="lbLive" class="lbx-live"><span class="lb-dot"></span><span>불러오는 중</span></div></div>'+
-  '<div id="lbMe"></div><div id="lbTiles" class="lb-tiles"></div></div><div class="lbfs-r">'+
-  '<div class="lb-tabs" id="lbTabs">'+[['top','커리어 점수'],['longest','최장 집권'],['recent','최근 기록'],['stats','권력 통계']].map(t=>'<button data-t="'+t[0]+'" aria-selected="'+(LB.tab===t[0])+'">'+t[1]+'</button>').join('')+'</div>'+
-  '<div class="lb-dif" id="lbDif" role="group" aria-label="난이도">'+LB_DIFS.map(k=>'<button data-d="'+k+'" style="--dc:'+LB_DCOL[k]+'" aria-pressed="'+(LB.diff===k)+'"><i></i>'+k+'</button>').join('')+'</div>'+
-  '<div id="lbBody"><div class="lb-skel"></div><div class="lb-skel"></div><div class="lb-skel"></div></div></div></div></div>';
-  document.body.appendChild(o);document.body.style.overflow='hidden';gxLattice(o.querySelector('.gx-bg'));
-  document.getElementById('lbBack').onclick=()=>{SFX.back();lbClose();(LB.back||home)();};
-  document.getElementById('lbTabs').onclick=e=>{const b=e.target.closest('button[data-t]');if(!b)return;SFX.click();LB.tab=b.dataset.t;
-    document.querySelectorAll('#lbTabs button').forEach(x=>x.setAttribute('aria-selected',x===b?'true':'false'));if(LB.data)lbRender(true,true);};
-  const bd=document.getElementById('lbBody');bd.addEventListener('click',e=>{const p=e.target.closest('[data-open]');if(!p)return;SFX.click();LB.open=LB.open===p.dataset.open?null:p.dataset.open;if(LB.data)lbRender(false,true);});
-  bd.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-open]')){e.preventDefault();e.target.click();}});
-  document.getElementById('lbDif').onclick=e=>{const b=e.target.closest('button[data-d]');if(!b||b.dataset.d===LB.diff)return;SFX.click();LB.diff=b.dataset.d;
-    document.querySelectorAll('#lbDif button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));
-    document.getElementById('lbAll').href='leaderboard.html?diff='+encodeURIComponent(LB.diff);if(LB.data)lbRender(true);};}
-function lbBody(h){const b=document.getElementById('lbBody');if(b)b.innerHTML=h;}
-function lbLive(){const el=document.getElementById('lbLive');if(!el)return;
-  if(LB.err&&!LB.data)el.innerHTML='<span class="lb-dot off"></span><span>연결이 안 돼요</span>';
-  else if(LB.err)el.innerHTML='<span class="lb-dot off"></span><span>연결이 끊겼어요 · 다시 시도하는 중</span>';
-  else{const u=LB.data&&LB.data.updated?new Date(LB.data.updated):new Date();
-    el.innerHTML='<span class="lb-dot"></span><span>LIVE · '+u.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})+'</span>';}}
-function lbRender(anim,onlyBody){const d=lbView(),root=document.getElementById('lbRoot');if(!d||!root)return;
-  root.classList.toggle('lb-still',!anim);
-  if(!onlyBody){
-    const me=document.getElementById('lbMe');
-    if(LB.id){const rk=d.order.indexOf(LB.id)+1;
-      me.innerHTML=rk?'<div class="lb-banner"><span>'+lbEsc(LB.nick||'내')+' 대통령의 이번 커리어는 </span><b style="font-size:20px">'+rk+'위</b><span style="color:var(--text-secondary)"> / '+(LB.diff==='전체'?'전체':LB.diff+' 난이도')+' '+d.order.length+'개</span></div>'
-        :'<div class="lb-banner">방금 끝낸 커리어를 시트에 반영하는 중이에요. <span style="color:var(--text-secondary)">잠시 뒤 자동으로 순위가 나타나요.</span></div>';}
-    else me.innerHTML='';
-    const s=d.stats||{},t=(k,v)=>'<div class="lb-tile"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>';
-    document.getElementById('lbTiles').innerHTML=t('지나간 인생',d.careers||0)+t('참가자',d.players||0)+t('평균 임기',(s.avgTerms||0)+'선')+t('2선 이상',(s.reelectRate||0)+'%')+t('개헌한 비율',(s.amendRate||0)+'%')+t('스스로 퇴임',(s.retireRate||0)+'%');}
-  if(LB.tab==='stats')return lbBody(lbStats());
-  const list=(d[LB.tab]||[]).slice(0,LB_N);
-  if(!list.length)return lbBody('<div class="card-lb" style="text-align:center;padding:30px 10px;color:var(--text-secondary);font-size:14px;line-height:1.8">'+(LB.diff==='전체'?'아직 기록이 없어요.':'아직 '+lbEsc(LB.diff)+' 난이도 기록이 없어요.')+'<br>첫 번째 대통령이 되어 보세요.</div>');
-  const oi=LB.tab==='top'?list.slice(0,3).findIndex(r=>r.id===LB.open):-1;
-  if(LB.tab==='top')return lbBody(lbPodium(list)+(oi>=0?lbDet(list[oi],oi+1):'<div class="lbd-hint">시상대의 1~3위를 누르면 세부 수치를 볼 수 있어요</div>')+(list.length>3?'<div class="card-lb" style="padding:2px 10px">'+list.slice(3).map((r,i)=>lbRow(r,i+3,'top')).join('')+'</div>':'')+
-    (LB.data&&!LB.data.script?'<div class="lb-note"><b style="color:#a8321f">2026.10.27</b></div>':''));
-  lbBody('<div class="card-lb" style="padding:2px 10px">'+list.map((r,i)=>lbRow(r,i,LB.tab)).join('')+'</div>');}
-function lbGrades(s){return String(s||'').split('/').filter(Boolean).map(g=>'<span class="lb-g" style="color:'+(GCOL[g]||'#6e675c')+'">'+lbEsc(g)+'</span>').join('');}
-function lbRow(r,i,mode){const d=lbView(),mine=r.id===LB.id,fr=LB.fresh.has(r.id);
-  const right=mode==='longest'?'<div class="b">'+r.years+'<span style="font-size:11px">년</span></div><div class="s">'+r.score+'점</div>':
-    mode==='recent'?'<div class="b">'+r.score+'</div><div class="s">'+lbEsc(lbAgo(r.t))+'</div>':'<div class="b">'+r.score+'</div><div class="s">'+r.terms+'선</div>';
-  const rk=mode==='recent'?'<span style="font-size:10px;color:var(--text-muted)">'+((d.order.indexOf(r.id)+1)||'–')+'위</span>':i+1;
-  return '<div class="lb-row'+(mine?' mine':'')+(fr?' fresh':'')+(mode!=='recent'&&i<3?' m'+(i+1):'')+'" style="animation-delay:'+Math.min(i,12)*30+'ms"><div class="rk">'+rk+'</div><div class="who"><div class="nm">'+lbEsc(r.nick)+(fr?' <span class="lb-new">NEW</span>':'')+(mine?' <span class="lb-new" style="background:#2f4a6b;color:#fff">나</span>':'')+'</div>'+
-    '<div class="mt">'+lbEsc(r.bg)+' · '+r.terms+'선 '+r.years+'년 · <span style="color:'+lbCol(r.leader)+'">'+lbEsc(r.leader)+'</span>'+lbDiffTag(r.diff)+'</div>'+
-    '<div class="ex">'+lbGrades(r.grades)+'<span>'+lbEsc(r.exit)+'</span>'+(r.amend?'<span style="color:var(--text-danger)">· 개헌 '+r.amend+'회</span>':'')+'</div></div><div class="val">'+right+'</div></div>';}
-// 시상대: 어두운 무대 위 금·은·동 받침대. 1위는 가운데 가장 높이, 왕관을 쓴다. 얼굴은 그 커리어와 닮은 지도자.
-function lbPodium(list){const m=[list[1],list[0],list[2]],rk=[2,1,3],cls=['s','g','b'];
-  const sp=[[8,24,0],[22,62,.8],[50,12,1.6],[78,58,.4],[91,20,1.2],[66,30,2]].map(p=>'<i class="lbx-spk" style="left:'+p[0]+'%;top:'+p[1]+'%;animation-delay:'+p[2]+'s"></i>').join('');
-  return '<div class="lbx-stage">'+sp+'<div class="lbx-pods">'+m.map((r,j)=>r?'<div class="lbx-pod '+cls[j]+(LB.fresh.has(r.id)?' fresh':'')+(r.id===LB.id?' mine':'')+'" style="animation-delay:'+[.25,.05,.4][j]+'s" data-open="'+lbEsc(r.id)+'" role="button" tabindex="0" aria-expanded="'+(LB.open===r.id)+'">'+
-    '<div class="lbx-av">'+(j===1?LBX_CROWN:'')+(portrait(r.leader,'100%')||'<span>'+rk[j]+'</span>')+'</div><div class="nm">'+lbEsc(r.nick)+'</div><div class="sc">'+Number(r.score).toLocaleString('ko-KR')+'</div>'+
-    '<div class="ld">'+r.terms+'선 · '+lbEsc(r.leader)+(LB.diff==='전체'?lbDiffTag(r.diff):'')+'</div><div class="lbx-ped"><b>'+rk[j]+'</b></div></div>':'<div></div>').join('')+'</div></div>';}
-function lbBars(obj,colf){const a=Object.entries(obj||{}).sort((x,y)=>y[1]-x[1]);if(!a.length)return '<div class="lb-note">아직 데이터가 없어요.</div>';const mx=a[0][1];
-  return a.map(([k,v],i)=>'<div class="lb-hb"><span class="n">'+lbEsc(k)+'</span><span class="tr"><span style="width:'+(v/mx*100)+'%;background:'+colf(k)+';animation-delay:'+i*45+'ms"></span></span><span class="c">'+v+'</span></div>').join('');}
-function lbDir(rows){const W=300,H=140,mid=70,bw=(W-20)/5,sc=v=>Math.max(-1,Math.min(1,v/12))*54;
-  let s='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block" role="img" aria-label="임기별 평균 권력 방향">';
-  s+='<line x1="8" x2="'+(W-8)+'" y1="'+mid+'" y2="'+mid+'" stroke="rgba(29,27,24,.25)"/>';
-  s+='<text x="10" y="11" font-size="9" fill="rgba(29,27,24,.45)">권력 집중 ↑</text><text x="10" y="'+(H-3)+'" font-size="9" fill="rgba(29,27,24,.45)">견제·분산 ↓</text>';
-  rows.forEach((r,i)=>{const x=10+i*bw+bw*.22,w=bw*.56,cx=x+w/2;
-    if(r.avg===null){s+='<text x="'+cx+'" y="'+(mid-6)+'" font-size="9" text-anchor="middle" fill="rgba(29,27,24,.3)">'+r.term+'기 없음</text>';return;}
-    const h=sc(r.avg),y=h>=0?mid-h:mid,col=h>=0?'#b3261e':'#2f5f99';
-    s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+Math.max(2,Math.abs(h)).toFixed(1)+'" rx="3" fill="'+col+'"/>';
-    s+='<text x="'+cx+'" y="'+(h>=0?y-4:y+Math.abs(h)+11).toFixed(1)+'" font-size="10" font-weight="700" text-anchor="middle" fill="'+col+'">'+(r.avg>0?'+':'')+r.avg+'</text>';
-    s+='<text x="'+cx+'" y="'+(h>=0?mid+12:mid-5)+'" font-size="9" text-anchor="middle" fill="rgba(29,27,24,.6)">'+r.term+'기 · '+r.n+'명</text>';});
-  return s+'</svg>';}
-function lbStats(){const s=lbView().stats||{},dt=(s.dirByTerm&&s.dirByTerm.length)?s.dirByTerm:[1,2,3,4,5].map(t=>({term:t,n:0,avg:null}));
-  const exitCol=k=>/퇴임/.test(k)?'#2f5f99':/실패|출마|패배/.test(k)?'#6e675c':'#b3261e';
-  const box=(t,h)=>'<div class="card-lb"><div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:10px">'+t+'</div>'+h+'</div>';
-  return box('임기가 거듭될수록 선택은 어디로',lbDir(dt))+
-    box('닮은 지도자 분포',lbBars(s.leaders,lbCol))+box('어떻게 물러났나',lbBars(s.exits,exitCol))+box('출신 배경',lbBars(s.backgrounds,()=>'#2f4a6b'));}
-
 /* ---------- 홈 아이콘 ---------- */
 const ICO2={lock:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',stamp:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6v5l-1 3h-4L9 8z"/><path d="M4 15h16v3H4z"/><path d="M6 21h12"/><path d="M8 11h8l1 4H7z"/></svg>',book:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M8 7h8M8 11h6"/></svg>',
  syr:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3a2.4 2.4 0 0 1-3.4 0l-.6-.6a2.4 2.4 0 0 1 0-3.4L15 5"/><path d="m9 11 4 4"/><path d="m5 19-3 3"/><path d="m14 4 6 6"/></svg>'};
-
-/* ---------- 가이드북 ---------- */
-// 숫자와 목록은 게임 데이터에서 바로 읽어 와서, 규칙이 바뀌어도 가이드북이 어긋나지 않게 했다.
-// 가이드북: 실제 게임 화면 캡처 위에 번호를 얹어 설명하는 화면 투어. 글로 된 규칙은 마지막 장의 "자세한 규칙"에서 본다.
-// 캡처는 폭 375px 화면을 1.5배로 찍은 것(이미지 폭 600px 중 왼쪽 375px가 게임). 상자 좌표는 그 화면의 CSS px.
-const TOUR=[
- {img:'home',y:[90,1480],t:'시작 화면',c:[
-  [[16,106,328,138],'무대 고르기','대한민국·조선·미국 가운데 하나를 고른다. 무대마다 위기, 규칙, 인물, 화면 분위기가 다르다.'],
-  [[16,348,328,48],'명예의 전당','다른 참가자들의 커리어 점수 순위. 끝까지 마친 판만 오른다.'],
-  [[16,582,328,109],'출발 인물','누구의 출발점에서 시작할지 고른다. 처음 지표가 조금씩 달라진다. 실제 인물을 재현하지는 않는다.'],
-  [[16,1231,328,61],'결정 빈도','1년에 6번(표준) 또는 3번(속전속결) 결정한다.'],
-  [[16,1337,328,43],'난이도','연임할 때마다 한 단계씩 더 어려워진다.'],
-  [[16,1408,328,57],'취임한다','게임이 시작된다. 소리가 켜진다.']]},
- {img:'news',y:[180,665],t:'호외와 뉴스',c:[
-  [[12,194,351,391],'호외 · TV 뉴스','큰일이 생기면 신문 호외나 TV 뉴스로 먼저 알린다. 조선에서는 조보로 온다.'],
-  [[16,597,343,51],'확인','누르면 그 사건을 다루는 화면으로 넘어간다.']]},
- {img:'event',y:[10,305],t:'상황판과 지표',c:[
-  [[16,24,343,28],'지금 어디쯤인가','몇 기 정부인지, 몇 년차 몇 번째 결정인지, 나이와 난이도. 오른쪽 끝은 소리 켜고 끄기.'],
-  [[16,74,343,118],'상황판','위기가 퍼지는 모습과 실시간 숫자. 빨간 점이 많을수록 위기가 크다.'],
-  [[16,204,343,69],'지표 6칸','왼쪽 4칸은 나라(지지율·경제·방역·군사), 오른쪽 2칸은 권력의 유혹(권력·혼란). 아래 막대가 지금 값이다. 혼란은 낮을수록 좋다.'],
-  [[16,283,343,14],'운명 개입','실패나 대실패가 나왔을 때 한 번 더 굴릴 수 있는 횟수.']]},
- {img:'event',y:[345,870],t:'사건과 선택지',c:[
-  [[16,358,343,17],'지금 급한 문제','지금 가장 위태로운 곳. 이 문제를 겨냥한 선택일수록 성공하기 쉽다.'],
-  [[16,391,343,149],'사건','지금 결정해야 할 일.'],
-  [[16,544,343,110],'참모의 조언','곁에 둔 참모 두 명이 각자 자기 분야에 맞는 선택지를 권한다.'],
-  [[16,723,343,137],'선택지 카드','누르면 이 선택으로 결정한다.'],
-  [[302,738,42,36],'성공 확률','이 선택이 성공 이상으로 끝날 확률.'],
-  [[31,783,313,20],'움직이는 지표','▲▼는 방향, 두 개면 크게. 초록은 좋은 변화, 빨강은 나쁜 변화. 형광펜 밑줄은 급한 문제를 겨냥한다는 뜻.'],
-  [[59,812,285,6],'확률 막대','왼쪽부터 대성공·성공·실패·대실패의 비율.'],
-  [[31,827,313,21],'선택의 성격','안전책은 크게 틀리지 않고, 승부수는 크게 얻거나 크게 잃는다. ★는 참모가 권한 선택.']]},
- {img:'wheel',y:[380,790],t:'판정 룰렛',c:[
-  [[70,454,236,290],'판정 룰렛','칸의 크기가 곧 확률이다. 바늘이 멈춘 칸이 결과가 된다. 누르면 바로 멈춘다.']]},
- {img:'result',y:[350,745],t:'결과',c:[
-  [[16,389,343,120],'무슨 일이 일어났나','선택의 결과. 글을 누르면 바로 넘길 수 있다. 그 아래 칩은 바뀐 지표다.'],
-  [[16,564,343,41],'판정','성공했는지, 상황에 맞는 선택이었는지. 경기로 치른 단계는 경기 결과로 정해진다.'],
-  [[16,669,343,51],'계속','다음 결정으로 간다. 실패했다면 이 아래에 운명 개입 버튼이 나온다.']]},
- {img:'report',y:[100,870],t:'연간 결산',c:[
-  [[16,118,343,75],'올해의 기록','그해 얻은 업적과 불명예. 커리어 점수의 명예 점수가 된다.'],
-  [[16,205,343,225],'국정 지표','지표 막대. 흰 눈금은 작년 값이라 나아졌는지 한눈에 보인다.'],
-  [[16,442,343,183],'임기 흐름','지지율과 위기의 흐름. 점선은 출마선 35와 당선 확정선 65.'],
-  [[16,793,343,53],'다음 해로','참모 회의와 특별 국정 과제를 거쳐 다음 해가 시작된다.']]},
- {img:'council',y:[110,790],t:'연말 참모 회의',c:[
-  [[16,132,328,392],'지금의 참모','효과(초록), 해마다 치르는 대가(빨강), 머무는 조건이 적혀 있다. 해임할 수도 있다.'],
-  [[16,469,328,43],'비상소집','커리어에 단 한 번, 전설 등급 참모를 곧바로 부를 수 있다.'],
-  [[16,544,328,14],'올해 찾아온 후보','나라가 잘하는 분야일수록 높은 등급이 찾아온다. 가끔은 이름 모를 사람이 찾아오기도 한다.'],
-  [[93,740,116,34],'임명','누구 대신 앉힐지 고르면 바로 바뀐다.']]},
- {img:'board',y:[130,745],t:'특별 국정 과제',c:[
-  [[16,143,168,150],'잠긴 과제','조건이 모자란 칸은 회색이다. ✗가 붙은 조건이 모자란 것이다.'],
-  [[16,301,168,150],'고를 수 있는 과제','조건을 채운 칸은 색이 들어온다. 눌러서 고른다. 올림픽·방역 총력전 같은 과제는 양궁·수영·태권도·승부차기, 백신 슬래시를 직접 하거나 시뮬레이션으로 맡긴다. 대회와 현장의 사건은 판마다 다르다.'],
-  [[28,264,111,17],'조건','무엇이 얼마나 필요한지, 지금 값은 얼마인지.'],
-  [[16,623,343,53],'과제 시작','고른 과제가 올해의 사건으로 이어진다.'],
-  [[16,684,343,48],'넘어가기','올해는 아무 과제도 벌이지 않는다.']]},
- {img:'termend',y:[190,545],t:'임기 말',c:[
-  [[16,203,343,152],'임기 말 지지율','35 미만이면 출마할 수 없고, 35~65는 확률, 65 이상이면 당선이 확정된다.'],
-  [[16,366,343,88],'마지막 승부','헌법이 막고 있어도 커리어에 한 번 개헌을 밀어붙일 수 있다. 실패하면 쫓겨난다. 임기 중 개헌이 무너졌다면 나오지 않는다.'],
-  [[16,462,343,71],'퇴임','여기서 커리어를 마치고 결산을 본다.']]}];
-function guide(back){window.scrollTo(0,0);let k=0,on=-1;
-  const draw=()=>{const T=TOUR[k],h=T.y[1]-T.y[0];
-    R.innerHTML='<div class="gt" style="animation:fdIn .3s ease-out"><div class="gt-top"><button id="gtBack" style="font-size:13px;padding:7px 12px">← 돌아가기</button><span class="gt-pg">'+(k+1)+' / '+TOUR.length+'</span></div>'+
-     '<div class="hd" style="font-size:24px;margin:10px 0 2px">'+T.t+'</div><div class="gt-dots">'+TOUR.map((x,j)=>'<i'+(j===k?' class="c"':'')+'></i>').join('')+'</div>'+
-     '<div class="gt-shot" style="aspect-ratio:375/'+h+'"><img src="guide/'+T.img+'.png" alt="" style="top:'+(-T.y[0]/h*100)+'%;width:160%">'+
-     T.c.map((c,j)=>{const r=c[0];return '<button class="gt-box'+(on===j?' on':'')+'" data-j="'+j+'" style="left:'+(r[0]/375*100)+'%;top:'+((r[1]-T.y[0])/h*100)+'%;width:'+(r[2]/375*100)+'%;height:'+(r[3]/h*100)+'%" aria-label="'+c[1]+'"><b>'+(j+1)+'</b></button>';}).join('')+'</div>'+
-     '<ol class="gt-list">'+T.c.map((c,j)=>'<li class="'+(on===j?'on':'')+'" data-j="'+j+'"><b>'+(j+1)+'</b><div><strong>'+c[1]+'</strong><span>'+c[2]+'</span></div></li>').join('')+'</ol>'+
-     '<div class="gt-nav"><button id="gtPrev"'+(k===0?' disabled':'')+'>이전</button><button id="gtNext" class="pri">'+(k===TOUR.length-1?'다 봤어요':'다음')+'</button></div>'+
-     (k===TOUR.length-1?'<button id="gtRules" style="width:100%;margin-top:8px;font-size:13.5px">자세한 규칙(글) 보기</button>':'')+'</div>';
-    const sel=j=>{on=on===j?-1:j;draw();const el=R.querySelector('.gt-list li.on');if(el)el.scrollIntoView({block:'nearest',behavior:'smooth'});};
-    R.querySelectorAll('[data-j]').forEach(b=>b.onclick=()=>sel(+b.dataset.j));
-    document.getElementById('gtBack').onclick=()=>{SFX.back();(back||home)();};
-    document.getElementById('gtPrev').onclick=()=>{if(k>0){k--;on=-1;SFX.click();window.scrollTo(0,0);draw();}};
-    document.getElementById('gtNext').onclick=()=>{SFX.click();if(k<TOUR.length-1){k++;on=-1;window.scrollTo(0,0);draw();}else (back||home)();};
-    const gr=document.getElementById('gtRules');if(gr)gr.onclick=()=>{SFX.click();guideText(()=>guide(back));};};
-  draw();}
-function guideText(back){window.scrollTo(0,0);
-  const pct=q=>tierP(q).map(p=>Math.round(p*100)+'%');
-  const row=(a,b)=>'<tr><th>'+a+'</th><td>'+b+'</td></tr>';
-  const fitRow=(lab,q)=>{const p=pct(q);return '<tr><th>'+lab+'</th><td class="g0">'+p[0]+'</td><td>'+p[1]+'</td><td class="g2">'+p[2]+'</td><td class="g3">'+p[3]+'</td></tr>';};
-  const good=TRO.filter(t=>t.g).map(t=>t.id==='safe'?'위기 대응 모범국(코로나 때는 방역 모범국)':t.n),bad=TRO.filter(t=>!t.g).map(t=>t.n);
-  const sec=(id,title,body,open)=>'<details class="gb-s" id="gb-'+id+'"'+(open?' open':'')+'><summary>'+title+'</summary><div class="gb-b">'+body+'</div></details>';
-  const S1=sec('start','1. 이 게임은 무엇인가',
-   '<p>당신은 한 나라를 이끈다. 기본 무대 <b>대한민국</b>에서는 취임 3주 만에 팬데믹을 맞은 대통령으로 <b>5년 단임</b> 임기를 보낸다. 1년에 6번(속전속결은 3번) 결정을 내린다. DLC 무대 <b>조선</b>과 <b>미국</b>은 시대와 제도, 사건이 모두 다르다.</p>'+
-   '<p>목표는 단순히 오래 버티는 것이 아니다. <b>위기를 다루면서 권력을 어떻게 쓰는지</b>가 이 게임의 핵심이다. 권력을 모으면 빠르게 움직일 수 있지만, 견제가 약해지고 부패가 자란다.</p>'+
-   '<ol class="gb-ol"><li>닉네임을 넣고 무대(대한민국·조선·미국), 출발 인물, 결정 빈도, 난이도를 고른다. 출발 인물은 대한민국의 박정희·노무현, 조선의 태조·세종, 미국의 워싱턴·링컨처럼 실제 인물의 모습을 빌린 것이다. 그 인물의 전성기 나이에서 시작하고, 이후 이야기는 모두 가상이다.</li><li>사건마다 선택지 하나를 고르면 판정 룰렛이 돈다.</li><li>해마다 연간 결산, 4년마다 임기 평가와 대선이 있다.</li><li>퇴임하거나 물러나면 커리어 점수와 <b>닮은 지도자</b>가 나온다.</li></ol>',true);
-  const S2=sec('screen','2. 화면 읽는 법',
-   '<table class="gb-t">'+row('상단 띠','임기 진행 막대. 칸 색은 그때의 판정 결과다.')+row('지표판','지도 아래 색 상자 6개. 왼쪽 4칸은 <b>나라</b>(지지율·경제·방역·군사), 오른쪽 2칸은 <b>권력의 유혹</b>(권력·혼란)이다. 혼란은 낮을수록 좋고, 권력은 좋고 나쁨이 정해져 있지 않다.')+row('선택지 카드','카드 하나에 필요한 것이 다 있다. 오른쪽 위 큰 숫자는 성공 확률. 문장 아래는 그 선택이 움직이는 지표(▲▼는 방향, ▲▲는 크게, 초록은 좋은 변화·빨강은 나쁜 변화·남색은 권력). 그 아래 막대는 대성공·성공·실패·대실패 비율, 마지막 줄은 선택의 성격(안전책·보통·승부수)과 ★참모 추천. 참모가 왜 추천하는지는 선택지 바로 위에 모여 있다.')+row('LIVE 상황판','지금 위기의 숫자(누적 사망자, 유가, 환율 등). 숫자가 오르면 붉게, 내리면 초록으로 돌아간다.')+
-   row('위기 지수','지도 왼쪽 아래 숫자. 위기마다 이름이 다르다(확산 지수, 에너지 위기 지수 등). 높을수록 나쁘다.')+row('지금 급한 문제','사건 위에 뜨는 칩. ●가 많을수록 급하다. 이 문제를 겨냥하는 선택지의 지표에는 형광펜 밑줄이 그어지고, 그런 선택일수록 판정이 유리하다.')+
-   row('성격·확률','<b>안전책·보통·승부수</b>와 함께 <b>성공 확률</b>(괄호 안은 그중 대성공)과 <b>대실패 확률</b>을 글자로 보여 준다.')+row('참모 추천','신중론 참모는 크게 잃지 않는 선택에, 승부론 참모는 기대 이익이 가장 큰 선택에 ★를 단다.')+row('참모 한마디','사건 위의 짧은 말. 지금 가장 신경 쓰이는 지표를 알려 준다.')+row('속보 띠','지표 상태에 따라 바뀌는 뉴스. 분위기를 읽는 데 쓴다.')+'</table>');
-  const S3=sec('judge','3. 판정 규칙 (운만은 아니다)',
-   '<p>선택지마다 <b>지금 상황에 얼마나 맞는지</b>(적합도)를 계산하고, 그 값이 룰렛 칸의 크기를 정한다.</p>'+
-   '<ul class="gb-ul"><li><b>급한 문제를 겨냥했는가</b> · 같은 사건의 다른 선택지와 비교해, 지금 급한 지표를 더 많이 돕는 선택일수록 유리하다.</li>'+
-   '<li><b>방식이 여건에 맞는가</b> · 강경 조치(권력 집중)는 권력이 크고 위기가 급할 때 잘 먹히고, 갈등이 크면 반발에 막힌다. 협치(견제·분산)는 신뢰(부패가 적고 지지율이 높음)가 있을 때, 그리고 시간 여유가 있을 때 잘 먹힌다.</li>'+
-   '<li><b>여력이 있는가</b> · 경제가 바닥인데 돈 드는 선택, 지지율이 바닥인데 인기 없는 선택, 방역 여력이 바닥인데 무리한 통제는 불리하다.</li>'+
-   '<li>연속 성공의 흐름(3연속 이상)은 조금 유리하고, 어려운 난이도와 뒤 임기는 조금 불리하다.</li></ul>'+
-   '<table class="gb-t gb-c"><tr><th></th><th class="g0">대성공</th><th>성공</th><th class="g2">실패</th><th class="g3">대실패</th></tr>'+fitRow('잘 맞음',1)+fitRow('조금 맞음',.4)+fitRow('보통',0)+fitRow('조금 안 맞음',-.4)+fitRow('안 맞음',-1)+'</table>'+
-   '<p class="gb-n">위 표는 성격이 <b>보통</b>인 선택지 기준이다. 대성공은 효과가 두 배 가까이 커지고 부작용이 거의 없다. 대실패는 좋은 효과가 사라지고 부작용이 커지며 지지율도 떨어진다.</p>'+
-   '<p><b>선택지의 성격</b> · 같은 사건 안에서 효과 총량이 가장 큰 선택지는 <b style="color:#a8321f">승부수</b>, 가장 작은 선택지는 <b style="color:#2e7d55">안전책</b>이다. 적합도가 성공할지 실패할지를 정한다면, 성격은 <b>결과가 얼마나 크게 갈리는지</b>를 정한다.</p>'+
-   '<table class="gb-t gb-c"><tr><th>적합도 보통</th><th class="g0">대성공</th><th>성공</th><th class="g2">실패</th><th class="g3">대실패</th><th>효과</th></tr>'+[0,1,2].map(k=>{const P=stakeP(0,k);return '<tr><th>'+STK[k].n+'</th><td class="g0">'+Math.round(P[0]*100)+'%</td><td>'+Math.round(P[1]*100)+'%</td><td class="g2">'+Math.round(P[2]*100)+'%</td><td class="g3">'+Math.round(P[3]*100)+'%</td><td>좋은 효과 ×'+STK[k].g+'<br>나쁜 효과 ×'+STK[k].b+'</td></tr>';}).join('')+'</table>'+
-   '<p class="gb-n">승부수는 평균으로 보면 이득이 가장 크지만 결과가 크게 흔들린다. 대성공하면 지지율 +4 보너스, 대실패하면 지지율 −2·갈등 +2가 더 붙는다. 여유가 있을 때는 안전책으로 지키고, 지지율이 대선 출마선(35) 근처이거나 위기가 급할 때는 승부수로 판을 뒤집는 식으로, <b>상황에 따라 위험을 고르는 것</b>이 핵심이다.</p>'+
-   '<p><b>참모 추천</b> · 비서실장(신중론)은 크게 잃지 않는 선택을, 정무수석(승부론)은 기대 이익이 가장 큰 선택을 권한다. 두 사람의 의견이 같으면 "참모진 모두 추천"으로 합쳐진다. 참모도 사람이라 가끔 틀린다. 정답은 정해져 있지 않다.</p>'+
-   '<p><b>운명 개입</b> · 결과가 실패나 대실패면 보라색 버튼으로 한 번 더 굴릴 수 있다. 처음 2번(‘운명 개입 +1’이 붙은 출발 인물은 3번) 주어지고, 임기가 바뀔 때마다 1번씩 늘어난다. 정권이 무너지기 직전 "마지막 순간"에도 쓸 수 있다.</p>');
-  const KD=[['지지율','국민의 평가. 임기 말 대선을 결정한다. (조선: 민심)'],['경제','일자리와 성장, 그리고 복지 안전망. 0에 가까워지면 정권이 무너진다. (조선: 국고)'],['방역','지금 위기를 얼마나 막아 내고 있는가. 위기의 크기와 대응 여력(의료 등)을 합친 값이다. 위기마다 이름이 바뀐다(에너지·안보·금융·방재·구휼 등).'],['군사','나라를 지킬 힘. 해마다 조금씩 낡는다. 30 아래로 떨어지면 지지율이 깎이고 안보 위기가 찾아오며, 70을 넘으면 국방비로 경제가, 군의 발언권으로 권력이 매년 1씩 움직인다.'],
-   ['권력','대통령에게 권한이 얼마나 몰려 있는가. 행정 권한이 크고 국회·법원·언론의 견제가 약할수록 높다. 크면 일이 빨라지지만, 좋기만 한 건 아니다.'],['혼란','사회의 갈등과 권력형 부패를 하나로 본 값. 사람들이 갈라설수록, 권력과 돈이 결탁할수록 오른다. 너무 높으면 전국 저항이나 탄핵 사건이 터진다. 낮을수록 좋다.']];
-  const S4=sec('ind','4. 지표 6가지',
-   '<table class="gb-t">'+KD.map(k=>row(k[0],k[1])).join('')+'</table>'+
-   '<p class="gb-n">화면에는 6개만 보이지만 게임 속에서는 더 잘게 나눠 계산한다(경제=경제+안전망, 방역=위기 지수+의료, 권력=행정 권한+견제, 혼란=갈등+유착+투명성). 갈등과 부패는 화면에서는 혼란 하나로 보이지만 게임 속에서는 따로 움직인다. 선택이 권력과 부패를 키우는 쪽이면 <b>권력 집중</b>, 줄이는 쪽이면 <b>견제·분산</b> 선택으로 기록된다.</p>'+
-   '<p><b>정권이 무너지는 경우</b> · 방역이 완전히 무너지면(의료가 거의 0이고 위기 지수 75 이상) 의료 붕괴, 경제가 거의 0이면 경제 붕괴, 지지율이 바닥이고 갈등이 매우 높으면 거리로 쫓겨난다.</p>');
-  const S5=sec('path','5. 노선과 선택이 부른 사건',
-   '<p>고른 선택은 쌓인다. 권력 집중 선택은 <b style="color:#b3261e">강경 노선</b>, 견제·분산 선택은 <b style="color:#2f5f99">협치 노선</b>, 경제를 앞세운 선택은 <b style="color:#9a6400">경제 우선 노선</b> 점수가 된다.</p>'+
-   '<p>점수가 쌓이면(표준 3번·6번, 속전속결 2번·4번) 그 노선의 후속 사건이 1단계, 2단계로 이어진다. 강경 노선이면 감시의 일상화 다음에 비상통치 연장안이, 협치 노선이면 자율 방역의 균열 다음에 시민 방역 연대가 나오는 식이다. 노선 점수는 임기마다 새로 센다.</p>'+
-   '<p>몇몇 사건은 고른 선택과 그 결과에 따라 <b>지난 결정의 여파</b> 사건을 부른다(예: 급한 마스크 계약 → 조달 비리 의혹).</p>'+
-   '<p><b style="color:#9a6400">지표가 부른 사건</b> · 나라 상태가 어떤 선에 닿으면 나오는 사건이다. 부패가 크게 자라면 검찰 압수수색, 갈등이 높으면 총파업, 방역 여력이 바닥나면 의료진 집단 사직, 권력이 너무 커지면 헌법재판소 심판이 오는 식이다. 같은 위기라도 나라를 어떻게 이끌었는지에 따라 만나는 사건이 달라진다.</p>'+
-   '<p>위기와 상관없는 공통 고민(측근 인사, 통계, 언론 등)도 위기마다 다른 모습으로 나온다. 한 커리어에서 같은 사건은 다시 나오지 않는다.</p>');
-  const S6=sec('scen','6. 위기와 특별 이벤트',
-   '<p>위기는 임기마다 다르다. 무엇이 올지는 미리 알 수 없다. 해가 바뀔 때마다 위기가 다시 커지고, 큰일이 터지면 <b>호외</b>가 뜬다. 위기마다 사건과 참모, 뉴스, 상황판 숫자가 모두 다르다.</p>'+
-   '<p><b style="color:#8f6a12">특별 국정 과제</b> · 해마다 참모 회의가 끝나면 6칸짜리 판이 열린다. 조건을 채운 과제만 색이 들어오고, 하나를 골라 벌이거나 넘어갈 수 있다. 단계가 2~4개 이어지고, 절반 넘게 성공하면 업적, 아니면 불명예가 붙는다. 올림픽은 <b>양궁·수영·태권도·승부차기</b> 가운데 세 종목을(대회마다 다르다. 끝날 때마다 시상식이 열리고 메달이 집계된다), 방역 총력전(조선은 역병 퇴치, 미국은 대유행 총력 대응)은 <b>백신 슬래시</b>를 직접 해야 하고, 그 단계는 주사위 대신 경기 결과로 판정한다. 백신 슬래시에서 <b>S등급</b>을 받고 선언에 성공하면 엔데믹(종식)이 선포되어, 남은 임기 동안 위기가 다시 커지지 않고 해마다 경제·안전망·지지율이 오른다. <b>군사가 70 이상</b>이면 전쟁 과제(다국적 연합 작전 · 대마도 정벌 · 해외 원정)가 열린다.</p>'+
-   '<p><b style="color:#b3261e">연임 개헌</b> · 대한민국은 5년 단임이다. 하지만 <b>권력이 50 이상</b>이면 판에 연임 개헌 과제가 열린다. 개헌안을 내면 국민투표(지지율이 높을수록 통과 가능성이 크다)를 거친다. 국민투표는 판정 주사위 없이 화면에 보인 통과 가능성으로만 갈린다. <b>한 번 통과한 개헌은 계속 유지돼</b>, 이후 임기마다 다시 대선에 나갈 수 있고 임기 한도도 두 배로 늘어난다. 편법이나 재투표 강행 같은 길도 있지만 기록에 남는다. 미국은 두 번째 임기에 같은 방식으로 3선 금지 조항 폐지 이벤트가 열린다.</p>'+
-   '<p><b style="color:#b3261e">비상계엄</b> · 대한민국에서 연임 개헌을 마친 뒤 <b>권력 70 이상, 군사 70 이상</b>이면 군 수뇌부가 계엄을 건의한다. 거사 성공 가능성은 지지율과 상관없고, 권력·군사가 높을수록, <b>나라가 혼란할수록</b> 오른다(10~90%, 판정 주사위 없음). 성공하면 선거가 사라지는 <b>영구집권</b>이 시작된다. 견제·신뢰가 무너지고, 이후 지지율은 떨어질 때마다 1.5배로 떨어진다. 임기 말 지지율이 35 미만이면 봉기 위험이 생기고 15 미만이면 봉기로 쫓겨난다. 실패하면 내란으로 체포돼 그대로 끝난다(명예 −8).</p>');
-  const S7=sec('elect','7. 임기 말 규칙',
-   '<table class="gb-t">'+row('대한민국','5년 단임. 연임 개헌이 한 번 통과되면 그 뒤로는 임기마다 대선에 나갈 수 있다(최대 10기). 발의·편법·재투표 강행은 실패·대실패로 판정되면 무너지고, 국민투표는 통과 가능성으로만 갈린다. 개헌이 무너진 임기에는 임기 말 마지막 승부도 열리지 않는다. 계엄으로 영구집권하면 선거 없이 이어 간다.')+row('미국','4년 중임. 1기 말에는 선거로 재선에 도전한다. 2기 말에는 3선 금지 조항이 폐지된 경우에만 나갈 수 있다.')+row('조선','선거가 없다. 치세 5년마다 민심의 심판이 있다. 민심 35 이상이면 이어 가고, 20~35는 반정 위험이 생기며, 20 미만이면 반정이 일어난다. 최대 네 번의 치세.')+'</table>'+
-   '<table class="gb-t">'+row('35 미만','출마할 수 없다.')+row('35 ~ 65','당선 가능성이 1%에서 100%까지 비례해서 오른다.')+row('65 이상','출마하면 반드시 당선된다.')+'</table>'+
-   '<p>나갈 수 있어도 스스로 내려올 수 있다. 명예로운 퇴임은 명예 점수에 보너스가 붙는다.</p>'+
-   '<p><b>마지막 승부</b> · 헌법에 막혀 출마할 수 없어도, 지지율이 35 이상이면 커리어에 한 번 임기 말 개헌을 밀어붙일 수 있다. 성공 확률(10~80%)은 지지율과 권력이 높을수록, 책략가가 곁에 있을수록 오른다. 통과하면 권력 +8, 견제 −10, 혼란이 오르고 지지율 −6에 불명예 "임기 말 개헌 강행"이 붙은 채 출마한다. 부결되면 그대로 쫓겨난다(명예 점수 −6).</p>');
-  const S8=sec('score','8. 점수 계산',
-   '<p><b>임기 점수</b> = 지지율×0.26 + 생명 보호×0.27 + 경제×0.19 + 청렴×0.11 + 제도 변화×0.17</p>'+
-   '<table class="gb-t">'+row('등급','S 82↑ · A 70↑ · B 58↑ · C 46↑ · D 33↑ · F')+row('생명 보호','임기 중 인명 피해가 적을수록 높다(0~100)')+row('청렴','부패가 낮을수록 높다')+row('제도 변화','취임 때보다 권력 견제·정보 공개·안전망이 얼마나 늘었는가')+'</table>'+
-   '<p><b>커리어 점수</b>는 상한이 없다. 이룬 것은 더하고 무너진 것은 빼며, 모든 항목이 정수라 소수점이 없다. 10,000점은 아주 잘한 긴 커리어만 넘는다.</p>'+
-   '<table class="gb-t">'+row('임기','임기 점수×30 + 등급(S +500 · A +300 · B +150 · D −150 · F −300). 두 번째 임기부터 0.7 · 0.45 · 0.3 · 0.2배')+
-   row('선거','당선·반정 진압마다 +300, 열세(가능성 50% 미만)를 뒤집으면 +200 더')+row('판정','대성공 +40 · 성공 +5 · 실패 −15 · 대실패 −50 (판정과 업적·불명예도 그 일이 있었던 임기의 비율을 따른다)')+
-   row('업적·불명예','업적 +100 · 특별 과제 업적 +300 / 불명예 −150 · 특별 과제 불명예 −300 · 헌정 파괴 −800')+
-   row('그 밖의 것','승부수가 통하면 +120, 무리수 −100 · 엔데믹 선언 +600 · 개헌 1번 −500 · 계엄 영구집권 −2000 · 마지막 지지율 (지지율−50)×10 · 운명 개입 1번 −60')+
-   row('퇴장','스스로 퇴임 +600 · 임기 완료 +400 · 임기 한도 +300 · 출마 불가 0 · 낙선 −100 · 종신 집권 끝 −300 · 하야 −500 · 축출·반정·붕괴 −800 · 개헌 실패 −1000 · 내란 실패 −1500')+'</table>'+
-   '<p class="gb-n">업적: '+good.join(', ')+'<br>불명예: '+bad.join(', ')+'</p>');
-  const lg=LEADK.map(id=>{const L=LEAD[id],on=MEM.leaders&&MEM.leaders[id];return '<span class="gb-lead" style="border-color:'+(on?L.col:'var(--border)')+'">'+(on?'<b>'+L.n+'</b> · '+L.k:'??? · '+L.k)+'</span>';}).join('');
-  const S9=sec('lead','9. 닮은 지도자 '+LEADK.length+'명',
-   '<p>커리어가 끝나면 어떻게 물러났는지를 가장 크게 보고, 선택의 방향(권력 집중 ↔ 견제·분산)과 임기 점수, 몇 선·개헌·계엄, 청렴·통합·안전망 같은 통치 습관, 업적과 불명예, 겪은 위기를 함께 따져 '+LEADK.length+'명 중 한 명을 고른다. 비슷하게 맞는 사람이 여럿이면 그때그때 달라진다. 이미 만난 지도자는 이름이 보인다.</p><div class="gb-leads">'+lg+'</div>'+
-   '<p class="gb-n">게임 속 비유이며 실제 인물에 대한 평가가 아니다.</p>');
-  const S10=sec('setup','10. 출신 배경 · 결정 빈도 · 난이도',
-   '<table class="gb-t">'+BG.filter(b=>!b.sec).map(b=>row(b.n+(b.ageQ?'':' (전성기 '+b.age+'세)'),b.k||b.d)).join('')+'</table><p class="gb-n">조선과 미국 DLC에는 그 무대만의 출신 배경이 따로 있다. 어딘가에는 조건을 채워야 나타나는 비밀 인물도 있다.</p>'+
-   '<p class="gb-n">해가 바뀔 때 나오는 지도자의 말에는 실제로 남긴 말과, 그 인물이 했을 법한 말을 게임을 위해 새로 지은 것이 섞여 있다. 책이나 문헌에서 온 말에는 그 제목을 함께 적었다.</p>'+
-   '<table class="gb-t">'+MODE.map(m=>row(m.n,m.d)).join('')+row('난이도','쉬움 · 보통 · 어려움 · 지옥. 처음에는 보통이다. 어려울수록 위기가 빨리 자라고 피해가 커진다. 연임할 때마다 한 단계씩 더 어려워진다.')+'</table>'+
-   '<p>시작할 때 <b>시대 조건</b> 하나가 무작위로 붙는다: '+MODS.map(m=>m.n+'('+m.d+')').join(', ')+'.</p>');
-  const S11=sec('mini','11. 서브게임 · 백신 슬래시',
-   '<p>홈 화면 아래에서 할 수 있는 반사신경 게임이다. 손가락이나 마우스로 화면을 <b>빠르게 그어</b> 바이러스를 벤다.</p>'+
-   '<table class="gb-t">'+row('<span class="mg-dot" style="background:#b3261e"></span>바이러스','벤다. 놓쳐서 아래로 떨어지면 병상 하나를 잃는다.')+row('<span class="mg-dot" style="background:#4a3d7a"></span>변이','베면 작은 바이러스 둘로 갈라진다.')+row('<span class="mg-dot" style="background:#b8541e"></span>내성 바이러스','두 번 베어야 한다.')+
-   row('<span class="mg-dot" style="background:#2f5f99"></span>시민','베면 안 된다. 베면 병상을 잃는다.')+row('<span class="mg-dot" style="background:#1f7a72"></span>백신','베면 잠시 시간이 느려진다.')+row('<span class="mg-dot" style="background:#f4f4f4"></span>마스크','베면 실수 한 번을 막아 준다.')+row('<span class="mg-dot" style="background:#2e7d55"></span>치료제','베면 화면의 바이러스가 모두 사라진다.')+'</table>'+
-   '<p>한 번 그을 때 3마리 이상 베면 연속 보너스, 놓치지 않고 계속 베면 배율이 x2(10마리), x3(25마리), x4(45마리)로 오른다. 첫 10초는 연습 구간이라 놓쳐도 괜찮다. 그 뒤로는 갈수록 빨라지고 시민이 많아진다. 병상 3개를 모두 잃으면 끝난다.</p><p class="gb-n">등급: S 3,500점 · A 2,200점 · B 1,200점 · C 500점 이상</p>');
-  const S13=sec('cns','13. 참모 · 중신 · 각료',
-   '<p>사건마다 곁에서 조언하는 사람은 둘이다. 대한민국은 <b>참모</b>, 조선은 <b>중신</b>, 미국은 <b>각료</b>라고 부른다. 해마다 연간 결산이 끝나면 <b>'+(ROLE.kr.meet)+' · 도목정사 · 내각 개편</b>이 열리고, 찾아온 후보 가운데 누구를 앉힐지 직접 고른다. 역사 속 인물과 지금 살아 있는 인물이 모두 후보로 나온다.</p>'+
-   '<table class="gb-t">'+row('분야','의료·방역, 경제, 군사, 행정(지지율), 통합(갈등), 감찰(부패), 책략(권력) 일곱 가지')+
-     row('효과','자기 분야를 좋게 하는 선택을 할 때마다 그 지표가 더 오른다. 실무 +1(성공했을 때만), 능신 +1, 명신 +2, 전설 +3. 책략가는 승부수의 실패 확률도 줄여 준다.')+
-     row('대가','명신과 전설은 해마다 대가가 따른다(예: 경제 참모는 부의 쏠림으로 혼란, 군사 참모는 군의 발언권으로 권력). 책략가는 능신부터 견제를 깎는다.')+
-     row('누가 오나','그 분야 지표가 높을수록 높은 등급이 찾아온다(60 이상이면 명신까지). 통합과 감찰은 혼란이, 책략은 권력이 높을수록 거물이 온다. 가장 약한 분야에서 <b>구원 투수</b>가 오는 해도 있다.')+
-     row('전설','나라를 정말 잘 다스린 해에만 드물게 찾아온다. 그해 국정 점수가 55 아래면 오지 않고, 높을수록 자주 온다. 그 분야도 충분히 강해야 한다. <b>어떤 전설은 모집에 나오지 않는다.</b> 역사 속 그 인물다운 사건을 거쳐야만 만날 수 있고, 합류할 때까지 누구인지 알 수 없다.')+
-     row('떠나는 사람','명신은 자기 분야 55를 기대한다(통합·감찰은 혼란 45 이하, 책략은 권력 50 이상). 2년 연속 못 채우면 떠난다. 전설은 1년 뒤 연임 심사(자기 분야 70 이상 · 혼란 30 이하 · 권력 65 이상)를 통과해야 한 해 더 머물고, 2년이 지나면 반드시 떠난다. 한 번 떠난 사람은 돌아오지 않는다. 명신 이상을 해임하면 지지율이 1 깎인다.')+'</table>'+
-   '<p class="gb-n">후보 카드의 따옴표 말 중 <b>어록</b> 표시가 있는 것은 그 인물이 실제로 남긴 말(또는 그렇게 전해지는 말)이고, 표시가 없는 것은 게임 속 대사다.</p>');
-  const S12=sec('rec','12. 무엇이 기록되나',
-   '<p>게임 사이트에서 플레이하면 연구를 위해 <b>학교, 닉네임, 선택, 판정, 지표, 임기 결과, 점수, 플레이 시간</b>이 구글 시트에 기록된다. <b>이름과 전화번호</b>(적은 경우만)는 상품 연락용으로 탐구 진행자만 보는 탭에 따로 보관하고, 분석 기록에는 넣지 않는다. 명예의 전당에는 닉네임·학교·점수만 보인다. 아이패드용 아티팩트에서 한 플레이는 기록되지 않는다.</p>');
-  R.innerHTML='<div class="gb" style="animation:fdIn .3s ease-out">'+
-   '<button id="gbBack" style="font-size:13px;padding:7px 12px;margin-bottom:12px">← 돌아가기</button>'+
-   '<div style="font-size:27px;font-family:var(--font-voice);font-weight:800;margin:2px 0 6px">가이드북</div>'+
-   '<div style="font-size:13px;color:var(--text-secondary);line-height:1.7;margin-bottom:14px">처음이라면 1~3번만 읽어도 충분하다. 나머지는 궁금할 때 펼쳐 보자.</div>'+
-   '<div class="gb-toc">'+[['start','시작'],['screen','화면'],['judge','판정'],['ind','지표'],['cns','참모'],['path','노선'],['scen','특별 이벤트'],['elect','임기 말'],['score','점수'],['lead','지도자']].map(x=>'<button data-g="'+x[0]+'">'+x[1]+'</button>').join('')+'</div>'+
-   S1+S2+S3+S4+S13+S5+S6+S7+S8+S9+S10+S12+
-   '<button id="gbBack2" style="width:100%;margin-top:14px;padding:13px">돌아가기</button></div>';
-  const go=()=>{SFX.click();(back||home)();};
-  document.getElementById('gbBack').onclick=go;document.getElementById('gbBack2').onclick=go;
-  document.querySelectorAll('.gb-toc button').forEach(b=>b.onclick=()=>{const d=document.getElementById('gb-'+b.dataset.g);if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'});}});}
-
-/* ---------- 서브게임: 백신 슬래시 ---------- */
-// 화면을 빠르게 그어 바이러스를 벤다. 시민은 피하고, 바이러스를 놓치면 병상을 잃는다. 시간이 갈수록 빨라진다.
-const MGT={v:{r:24,c:'#e5484d',sc:10},s:{r:15,c:'#ff6b6b',sc:5},x:{r:26,c:'#9b6bff',sc:15},a:{r:27,c:'#f08c2e',sc:25,hp:2},
-  civ:{r:23,c:'#5aa9ff'},vac:{r:19,c:'#4fe0d0'},mask:{r:20,c:'#f4f4f4'},cure:{r:20,c:'#3fc38f'}};
-const MGW=[[0,'1차 유행','첫 10초는 연습 · 놓쳐도 병상이 줄지 않는다'],[10,'연습 끝','이제부터 놓치면 병상을 잃는다'],[18,'2차 유행','변이 등장 · 베면 둘로 갈라진다'],[38,'3차 유행','내성 바이러스 · 두 번 베어라'],[62,'대유행','시민이 늘어난다 · 조심해서 베어라'],[90,'끝없는 파도','버틸 수 있을 때까지']];
-let MG=null;
-function mgStop(){if(!MG)return;MG.run=false;cancelAnimationFrame(MG.raf);document.removeEventListener('visibilitychange',MG.vis);window.removeEventListener('resize',MG.rs);MG=null;}
-function mini(back,mission){mgStop();window.scrollTo(0,0);
-  const best=MEM.mgBest||0;
-  R.innerHTML='<div class="mg" style="animation:fdIn .3s ease-out">'+
-   '<div class="mg-top"><button id="mgBack" style="font-size:13px;padding:7px 12px;'+(mission?'visibility:hidden':'')+'">← 돌아가기</button><div class="mg-tt">'+(mission?'현장 지휘':'백신 슬래시')+'</div><button id="mgPause" class="mg-pz" aria-label="일시정지">II</button></div>'+
-   '<div id="mgBox" class="mg-box"><canvas id="mgC"></canvas><div id="mgOv" class="mg-ov"></div></div>'+
-   '<div class="mg-foot">최고 기록 <b id="mgBest">'+best+'</b>점 · 그은 선이 빠를수록 잘 베어진다</div></div>';
-  const box=document.getElementById('mgBox'),cv=document.getElementById('mgC'),ov=document.getElementById('mgOv'),ctx=cv.getContext('2d');
-  
-  const FF=getComputedStyle(document.body).fontFamily;
-  const W=box.clientWidth,H=Math.round(Math.min(Math.max(440,window.innerHeight*.66),640));box.style.height=H+'px';
-  const D=Math.min(2,window.devicePixelRatio||1);cv.width=W*D;cv.height=H*D;cv.style.width=W+'px';cv.style.height=H+'px';ctx.setTransform(D,0,0,D,0,0);
-  MG={run:false,raf:0,W:W,H:H,back:back||home,mission:mission||null,state:'intro'};
-  const G=MG;
-  G.vis=()=>{if(document.hidden&&G.state==='play')pause();};document.addEventListener('visibilitychange',G.vis);
-  // 화면을 돌리거나 창 크기가 바뀌면 판 크기를 다시 맞춘다(게임 중이면 잠시 멈춘다)
-  G.rs=()=>{const nw=box.clientWidth;if(!nw||Math.abs(nw-G.W)<30)return;if(G.state==='play')pause();
-    const sx=nw/G.W;G.W=nw;cv.width=nw*D;cv.style.width=nw+'px';ctx.setTransform(D,0,0,D,0,0);G.ents.forEach(e=>{e.x*=sx;});draw();};
-  window.addEventListener('resize',G.rs);
-  document.getElementById('mgBack').onclick=()=>{SFX.back();const b=G.back;mgStop();b();};
-  document.getElementById('mgPause').onclick=()=>{SFX.pause();if(G.state==='play')pause();else if(G.state==='pause')resume();};
-  // ----- 소리 -----
-  const snd={slice:k=>tone(700+Math.min(k,8)*90,'triangle',.07,.11,0,1500+Math.min(k,8)*120),civ:()=>{tone(140,'sawtooth',.3,.16);tone(110,'sawtooth',.35,.14,.05);},
-    miss:()=>{noise(.25,.18,0,500);tone(90,'sine',.25,.22);},pow:()=>[660,880,1100,1320].forEach((f,k)=>tone(f,'triangle',.18,.1,k*.05)),
-    combo:n=>[523,659,784,1047].slice(0,Math.min(4,n-1)).forEach((f,k)=>tone(f,'triangle',.22,.12,k*.06)),wave:()=>{tone(392,'square',.12,.07);tone(523,'square',.18,.07,.12);},over:()=>[392,330,262,196].forEach((f,k)=>tone(f,'triangle',.35,.15,k*.14))};
-  // ----- 상태 -----
-  function reset(){Object.assign(G,{t:0,last:0,score:0,lives:3,shield:0,slow:0,mult:1,streak:0,maxStreak:0,bestCombo:0,sliced:0,spawned:0,missed:0,civHit:0,civSeen:0,
-    ents:[],parts:[],texts:[],trail:[],next:.6,wave:-1,banner:null,shake:0,flash:0,flashC:'#f0605f',stroke:null,count:3});}
-  // ----- 생성 -----
-  function lvl(){return Math.min(1.45,G.t/90);}
-  function launch(type,x0){const L=lvl(),T=MGT[type],h=G.H*(.48+Math.random()*.32),g=G.H*(1.05+.55*L);
-    const x=x0!=null?x0:G.W*(.14+Math.random()*.72),tx=G.W*(.25+Math.random()*.5),tUp=Math.sqrt(2*h/g);
-    const e={type:type,x:x,y:G.H+T.r+4,vx:(tx-x)/(tUp*2.1)*(0.7+Math.random()*.6),vy:-Math.sqrt(2*g*h),g:g,r:T.r,rot:Math.random()*6.3,vr:(Math.random()-.5)*3,hp:T.hp||1,inv:0,dead:false,hitC:0};
-    G.ents.push(e);if(type==='v'||type==='x'||type==='a')G.spawned++;if(type==='civ')G.civSeen++;}
-  function spawnGroup(){const L=lvl(),n=G.t<12?1:1+Math.floor(Math.random()*(1.3+L*2.6)),pw=G.t>16?Math.random():1;
-    if(pw<.035)launch('vac');else if(pw<.065)launch('mask');else if(pw<.08)launch('cure');
-    for(let k=0;k<n;k++){const r=Math.random(),pc=G.t<8?0:.07+.2*Math.min(1,L),px=G.t>18?.08+.16*Math.min(1,L):0,pa=G.t>38?.06+.12*Math.min(1,L):0;
-      const ty=r<pc?'civ':r<pc+px?'x':r<pc+px+pa?'a':'v';setTimeout(()=>{if(G.run&&G.state==='play')launch(ty);},k*110);}
-    G.next=(G.t<12?1.35:Math.max(.42,1.2-.62*Math.min(1,L)-.1*Math.max(0,L-1)))*(0.75+Math.random()*.5);}
-  // ----- 효과 -----
-  function burst(x,y,c,n,sp){for(let k=0;k<n;k++){const a=Math.random()*6.3,v=(sp||1)*(60+Math.random()*220);G.parts.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-60,r:2+Math.random()*3.5,c:c,life:.5+Math.random()*.4,t:0});}}
-  function halves(e,ang){const T=MGT[e.type];for(const sd of [-1,1])G.parts.push({half:1,x:e.x,y:e.y,vx:e.vx*.4+Math.cos(ang+Math.PI/2)*sd*120,vy:e.vy*.3+Math.sin(ang+Math.PI/2)*sd*120-80,r:e.r,c:T.c,ang:ang,sd:sd,rot:0,vr:sd*4,life:.9,t:0,type:e.type});}
-  function txt(x,y,s,c,big){G.texts.push({x:x,y:y,s:s,c:c||'#fff',t:0,life:big?1.3:.8,big:big});}
-  function loseLife(why,x,y){if(G.shield>0){G.shield--;txt(x,y,'마스크가 막았다','#f4f4f4');snd.pow();return;}
-    G.lives--;G.streak=0;G.mult=1;G.shake=.35;G.flash=.5;G.flashC='#f0605f';txt(x,Math.min(y,G.H-40),why,'#ff8a8a',true);vib([60,40,60]);if(G.lives<=0)over();}
-  function hit(e,ang){const T=MGT[e.type];
-    if(e.type==='civ'){e.dead=true;G.civHit++;snd.civ();burst(e.x,e.y,'#5aa9ff',10,.7);G.flashC='#5aa9ff';loseLife('시민을 베었다!',e.x,e.y);return 0;}
-    if(e.type==='vac'){e.dead=true;G.slow=3.5;snd.pow();burst(e.x,e.y,T.c,18);txt(e.x,e.y,'백신 · 시간이 느려진다',T.c,true);return 0;}
-    if(e.type==='mask'){e.dead=true;G.shield=Math.min(2,G.shield+1);snd.pow();burst(e.x,e.y,T.c,14);txt(e.x,e.y,'마스크 · 실수 1번 막음',T.c,true);return 0;}
-    if(e.type==='cure'){e.dead=true;snd.pow();G.flash=.6;G.flashC='#3fc38f';burst(e.x,e.y,T.c,24,1.3);let n=0;
-      G.ents.forEach(o=>{if(!o.dead&&(o.type==='v'||o.type==='s'||o.type==='x'||o.type==='a')){o.dead=true;n++;G.sliced++;G.score+=MGT[o.type].sc*G.mult;burst(o.x,o.y,MGT[o.type].c,10);}});
-      txt(e.x,e.y,'치료제 · '+n+'마리 소멸',T.c,true);return n;}
-    if(e.type==='a'&&e.inv>0)return 0;
-    if(e.type==='a'&&e.hp>1){e.hp--;e.inv=.18;e.hitC=.25;burst(e.x,e.y,'#c9ced6',8,.6);tone(320,'square',.06,.09);txt(e.x,e.y-e.r,'한 번 더!','#ffcf99');return 0;}
-    e.dead=true;G.sliced++;G.streak++;G.maxStreak=Math.max(G.maxStreak,G.streak);
-    G.mult=G.streak>=45?4:G.streak>=25?3:G.streak>=10?2:1;
-    const pts=T.sc*G.mult;G.score+=pts;halves(e,ang);burst(e.x,e.y,T.c,9);txt(e.x,e.y-e.r,'+'+pts,G.mult>1?'#ffd166':'#fff');
-    if(e.type==='x'){for(const sd of [-1,1]){const r=MGT.s.r;G.spawned++;G.ents.push({type:'s',x:e.x+sd*8,y:e.y,vx:sd*(110+Math.random()*90)+e.vx*.3,vy:Math.min(e.vy,0)-260-Math.random()*120,g:e.g*1.1,r:r,rot:0,vr:sd*5,hp:1,inv:.12,dead:false,hitC:0});}}
-    return 1;}
-  // ----- 입력 -----
-  const pos=ev=>{const r=cv.getBoundingClientRect();return {x:ev.clientX-r.left,y:ev.clientY-r.top,t:performance.now()};};
-  function segHit(p0,p1){const dx=p1.x-p0.x,dy=p1.y-p0.y,len=Math.hypot(dx,dy),dt=Math.max(1,p1.t-p0.t);if(len<4||len/dt<.32)return;if(G.stroke&&!G.stroke.sw){G.stroke.sw=1;SFX.swing();}
-    const ang=Math.atan2(dy,dx);let n=0;
-    for(const e of G.ents){if(e.dead||e.inv>0&&e.type!=='a')continue;const t=Math.max(0,Math.min(1,((e.x-p0.x)*dx+(e.y-p0.y)*dy)/(len*len))),cx=p0.x+dx*t,cy=p0.y+dy*t;
-      if(Math.hypot(e.x-cx,e.y-cy)<=e.r+4){const k=hit(e,ang);if(k>0){n+=k;G.stroke.hits+=k;snd.slice(G.stroke.hits);}}}}
-  cv.addEventListener('pointerdown',ev=>{if(G.state!=='play')return;ev.preventDefault();try{cv.setPointerCapture(ev.pointerId);}catch(e){}const p=pos(ev);G.stroke={hits:0,last:p};G.trail=[p];});
-  cv.addEventListener('pointermove',ev=>{if(G.state!=='play'||!G.stroke)return;ev.preventDefault();const p=pos(ev);segHit(G.stroke.last,p);G.stroke.last=p;G.trail.push(p);if(G.trail.length>24)G.trail.shift();});
-  const up=()=>{if(!G.stroke)return;const n=G.stroke.hits;if(n>=3){const b=n*n*5;G.score+=b;G.bestCombo=Math.max(G.bestCombo,n);txt(G.W/2,G.H*.42,n+'연속 베기! +'+b,'#ffd166',true);snd.combo(n);}else G.bestCombo=Math.max(G.bestCombo,n);G.stroke=null;};
-  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);cv.addEventListener('pointerleave',up);
-  // ----- 화면 전환 -----
-  function overlay(h){ov.innerHTML=h;ov.style.display=h?'flex':'none';}
-  function introOv(){G.state='intro';overlay('<div class="mg-card"><div class="mg-k">서브게임</div><div class="mg-h">백신 슬래시</div>'+
-    '<div class="mg-rules"><div><span class="mg-dot" style="background:#e5484d"></span><b>바이러스</b>를 그어서 벤다. 놓치면 병상 −1</div><div><span class="mg-dot" style="background:#5aa9ff"></span><b>시민</b>은 베면 안 된다. 베면 병상 −1</div>'+
-    '<div><span class="mg-dot" style="background:#9b6bff"></span>변이는 둘로 갈라지고, <span class="mg-dot" style="background:#f08c2e"></span>내성 바이러스는 두 번 벤다</div><div><span class="mg-dot" style="background:#4fe0d0"></span>백신 <span class="mg-dot" style="background:#f4f4f4"></span>마스크 <span class="mg-dot" style="background:#3fc38f"></span>치료제는 베면 도움이 된다</div>'+
-    '<div>한 번에 3마리 이상 베면 보너스, 놓치지 않고 이어 베면 배율 x2·x3·x4</div></div>'+
-    '<button id="mgGo" class="mg-btn">시작</button><div class="mg-sub">첫 10초는 연습 구간 · 병상 3개를 모두 잃으면 끝난다 · 손가락이나 마우스로 빠르게 긋기</div></div>');
-    document.getElementById('mgGo').onclick=()=>{aInit();SFX.coin();start();};}
-  function start(){cancelAnimationFrame(G.raf);reset();overlay('');G.state='count';G.cd=2.4;[3,2,1].forEach((n,k)=>SFX.beep(n,k*.8));SFX.beep(0,2.4);G.run=true;G.last=performance.now();G.raf=requestAnimationFrame(loop);}
-  function pause(){if(G.state!=='play')return;G.state='pause';overlay('<div class="mg-card"><div class="mg-h">일시정지</div><button id="mgRes" class="mg-btn">계속하기</button><button id="mgQuit" class="mg-btn2">그만하기</button></div>');
-    document.getElementById('mgRes').onclick=()=>{SFX.click();resume();};document.getElementById('mgQuit').onclick=()=>{SFX.click();over();};}
-  function resume(){overlay('');G.state='play';G.last=performance.now();}
-  function over(){if(G.state==='over')return;G.state='over';snd.over();
-    const acc=G.spawned?Math.min(100,Math.round(G.sliced/G.spawned*100)):0,sc=Math.round(G.score),nb=sc>(MEM.mgBest||0);
-    if(nb){MEM.mgBest=sc;msave();}MEM.mgPlays=(MEM.mgPlays||0)+1;msave();
-    const gr=sc>=3500?'S':sc>=2200?'A':sc>=1200?'B':sc>=500?'C':'D';
-    const st=(a,b)=>'<div class="mg-st"><span>'+a+'</span><b>'+b+'</b></div>';
-    setTimeout(()=>{if(!MG||G.state!=='over')return;overlay('<div class="mg-card"><div class="mg-k">'+(nb?'최고 기록!':'게임 끝')+'</div><div class="mg-gr" style="color:'+GCOL[gr]+'">'+gr+'</div>'+
-      '<div class="mg-score">'+sc.toLocaleString('ko-KR')+'<span>점</span></div>'+
-      '<div class="mg-stats">'+st('버틴 시간',Math.floor(G.t)+'초')+st('벤 바이러스',G.sliced+'마리')+st('정확도',acc+'%')+st('최대 연속',G.maxStreak+'마리')+st('한 번에 최다',G.bestCombo+'마리')+st('벤 시민',G.civHit+'명')+'</div>'+
-      (G.mission?'<button id="mgRep" class="mg-btn">결과 보고</button>':'<button id="mgAgain" class="mg-btn">다시 하기</button><button id="mgOut" class="mg-btn2">돌아가기</button>')+'</div>');
-      if(G.mission){document.getElementById('mgRep').onclick=()=>{SFX.click();const m=G.mission;mgStop();m(gr,sc);};return;}
-      const be=document.getElementById('mgBest');if(be)be.textContent=MEM.mgBest||0;
-      document.getElementById('mgAgain').onclick=()=>{SFX.coin();start();};document.getElementById('mgOut').onclick=()=>{SFX.click();const b=G.back;mgStop();b();};},650);}
-  // ----- 갱신 -----
-  function update(dt){const L=lvl();
-    if(G.state==='count'){G.cd-=dt;if(G.cd<=0){G.state='play';}return;}
-    if(G.state!=='play')return;
-    G.t+=dt;const sdt=dt*(G.slow>0?.42:1);if(G.slow>0)G.slow-=dt;
-    // 파도 안내
-    for(let k=MGW.length-1;k>=0;k--){if(G.t>=MGW[k][0]){if(G.wave<k){G.wave=k;G.banner={a:MGW[k][1],b:MGW[k][2],t:0};snd.wave();}break;}}
-    G.next-=sdt;if(G.next<=0)spawnGroup();
-    for(const e of G.ents){if(e.dead)continue;e.vy+=e.g*sdt;e.x+=e.vx*sdt;e.y+=e.vy*sdt;e.rot+=e.vr*sdt;if(e.inv>0)e.inv-=dt;if(e.hitC>0)e.hitC-=dt;
-      if(e.x<e.r&&e.vx<0||e.x>G.W-e.r&&e.vx>0)e.vx*=-.8;
-      if(e.vy>0&&e.y>G.H+e.r+6){e.dead=true;
-        if(e.type==='v'||e.type==='x'||e.type==='a'){G.missed++;snd.miss();
-          if(G.t<10){G.streak=0;G.mult=1;txt(e.x,G.H-30,'놓쳤다! (연습 구간이라 병상은 그대로)','#ffb3b2');}else loseLife('감염 확산!',e.x,G.H-30);}
-        else if(e.type==='s'){G.streak=0;G.mult=1;}}}
-    G.ents=G.ents.filter(e=>!e.dead);
-    for(const p of G.parts){p.t+=dt;p.vy+=600*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.half)p.rot+=p.vr*dt;}
-    G.parts=G.parts.filter(p=>p.t<p.life);
-    for(const x of G.texts){x.t+=dt;x.y-=36*dt;}G.texts=G.texts.filter(x=>x.t<x.life);
-    if(G.banner){G.banner.t+=dt;if(G.banner.t>2.2)G.banner=null;}
-    const now=performance.now();G.trail=G.trail.filter(p=>now-p.t<140);
-    if(G.shake>0)G.shake-=dt;if(G.flash>0)G.flash-=dt;}
-  // ----- 그리기 -----
-  function virus(e,c){const T=MGT[e.type];ctx.save();ctx.translate(e.x,e.y);ctx.rotate(e.rot);const r=e.r;
-    const sp=e.type==='s'?8:11;ctx.strokeStyle=c;ctx.lineWidth=2.4;ctx.fillStyle=c;
-    for(let k=0;k<sp;k++){const a=k/sp*Math.PI*2;ctx.beginPath();ctx.moveTo(Math.cos(a)*r*.8,Math.sin(a)*r*.8);ctx.lineTo(Math.cos(a)*r*1.28,Math.sin(a)*r*1.28);ctx.stroke();
-      ctx.beginPath();ctx.arc(Math.cos(a)*r*1.32,Math.sin(a)*r*1.32,r*.13,0,7);ctx.fill();}
-    const g=ctx.createRadialGradient(-r*.3,-r*.35,r*.15,0,0,r);g.addColorStop(0,'#fff6');g.addColorStop(.25,c);g.addColorStop(1,shade(c,-.45));
-    ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,r*.92,0,7);ctx.fill();
-    ctx.fillStyle=shade(c,-.55);for(const [a,b,s] of [[-.3,.2,.18],[.35,-.25,.14],[.1,.45,.12]]){ctx.beginPath();ctx.arc(a*r,b*r,s*r,0,7);ctx.fill();}
-    if(e.type==='x'){ctx.strokeStyle='#e2d4ff';ctx.lineWidth=1.6;ctx.setLineDash([4,4]);ctx.beginPath();ctx.arc(0,0,r*1.05,0,7);ctx.stroke();ctx.setLineDash([]);}
-    if(e.type==='a'){ctx.strokeStyle=e.hp>1?'#c9ced6':'#7c838c';ctx.lineWidth=5;for(let k=0;k<6;k++){const a=k/6*Math.PI*2+.15;ctx.beginPath();ctx.arc(0,0,r*1.08,a,a+.78);ctx.stroke();}
-      if(e.hp<=1){ctx.strokeStyle='#ffe0c2';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-r*.5,-r*.2);ctx.lineTo(0,r*.1);ctx.lineTo(r*.4,-r*.35);ctx.stroke();}}
-    ctx.restore();}
-  function shade(hex,f){const n=parseInt(hex.slice(1),16),r=n>>16,g=n>>8&255,b=n&255,m=v=>Math.max(0,Math.min(255,Math.round(f<0?v*(1+f):v+(255-v)*f)));return 'rgb('+m(r)+','+m(g)+','+m(b)+')';}
-  function civ(e){ctx.save();ctx.translate(e.x,e.y);const r=e.r;const g=ctx.createRadialGradient(-r*.3,-r*.4,r*.1,0,0,r);g.addColorStop(0,'#cfe6ff');g.addColorStop(1,'#2f6fbf');
-    ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,r,0,7);ctx.fill();ctx.strokeStyle='#e8f3ff';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle='#0b2140';ctx.beginPath();ctx.arc(-r*.32,-r*.15,r*.11,0,7);ctx.arc(r*.32,-r*.15,r*.11,0,7);ctx.fill();
-    ctx.fillStyle='#ffffffdd';ctx.beginPath();ctx.roundRect?ctx.roundRect(-r*.55,r*.08,r*1.1,r*.42,r*.15):ctx.rect(-r*.55,r*.08,r*1.1,r*.42);ctx.fill();
-    ctx.restore();}
-  function item(e){ctx.save();ctx.translate(e.x,e.y);ctx.rotate(e.rot*.3);const r=e.r,c=MGT[e.type].c;ctx.shadowColor=c;ctx.shadowBlur=14;
-    ctx.fillStyle='#0d1a20';ctx.strokeStyle=c;ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(0,0,r,0,7);ctx.fill();ctx.stroke();ctx.shadowBlur=0;
-    ctx.fillStyle=c;ctx.strokeStyle=c;
-    if(e.type==='vac'){ctx.fillRect(-r*.22,-r*.6,r*.44,r*1.1);ctx.fillStyle='#0d1a20';ctx.fillRect(-r*.14,-r*.5,r*.28,r*.35);ctx.fillStyle=c;ctx.fillRect(-r*.32,-r*.72,r*.64,r*.16);}
-    else if(e.type==='mask'){ctx.beginPath();ctx.moveTo(-r*.6,-r*.25);ctx.quadraticCurveTo(0,-r*.45,r*.6,-r*.25);ctx.lineTo(r*.5,r*.25);ctx.quadraticCurveTo(0,r*.5,-r*.5,r*.25);ctx.closePath();ctx.fill();}
-    else{ctx.fillRect(-r*.15,-r*.55,r*.3,r*1.1);ctx.fillRect(-r*.55,-r*.15,r*1.1,r*.3);}
-    ctx.restore();}
-  function draw(){const W=G.W,H=G.H;ctx.save();
-    if(G.shake>0){const m=G.shake*16;ctx.translate((Math.random()-.5)*m,(Math.random()-.5)*m);}
-    const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#0c1219');bg.addColorStop(1,'#111a24');ctx.fillStyle=bg;ctx.fillRect(-20,-20,W+40,H+40);
-    ctx.strokeStyle='rgba(120,170,220,.06)';ctx.lineWidth=1;for(let x=0;x<W;x+=32){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}for(let y=0;y<H;y+=32){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-    if(G.slow>0){ctx.fillStyle='rgba(79,224,208,'+(.06+.04*Math.sin(G.t*8))+')';ctx.fillRect(0,0,W,H);}
-    for(const e of G.ents){if(e.type==='civ')civ(e);else if(MGT[e.type].sc)virus(e,e.hitC>0?'#ffffff':MGT[e.type].c);else item(e);}
-    for(const p of G.parts){const a=1-p.t/p.life;ctx.globalAlpha=Math.max(0,a);
-      if(p.half){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.ang+p.rot);ctx.beginPath();ctx.arc(0,0,p.r*.92,p.sd>0?0:Math.PI,p.sd>0?Math.PI:Math.PI*2);ctx.closePath();ctx.fillStyle=p.c;ctx.fill();ctx.strokeStyle='#ffffff88';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-p.r,0);ctx.lineTo(p.r,0);ctx.stroke();ctx.restore();}
-      else{ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fill();}}
-    ctx.globalAlpha=1;
-    // 그은 자국
-    const tr=G.trail;if(tr.length>1){const now=performance.now();ctx.lineCap='round';ctx.lineJoin='round';
-      for(let k=1;k<tr.length;k++){const a=1-(now-tr[k].t)/140;if(a<=0)continue;ctx.strokeStyle='rgba(180,240,255,'+(a*.9)+')';ctx.lineWidth=2+a*7;ctx.shadowColor='#7fe8ff';ctx.shadowBlur=12;
-        ctx.beginPath();ctx.moveTo(tr[k-1].x,tr[k-1].y);ctx.lineTo(tr[k].x,tr[k].y);ctx.stroke();}ctx.shadowBlur=0;}
-    for(const x of G.texts){const a=1-x.t/x.life;ctx.globalAlpha=Math.max(0,a);ctx.fillStyle=x.c;ctx.font='700 '+(x.big?19:14)+'px '+FF;ctx.textAlign='center';ctx.fillText(x.s,x.x,x.y);}
-    ctx.globalAlpha=1;
-    if(G.flash>0){ctx.fillStyle=G.flashC;ctx.globalAlpha=G.flash*.35;ctx.fillRect(0,0,W,H);ctx.globalAlpha=1;}
-    ctx.restore();
-    // 위쪽 정보
-    const ff=FF;ctx.textAlign='left';ctx.fillStyle='#fff';ctx.font='800 26px '+ff;ctx.fillText(Math.round(G.score||0).toLocaleString('ko-KR'),14,36);
-    if(G.mult>1){ctx.fillStyle='#ffd166';ctx.font='800 15px '+ff;ctx.fillText('x'+G.mult+' 배율',14,56);}
-    ctx.textAlign='right';for(let k=0;k<3;k++){const on=k<G.lives;ctx.fillStyle=on?'#f0605f':'rgba(255,255,255,.15)';const x=W-16-k*26,y=22;
-      ctx.beginPath();ctx.roundRect?ctx.roundRect(x-18,y-8,18,12,3):ctx.rect(x-18,y-8,18,12);ctx.fill();ctx.fillRect(x-20,y+4,3,6);ctx.fillRect(x-1,y+4,3,6);}
-    ctx.font='600 11px '+ff;ctx.fillStyle='rgba(255,255,255,.55)';ctx.fillText('병상',W-16,48);
-    if(G.shield>0){ctx.fillStyle='#f4f4f4';ctx.fillText('마스크 '+G.shield,W-16,64);}
-    if(G.slow>0){ctx.fillStyle='#4fe0d0';ctx.fillText('슬로모션 '+G.slow.toFixed(1)+'초',W-16,G.shield>0?80:64);}
-    if(G.banner&&G.state==='play'){const b=G.banner,a=b.t<.3?b.t/.3:b.t>1.8?Math.max(0,(2.2-b.t)/.4):1;ctx.globalAlpha=a;ctx.textAlign='center';
-      ctx.fillStyle='rgba(10,14,20,.6)';ctx.fillRect(0,H*.3-34,W,62);ctx.fillStyle='#ffd166';ctx.font='800 24px '+ff;ctx.fillText(b.a,W/2,H*.3);ctx.fillStyle='#e8ecf0';ctx.font='500 13px '+ff;ctx.fillText(b.b,W/2,H*.3+20);ctx.globalAlpha=1;}
-    if(G.state==='count'){ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='800 64px '+ff;const n=Math.ceil(G.cd/0.8);ctx.globalAlpha=.9;ctx.fillText(n>0?n:'',W/2,H/2);ctx.globalAlpha=1;}}
-  function loop(now){if(!MG||!G.run)return;const dt=Math.min(.05,(now-G.last)/1000);G.last=now;update(dt);draw();G.raf=requestAnimationFrame(loop);}
-  reset();draw();introOv();}
-
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 구글 시트에는 이 이름의 탭에 따로 쌓인다.

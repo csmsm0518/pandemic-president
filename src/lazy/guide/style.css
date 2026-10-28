@@ -1,0 +1,42 @@
+/* 이 조각을 불러올 때 함께 붙는 디자인. 원래 src/css 에 있던 규칙을 순서대로 옮겼다 */
+.gb-toc{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.gb-toc button{font-size:12px;padding:6px 10px;border-radius:999px}
+.gb-s{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;scroll-margin-top:12px}
+.gb-s summary{cursor:pointer;list-style:none;padding:13px 15px;font-size:15px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.gb-s summary::-webkit-details-marker{display:none}
+.gb-s summary::after{content:"+";color:var(--text-muted);font-weight:400;font-size:18px}
+.gb-s[open] summary::after{content:"−"}
+.gb-b{padding:0 15px 14px;font-size:13.5px;line-height:1.8;color:var(--text-secondary)}
+.gb-b p{margin:0 0 10px}
+.gb-b b{color:var(--text-primary)}
+.gb-ol,.gb-ul{margin:0 0 10px;padding-left:20px}
+.gb-ol li,.gb-ul li{margin-bottom:5px}
+.gb-t{width:100%;border-collapse:collapse;margin:4px 0 10px;font-size:12.5px}
+.gb-t th,.gb-t td{border-bottom:1px solid var(--border);padding:7px 6px;text-align:left;vertical-align:top;line-height:1.6}
+.gb-t th{color:var(--text-primary);font-weight:600;white-space:nowrap;padding-right:10px}
+.gb-c td,.gb-c th{text-align:center;font-variant-numeric:tabular-nums}
+.gb-c tr td:first-child,.gb-c tr th:first-child{text-align:left}
+.gb-c .g0{color:#2e7d55}
+.gb-c .g2{color:#9a6400}
+.gb-c .g3{color:#b3261e}
+.gb-n{font-size:12px;color:var(--text-muted)}
+.gb-leads{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.gb-lead{font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid;background:var(--surface-1);color:var(--text-secondary)}
+.gt-top{display:flex;justify-content:space-between;align-items:center}
+.gt-pg{font-size:13px;font-weight:700;color:var(--text-muted)}
+.gt-dots{display:flex;gap:4px;margin:6px 0 12px}
+.gt-dots i{flex:1;height:4px;border-radius:2px;background:var(--surface-1)}
+.gt-dots i.c{background:var(--accent)}
+.gt-shot{position:relative;overflow:hidden;border-radius:14px;border:1px solid var(--border-strong);background:var(--bg);box-shadow:0 10px 24px -14px rgba(40,28,12,.45)}
+.gt-shot img{position:absolute;left:0;display:block;max-width:none;height:auto;pointer-events:none}
+.gt-box{position:absolute;padding:0;border:2px solid #b3261e;border-radius:8px;background:rgba(179,38,30,.06);cursor:pointer;transition:background .15s,box-shadow .15s}
+.gt-box b{position:absolute;left:-9px;top:-9px;width:20px;height:20px;border-radius:50%;background:#b3261e;color:#fff;font-size:11.5px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.gt-box:hover,.gt-box.on{background:rgba(179,38,30,.16);box-shadow:0 0 0 3px rgba(179,38,30,.25)}
+.gt-list{list-style:none;padding:0;margin:14px 0 0;display:flex;flex-direction:column;gap:6px}
+.gt-list li{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--border);cursor:pointer}
+.gt-list li.on{border-color:#b3261e;background:rgba(179,38,30,.06)}
+.gt-list li>b{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#b3261e;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center}
+.gt-list strong{display:block;font-size:14.5px;margin-bottom:2px}
+.gt-list span{font-size:13px;line-height:1.6;color:var(--text-secondary)}
+.gt-nav{display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-top:14px}
+.gt-nav button{padding:14px;font-size:15px}

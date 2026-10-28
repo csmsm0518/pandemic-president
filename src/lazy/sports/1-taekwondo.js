@@ -63,7 +63,8 @@ function simTkd(){const R=tkRival(),m=.95+Math.random()*.25,L=[];let me=0,op=0;
     me+=a;op+=b;L.push('<span class="k">'+r+'R</span>'+OLY_HOME()+' '+a+' : '+b+' '+R.n);}
   let win=me>op;if(me===op){win=Math.random()<.5;L.push('<span class="k">골든</span>'+(win?OLY_HOME()+'이 먼저 땄다':R.n+'이 먼저 땄다'));}
   return {lines:L,head:me+' : '+op+' · '+(win?'금메달':'은메달'),t:win?0:1};}
-function mgPick(kind,box){const G=MG_SPORT[kind];
+// 받아 오는 사이 화면이 넘어갔으면(상자가 빠졌으면) 그리지 않는다
+function mgPick(kind,box){if(!box||!box.isConnected)return;const G=MG_SPORT[kind];
   box.innerHTML='<div class="mgx mg-pick"><div class="mgx-h">'+G.n+'</div><div class="mgx-t">직접 치르면 실력만큼 결과가 나온다. 시뮬레이션으로 맡기면 선수들이 알아서 치르고, 결과만 빠르게 본다.</div>'+
     '<div class="mg-2"><button id="mgPlay" class="pri"><b>직접 한다</b><small>'+G.how+'</small></button><button id="mgSim"><b>시뮬레이션으로 진행</b><small>선수들에게 맡기고 결과만 본다</small></button></div></div>';
   // 경기가 끝나면 시상대를 세우고(메달 집계에 더한 뒤) 판정으로 넘어간다
@@ -81,7 +82,6 @@ function olyCere(box,n,t,go){const R0=CAR&&CAR.spRun;if(R0&&OLY_IDS.indexOf(R0.i
     '<div class="oc-msg">'+(t<3?'<b>'+MEDAL[t]+'</b> · 시상대 '+(t+1)+'번째 칸에 '+home+' 국기가 오른다':'메달은 놓쳤다. 우리 선수가 시상대 아래에서 박수를 쳤다')+'</div>'+
     (m?'<div class="oc-tally">'+olyTally(m)+'</div>':'')+'<button id="ocGo" class="pri" style="width:100%;padding:14px;margin-top:12px">계속</button></div>';
   document.getElementById('ocGo').onclick=()=>{SFX.click();go();};}
-const olyTally=m=>'<span>메달 집계</span>'+['금','은','동'].map((x,k)=>'<i class="m'+k+'">'+x+'</i><b>'+m[k]+'</b>').join('');
 // r: {lines:[html], head:'결과 한 줄', t:0~3}. 줄이 하나씩 올라오고 마지막에 결과가 도장처럼 찍힌다.
 function mgSimShow(box,n,r,done){box.innerHTML='<div class="mgx mg-sim"><div class="mgx-h">'+n+' · 시뮬레이션</div><div class="mg-sl">'+
     r.lines.map((l,i)=>'<div style="animation-delay:'+(i*220)+'ms">'+l+'</div>').join('')+'</div>'+
@@ -91,4 +91,3 @@ function mgSimShow(box,n,r,done){box.innerHTML='<div class="mgx mg-sim"><div cla
 const mgGauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
 const MG_NAT=()=>['호주','미국','중국','일본','영국','프랑스','캐나다','이탈리아','헝가리','브라질','독일','스웨덴','튀르키예','멕시코'].filter(n=>!(CP.id==='usa'&&n==='미국')).sort(()=>Math.random()-.5);
 const MEDAL=['금메달','은메달','동메달','메달을 놓쳤다'];
-

@@ -1,7 +1,5 @@
 /* ---------- 게임 안 명예의 전당 (리더보드) ---------- */
 // leaderboard.html과 같은 Apps Script 주소(doGet)에서 순위를 받아 온다. 화면이 열려 있는 동안 15초마다 갱신.
-// 아티팩트(아이패드용)로 빌드하면 true가 된다. 아티팩트는 외부 주소에 연결할 수 없어서 순위표 대신 게임 사이트 링크를 보여 준다.
-const IN_ART=false,SITE='https://csmsm0518.github.io/pandemic-president/';
 function artBoard(o){o=o||{};window.scrollTo(0,0);
   R.innerHTML='<div style="animation:fdIn .3s ease-out">'+
   '<button id="lbBack" style="font-size:13px;padding:7px 12px;margin-bottom:14px">← 돌아가기</button>'+
@@ -25,7 +23,6 @@ const lbDiffTag=d=>d&&LB_DCOL[d]?'<span class="lb-dt" style="--dc:'+LB_DCOL[d]+'
 function lbView(){const d=LB.data;if(!d||LB.diff==='전체')return d;
   if(d.byDiff)return d.byDiff[LB.diff]||{careers:0,players:0,top:[],longest:[],recent:[],order:[],stats:{}};
   const f=a=>(a||[]).filter(r=>r.diff===LB.diff);return Object.assign({},d,{top:f(d.top),longest:f(d.longest),recent:f(d.recent)});}
-const lbEsc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function lbAgo(t){const d=(Date.now()-new Date(t).getTime())/1000;if(!isFinite(d))return '';if(d<60)return '방금';if(d<3600)return Math.floor(d/60)+'분 전';if(d<86400)return Math.floor(d/3600)+'시간 전';
   const x=new Date(t);return (x.getMonth()+1)+'월 '+x.getDate()+'일';}
 function lbJsonp(){return new Promise((res,rej)=>{const cb='__lbg'+Date.now()+Math.floor(Math.random()*1e4),s=document.createElement('script');
@@ -105,4 +102,3 @@ function hofRender(){const v=hofView(),body=document.getElementById('hofBody');h
     hofCard({i:6,t:'무대별 최고',u:'무대마다 1위',list:C.camp,it:r=>P(r,num(r.score)+'<small>점</small>',E(hofCampN(r.camp))+(r.school?' · '+E(r.school):''))});
   body.classList.toggle('still',!first);
   body.innerHTML='<div class="hof-side">'+left+'</div>'+mainCard+'<div class="hof-side">'+right+'</div>';}
-

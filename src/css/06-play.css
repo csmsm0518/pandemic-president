@@ -36,7 +36,6 @@
 /* 결과: 판정 등급이 도장처럼 찍히고, 계속 버튼은 메뉴와 같은 화살촉 모양 */
 .tierb{display:inline-block;animation:stamp .55s cubic-bezier(.2,1.4,.4,1) both}
 #wrap #nx{border-radius:0;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,0 100%);font-family:var(--font-voice);font-weight:800;letter-spacing:.06em}
-/* 가로 화면에서는 왼쪽에 상황판, 오른쪽에 사건과 선택지를 두고 화면을 넓게 쓴다 */
 /* 가로 모드를 골랐을 때(넓은 화면) */
 @media (min-width:720px){
   html[data-ori="l"] #app:has(#wrap){max-width:1220px;padding:clamp(12px,2vw,22px) clamp(14px,2.6vw,32px) 48px}
