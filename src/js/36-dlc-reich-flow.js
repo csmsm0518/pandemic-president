@@ -44,7 +44,7 @@ function histHit(o){const k=cur.o.indexOf(o),same=k===cur.hh;const key=CAR.term+
 const HIST_FATE={hitler:'히틀러는 1945년 4월 30일 베를린의 지하 벙커에서 스스로 목숨을 끊었다.',mussolini:'무솔리니는 1943년 실각했고, 1945년 4월 달아나다 이탈리아 파르티잔에게 붙잡혀 처형됐다.',
  goering:'괴링은 뉘른베르크 재판에서 사형을 선고받고, 집행 전날 밤 스스로 목숨을 끊었다.',rommel:'롬멜은 1944년 히틀러 암살 음모에 얽혔다는 의심을 받고 자살을 강요당했다.',doenitz:'되니츠는 히틀러가 죽은 뒤 국가원수로 항복을 지휘했고, 뉘른베르크 재판에서 징역 10년을 선고받았다.'};
 function histPanel(){const h=CAR.hs||[0,0],li=t=>'<li style="margin-bottom:6px">'+t+'</li>';
-  return '<div style="background:var(--surface-1);border-left:3px solid #8f6a12;border-radius:0 var(--radius) var(--radius) 0;padding:13px 15px;margin-bottom:16px">'+
+  return '<div style="background:var(--surface-1);border:1px solid rgba(143,106,18,.32);border-radius:var(--radius);padding:13px 15px;margin-bottom:16px">'+
    '<div style="font-size:12px;font-weight:700;color:#8f6a12;letter-spacing:.04em;margin-bottom:6px">당신의 선택과 실제 역사</div>'+
    '<div style="font-size:14px;line-height:1.65;margin-bottom:10px">실제 역사가 있었던 사건에서 <b>같은 선택 '+h[0]+'번</b>, <b>다른 선택 '+h[1]+'번</b>을 했다.</div>'+
    '<ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.65;color:var(--text-secondary)">'+
