@@ -338,7 +338,7 @@ function resolve(o,t){const e=o[1],ch=o[3];logTier(t);
     apply({u:-30,a:-22,c:11,p:6},1);
     last={t:t,x:'공권력이 광장을 비웠다. 질서는 돌아왔고 <em>그 장면이 정부의 얼굴</em>이 됐다. '+pk(TIER[t].l)};}
   else if(e.X==='quit'){S.quit=1;return careerEnd('quit');}
-  else{apply(e,0,t,STK[lastS]);last={t:t,x:o[2]+' '+pk(TIER[t].l),cn:cnBonus(e,t).concat(cnSaveMsg?[cnSaveMsg]:[])};cnSaveMsg='';
+  else{apply(e,0,t,STK[lastS]);last={t:t,x:o[2]+' '+pk(TIER[t].l),cn:cnBonus(e,t).concat(cnSaveMsg?[cnSaveMsg]:[])};cnSaveMsg='';if(cur.hist)histHit(o);
     if(t===3){S.a=cl(S.a-4);S.u=cl(S.u+4);}
     if(lastS===2&&t===0){S.a=cl(S.a+4);last.x+=' <em>승부수가 통했다.</em> 결단력 있는 지도자라는 평가가 붙었다.';CAR.boldWin=(CAR.boldWin||0)+1;}
     if(lastS===2&&t===3){S.a=cl(S.a-2);S.u=cl(S.u+2);last.x+=' <em>무리수였다</em>는 비판이 쏟아졌다.';CAR.boldLoss=(CAR.boldLoss||0)+1;}
@@ -407,6 +407,7 @@ function res(){const T=TIER[last.t],wc=last.x.split(' ').length,dl=Math.min(650,
   '<div id="txt" style="background:color-mix(in srgb,'+T.bd+' 7%,var(--surface-2));border:1px solid color-mix(in srgb,'+T.bd+' 32%,transparent);border-radius:14px;padding:16px 17px;margin-bottom:14px;cursor:pointer"><div class="rsd" style="font-size:15.5px;line-height:1.85">'+words(last.x,40)+'</div></div>'+
   '<div style="margin-bottom:12px;min-height:28px">'+deltas()+'</div>'+
   (last.cn&&last.cn.length?'<div class="cn-fx">'+last.cn.map(x=>'<span>'+x+'</span>').join('')+'</div>':'')+
+  (last.hn?'<div style="margin:0 0 14px;padding:11px 13px;border-left:3px solid #8f6a12;background:rgba(143,106,18,.07);border-radius:0 10px 10px 0;font-size:13.5px;line-height:1.65;color:var(--text-secondary)"><b style="color:#8f6a12">실제 역사</b> · '+last.hn+'</div>':'')+
   (()=>{if(cur.mg)return '<div class="jdg"><span>판정</span><b>경기 결과로 정해졌다</b></div>';
   if(spFixed(lastO))return '<div class="jdg"><span>판정</span><b>'+(lastO[4].vote?'투표로':'거사 결과로')+' 정해졌다</b></div>';const fw=fitWord(lastFit.q),P=stakeP(lastFit.q,lastS);return '<div class="jdg"><span>판정</span><span class="stk s'+lastS+'">'+STK[lastS].n+'</span><b style="color:'+fw[1]+'">'+fw[0]+'</b><span class="jdg-p">성공 이상 '+Math.round((P[0]+P[1])*100)+'%</span></div>';})()+
   (lastFit.why.length?'<div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:6px">판정에 영향을 준 것</div><div style="display:flex;flex-direction:column;gap:5px;margin-bottom:18px">'+lastFit.why.map((w,j)=>'<div style="font-size:13px;color:var(--text-secondary);opacity:0;animation:fdIn .3s ease-out forwards;animation-delay:'+(200+j*90)+'ms"><b style="color:'+(w[0]==='+'?'#2e7d55':'#b3261e')+'">'+(w[0]==='+'?'▲':'▼')+'</b> '+w[1]+'</div>').join('')+'</div>':'<div style="height:4px"></div>')+

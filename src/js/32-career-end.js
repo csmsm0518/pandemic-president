@@ -180,6 +180,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
    lab('마지막 순간의 숫자')+
    '<div style="background:var(--surface-1);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px">'+
    VORD.map(k=>row(vName(k),Math.round(vVal(k)))).join('')+row(SCX().iName,Math.round(S.i))+row('누적 인명 피해 지수',Math.round(cDeaths))+row('개헌',(CAR.amend||0)+'회'+(CAR.amendHow?' ('+CAR.amendHow+')':''))+(CAR.dict?row('영구집권',CAR.dict+'기 계엄으로 시작'):'')+(CAR.spLog&&CAR.spLog.length?row('특별 이벤트',CAR.spLog.join(', ')):'')+'</div>'+
+   (CAR.camp==='reich'?histPanel():'')+
    (kind==='defeat'&&CAR.camp==='reich'?'<button id="rhine" class="pri" style="width:100%;margin-bottom:8px;padding:15px;font-weight:700">에피소드 · 라인강의 기적 시작 ▶<span style="display:block;font-size:12px;font-weight:500;opacity:.85;margin-top:3px">1949년, 폐허 위의 새 공화국을 이끈다</span></button>':'')+
    '<button id="again" style="width:100%;margin-bottom:8px;padding:14px;font-weight:600;background:#2f4a6b;border-color:#2f4a6b">새 인생 시작</button>'+
    (god?'<p style="margin:0 0 8px;padding:12px;border-radius:10px;font-size:13px;line-height:1.6;text-align:center;color:var(--text-secondary);border:1px dashed var(--border)">⚡ 데우스 엑스 마키나의 판은 명예의 전당과 이 기기의 기록에 남지 않는다.</p>':

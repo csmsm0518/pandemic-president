@@ -33,10 +33,25 @@ function warRoll(te,p){window.scrollTo(0,0);const win=Math.random()*100<p;
     else{CAR.ww='lose';te.elect='패전';te.winP=p;CAR.elections.push('세계대전 '+p+'% 패전');logSpecial('세계대전 패전',0,'중립');
       if(!godRun()){MEM.bonn=1;msave();}CAR.tro.push({id:'ww_lose',n:'세계대전 패전',g:0,term:1,year:YRS});
       document.getElementById('vt').textContent='전쟁에서 졌다';SFX.stamp(.3);SFX.lose(.3);vib([90,60,120]);w.innerHTML=stamp('패전','#b3261e');
-      tx.innerHTML=card('<div style="font-size:14px;line-height:1.75;color:var(--text-secondary)">1945년 5월, 무조건 항복 문서에 서명이 끝났다. 도시들은 잿더미가 됐고, 나라는 네 조각으로 나뉘어 점령됐다. 정권의 지도자들은 국제 군사 재판정에 섰다. 재판정에서는 전쟁 중 끌려간 사람들과 사라진 사람들의 이름이 하나씩 불렸다.</div>'+
+      tx.innerHTML=card('<div style="font-size:14px;line-height:1.75;color:var(--text-secondary)">1945년 5월, 무조건 항복 문서에 서명이 끝났다. 도시들은 잿더미가 됐고, 나라는 네 조각으로 나뉘어 점령됐다. 정권의 지도자들은 뉘른베르크 국제 군사 재판정에 섰다. 재판정에서는 전쟁 중 끌려간 사람들과 사라진 사람들의 이름이 하나씩 불렸다.</div>'+
         '<div style="font-size:13px;line-height:1.7;margin-top:10px;color:var(--text-muted)">4년 뒤, 폐허 위에 새 공화국이 선다. <b style="color:var(--text-secondary)">에피소드 「라인강의 기적」</b>이 열렸다.</div>');}
     const g=document.getElementById('go2');g.style.opacity=1;g.style.pointerEvents='auto';g.style.transition='opacity .3s';
     let gone=0;g.onclick=()=>{if(gone++)return;SFX.click();if(win)reignEnd(te);else{te.decision='패전';careerEnd('defeat');}};},1800);}
+// 실제 역사 쪽지: 고른 선택지가 실제 역사와 같은지 세고(다시 굴리기는 한 번만 센다), 결과 화면에 붙일 글을 만든다
+function histHit(o){const k=cur.o.indexOf(o),same=k===cur.hh;const key=CAR.term+'-'+S.turn+'-'+cur.t;CAR.hsK=CAR.hsK||{};if(!CAR.hsK[key]){CAR.hsK[key]=1;CAR.hs=CAR.hs||[0,0];CAR.hs[same?0:1]++;}
+  last.hn=(same?'히틀러도 같은 길을 택했다. ':'히틀러는 「'+cur.o[cur.hh][0]+'」 쪽을 택했다. ')+cur.hist;}
+// 결산 화면: 어떻게 끝났든 당신의 선택과 실제 역사를 나란히 보여 준다
+const HIST_FATE={hitler:'히틀러는 1945년 4월 30일 베를린의 지하 벙커에서 스스로 목숨을 끊었다.',mussolini:'무솔리니는 1943년 실각했고, 1945년 4월 달아나다 이탈리아 파르티잔에게 붙잡혀 처형됐다.',
+ goering:'괴링은 뉘른베르크 재판에서 사형을 선고받고, 집행 전날 밤 스스로 목숨을 끊었다.',rommel:'롬멜은 1944년 히틀러 암살 음모에 얽혔다는 의심을 받고 자살을 강요당했다.',doenitz:'되니츠는 히틀러가 죽은 뒤 국가원수로 항복을 지휘했고, 뉘른베르크 재판에서 징역 10년을 선고받았다.'};
+function histPanel(){const h=CAR.hs||[0,0],li=t=>'<li style="margin-bottom:6px">'+t+'</li>';
+  return '<div style="background:var(--surface-1);border-left:3px solid #8f6a12;border-radius:0 var(--radius) var(--radius) 0;padding:13px 15px;margin-bottom:16px">'+
+   '<div style="font-size:12px;font-weight:700;color:#8f6a12;letter-spacing:.04em;margin-bottom:6px">당신의 선택과 실제 역사</div>'+
+   '<div style="font-size:14px;line-height:1.65;margin-bottom:10px">실제 역사가 있었던 사건에서 <b>같은 선택 '+h[0]+'번</b>, <b>다른 선택 '+h[1]+'번</b>을 했다.</div>'+
+   '<ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.65;color:var(--text-secondary)">'+
+   li('실제 나치 독일은 1945년 5월 무조건 항복했다. '+(HIST_FATE[CAR.bgid]||''))+
+   li('나치 정권은 유럽의 유대인 약 600만 명을 학살했다(홀로코스트). 로마인(집시), 장애인, 정치범, 동성애자도 박해하고 죽였다.')+
+   li('제2차 세계대전의 사망자는 7천만 명이 넘는 것으로 추산된다. 그 절반 이상이 민간인이었다.')+
+   li('정권 지도자들은 뉘른베르크 국제 군사 재판에서 전쟁 범죄와 인도에 반한 죄로 심판받았다.')+'</ul></div>';}
 // 패전 뒤 결산 화면의 '라인강의 기적 시작': 서독 총리 고르기로 바로 간다
 function rhineGo(){if(!godRun()){MEM.bonn=1;msave();}camp='bonn';bg=-1;stepLeader();}
 

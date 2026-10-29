@@ -2360,17 +2360,18 @@ const EV_U=[
 ['더 유리할 때까지 공세를 편다',{i:-3,p:4,e:-4,a:-2},'전선은 조금 밀렸다.'],
 ['동맹국에 협상을 맡긴다',{chk:3,i:-2},'미국은 한 발 물러섰다.']]}];
 
-/* ---------- DLC · 전쟁기 독일: 일당 군사 국가 / 에피소드 · 라인강의 기적: 서독 총리 ---------- */
-// 전쟁기 독일의 지도자는 모두 가상 인물이다. 실제 나치 지도자는 고를 수 있는 인물로 넣지 않는다.
-// 학살과 박해는 점수를 얻는 선택지로 두지 않는다. 체제의 억압은 나오되, 그 값은 고립과 저항과 전후 재판으로 돌아온다.
+/* ---------- DLC · 전쟁기 독일: 추축국 지도자의 나라 / 에피소드 · 라인강의 기적: 서독 총리 ---------- */
+// 출발 인물은 실제 추축국 지도자다. 선택은 자유지만, 실제 역사에 있었던 사건에서는 고른 뒤에 '실제 역사' 쪽지가 붙고(HIST_R),
+// 커리어가 끝나면 어떻게 끝났든 '당신의 선택과 실제 역사'를 나란히 보여 준다(36-dlc-reich-flow.js의 histPanel).
+// 학살과 박해는 고를 수 있는 선택지로 두지 않는다. 체제의 범죄로 쪽지와 결산에서 사실대로 다룬다.
+// 무솔리니처럼 독일 사람이 아닌 인물은 '만약 그가 추축 진영을 이끌었다면'이라는 가정이다.
 // 전쟁에서 지면 정권이 무너지고 '라인강의 기적'(서독) 에피소드가 열린다. 서독의 출발 인물은 실제 총리의 이미지를 빌린 출발점이다.
 const BG_R=[
- {id:'r_marshal',n:'오토 폰 라이헨바흐',k:'참모본부 출신 원수',s:'참모본부에서 평생을 보낸 원수가 국가원수 자리에 올랐다. 작전 지도는 누구보다 잘 읽지만, 거리의 민심은 잘 읽지 못한다.',e:{mil:10,p:4,a:-3,chk:3},age:58,x:'원수의 길'},
- {id:'r_orator',n:'카를 베르너',k:'광장을 휘어잡는 선동가',s:'맥줏집 연설로 이름을 얻은 당의 선동가. 라디오 앞의 사람들을 울리고 웃길 줄 안다. 군은 그를 믿지 않는다.',e:{a:10,p:6,u:4,trn:-6,mil:-3},age:44,x:'선동가의 길'},
- {id:'r_industry',n:'프리드리히 호프만',k:'군수 공장을 굴리는 산업가',s:'철강 회사를 이끌던 산업가가 전시 경제를 맡았다. 숫자와 생산 라인은 믿지만, 정치는 거래라고 생각한다.',e:{e:10,mil:4,c:6,a:-2},age:50,x:'산업가의 길'},
- {id:'r_police',n:'하인리히 슈톨츠',k:'비밀경찰을 키운 실력자',s:'비밀경찰을 키워 당의 2인자가 된 사내. 모든 서류철의 위치를 안다. 그를 두려워하는 만큼 미워하는 사람도 많다. 가장 어려운 길이다.',e:{p:12,chk:-8,trn:-8,a:-5,u:-3},age:46,x:'비밀경찰의 길'},
- {id:'r_ace',n:'에른스트 렌츠',k:'하늘의 영웅이 된 비행사',s:'지난 전쟁의 격추왕. 포스터 속 그의 얼굴은 모두가 안다. 대중은 그를 사랑하지만, 사치와 측근 정치도 그를 따라다닌다.',e:{a:8,mil:6,c:4},age:41,t:1,x:'격추왕의 길'},
- {id:'r_diplomat',n:'루트비히 크로네',k:'귀족 출신의 외교관',s:'오래된 귀족 집안의 외교관이 당의 추대로 정점에 섰다. 전쟁을 짧게 끝낼 협상을 꿈꾼다. 당의 강경파는 그를 허수아비로 본다.',e:{u:-4,e:3,trn:4,p:-4,mil:-2},age:60,x:'외교관의 길'}];
+ {id:'hitler',n:'아돌프 히틀러',k:'나치 독일의 총통',s:'1933년 총리가 된 뒤 의회를 무력화하고 스스로 총통이 됐다. 이 전쟁과 학살을 일으킨 장본인이다. 그의 곁에서는 권력이 한 사람에게 모이고, 견제와 진실은 사라진다.',e:{p:14,chk:-10,trn:-10,a:6,mil:6,u:4},age:50,x:'히틀러의 길'},
+ {id:'mussolini',n:'베니토 무솔리니',k:'파시즘을 만든 독재자',s:'로마 진군으로 권력을 잡은 이탈리아의 독재자. 파시즘이라는 말을 처음 만들었다. 만약 그가 추축 진영 전체를 이끌었다면, 이라는 가정이다.',e:{a:8,p:8,trn:-6,mil:-4,e:-2},age:56,x:'무솔리니의 길'},
+ {id:'goering',n:'헤르만 괴링',k:'후계자로 지명된 2인자',s:'공군 총사령관이자 히틀러가 지명한 후계자. 점령지의 미술품을 긁어모은 사치와 약탈로 악명이 높았다.',e:{mil:5,c:10,p:6,trn:-4},age:46,x:'괴링의 길'},
+ {id:'rommel',n:'에르빈 롬멜',k:'사막의 여우',s:'북아프리카 전선에서 "사막의 여우"로 불린 장군. 당보다 전장을 아는 사람이다. 만약 장군이 나라를 이끌었다면, 이라는 가정이다.',e:{mil:10,a:4,p:-2,chk:2},age:50,x:'롬멜의 길'},
+ {id:'doenitz',n:'카를 되니츠',k:'마지막 국가원수',s:'잠수함 함대를 이끈 해군 제독. 히틀러의 유언에 따라 정권의 마지막 국가원수가 됐다. 그가 처음부터 나라를 이끌었다면, 이라는 가정이다.',e:{mil:6,p:4,e:-2},age:48,x:'되니츠의 길'}];
 const ADV_R=[
  {c:s=>s.i>55,who:'참모총장',l:['전선 지도에 빨간 화살표가 늘고 있습니다. 오늘 결정하셔야 합니다.','예비 병력이 바닥났습니다. 다음 공세는 막기 어렵습니다.']},
  {c:s=>s.m<35,who:'군의감',l:['야전 병원에 붕대보다 부상병이 많습니다.','동상 환자가 총상 환자보다 많아졌습니다.']},
@@ -2518,7 +2519,7 @@ const EV_R=[
 ['병사를 빼 준다',{a:6,mil:-4,trn:-3},'영화는 화려했다. 그 병사들이 있어야 할 전선이 하나 무너졌다.'],
 ['예산만 주고 병사는 안 준다',{a:3,e:-2},'영화는 작아졌다.'],
 ['뉴스 영화만 찍게 한다',{trn:2,a:1},'극장마다 전선 소식이 나왔다. 사람들은 화면 속 얼굴에서 지친 기색을 읽었다.']]},
-{y:0,t:'국민 돌격대',d:'병력이 모자란다. <em>노인과 소년</em>까지 무장시키자는 안이다.',o:[
+{y:0,t:"국민 돌격대",d:'병력이 모자란다. <em>노인과 소년</em>까지 무장시키자는 안이다.',o:[
 ['동원한다',{mil:4,a:-6,u:5,m:-3},'열다섯 살 소년들이 대전차 무기를 들었다. 어머니들은 아무 말도 하지 않았다.'],
 ['열여덟 살 이상만 동원한다',{mil:2,a:-2},'후방 공장이 일손을 잃었다.'],
 ['동원하지 않는다',{mil:-2,a:2,saf:2},'장군들은 화를 냈다. 아이들은 학교에 남았다.']]},
@@ -2607,6 +2608,34 @@ const EV_R=[
 ['함대를 보내 해역을 봉쇄한다',{i:7,a:4,mil:3},'양쪽 함대가 포신을 마주했다. 세계가 숨을 죽였다.'],
 ['핫라인으로 진상 조사를 제안한다',{i:-4,trn:3,a:-2},'공동 조사단이 꾸려졌다.'],
 ['보도를 통제하고 조용히 넘긴다',{i:-1,trn:-4},'숨진 수병들의 가족은 사고라는 통지만 받았다.']]}];
+
+// 실제 역사 쪽지: 사건 제목 → [실제로 고른 선택지 번호, 그 뒤에 일어난 일]. 고르고 나면 결과 화면에 붙는다(36-dlc-reich-flow.js의 histHit).
+const HIST_R={
+ '전쟁의 첫날':[0,'1939년 9월 1일 폴란드를 침공했다. 영국과 프랑스가 이틀 뒤 선전포고했다.'],
+ '국민 라디오':[0,'값싼 "국민 수신기"를 대량 보급했다. 전쟁이 나자 외국 방송 청취를 범죄로 정했고, 사형까지 선고된 사람도 있었다.'],
+ '청년단 의무 가입':[0,'1936년과 1939년 법으로 히틀러 청소년단 가입을 사실상 의무로 만들었다. 전쟁 말기에는 이 소년들이 전선에 섰다.'],
+ '교회의 설교':[1,'1941년 갈렌 주교가 장애인 학살(T4 작전)을 고발하는 설교를 했다. 정권은 민심을 두려워해 주교를 건드리지 못했고, T4 작전을 공식 중단했다. 학살은 몰래 이어졌다.'],
+ '장군들의 반대':[0,'1938년 국방장관과 육군 총사령관을 추문으로 몰아 내쫓고, 스스로 군 최고 지휘권을 쥐었다.'],
+ '반체제 학생들':[0,'1943년 뮌헨 대학생 저항 모임 "백장미"가 전단을 뿌렸다. 숄 남매 등이 인민 법정에서 사형 선고를 받고 며칠 만에 처형됐다.'],
+ '국경을 넘는 과학자들':[2,'1933년부터 유대인 학자들을 대학에서 쫓아냈다. 아인슈타인을 비롯한 수많은 과학자가 떠났고, 그중 몇몇은 미국의 원자폭탄 개발에 참여했다.'],
+ '석유':[2,'1942년 캅카스 유전을 노린 남부 공세를 폈다. 공세는 스탈린그라드에서 멈췄다.'],
+ '점령지 노동력':[2,'점령지에서 약 1,200만 명을 강제로 끌고 와 공장과 농장에서 일을 시켰다. 수많은 사람이 굶주림과 학대로 죽었다.'],
+ '포로 처우':[1,'소련군 포로 약 570만 명 가운데 300만 명 넘게 굶주림과 학대로 죽었다. 서방 연합군 포로는 대체로 협약대로 대우했다.'],
+ '암호 기계':[1,'에니그마 암호기는 깨지지 않는다고 믿었다. 영국은 이미 암호를 풀어 잠수함과 호송선의 위치를 읽고 있었다.'],
+ '로켓 무기':[0,'V-2 로켓을 만들었다. 지하 공장에서 강제 노동으로 생산했는데, 로켓 공격으로 죽은 사람보다 만들다 죽은 수용자가 더 많았다.'],
+ '동맹국의 구원 요청':[0,'1941년 이탈리아가 북아프리카와 그리스에서 무너지자 롬멜의 아프리카 군단을 보냈다.'],
+ '선전 영화':[0,'패전 직전인 1944~1945년, 대작 선전 영화 「콜베르크」에 군인 수천 명을 엑스트라로 동원했다.'],
+ "국민 돌격대":[0,'1944년 10월 16세부터 60세까지의 남자를 "국민 돌격대"로 동원했다. 소년과 노인들이 대전차 무기를 들고 전선에 섰다.'],
+ '다리를 폭파하라':[0,'1945년 3월 독일 안의 다리와 공장과 발전소를 모두 부수라는 "네로 명령"을 내렸다. 군수 장관 슈페어 등이 몰래 따르지 않아 상당 부분이 남았다.'],
+ '겨울 전선':[1,'1941년 12월 모스크바 앞에서 "한 발짝도 물러서지 말라"는 명령을 내렸다. 겨울 장비가 없던 병사 수십만 명이 동상과 추위로 쓰러졌다.'],
+ '포위된 군단':[1,'1942년 겨울 스탈린그라드에서 포위된 제6군에게 탈출을 금지하고 공중 보급을 약속했다. 9만여 명이 포로가 됐고, 살아 돌아온 사람은 약 6천 명이었다.'],
+ '잠수함전':[0,'잠수함을 대량으로 만들었다. 잠수함 승무원 약 4만 명 가운데 3만 명 가까이가 돌아오지 못했다.'],
+ '전략 폭격':[2,'"보복 무기" V-1 · V-2로 런던을 때렸다. 그 사이 독일 도시들은 폭격으로 잿더미가 됐다.'],
+ '상륙 작전':[2,'연합군이 가장 가까운 칼레 해협으로 올 것이라 믿었다. 1944년 6월 연합군은 노르망디에 상륙했다.'],
+ '두 전선':[0,'1941년 6월 불가침 조약을 깨고 소련을 침공했다(바르바로사 작전). 독일군 전사자의 대부분이 이 동부 전선에서 나왔다.'],
+ '신무기 시제품':[1,'세계 첫 실전 제트 전투기 Me 262를 폭격기로도 고쳐 쓰라고 고집해 배치가 늦어졌다.'],
+ '강화 제안':[1,'끝까지 강화를 거부하고 "무조건 항복"을 요구받을 때까지 싸웠다. 전쟁 마지막 열 달 동안 전쟁 전체 독일군 전사자의 거의 절반이 죽었다.']};
+EV_R.concat([SCN.ww2.op]).forEach(e=>{const h=HIST_R[e.t];if(h){e.hh=h[0];e.hist=h[1];}});
 
 // 에피소드 · 라인강의 기적(서독)
 const BG_B=[
@@ -2817,8 +2846,8 @@ const EV_B=[
 
 // 초상: 전쟁기 독일은 군복·제복 차림, 서독 총리는 양복 차림
 Object.assign(PFS,{
- '오토 폰 라이헨바흐':'c=milcoat,cc=#4f5a4a,h=bald,hc=#cfc8b8,f=mus,hw=pickel','카를 베르너':'c=mil,cc=#6b5a3c,h=side,hc=#2b2018,a=grin','프리드리히 호프만':'c=suit,cc=#2f3236,t=#5b1f1f,h=side,hc=#8a7f72,w,a=cigar',
- '하인리히 슈톨츠':'c=milcoat,cc=#25272b,h=short,hc=#3a2f25,hw=hcap','에른스트 렌츠':'c=mil,cc=#5a6a7a,h=fore,hc=#5a4632,a=smile','루트비히 크로네':'c=suit,cc=#2b3a55,t=#3d5a80,h=side,hc=#d8d2c4,f=mus',
+ '아돌프 히틀러':'c=mil,cc=#6b5e3c,h=side,hc=#2b2018,f=mus','베니토 무솔리니':'c=mil,cc=#25272b,h=bald,hc=#cfc8b8','헤르만 괴링':'c=milcoat,cc=#8a96a3,h=side,hc=#5a4632,w',
+ '에르빈 롬멜':'c=mil,cc=#6b6a52,h=short,hc=#5a4632,hw=hcap','카를 되니츠':'c=mil,cc=#1f2a3d,h=side,hc=#8a7f72,hw=hcap',
  '콘라트 아데나워':'c=suit,cc=#2b2b2e,t=#3a3f45,h=bald,hc=#d8d2c4','루트비히 에르하르트':'c=suit,cc=#3a3f45,t=#2f5f99,h=side,hc=#c8bfae,w,a=cigar','빌리 브란트':'c=suit,cc=#2b3a55,t=#7a2e2a,h=side,hc=#5a5048,a=smile',
  '헬무트 슈미트':'c=suit,cc=#3a3f45,t=#2b2b2e,h=side,hc=#b8b0a0','헬무트 콜':'c=suit,cc=#2f3236,t=#5b4a2e,h=side,hc=#3a3330,w'});
 /* ---------- 캠페인: 기본(대한민국) + DLC(조선, 미국) ---------- */
@@ -2836,8 +2865,8 @@ const CAMPS={
   intro:'4년 중임제다. 재선까지는 선거로 가능하고, 세 번째 임기는 수정헌법 22조가 막는다. 두 번째 임기에 <b>권력이 크게 커지면</b> 그 조항을 없애려는 움직임이 생긴다.',
   lbl:{c:'로비 유착',u:'양극화',chk:'의회·법원 견제',saf:'사회 안전망'},init:{i:14,m:60,a:60,e:60,p:34,c:16,u:34,chk:78,trn:66,saf:48}},
  // 전쟁기 독일: 선거 없는 일당 군사 국가. 1기(6년)가 세계대전이고, 1기가 끝날 때 승패가 갈린다(36-dlc-reich-flow.js)
- reich:{id:'reich',n:'전쟁기 독일',tag:'DLC',sub:'일당 군사 국가 · 세계대전, 그리고 그 뒤',role:'지도자',yrs:6,maxT:4,rule:'reign',scen0:'ww2',post:['occupy','resist','coldw'],
-  intro:'선거는 없다. 당과 군과 비밀경찰이 권력의 전부다. 첫 6년은 <b>세계대전</b>이다. 이기면 제국이 이어지고, 지면 정권이 무너지며 <b>라인강의 기적</b> 에피소드가 열린다.',
+ reich:{id:'reich',n:'전쟁기 독일',tag:'DLC',sub:'추축국 지도자 · 세계대전, 그리고 실제 역사',role:'지도자',yrs:6,maxT:4,rule:'reign',scen0:'ww2',post:['occupy','resist','coldw'],
+  intro:'히틀러 · 무솔리니 같은 실제 추축국 지도자로 나라를 이끈다. 선택은 자유지만, 실제 역사가 있었던 사건에서는 <b>그때 실제로 무슨 일이 있었는지</b>가 함께 뜬다. 첫 6년은 <b>세계대전</b>이다. 이기면 제국이 이어지고, 지면 정권이 무너지며 <b>라인강의 기적</b> 에피소드가 열린다.',
   lbl:{a:'민심',m:'보급·의무',e:'전시 경제',p:'당의 장악력',c:'간부 부패',u:'내부 반발',chk:'군부 견제',trn:'언론 자유',saf:'배급'},init:{i:30,m:50,a:58,e:56,p:62,c:22,u:30,chk:40,trn:22,saf:40,mil:62},
   rgT:{termL:n=>n+'기 통치',lastMsg:'권좌에 오른 지 {Y}년. <b>이제 후계자에게 자리를 넘길 때다.</b>',heir:'후계자에게 권력을 넘긴다',finSub:'통치를 마친다',heirSub:'스스로 물러나 당 원로가 된다',
    dead:'민심도 군도 떠났다. <b>장교들이 관저를 포위했다.</b>',deadBtn:'운명을 맞는다',deadSub:'쿠데타가 일어난다',shaky:'민심이 흔들린다',shaky2:'민심은 버티지만 장교단이 술렁인다',
@@ -6576,7 +6605,7 @@ function resolve(o,t){const e=o[1],ch=o[3];logTier(t);
     apply({u:-30,a:-22,c:11,p:6},1);
     last={t:t,x:'공권력이 광장을 비웠다. 질서는 돌아왔고 <em>그 장면이 정부의 얼굴</em>이 됐다. '+pk(TIER[t].l)};}
   else if(e.X==='quit'){S.quit=1;return careerEnd('quit');}
-  else{apply(e,0,t,STK[lastS]);last={t:t,x:o[2]+' '+pk(TIER[t].l),cn:cnBonus(e,t).concat(cnSaveMsg?[cnSaveMsg]:[])};cnSaveMsg='';
+  else{apply(e,0,t,STK[lastS]);last={t:t,x:o[2]+' '+pk(TIER[t].l),cn:cnBonus(e,t).concat(cnSaveMsg?[cnSaveMsg]:[])};cnSaveMsg='';if(cur.hist)histHit(o);
     if(t===3){S.a=cl(S.a-4);S.u=cl(S.u+4);}
     if(lastS===2&&t===0){S.a=cl(S.a+4);last.x+=' <em>승부수가 통했다.</em> 결단력 있는 지도자라는 평가가 붙었다.';CAR.boldWin=(CAR.boldWin||0)+1;}
     if(lastS===2&&t===3){S.a=cl(S.a-2);S.u=cl(S.u+2);last.x+=' <em>무리수였다</em>는 비판이 쏟아졌다.';CAR.boldLoss=(CAR.boldLoss||0)+1;}
@@ -6645,6 +6674,7 @@ function res(){const T=TIER[last.t],wc=last.x.split(' ').length,dl=Math.min(650,
   '<div id="txt" style="background:color-mix(in srgb,'+T.bd+' 7%,var(--surface-2));border:1px solid color-mix(in srgb,'+T.bd+' 32%,transparent);border-radius:14px;padding:16px 17px;margin-bottom:14px;cursor:pointer"><div class="rsd" style="font-size:15.5px;line-height:1.85">'+words(last.x,40)+'</div></div>'+
   '<div style="margin-bottom:12px;min-height:28px">'+deltas()+'</div>'+
   (last.cn&&last.cn.length?'<div class="cn-fx">'+last.cn.map(x=>'<span>'+x+'</span>').join('')+'</div>':'')+
+  (last.hn?'<div style="margin:0 0 14px;padding:11px 13px;border-left:3px solid #8f6a12;background:rgba(143,106,18,.07);border-radius:0 10px 10px 0;font-size:13.5px;line-height:1.65;color:var(--text-secondary)"><b style="color:#8f6a12">실제 역사</b> · '+last.hn+'</div>':'')+
   (()=>{if(cur.mg)return '<div class="jdg"><span>판정</span><b>경기 결과로 정해졌다</b></div>';
   if(spFixed(lastO))return '<div class="jdg"><span>판정</span><b>'+(lastO[4].vote?'투표로':'거사 결과로')+' 정해졌다</b></div>';const fw=fitWord(lastFit.q),P=stakeP(lastFit.q,lastS);return '<div class="jdg"><span>판정</span><span class="stk s'+lastS+'">'+STK[lastS].n+'</span><b style="color:'+fw[1]+'">'+fw[0]+'</b><span class="jdg-p">성공 이상 '+Math.round((P[0]+P[1])*100)+'%</span></div>';})()+
   (lastFit.why.length?'<div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:6px">판정에 영향을 준 것</div><div style="display:flex;flex-direction:column;gap:5px;margin-bottom:18px">'+lastFit.why.map((w,j)=>'<div style="font-size:13px;color:var(--text-secondary);opacity:0;animation:fdIn .3s ease-out forwards;animation-delay:'+(200+j*90)+'ms"><b style="color:'+(w[0]==='+'?'#2e7d55':'#b3261e')+'">'+(w[0]==='+'?'▲':'▼')+'</b> '+w[1]+'</div>').join('')+'</div>':'<div style="height:4px"></div>')+
@@ -7133,6 +7163,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
    lab('마지막 순간의 숫자')+
    '<div style="background:var(--surface-1);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px">'+
    VORD.map(k=>row(vName(k),Math.round(vVal(k)))).join('')+row(SCX().iName,Math.round(S.i))+row('누적 인명 피해 지수',Math.round(cDeaths))+row('개헌',(CAR.amend||0)+'회'+(CAR.amendHow?' ('+CAR.amendHow+')':''))+(CAR.dict?row('영구집권',CAR.dict+'기 계엄으로 시작'):'')+(CAR.spLog&&CAR.spLog.length?row('특별 이벤트',CAR.spLog.join(', ')):'')+'</div>'+
+   (CAR.camp==='reich'?histPanel():'')+
    (kind==='defeat'&&CAR.camp==='reich'?'<button id="rhine" class="pri" style="width:100%;margin-bottom:8px;padding:15px;font-weight:700">에피소드 · 라인강의 기적 시작 ▶<span style="display:block;font-size:12px;font-weight:500;opacity:.85;margin-top:3px">1949년, 폐허 위의 새 공화국을 이끈다</span></button>':'')+
    '<button id="again" style="width:100%;margin-bottom:8px;padding:14px;font-weight:600;background:#2f4a6b;border-color:#2f4a6b">새 인생 시작</button>'+
    (god?'<p style="margin:0 0 8px;padding:12px;border-radius:10px;font-size:13px;line-height:1.6;text-align:center;color:var(--text-secondary);border:1px dashed var(--border)">⚡ 데우스 엑스 마키나의 판은 명예의 전당과 이 기기의 기록에 남지 않는다.</p>':
@@ -7227,10 +7258,25 @@ function warRoll(te,p){window.scrollTo(0,0);const win=Math.random()*100<p;
     else{CAR.ww='lose';te.elect='패전';te.winP=p;CAR.elections.push('세계대전 '+p+'% 패전');logSpecial('세계대전 패전',0,'중립');
       if(!godRun()){MEM.bonn=1;msave();}CAR.tro.push({id:'ww_lose',n:'세계대전 패전',g:0,term:1,year:YRS});
       document.getElementById('vt').textContent='전쟁에서 졌다';SFX.stamp(.3);SFX.lose(.3);vib([90,60,120]);w.innerHTML=stamp('패전','#b3261e');
-      tx.innerHTML=card('<div style="font-size:14px;line-height:1.75;color:var(--text-secondary)">1945년 5월, 무조건 항복 문서에 서명이 끝났다. 도시들은 잿더미가 됐고, 나라는 네 조각으로 나뉘어 점령됐다. 정권의 지도자들은 국제 군사 재판정에 섰다. 재판정에서는 전쟁 중 끌려간 사람들과 사라진 사람들의 이름이 하나씩 불렸다.</div>'+
+      tx.innerHTML=card('<div style="font-size:14px;line-height:1.75;color:var(--text-secondary)">1945년 5월, 무조건 항복 문서에 서명이 끝났다. 도시들은 잿더미가 됐고, 나라는 네 조각으로 나뉘어 점령됐다. 정권의 지도자들은 뉘른베르크 국제 군사 재판정에 섰다. 재판정에서는 전쟁 중 끌려간 사람들과 사라진 사람들의 이름이 하나씩 불렸다.</div>'+
         '<div style="font-size:13px;line-height:1.7;margin-top:10px;color:var(--text-muted)">4년 뒤, 폐허 위에 새 공화국이 선다. <b style="color:var(--text-secondary)">에피소드 「라인강의 기적」</b>이 열렸다.</div>');}
     const g=document.getElementById('go2');g.style.opacity=1;g.style.pointerEvents='auto';g.style.transition='opacity .3s';
     let gone=0;g.onclick=()=>{if(gone++)return;SFX.click();if(win)reignEnd(te);else{te.decision='패전';careerEnd('defeat');}};},1800);}
+// 실제 역사 쪽지: 고른 선택지가 실제 역사와 같은지 세고(다시 굴리기는 한 번만 센다), 결과 화면에 붙일 글을 만든다
+function histHit(o){const k=cur.o.indexOf(o),same=k===cur.hh;const key=CAR.term+'-'+S.turn+'-'+cur.t;CAR.hsK=CAR.hsK||{};if(!CAR.hsK[key]){CAR.hsK[key]=1;CAR.hs=CAR.hs||[0,0];CAR.hs[same?0:1]++;}
+  last.hn=(same?'히틀러도 같은 길을 택했다. ':'히틀러는 「'+cur.o[cur.hh][0]+'」 쪽을 택했다. ')+cur.hist;}
+// 결산 화면: 어떻게 끝났든 당신의 선택과 실제 역사를 나란히 보여 준다
+const HIST_FATE={hitler:'히틀러는 1945년 4월 30일 베를린의 지하 벙커에서 스스로 목숨을 끊었다.',mussolini:'무솔리니는 1943년 실각했고, 1945년 4월 달아나다 이탈리아 파르티잔에게 붙잡혀 처형됐다.',
+ goering:'괴링은 뉘른베르크 재판에서 사형을 선고받고, 집행 전날 밤 스스로 목숨을 끊었다.',rommel:'롬멜은 1944년 히틀러 암살 음모에 얽혔다는 의심을 받고 자살을 강요당했다.',doenitz:'되니츠는 히틀러가 죽은 뒤 국가원수로 항복을 지휘했고, 뉘른베르크 재판에서 징역 10년을 선고받았다.'};
+function histPanel(){const h=CAR.hs||[0,0],li=t=>'<li style="margin-bottom:6px">'+t+'</li>';
+  return '<div style="background:var(--surface-1);border-left:3px solid #8f6a12;border-radius:0 var(--radius) var(--radius) 0;padding:13px 15px;margin-bottom:16px">'+
+   '<div style="font-size:12px;font-weight:700;color:#8f6a12;letter-spacing:.04em;margin-bottom:6px">당신의 선택과 실제 역사</div>'+
+   '<div style="font-size:14px;line-height:1.65;margin-bottom:10px">실제 역사가 있었던 사건에서 <b>같은 선택 '+h[0]+'번</b>, <b>다른 선택 '+h[1]+'번</b>을 했다.</div>'+
+   '<ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.65;color:var(--text-secondary)">'+
+   li('실제 나치 독일은 1945년 5월 무조건 항복했다. '+(HIST_FATE[CAR.bgid]||''))+
+   li('나치 정권은 유럽의 유대인 약 600만 명을 학살했다(홀로코스트). 로마인(집시), 장애인, 정치범, 동성애자도 박해하고 죽였다.')+
+   li('제2차 세계대전의 사망자는 7천만 명이 넘는 것으로 추산된다. 그 절반 이상이 민간인이었다.')+
+   li('정권 지도자들은 뉘른베르크 국제 군사 재판에서 전쟁 범죄와 인도에 반한 죄로 심판받았다.')+'</ul></div>';}
 // 패전 뒤 결산 화면의 '라인강의 기적 시작': 서독 총리 고르기로 바로 간다
 function rhineGo(){if(!godRun()){MEM.bonn=1;msave();}camp='bonn';bg=-1;stepLeader();}
 
@@ -7362,7 +7408,7 @@ CP_ART.bonn=(()=>{let s='<svg viewBox="0 0 300 600" preserveAspectRatio="xMidYMi
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v3.7';
+const GAME_VER='v3.8';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 이 창을 닫으면 사라진다(같은 기기를 여러 사람이 쓰므로 브라우저에 저장하지 않는다)
 let PF={school:'',name:'',phone:'',agree:false};
