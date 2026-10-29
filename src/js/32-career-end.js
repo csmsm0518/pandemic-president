@@ -1,5 +1,5 @@
 /* ---------- 커리어 결산 ---------- */
-const EXH={served:'임기를 마치고 물러났다',deposed:'반정으로 폐위됐다',retire:'명예롭게 퇴임했다',lost:'지지율 미달로 출마하지 못했다',defeated:'선거에서 패배했다',limit:'더는 출마할 수 없었다',ousted:'거리로 쫓겨났다',amendfail:'무리한 개헌이 무너지며 쫓겨났다',coupfail:'내란이 실패하며 체포됐다',lifelong:'종신 집권 끝에 권좌에서 내려왔다',medfail:'의료 붕괴로 정권이 무너졌다',ecofail:'경제 붕괴로 정권이 무너졌다',quit:'스스로 하야했다'};
+const EXH={served:'임기를 마치고 물러났다',deposed:'반정으로 폐위됐다',retire:'명예롭게 퇴임했다',lost:'지지율 미달로 출마하지 못했다',defeated:'선거에서 패배했다',limit:'더는 출마할 수 없었다',ousted:'거리로 쫓겨났다',amendfail:'무리한 개헌이 무너지며 쫓겨났다',coupfail:'내란이 실패하며 체포됐다',lifelong:'종신 집권 끝에 권좌에서 내려왔다',medfail:'의료 붕괴로 정권이 무너졌다',ecofail:'경제 붕괴로 정권이 무너졌다',quit:'스스로 하야했다',purged:'군부 쿠데타로 축출됐다',defeat:'전쟁에 져 정권이 무너졌다'};
 function careerStats(){const N=LOG.filter(x=>x.eventType!=='임기 결정'),avg=a=>a.length?a.reduce((p,q)=>p+q,0)/a.length:0;
   const cs=CAR.cs.length?CAR.cs:[S.c],ts=CAR.ts.length?CAR.ts:[S.trn],us=CAR.us.length?CAR.us:[S.u],ss=CAR.ss.length?CAR.ss:[S.saf];
   const pc={};N.forEach(x=>{if(x.priority&&x.priority!=='없음')pc[x.priority]=(pc[x.priority]||0)+1;});
@@ -111,13 +111,13 @@ function leadWhy(F){if(!F)return '';const w=[F.d>=4?'권력을 모은 통치':F.
   for(const [ok,t] of c){if(w.length>=3)break;if(ok)w.push(t);}return w.join(' · ');}// 커리어 점수: 상한 없이 이룬 것은 더하고 무너진 것은 뺀다. 모든 항목이 정수라 합계도 정수다.
 // 임기 점수가 가장 크고, 임기가 거듭될수록 1 · 0.7 · 0.45 · 0.3 · 0.2배로 줄어든다. 아주 잘한 긴 커리어여야 10,000점 언저리에 닿는다.
 const TERMW=[1,.7,.45,.3,.2],GRADEPT={S:500,A:300,B:150,C:0,D:-150,F:-300},TIERPT=[40,5,-15,-50],
-  EXITPT={retire:600,served:400,limit:300,lost:0,defeated:-100,lifelong:-300,quit:-500,ousted:-800,deposed:-800,medfail:-800,ecofail:-800,amendfail:-1000,coupfail:-1500},
+  EXITPT={retire:600,served:400,limit:300,lost:0,defeated:-100,lifelong:-300,quit:-500,ousted:-800,deposed:-800,medfail:-800,ecofail:-800,amendfail:-1000,coupfail:-1500,purged:-800,defeat:-600},
   TROX=new Set(['coup','coupfail','coupx','selfcoup','martial']);   // 헌정을 무너뜨린 기록은 더 크게 뺀다
 function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if(v)it.push([n,v,note||'']);return v;},jo=CP.id==='joseon';
   let perf=0;CAR.terms.forEach((t,i)=>{const w=TERMW[Math.min(i,TERMW.length-1)],s=Math.round(cl(t.sc));
     perf+=add((jo?(i+1)+'번째 치세':(i+1)+'기')+' · '+t.g+'등급',(s*30+(GRADEPT[t.g]||0))*w,'임기 점수 '+s+'×30'+(GRADEPT[t.g]?' '+(GRADEPT[t.g]>0?'+':'−')+Math.abs(GRADEPT[t.g]):'')+(w<1?', ×'+w:''));});
-  const wins=CAR.terms.filter(t=>t.elect==='당선'||t.elect==='반정 진압'),up=wins.filter(t=>t.winP<50).length;
-  const cont=add(jo?'반정 진압':'선거 승리',wins.length*300+up*200,wins.length+'번'+(up?' (열세를 뒤집은 '+up+'번 +200씩)':''));
+  const wins=CAR.terms.filter(t=>t.elect==='당선'||t.elect==='반정 진압'||t.elect==='쿠데타 진압'||t.elect==='승전'),up=wins.filter(t=>t.winP<50).length;
+  const cont=add(jo?'반정 진압':CP.id==='reich'?'승전 · 쿠데타 진압':'선거 승리',wins.length*300+up*200,wins.length+'번'+(up?' (열세를 뒤집은 '+up+'번 +200씩)':''));
   // 판정과 업적·불명예도 그 일이 있었던 임기의 비율(TERMW)을 따른다
   const tw=k=>TERMW[Math.min(Math.max(0,(k||1)-1),TERMW.length-1)],TT=(CAR.ttT||[]).concat([CAR.tt||[0,0,0,0]]),tt=[0,1,2,3].map(k=>TT.reduce((s,a)=>s+(a[k]||0),0));
   add('판정',TT.reduce((s,a,i)=>s+tw(i+1)*a.reduce((q,v,k)=>q+v*TIERPT[k],0),0),TIER.map((T,k)=>T.n+' '+tt[k]).join(' · '));
@@ -180,6 +180,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
    lab('마지막 순간의 숫자')+
    '<div style="background:var(--surface-1);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px">'+
    VORD.map(k=>row(vName(k),Math.round(vVal(k)))).join('')+row(SCX().iName,Math.round(S.i))+row('누적 인명 피해 지수',Math.round(cDeaths))+row('개헌',(CAR.amend||0)+'회'+(CAR.amendHow?' ('+CAR.amendHow+')':''))+(CAR.dict?row('영구집권',CAR.dict+'기 계엄으로 시작'):'')+(CAR.spLog&&CAR.spLog.length?row('특별 이벤트',CAR.spLog.join(', ')):'')+'</div>'+
+   (kind==='defeat'&&CAR.camp==='reich'?'<button id="rhine" class="pri" style="width:100%;margin-bottom:8px;padding:15px;font-weight:700">에피소드 · 라인강의 기적 시작 ▶<span style="display:block;font-size:12px;font-weight:500;opacity:.85;margin-top:3px">1949년, 폐허 위의 새 공화국을 이끈다</span></button>':'')+
    '<button id="again" style="width:100%;margin-bottom:8px;padding:14px;font-weight:600;background:#2f4a6b;border-color:#2f4a6b">새 인생 시작</button>'+
    (god?'<p style="margin:0 0 8px;padding:12px;border-radius:10px;font-size:13px;line-height:1.6;text-align:center;color:var(--text-secondary);border:1px dashed var(--border)">⚡ 데우스 엑스 마키나의 판은 명예의 전당과 이 기기의 기록에 남지 않는다.</p>':
    '<button id="lbMine" style="display:block;width:100%;margin-bottom:8px;padding:13px;border-radius:10px;font-size:14px;font-weight:600;color:#8f6a12;border:1px solid rgba(143,106,18,.45);background:rgba(143,106,18,.08)">명예의 전당에서 내 순위 보기</button>')+
@@ -190,6 +191,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   if(!first)document.getElementById('scn').textContent=csc;
   if(first){openChr();runScore();}
   document.getElementById('again').onclick=()=>{SFX.click();home();};
+  if(document.getElementById('rhine'))document.getElementById('rhine').onclick=()=>{SFX.click();rhineGo();};
   if(!god)document.getElementById('lbMine').onclick=()=>{SFX.click();openBoard({back:()=>show(false),id:RUN.id,nick:NICK});};
   document.getElementById('cp').onclick=function(){copyText(summary,this);};};
   show(false);

@@ -248,7 +248,7 @@ const gxTabs=mini=>{const n=MINI.filter(x=>eggOn(x.id)).length;
 function gxTabsBind(){const a=document.getElementById('gxTbCamp'),b=document.getElementById('gxTbMini');
   if(a)a.onclick=()=>{if(a.classList.contains('on'))return;gxSfx('tick',0);stepCamp();};
   if(b)b.onclick=()=>{if(b.classList.contains('on'))return;try{aInit();}catch(e){}gxSfx('tick',1);stepMini();};}
-function stepCamp(){const ids=Object.keys(CAMPS).filter(id=>id!=='zombie');let k=Math.max(0,ids.indexOf(camp));
+function stepCamp(){const ids=Object.keys(CAMPS).filter(id=>id!=='zombie'&&campOn(id));let k=Math.max(0,ids.indexOf(camp));
   cine([{t:'무대 선택',h:'<div class="gx gx-camp">'+gxTop(0)+gxTabs(0)+'<h2 class="gx-q">어느 나라를 이끌 것인가</h2><div class="gx-cpw">'+
     ids.map((id,i)=>{const C=CAMPS[id]||SAIL_CP;return '<button class="gx-cp" data-c="'+id+'" style="--i:'+i+'"><span class="gx-cp-art" aria-hidden="true">'+(CP_ART[id]||'')+'</span>'+
       '<span class="gx-cp-tx"><span class="gx-cp-tag">'+C.tag+'</span><b>'+C.n+'</b><span class="gx-cp-sub">'+C.sub+'</span><span class="gx-cp-in">'+C.intro+'</span>'+

@@ -46,6 +46,7 @@ function evalTerm(kind){
 const winPct=a=>a<35?0:a>=65?100:Math.round(1+(a-35)*99/30);
 function termEnd(){window.scrollTo(0,0);
   const te=evalTerm('done');CAR.terms.push(te);CAR.tEval=CAR.term;if(!godRun()){MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;msave();}
+  if(CP.id==='reich'&&CAR.term===1&&!CAR.ww)return warEnd(te);   // 전쟁기 독일 1기의 끝: 세계대전의 승패(36-dlc-reich-flow.js)
   if(CP.rule==='reign')return reignEnd(te);
   // 개헌(amendPerm)이나 영구집권(dict)이면 임기 한도가 두 배로 늘어난다
   const av=Math.round(cl(S.a)),pct=winPct(av),amended=!!CAR.amendPerm||CAR.amendOK===CAR.term,limit=CP.rule==='single'?!amended:CP.rule==='two'?(CAR.term>=2&&!amended):false;
@@ -122,31 +123,40 @@ const RG_SAFE=60,RG_DEAD=30;
 function rgRisk(n){const av=Math.round(cl(S.a));if(av<RG_DEAD)return {r:100,base:100,old:0,fac:0};
   const base=av>=RG_SAFE?0:Math.round((RG_SAFE-av)*100/(RG_SAFE-RG_DEAD)),old=Math.max(0,n-2)*10,fac=Math.round(Math.max(0,S.u-45)*.8+Math.max(0,S.c-35)*.6);
   return {r:Math.min(95,base+old+fac),base:base,old:old,fac:fac};}
+// 선거 없는 나라(조선 · 전쟁기 독일)의 임기 끝 화면 낱말. 조선이 기본이고, 다른 나라는 CP.rgT로 바꿔 쓴다.
+const RGT0={termL:n=>n+'번째 치세',lastMsg:'옥좌에 오른 지 {Y}년. <b>이제 세자에게 자리를 물려줄 때다.</b>',heir:'세자에게 선위한다',finSub:'치세를 마친다',heirSub:'스스로 물러나 상왕이 된다',
+ dead:'민심이 완전히 떠났다. <b>반정의 칼날이 대궐 문 앞에 와 있다.</b>',deadBtn:'운명을 맞는다',deadSub:'반정이 일어난다',shaky:'민심이 흔들린다',shaky2:'민심은 버티지만 조정이 술렁인다',
+ cont:'치세를 이어 가면',risk:'반정이 일어날 가능성',riskS:'반정 위험',why:['민심','오래된 치세','당쟁 · 세도'],calm:'민심이 안정돼 있다. <b>치세를 이어 갈 수 있다.</b>',run:n=>n+'번째 치세를 이어 간다',
+ runSub:'다음 치세에는 새로운 시련이 온다',evalN:'치세 평가',evalT:'이번 치세의 평가',endA:'치세 끝의 민심',deadMark:'반정',dRun:'치세를 이어 감',dRetire:'선위 (이어 갈 수 있었음)',dDead:'반정',dFin:'치세 완료',
+ plotLab:n=>'반정 모의 · '+n+'번째 치세의 문턱',plotH:'궐 밖이 술렁인다',plotD:'반정을 꾀하는 무리가 있다는 밀고가 들어왔다. 군사와 대신들은 누구 편에 설 것인가.',plotBar:'임금 편에 선 군사',
+ won:'반정 모의를 진압했다',lost:'반정이 일어났다',wonS:'진압',lostS:'폐위',ok:'반정 진압',fail:'반정',stab:n=>n+'번째 치세 안정',elT:n=>n+'번째 치세 ',start:n=>n+'번째 치세 시작',kind:'deposed'};
+const rgt=k=>CP.rgT&&CP.rgT[k]!=null?CP.rgT[k]:RGT0[k];
 function reignEnd(te){const av=Math.round(cl(S.a)),isLast=CAR.term>=MAXT,n=CAR.term+1,RK=rgRisk(n),risk=isLast?0:RK.r;
   te.winP=isLast?'':100-risk;
   const acol=av>=RG_SAFE?'#2e7d55':av>=RG_DEAD?'#9a6400':'#b3261e';
   const opt=(id,t,sub,col)=>'<button id="'+id+'" style="width:100%;text-align:left;padding:14px 15px;margin-bottom:8px;'+(col?'border-color:'+col+'99;':'')+'"><span style="display:block;font-size:15px;font-weight:600">'+t+'</span><span style="display:block;font-size:12px;color:var(--text-muted);margin-top:3px">'+sub+'</span></button>';
-  let msg,btns;
-  if(isLast){msg='옥좌에 오른 지 '+(CAR.term*YRS)+'년. <b>이제 세자에게 자리를 물려줄 때다.</b>';btns=opt('fin','세자에게 선위한다','치세를 마친다','#2f5f99');}
-  else if(risk>=100){msg='민심이 완전히 떠났다. <b>반정의 칼날이 대궐 문 앞에 와 있다.</b>';btns=opt('dep','운명을 맞는다','반정이 일어난다','#b3261e');}
-  else{const why=[RK.base?'민심 '+RK.base+'%':'',RK.old?'오래된 치세 '+RK.old+'%':'',RK.fac?'당쟁 · 세도 '+RK.fac+'%':''].filter(Boolean).join(' · ');
-    msg=risk?(RK.base?'민심이 흔들린다':'민심은 버티지만 조정이 술렁인다')+'. 치세를 이어 가면 <b>반정이 일어날 가능성 '+risk+'%</b>.'+(why?'<br><span style="font-size:12.5px;color:var(--text-muted)">'+why+'</span>':''):'민심이 안정돼 있다. <b>치세를 이어 갈 수 있다.</b>';
-    btns=opt('run',n+'번째 치세를 이어 간다',risk?'반정 위험 '+risk+'% · 다음 치세에는 새로운 시련이 온다':'다음 치세에는 새로운 시련이 온다','#2f4a6b')+opt('retire','세자에게 선위한다','스스로 물러나 상왕이 된다','#2f5f99');}
-  R.innerHTML='<div style="animation:fdIn .4s ease-out">'+lab(CAR.term+'번째 치세 · '+YRS+'년의 끝 · '+ageNow()+'세')+
+  let msg,btns;const W=rgt('why');
+  if(isLast){msg=rgt('lastMsg').replace('{Y}',CAR.term*YRS);btns=opt('fin',rgt('heir'),rgt('finSub'),'#2f5f99');}
+  else if(risk>=100){msg=rgt('dead');btns=opt('dep',rgt('deadBtn'),rgt('deadSub'),'#b3261e');}
+  else{const why=[RK.base?W[0]+' '+RK.base+'%':'',RK.old?W[1]+' '+RK.old+'%':'',RK.fac?W[2]+' '+RK.fac+'%':''].filter(Boolean).join(' · ');
+    msg=risk?(RK.base?rgt('shaky'):rgt('shaky2'))+'. '+rgt('cont')+' <b>'+rgt('risk')+' '+risk+'%</b>.'+(why?'<br><span style="font-size:12.5px;color:var(--text-muted)">'+why+'</span>':''):rgt('calm');
+    btns=opt('run',rgt('run')(n),risk?rgt('riskS')+' '+risk+'% · '+rgt('runSub'):rgt('runSub'),'#2f4a6b')+opt('retire',rgt('heir'),rgt('heirSub'),'#2f5f99');}
+  R.innerHTML='<div style="animation:fdIn .4s ease-out">'+lab(rgt('termL')(CAR.term)+' · '+YRS+'년의 끝 · '+ageNow()+'세')+
    '<div class="cd sealhit" style="position:relative;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;overflow:hidden">'+
-   '<div class="seal" style="--sc:'+GCOL[te.g]+'"><b>'+te.g+'</b><span>치세 평가</span></div>'+
-   '<div style="font-size:11px;color:var(--text-muted);margin-bottom:6px">이번 치세의 평가 · '+te.scenario+'</div>'+
+   '<div class="seal" style="--sc:'+GCOL[te.g]+'"><b>'+te.g+'</b><span>'+rgt('evalN')+'</span></div>'+
+   '<div style="font-size:11px;color:var(--text-muted);margin-bottom:6px">'+rgt('evalT')+' · '+te.scenario+'</div>'+
    '<div style="font-size:22px;font-weight:600;color:'+te.col+';line-height:1.3;margin-bottom:8px;padding-right:80px">'+te.ti+'</div>'+
    '<div style="font-size:14px;color:var(--text-secondary);line-height:1.75">'+words(te.ds,200)+'</div></div>'+
-   card(lab('치세 끝의 민심')+'<div style="position:relative;height:16px;border-radius:8px;background:linear-gradient(90deg,rgba(179,38,30,.14) 0 '+RG_DEAD+'%,rgba(179,38,30,.08) '+RG_DEAD+'% '+RG_SAFE+'%,rgba(46,125,85,.10) '+RG_SAFE+'% 100%);margin:4px 0 8px"><span style="position:absolute;left:0;top:0;bottom:0;width:'+av+'%;border-radius:8px;background:'+acol+';animation:barG 1.3s cubic-bezier(.2,.8,.2,1) both"></span></div>'+
-     '<div style="position:relative;height:14px;font-size:11px;color:var(--text-muted)"><span style="position:absolute;left:'+RG_DEAD+'%;transform:translateX(-50%)">'+RG_DEAD+' 반정</span><span style="position:absolute;left:'+RG_SAFE+'%;transform:translateX(-50%);color:var(--text-secondary);font-weight:600">'+RG_SAFE+' 안전</span><span style="position:absolute;right:0">100</span></div>'+
+   card(lab(rgt('endA'))+'<div style="position:relative;height:16px;border-radius:8px;background:linear-gradient(90deg,rgba(179,38,30,.14) 0 '+RG_DEAD+'%,rgba(179,38,30,.08) '+RG_DEAD+'% '+RG_SAFE+'%,rgba(46,125,85,.10) '+RG_SAFE+'% 100%);margin:4px 0 8px"><span style="position:absolute;left:0;top:0;bottom:0;width:'+av+'%;border-radius:8px;background:'+acol+';animation:barG 1.3s cubic-bezier(.2,.8,.2,1) both"></span></div>'+
+     '<div style="position:relative;height:14px;font-size:11px;color:var(--text-muted)"><span style="position:absolute;left:'+RG_DEAD+'%;transform:translateX(-50%)">'+RG_DEAD+' '+rgt('deadMark')+'</span><span style="position:absolute;left:'+RG_SAFE+'%;transform:translateX(-50%);color:var(--text-secondary);font-weight:600">'+RG_SAFE+' 안전</span><span style="position:absolute;right:0">100</span></div>'+
      '<div style="font-size:14px;margin-top:10px;line-height:1.7">'+msg+'</div>')+btns+'</div>';
   SFX.stamp(.78);SFX.grade(te.g,.78);termCine(te);
-  const b=id=>document.getElementById(id);
-  if(b('run'))b('run').onclick=()=>{SFX.click();te.decision='치세를 이어 감';logSpecial('치세를 이어 감',0,'중립');if(!risk){te.elect='유지';CAR.elections.push(n+'번째 치세 안정');return newTerm();}election(false,100-risk,te);};
-  if(b('retire'))b('retire').onclick=()=>{SFX.click();te.decision='선위 (이어 갈 수 있었음)';CAR.retireElig=true;logSpecial('선위 (이어 갈 수 있었음)',-10,'견제·분산');careerEnd('retire');};
-  if(b('dep'))b('dep').onclick=()=>{SFX.click();te.decision='반정';careerEnd('deposed');};
-  if(b('fin'))b('fin').onclick=()=>{SFX.click();te.decision='치세 완료';careerEnd('served');};}
+  // 두 번 눌러 임기가 두 번 넘어가지 않게 한 번만 받는다
+  const b=id=>document.getElementById(id);let gone=0;const one=f=>()=>{if(gone++)return;f();};
+  if(b('run'))b('run').onclick=one(()=>{SFX.click();te.decision=rgt('dRun');logSpecial(rgt('dRun'),0,'중립');if(!risk){te.elect='유지';CAR.elections.push(rgt('stab')(n));return newTerm();}election(false,100-risk,te);});
+  if(b('retire'))b('retire').onclick=one(()=>{SFX.click();te.decision=rgt('dRetire');CAR.retireElig=true;logSpecial(rgt('dRetire'),-10,'견제·분산');careerEnd('retire');});
+  if(b('dep'))b('dep').onclick=one(()=>{SFX.click();te.decision=rgt('dDead');careerEnd(rgt('kind'));});
+  if(b('fin'))b('fin').onclick=one(()=>{SFX.click();te.decision=rgt('dFin');careerEnd('served');});}
 
 // 대통령 선거(조선 반정 제외)는 당선이 확정이 아니면 개표 전에 TV 토론이 열린다. 토론 결과로 당선 가능성이 오르내린다.
 const DB_D=[14,6,-4,-10];
@@ -165,22 +175,22 @@ function election(amend,pct,te,deb){
   window.scrollTo(0,0);
   const n=CAR.term+1,win=Math.random()*100<pct,jit=Math.random()*4-2;
   const share=win?Math.max(50.4,Math.min(79,50.5+(S.a-50)*.55+jit)):Math.min(49.6,Math.max(28,48+(S.a-50)*.45+jit));
-  const RG=CP.rule==='reign';te.elect=RG?(win?'반정 진압':'반정'):win?'당선':'낙선';te.winP=pct;CAR.elections.push(n+(RG?'번째 치세 ':'기 ')+pct+'% '+te.elect);
+  const RG=CP.rule==='reign';te.elect=RG?(win?rgt('ok'):rgt('fail')):win?'당선':'낙선';te.winP=pct;CAR.elections.push((RG?rgt('elT')(n):n+'기 ')+pct+'% '+te.elect);
   R.innerHTML='<div style="animation:fdIn .35s ease-out;padding-top:10px">'+
-   lab(RG?'반정 모의 · '+n+'번째 치세의 문턱':amend?n+'선 대선 · 고친 헌법 아래':(n)+'번째 대통령 선거')+
-   '<div id="vt" style="font-size:24px;font-weight:600;margin-bottom:6px">'+(RG?'궐 밖이 술렁인다':'개표 중')+'</div>'+
-   '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:18px">'+(RG?'반정을 꾀하는 무리가 있다는 밀고가 들어왔다. 군사와 대신들은 누구 편에 설 것인가.':amend?'헌법이 바뀌었다. 이제 남은 것은 표다.':'국민이 다시 묻는다. 한 번 더 맡길 것인가.')+' <span style="color:var(--text-muted)">· '+(RG?'진압 가능성 ':'당선 가능성 ')+pct+'%'+(te.dbD!=null&&!RG?' (TV 토론 '+(te.dbD>=0?'+':'')+te.dbD+'%p)':'')+'</span></div>'+
-   card('<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:6px"><span>'+(RG?'임금 편에 선 군사':'득표율')+'</span><span id="vp">0%</span></div>'+
+   lab(RG?rgt('plotLab')(n):amend?n+'선 대선 · 고친 헌법 아래':(n)+'번째 대통령 선거')+
+   '<div id="vt" style="font-size:24px;font-weight:600;margin-bottom:6px">'+(RG?rgt('plotH'):'개표 중')+'</div>'+
+   '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:18px">'+(RG?rgt('plotD'):amend?'헌법이 바뀌었다. 이제 남은 것은 표다.':'국민이 다시 묻는다. 한 번 더 맡길 것인가.')+' <span style="color:var(--text-muted)">· '+(RG?'진압 가능성 ':'당선 가능성 ')+pct+'%'+(te.dbD!=null&&!RG?' (TV 토론 '+(te.dbD>=0?'+':'')+te.dbD+'%p)':'')+'</span></div>'+
+   card('<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:6px"><span>'+(RG?rgt('plotBar'):'득표율')+'</span><span id="vp">0%</span></div>'+
      '<div style="position:relative;height:20px;border-radius:10px;background:rgba(29,27,24,.07);overflow:hidden"><span id="vb" style="position:absolute;left:0;top:0;bottom:0;width:0;background:#2f4a6b;border-radius:10px;transition:width 1.6s cubic-bezier(.2,.8,.2,1)"></span>'+
      '<span style="position:absolute;left:calc(50% - 1px);top:0;bottom:0;width:2px;background:#fff;opacity:.8"></span></div>')+
    '<div id="won" style="text-align:center;margin:22px 0;min-height:70px"></div>'+
-   '<button id="go2" class="pri" style="width:100%;padding:15px;font-size:15px;opacity:0;pointer-events:none">'+(win?(RG?n+'번째 치세 시작':n+'기 정부 출범'):'커리어 결산 보기')+'</button></div>';
+   '<button id="go2" class="pri" style="width:100%;padding:15px;font-size:15px;opacity:0;pointer-events:none">'+(win?(RG?rgt('start')(n):n+'기 정부 출범'):'커리어 결산 보기')+'</button></div>';
   requestAnimationFrame(()=>requestAnimationFrame(()=>{const vb=document.getElementById('vb');if(vb)vb.style.width=share+'%';}));
   const t0=performance.now();(function f(){const k=Math.min(1,(performance.now()-t0)/1600),el=document.getElementById('vp');if(!el)return;el.textContent=(share*(1-Math.pow(1-k,3))).toFixed(1)+'%';if(k<1)requestAnimationFrame(f);})();
   SFX.roll(1.7);
-  setTimeout(()=>{const w=document.getElementById('won');if(!w)return;document.getElementById('vt').textContent=RG?(win?'반정 모의를 진압했다':'반정이 일어났다'):'개표 완료';
-    if(win){SFX.stamp(.3);SFX.win(.3);w.innerHTML='<div style="display:inline-block;font-size:40px;font-weight:800;color:#2e7d55;letter-spacing:6px;border:3px solid #2e7d55;border-radius:10px;padding:4px 18px;animation:stamp .6s cubic-bezier(.2,1.4,.4,1) both">'+(RG?'진압':'당선')+'</div>';}
-    else{SFX.stamp(.3);SFX.lose(.3);vib([90,60,120]);w.innerHTML='<div style="display:inline-block;font-size:40px;font-weight:800;color:#b3261e;letter-spacing:6px;border:3px solid #b3261e;border-radius:10px;padding:4px 18px;animation:stamp .6s cubic-bezier(.2,1.4,.4,1) both">'+(RG?'폐위':'낙선')+'</div><div style="font-size:13px;color:var(--text-secondary);margin-top:12px">'+pct+'%의 가능성은 이번에 오지 않았다.</div>';}
+  setTimeout(()=>{const w=document.getElementById('won');if(!w)return;document.getElementById('vt').textContent=RG?(win?rgt('won'):rgt('lost')):'개표 완료';
+    if(win){SFX.stamp(.3);SFX.win(.3);w.innerHTML='<div style="display:inline-block;font-size:40px;font-weight:800;color:#2e7d55;letter-spacing:6px;border:3px solid #2e7d55;border-radius:10px;padding:4px 18px;animation:stamp .6s cubic-bezier(.2,1.4,.4,1) both">'+(RG?rgt('wonS'):'당선')+'</div>';}
+    else{SFX.stamp(.3);SFX.lose(.3);vib([90,60,120]);w.innerHTML='<div style="display:inline-block;font-size:40px;font-weight:800;color:#b3261e;letter-spacing:6px;border:3px solid #b3261e;border-radius:10px;padding:4px 18px;animation:stamp .6s cubic-bezier(.2,1.4,.4,1) both">'+(RG?rgt('lostS'):'낙선')+'</div><div style="font-size:13px;color:var(--text-secondary);margin-top:12px">'+pct+'%의 가능성은 이번에 오지 않았다.</div>';}
     const g=document.getElementById('go2');g.style.opacity=1;g.style.pointerEvents='auto';g.style.transition='opacity .3s';
-    g.onclick=()=>{if(win){SFX.start();newTerm();}else{SFX.click();careerEnd(RG?'deposed':'defeated');}};},1800);}
+    g.onclick=()=>{if(win){SFX.start();newTerm();}else{SFX.click();careerEnd(RG?rgt('kind'):'defeated');}};},1800);}
 

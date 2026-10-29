@@ -457,7 +457,7 @@ function chipsHTML(e){if(!e||e.X)return '';const hot=urgV();
   return '<span class="chs">'+ks.map(([k,v])=>{const g=vGood(k,v),n=Math.abs(v)>=5?2:1,ar=(v>0?'▲':'▼').repeat(n),h=g&&hot[k];
     return '<span class="ch'+(h?' hot':'')+'" style="--c:'+V6[k].col+'"><span>'+vName(k)+'</span><b class="'+(g===null?'nu':g?'gd':'bd')+'">'+ar+'</b></span>';}).join('')+'</span>';}
 // 출발 인물: 효과(e)를 화면 지표 6개 기준으로 설명한다
-[CAMPS.kr,CAMPS.joseon,CAMPS.usa,CAMPS.zombie].forEach(C=>C.bg.forEach(q=>{if(q.e&&!q.f)q.f=s=>{for(const k in q.e)s[k]+=q.e[k];};}));
+[CAMPS.kr,CAMPS.joseon,CAMPS.usa,CAMPS.zombie,CAMPS.reich,CAMPS.bonn].forEach(C=>C.bg.forEach(q=>{if(q.e&&!q.f)q.f=s=>{for(const k in q.e)s[k]+=q.e[k];};}));
 function vNameC(k,C){const L=C.lbl||{},V=C.vl||{};return k==='A'?(L.a||'지지율'):k==='E'?(L.e||'경제'):k==='H'?(HN[C.scen0]||'방역'):k==='U'?(L.u||'갈등'):k==='P'?(V.P||'권력'):k==='M'?(V.M||'군사'):k==='X'?(V.X||'혼란'):(V.C||'부패');}
 function bgDesc(q,C){if(!q.e)return q.d||'';const xs=VORD.map(k=>[k,Math.round(vDelta(k,q.e))]).filter(x=>x[1]);
   return xs.map(([k,v])=>{const g=vGood(k,v),col=g===null?'#3d5a80':g?'#2a6e4b':'#a8321f';return '<span style="color:'+V6[k].col+'">'+vNameC(k,C)+'</span> <b style="color:'+col+'">'+(v>0?'+':'−')+Math.abs(v)+'</b>';}).join(' · ')+(q.t?' · <span style="color:#3d5a80">운명 개입 +'+q.t+'</span>':'');}

@@ -72,7 +72,7 @@ function cnEnc(){const H=CAR.hid=CAR.hid||{},here=n=>CN_HID[n].camps.indexOf(CP.
 const cnByName=n=>CN.find(c=>c.n===n);
 const cnHas=f=>cnHired().some(c=>CN_SP[c.n]&&CN_SP[c.n].f===f);
 const cnPow=d=>cnHired().filter(c=>c.d===d).reduce((s,c)=>s+CN_POW[c.t],0);
-function cnPool(){const tg=CP.id==='joseon'?'j':CP.id==='usa'?'u':'';return CN.filter(c=>(!tg||c.tg.indexOf(tg)>=0)&&!cnHidden(c.n)&&c.n!==(CAR&&CAR.bgn));}
+function cnPool(){const tg=CP.id==='joseon'?'j':CP.id==='usa'||CP.id==='reich'||CP.id==='bonn'?'u':'';return CN.filter(c=>(!tg||c.tg.indexOf(tg)>=0)&&!cnHidden(c.n)&&c.n!==(CAR&&CAR.bgn));}
 function cnRisk(c){if(c.r){const m=c.r.match(/^([a-z]+)([+-]\d+):(.*)$/);return m?[{k:m[1],v:+m[2],l:m[3]}]:[];}
   const D=CN_DOM[c.d],m=c.d==='S'?c.t-1:c.t-2;if(m<=0)return [];
   const L=[{k:D.rk[0],v:D.rk[1]*m,l:D.rk[2]}];if(D.rk2&&c.t>=3)L.push({k:D.rk2[0],v:D.rk2[1]*(c.t-2),l:D.rk[2]});return L;}

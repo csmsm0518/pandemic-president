@@ -3,7 +3,7 @@
    전선마다 더 많은 쪽이 이기고, 이긴 전선이 진 전선보다 많으면 그날을 이긴다. 지켜 낸 전선에는 다음 날 거점 병력 1이 붙는다.
    참전 규모(ctx.war)에 따라 하루 병력이 달라지고, 공세(ctx.stance 'atk')면 적이 1 더 많고, 방어('def')면 비겨도 우리가 지킨다. */
 const WR_D=3;
-const WR_F=()=>CP.id==='joseon'?['포구','해안','산성']:CP.id==='usa'?['북부 전선','수도 외곽','남부 전선']:['해협','항구','고지'];
+const WR_F=()=>CP.id==='joseon'?['포구','해안','산성']:CP.id==='usa'?['북부 전선','수도 외곽','남부 전선']:CP.id==='reich'?['서부 전선','동부 전선','북아프리카']:['해협','항구','고지'];
 function wrSetup(){const c=(CAR.spRun&&CAR.spRun.ctx)||{};
   return {u:10+(c.war==='big'?2:c.war==='small'||c.war==='talk'?-1:0),eu:10+(c.stance==='atk'?1:0),def:c.stance==='def'};}
 // 적의 배치: 무작위로 나누되, 전날 빼앗긴 전선에는 더 보낸다

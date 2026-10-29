@@ -191,6 +191,7 @@ function needEval(n){if(n[0]==='NOWAR')return {ok:SCX().id!=='war',txt:'전쟁 �
   if(n[0]==='COV')return {ok:isCov(),txt:'코로나 위기 중(1기)'};
   if(n[0]==='NODICT')return {ok:!CAR.dict,txt:'아직 영구집권하지 않았다'};
   if(n[0]==='T2')return {ok:CAR.term>=2,txt:'2기 임기 중'};
+  if(n[0]==='UNIFY')return {ok:SCX().id==='unify',txt:'통일 위기 중'};
   const v=Math.round(n[0]==='I'?S.i:vVal(n[0])),nm=n[0]==='I'?'위기 지수':vName(n[0]),ok=n[1]==='>='?v>=n[2]:v<=n[2];
   return {ok:ok,txt:nm+' '+n[2]+(n[1]==='>='?' 이상':' 이하'),cur:v};}
 function startSpecial(sp,key,y){CAR.spDone[key]=1;wolyMark(sp,y);CAR.spLog=CAR.spLog||[];CAR.spLog.push(CAR.term+'기 '+(y+1)+'년 '+sp.n);

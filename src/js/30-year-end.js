@@ -15,7 +15,7 @@ function report(){SFX.report();window.scrollTo(0,0);
   const say=RPX(worst)[bd(S[worst])];
   // 세로 화면: 지표는 3×2 타일, 흐름 그래프는 같은 카드에 낮게, 다음 버튼은 아래 고정(pfit)
   const PO=isP(),chart=lineChart([{pts:TH.map(h=>h.h!=null?h.h:100-h.i),col:V6.H.col,w:1.6},{pts:TH.map(h=>h.a),col:'#2e7d55',w:2.4}],YRS*PY),
-    legend='<div style="display:flex;gap:14px;font-size:11px;color:var(--text-muted);margin-top:8px;flex-wrap:wrap"><span><b style="color:#2e7d55">━</b> '+KN.a+'</span><span><b style="color:'+V6.H.col+'">━</b> '+X.ctrl+'</span><span>'+(CP.rule==='reign'?'┄ 반정 위험선 35 · 안정 65':'┄ 출마선 35 · 당선 확정 65')+'</span></div>';
+    legend='<div style="display:flex;gap:14px;font-size:11px;color:var(--text-muted);margin-top:8px;flex-wrap:wrap"><span><b style="color:#2e7d55">━</b> '+KN.a+'</span><span><b style="color:'+V6.H.col+'">━</b> '+X.ctrl+'</span><span>'+(CP.rule==='reign'?'┄ '+rgt('deadMark')+' 위험선 35 · 안정 65':'┄ 출마선 35 · 당선 확정 65')+'</span></div>';
   R.innerHTML='<div class="'+(PO?'pfit rp':'')+'" style="position:relative;animation:fdIn .35s ease-out">'+(PO?'<div class="p-sc">':'')+
    '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"><span style="font-size:12px;font-weight:600;color:var(--text-muted)">'+(CP.id==='joseon'?CAR.term+'번째 치세':CAR.term+'기')+' '+y+'년차 연말 · '+ageNow()+'세</span><span style="font-size:11px;color:var(--text-muted)">'+MOD.n+'</span></div>'+
    '<div class="hd rp-h" style="font-size:24px;margin-bottom:8px">'+(fin?'임기 마지막 결산':'연간 총결산')+'</div>'+
