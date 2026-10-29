@@ -7398,10 +7398,11 @@ Object.assign(BOARD_POOL,{reich:['war_r','autob','volksw','rocket','pand_r'],bon
 Object.assign(NEED,{enable:[['P','>=',50]],war_r:[['M','>=',60]],autob:[['E','>=',45]],volksw:[['E','>=',52],['X','<=',40]],rocket:[['E','>=',55],['M','>=',55]],pand_r:[['I','>=',25]],
  emerg:[['P','>=',50]],wwunder:[['E','<=',50]],wc54:[['A','>=',45]],europe:[['E','>=',50],['X','<=',35]],war_b:[['M','>=',55]],reunify:[['UNIFY']]});
 
-// 무대 고르기 그림: 전쟁기 독일은 검정 · 하양 · 빨강 제국 삼색에 철십자, 서독은 검정 · 빨강 · 금색 삼색
-CP_ART.reich=(()=>{const cx=150,cy=300;let s='<svg viewBox="0 0 300 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="300" height="600" fill="#ece6d6"/><rect width="100" height="600" fill="#1d1b18"/><rect x="200" width="100" height="600" fill="#b3261e"/>';
-  s+='<path d="M'+(cx-14)+' '+(cy-70)+'h28l-6 46 46-6v28l-46-6 6 46h-28l6-46-46 6v-28l46 6z" fill="#1d1b18" stroke="#ece6d6" stroke-width="5" transform="translate(0 0) scale(1)"/>';
-  return s+'</svg>';})();
+// 무대 고르기 그림: 전쟁기 독일은 실제 나치 깃발(빨간 바탕 · 흰 원 · 45° 기운 하켄크로이츠), 서독은 검정 · 빨강 · 금색 삼색.
+// 하켄크로이츠는 이 깃발 한 곳에만 쓴다(초상이나 화면 장식으로 되풀이하지 않는다)
+CP_ART.reich=(()=>{const arm=[[-8,-54,16,108],[-54,-8,108,16],[-8,-54,62,16],[38,-8,16,62],[-54,38,62,16],[-54,-54,16,62]];
+  return '<svg viewBox="0 0 300 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="300" height="600" fill="#c8281e"/><circle cx="150" cy="300" r="100" fill="#f2ede4"/>'+
+   '<g transform="translate(150 300) rotate(45)" fill="#1d1b18">'+arm.map(r=>'<rect x="'+r[0]+'" y="'+r[1]+'" width="'+r[2]+'" height="'+r[3]+'"/>').join('')+'</g></svg>';})();
 CP_ART.bonn=(()=>{let s='<svg viewBox="0 0 300 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="300" height="200" fill="#1d1b18"/><rect y="200" width="300" height="200" fill="#c8281e"/><rect y="400" width="300" height="200" fill="#e8b81c"/>';
   for(let i=0;i<3;i++){let d='M-20 '+(470+i*40);for(let x=-20;x<320;x+=40)d+='q10 -10 20 0t20 0';s+='<path d="'+d+'" fill="none" stroke="#fff4c8" stroke-opacity=".45" stroke-width="4"/>';}
   return s+'</svg>';})();
