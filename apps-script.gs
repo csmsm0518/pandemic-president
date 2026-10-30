@@ -22,7 +22,7 @@
 //
 // 열은 항상 예전 버전 뒤에 이어 붙이므로, 이미 쌓인 기록과 줄이 어긋나지 않는다. 머리글(1행)은 자동으로 새 버전으로 바뀐다.
 
-const SCRIPT_VER = 'v20';
+const SCRIPT_VER = 'v21';
 // [비밀 게임 기록] v13: 좀비 서바이벌 「방역선」과 비밀 모드 「대항해」의 점수가 "비밀 게임 기록" 탭에 쌓이고, 명예의 전당 오른쪽 두 칸에 순위가 나온다.
 const ARCADE = [['판ID', 'id'], ['게임', 'game'], ['닉네임', 'nickname'], ['학교', 'school'], ['점수', 'score'], ['시간(초)', 'sec'], ['성공', 'win'], ['세부', 'detail'], ['게임 버전', 'gv'],
   // ----- v15: 숨김(관리자가 아무 글자나 적으면 그 줄은 순위에서 빠진다. 서버가 말이 안 되는 기록을 받으면 스스로 사유를 적는다) -----
@@ -282,7 +282,9 @@ const SUMMARY = [
   // ----- 쿠폰(메인 화면 쿠폰함)으로 받아 이 판에 더해진 운명 개입 수. '운명 개입 사용' · '남은 개입'을 비교할 때 뺀다 -----
   ['쿠폰 운명 개입', 'couponTok'],
   // ----- v19: 회원으로 한 판이면 회원 키(아이디의 지문). 같은 회원의 여러 기기 판을 한 사람으로 묶는다 -----
-  ['회원 키', 'mkey']
+  ['회원 키', 'mkey'],
+  // ----- v21: 오늘의 도전(한국 시간 날짜). 순위 판이면 '예'(그날 처음 시작한 판), 연습 판은 빈칸 -----
+  ['도전 날짜', 'dcDate'], ['도전 순위 판', 'dcRanked']
 ];
 // 상품 연락용 참가자 정보. 분석 시트와 따로 둔다.
 const PRIVATE = [['판ID', 'id'], ['시작 시각', 'startedAt'], ['닉네임', 'nickname'], ['학교', 'school'], ['이름', 'realName'], ['전화번호', 'phone'], ['개인정보 동의', 'consent'], ['게임 버전', 'gv'], ['학교(적은 그대로)', 'schoolRaw'], ['회원 아이디', 'mid']];
@@ -522,6 +524,9 @@ function doPost(e) {
     run.v = d.v || '';
     run.gv = run.gv || d.gv || '';
     // 회원 판: 토큰이 맞으면 참가자 탭에 아이디, 요약 탭에 회원 키를 남긴다(토큰은 어디에도 적지 않는다)
+    const dcOk = [kstDate_(now), kstDate_(new Date(now.getTime() - 864e5))];
+    if (dcOk.indexOf(String(run.dcDate || '')) < 0) { run.dcDate = ''; run.dcRanked = ''; }
+    else run.dcRanked = run.dcRanked === '예' ? '예' : '';
     const mid = memberOfRun_(ss, run.mid, run.mtok);
     run.mkey = mid ? memberKey_(mid) : '';
     delete run.mid; delete run.mtok;
@@ -1003,11 +1008,19 @@ function buildBoard_() {
   const g = (r, n) => (ix[n] === undefined ? '' : r[ix[n]]);
   const num = x => (x === '' || x === null || isNaN(Number(x)) ? null : Number(x));
   const PS = privSchools_();
-  const rows = [];
+  const rows = [], dcRows = [], dToday = kstDate_(new Date()), dYest = kstDate_(new Date(Date.now() - 864e5));
   for (let i = 1; i < v.length; i++) {
     const r = v[i], sc = num(g(r, '커리어 점수')), id = String(g(r, '판ID'));
     // 학교: 관리자가 '참가자(비공개)' 탭에서 고친 학교가 있으면 그것을 쓴다(요약 탭의 학교는 처음 받은 그대로)
     const sch = Object.prototype.hasOwnProperty.call(PS, id) ? PS[id] : g(r, '학교');
+    // 오늘의 도전: 중도 이탈 줄(점수 없음)도 '그 사람의 첫 판'을 정하는 데 쓰므로 점수 거르기 전에 모은다
+    const dd = String(g(r, '도전 날짜') || '');
+    if ((dd === dToday || dd === dYest) && String(g(r, '도전 순위 판')) === '예' && id !== 'test') {
+      const mk = String(g(r, '회원 키') || '').trim(), pid = String(g(r, '플레이어ID') || '').trim(), t0 = g(r, '기록 시각');
+      dcRows.push({d: dd, key: mk ? 'u:' + mk : pid ? 'p:' + pid : 'r:' + id, t: t0 instanceof Date ? t0.getTime() : Date.parse(t0) || 0,
+        sc: sc, bad: !!String(g(r, '숨김') || '').trim() || (sc !== null && Math.abs(sc) > SCORE_MAX), nick: pubNick_(g(r, '닉네임')), school: schoolName_(sch),
+        leader: String(g(r, '닮은 지도자')), exit: String(g(r, '퇴장 방식'))});
+    }
     if (sc === null || id === 'test') continue;          // 중도 이탈·테스트 줄은 제외
     if (String(g(r, '숨김') || '').trim()) continue;      // 관리자가 가린 줄 · 서버가 이상하다고 적은 줄
     if (Math.abs(sc) > SCORE_MAX) continue;
@@ -1048,6 +1061,8 @@ function buildBoard_() {
     });
   }
   Object.assign(out, boardOf_(rows, 30, 15));
+  out.daily = dailyOf_(dcRows, dToday);
+  out.dailyY = dailyOf_(dcRows, dYest);
   // 난이도별 순위: 응답이 너무 커지지 않게 목록은 조금 짧게 자른다
   out.diffs = DIFFS;
   out.byDiff = {};
@@ -1055,6 +1070,19 @@ function buildBoard_() {
   return out;
 }
 
+// 오늘의 도전 순위: 사람마다(회원 키 · 플레이어ID) 그날 처음 시작한 순위 판 하나만. 그 판이 중도 이탈이면 그 사람은 순위에 없다
+const kstDate_ = d => Utilities.formatDate(d, 'Asia/Seoul', 'yyyy-MM-dd');
+function dailyOf_(L, d) {
+  const first = {};
+  L.filter(r => r.d === d).sort((a, b) => a.t - b.t).forEach(r => { if (!first[r.key]) first[r.key] = r; });
+  const ok = Object.keys(first).map(k => first[k]).filter(r => r.sc !== null && !r.bad).sort((a, b) => b.sc - a.sc);
+  const sch = {};
+  ok.forEach(r => { if (!r.school) return; const s = sch[r.school] = sch[r.school] || {s: r.school, n: 0, sum: 0, best: -1e9}; s.n++; s.sum += r.sc; s.best = Math.max(s.best, r.sc); });
+  return {date: d, n: ok.length, tried: Object.keys(first).length,
+    top: ok.slice(0, 50).map((r, i) => ({r: i + 1, nick: r.nick, school: r.school, score: r.sc, leader: r.leader, exit: r.exit})),
+    schools: Object.keys(sch).map(k => sch[k]).map(s => ({s: s.s, n: s.n, avg: Math.round(s.sum / s.n), best: s.best})).sort((a, b) => b.avg - a.avg).slice(0, 15),
+    scores: ok.map(r => r.sc)};   // 점수만(내 순위 셈 · 분포용)
+}
 // 한 묶음의 기록으로 순위표·통계를 만든다(전체 한 번, 난이도마다 한 번)
 function boardOf_(rows, nTop, nList) {
   // det(세부 수치)는 점수 순위 상위 3명에게만 붙인다(응답 크기를 줄이려고)

@@ -131,7 +131,7 @@ function cnCard(c,body,extra){const kp=cnKeep(c),rk=cnRiskTxt(c),M=(CAR.cnMeta||
    (CN_SP[c.n]?'<div class="cn-sp"><b>특수능력 · '+CN_SP[c.n].n+'</b> '+CN_SP[c.n].d+'</div>':'')+
    '<div class="cn-e"><span class="cn-ep">'+cnEffTxt(c)+'</span>'+(rk?'<span class="cn-er">대가: 해마다 '+rk+'</span>':'')+(kp?'<span class="cn-ek'+(kp.ok?'':' bad')+'">'+(c.t===4?'임기 최대 2년 · 1년 뒤 연임 심사: ':'잔류 기준: ')+kp.txt+' (지금 '+kp.v+')'+(c.t===4&&M&&M.y>=1?' · 마지막 해':'')+'</span>':'')+'</div>'+(body||'')+'</div></div>';}
 // 비상소집: 커리어에 단 한 번, 전설 등급 후보 셋 가운데 한 명을 곧바로 앉힌다
-function cnEmerg(back){window.scrollTo(0,0);const RL=roleOf(),hired=new Set(CAR.cn.filter(i=>i!=null)),L=cnPool().filter(c=>c.t===4&&!hired.has(c.i)&&!CAR.cnGone.has(c.i)).sort(()=>Math.random()-.5),out=[],ds=new Set();
+function cnEmerg(back){dcSeed('cnem');window.scrollTo(0,0);const RL=roleOf(),hired=new Set(CAR.cn.filter(i=>i!=null)),L=cnPool().filter(c=>c.t===4&&!hired.has(c.i)&&!CAR.cnGone.has(c.i)).sort(()=>Math.random()-.5),out=[],ds=new Set();
   L.forEach(c=>{if(out.length<3&&!ds.has(c.d)){out.push(c);ds.add(c.d);}});L.forEach(c=>{if(out.length<3&&out.indexOf(c)<0)out.push(c);});
   out.forEach(c=>CAR.cnSeen.add(c.i));SFX.report();vib([40,30,40]);
   R.innerHTML='<div class="gcn deal"><div class="cn-em"><div class="cn-em-k">커리어에 단 한 번</div><div class="hd" style="font-size:28px;color:#fff">비상소집</div>'+
@@ -143,7 +143,7 @@ function cnEmerg(back){window.scrollTo(0,0);const RL=roleOf(),hired=new Set(CAR.
     CAR.cn[s]=c.i;CAR.cnMeta[c.i]={miss:0};CAR.cnEm=CAR.term+'기 '+y+'년 '+c.n;CAR.cnLog.push(CAR.term+'기 '+y+'년 비상소집: '+c.n+'(★4 '+CN_DOM[c.d].n+')'+(old!=null?' ← '+CN[old].n:''));back();});
   document.getElementById('emNo').onclick=()=>{SFX.back();back();};}
 const cnEmBtn=()=>CAR&&!CAR.cnEm?'<button id="cnEm" class="cn-embtn">비상소집 · 전설 '+roleOf().n+' 부르기 <small>커리어에 한 번</small></button>':'';
-function council(go){window.scrollTo(0,0);const RL=roleOf(),notes=cnYear();let cands=cnDraw(),arm=-1,enc=cnEnc(),dealt=false;const y=Math.round(S.turn/PY)+1;
+function council(go){dcSeed('council');window.scrollTo(0,0);const RL=roleOf(),notes=cnYear();let cands=cnDraw(),arm=-1,enc=cnEnc(),dealt=false;const y=Math.round(S.turn/PY)+1;
   const encHTML=()=>{if(!enc)return '';const X=CN_HID[enc.n],c=cnByName(enc.n);
     const sl=act=>'<div class="cn-b">'+[0,1].map(s=>'<button class="cn-btn pick" data-enc="'+act+','+s+'">'+(CAR.cn[s]==null?'빈 자리에 맞이한다':'<span>'+CN[CAR.cn[s]].n+'</span> 대신')+'</button>').join('')+'</div>';
     if(enc.kind==='done')return '<div class="cn-enc"><div class="cn-enc-k">만남</div>'+cnCard(c,'')+'<div class="cn-enc-t" style="margin-top:10px">'+enc.msg+'</div></div>';

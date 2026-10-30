@@ -82,6 +82,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   lab('난이도')+'<div class="hl-dif" style="display:flex;gap:8px;margin-bottom:24px">'+dfb+'</div>'+
   '<div class="hl-go"><button id="st" class="pri"'+(B?'':' disabled')+' style="width:100%;padding:16px;font-size:16.5px;margin-bottom:12px">'+(!B?'인물을 선택하세요':camp==='joseon'?'즉위한다':camp==='zombie'?'지휘를 맡는다':'취임한다')+'</button></div>'+(P?bgHint+introH:'')+
   '<div class="hm-row"><button id="tutBtn" class="tgl" role="switch" aria-checked="'+tutOn()+'"><span class="tgl-k"></span><span>튜토리얼 '+(tutOn()?'켜짐':'꺼짐')+'</span></button></div>'+
+  '<button id="dcBtn" class="hm-card hm-daily"><span class="hm-i">'+GX_IC.daily+'</span><span class="hm-x"><b>오늘의 도전</b><span>'+gEsc(dcSub())+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="ldBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>불러오기</b><span>'+gEsc(svMenuTxt()||'저장된 게임이 없다')+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="lbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>명예의 전당</b><span>모두의 최고 기록</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="gbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>가이드북</b><span>판정 규칙, 지표, 대선, 점수 계산까지 한 번에</span></span><span class="hm-go">'+CHEV+'</span></button>'+boxTileLite()+
@@ -102,6 +103,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   $('tutBtn').onclick=()=>{SFX.click();MEM.tut=!tutOn();msave();homeLite();};
   $('lbBtn').onclick=()=>{SFX.click();openBoard({back:home});};
   $('miBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();stepMini();};
+  if($('dcBtn'))$('dcBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();dcOpen($('dcBtn'));};
   if($('ldBtn'))$('ldBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();svPicker();};   // 라이트 모드 메인 화면은 작은 창으로 연다
   $('gbBtn').onclick=()=>{SFX.click();guide(home);};
   boxBind('hl',()=>SFX.click());
@@ -134,11 +136,11 @@ function resetAsk(){const o=document.getElementById('rsAsk');if(o)o.remove();
   document.getElementById('rsYes').onclick=()=>{try{const L=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(RESET_KEYS(k))L.push(k);}L.forEach(k=>localStorage.removeItem(k));}catch(e){}
     location.reload();};
   setTimeout(()=>{const b=document.getElementById('rsNo');if(b)b.focus();},30);}
-function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
+function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp)||camp==='zombie')camp='kr';document.documentElement.dataset.camp='kr';
   R.innerHTML='<div style="min-height:70vh"></div>';
   const msg=HUB_MSG;HUB_MSG='';
-  const sv=svMenuTxt(),M=[].concat([['mmNew','새 게임','한 번의 인생을 시작한다','new'],['mmLoad','불러오기',sv||'저장된 게임이 없다','guide']],[['mmBoard','명예의 전당','모두의 최고 기록','board'],['mmDex','도감','만난 지도자와 임기 평가','dex'],['mmGuide','가이드북','처음이라면 여기부터','guide']]);
+  const sv=svMenuTxt(),M=[].concat([['mmNew','새 게임','한 번의 인생을 시작한다','new'],['mmDaily','오늘의 도전',dcSub(),'daily'],['mmLoad','불러오기',sv||'저장된 게임이 없다','guide']],[['mmBoard','명예의 전당','모두의 최고 기록','board'],['mmDex','도감','만난 지도자와 임기 평가','dex'],['mmGuide','가이드북','처음이라면 여기부터','guide']]);
   // 기록 카드: 닉네임, 최고 기록, 도감 진행도
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
   const st=(l,v,u)=>'<div><span>'+l+'</span><b>'+v+'</b>'+(u&&v!=='—'?'<small>'+u+'</small>':'')+'</div>';
@@ -169,6 +171,7 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   gxLattice(document.querySelector('.gx-bg'));
   $('snd').onclick=toggleSound;
   $('mmNew').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');stepCamp();};
+  $('mmDaily').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');dcOpen($('mmDaily'));};
   $('mmLoad').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');ldPanel();};
   $('mmBoard').onclick=()=>{gxSfx('click');cineClose();openBoard({back:home});};
   $('mmDex').onclick=()=>{gxSfx('click');dexScene();};

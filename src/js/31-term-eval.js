@@ -50,7 +50,8 @@ function termEnd(){window.scrollTo(0,0);
   if(CP.rule==='reign')return reignEnd(te);
   // 개헌(amendPerm)이나 영구집권(dict)이면 임기 한도가 두 배로 늘어난다
   const av=Math.round(cl(S.a)),pct=winPct(av),amended=!!CAR.amendPerm||CAR.amendOK===CAR.term,limit=CP.rule==='single'?!amended:CP.rule==='two'?(CAR.term>=2&&!amended):false;
-  const capT=amended||CAR.dict?MAXT*2:MAXT,isLast=CAR.term>=capT||limit,can=!CAR.dict&&pct>0&&!isLast,n=CAR.term+1;
+  const capT=DC?1:amended||CAR.dict?MAXT*2:MAXT,   // 오늘의 도전은 개헌 · 계엄이 있어도 한 임기로 끝난다
+    isLast=CAR.term>=capT||limit,can=!CAR.dict&&pct>0&&!isLast,n=CAR.term+1;
   const risk=av>=35?0:av<15?100:Math.round((35-av)*5);
   // 마지막 승부: 헌법이 막고 있어도 임기 말에 한 번, 개헌을 밀어붙일 수 있다(커리어에 한 번, 지지율 35 이상)
   const lsOK=limit&&!CAR.lastShot&&CAR.amendFail!==CAR.term&&CAR.term<MAXT&&av>=35,lsP=Math.max(.1,Math.min(.8,.15+(av-35)/90+(vVal('P')-40)/160+.05*cnPow('S')));
@@ -93,7 +94,7 @@ function termEnd(){window.scrollTo(0,0);
   if(b('retire'))b('retire').onclick=()=>{SFX.click();te.decision='퇴임 (출마 가능했음)';CAR.retireElig=true;logSpecial('퇴임 (출마 가능했음)',-10,'견제·분산');careerEnd('retire');};
   if(b('last'))b('last').onclick=()=>{SFX.click();lastShot(te,lsP,n);};
   if(b('stay'))b('stay').onclick=()=>{SFX.click();te.decision='무투표 집권 연장';logSpecial(te.decision,30,'권력 집중');
-    if(Math.random()*100>=risk){te.elect=risk?'봉기 진압':'무투표';CAR.elections.push(n+'기 '+te.elect);
+    dcSeed('rev');if(Math.random()*100>=risk){te.elect=risk?'봉기 진압':'무투표';CAR.elections.push(n+'기 '+te.elect);
       if(!risk)return newTerm();
       S.a=cl(S.a-3);S.chk=cl(S.chk-4);
       return breaking({k:'bad',h:'전국 동시 집회, 계엄군 투입으로 해산',s:'비상통치기구 "질서 회복"… 사상자 집계는 발표되지 않아',b:'광장은 비워졌다. '+n+'기 집권이 시작됐지만, 그날의 사진은 지워지지 않는다.'},()=>newTerm());}
@@ -101,7 +102,7 @@ function termEnd(){window.scrollTo(0,0);
     breaking({k:'bad',h:'민중 봉기… 군, 시위대에 발포 거부',s:'비상통치기구 붕괴, 대통령 행방 묘연',b:'총을 든 사람들이 끝내 등을 돌렸다. 영구집권은 '+CAR.term+'기에서 끝났다.'},()=>careerEnd('ousted'));};
   if(b('dep'))b('dep').onclick=()=>{SFX.click();te.decision='민중 봉기';careerEnd('ousted');};
   if(b('fin'))b('fin').onclick=()=>{SFX.click();te.decision=CAR.dict?'종신 집권 끝에 퇴장':limit?'임기 완료 (연임 불가)':isLast?'임기 한도로 퇴장':'출마 불가 (지지율 35 미만)';careerEnd(CAR.dict?'lifelong':limit?'served':isLast?'limit':'lost');};}
-function lastShot(te,p,n){CAR.lastShot=1;const ok=Math.random()<p,us=CP.id==='usa';RUN.lastShot=(ok?'성공':'실패')+' ('+Math.round(p*100)+'%)';
+function lastShot(te,p,n){dcSeed('last');CAR.lastShot=1;const ok=Math.random()<p,us=CP.id==='usa';RUN.lastShot=(ok?'성공':'실패')+' ('+Math.round(p*100)+'%)';
   logSpecial('임기 말 개헌 강행 · '+(ok?'통과':'부결'),30,'권력 집중');
   if(!ok){SFX.voteFail();te.decision='임기 말 개헌 강행 → 부결';
     return breaking({k:'bad',h:us?'수정헌법 22조 폐지안 부결… "3선 야욕" 역풍':'임기 말 개헌안 부결… 대통령 퇴진 요구 확산',s:'마지막 승부가 무너졌다. 여당마저 등을 돌렸다.',b:'광장은 "헌법을 지켜라"는 구호로 가득 찼다. 임기는 불명예 속에 끝났다.'},()=>careerEnd('amendfail'));}
@@ -172,7 +173,7 @@ function debateGate(amend,pct,te){window.scrollTo(0,0);const n=CAR.term+1;
   document.getElementById('dbNo').onclick=()=>{SFX.click();te.dbD=-3;go(Math.max(1,pct-3),'거부');};
   document.getElementById('dbIn').onclick=()=>{SFX.click();window.scrollTo(0,0);R.innerHTML='<div style="animation:fdIn .35s ease-out">'+lab('대선 TV 토론 · 생중계')+'<div id="dbBox"></div></div>';
     debateRun(document.getElementById('dbBox'),{pct:pct,amend:amend},(t,v)=>{te.dbD=DB_D[t];go(Math.max(1,Math.min(99,pct+DB_D[t])),['압승','우세','열세','완패'][t]+' '+v+'%');});};}
-function election(amend,pct,te,deb){
+function election(amend,pct,te,deb){dcSeed('elect');
   if(!deb&&CP.rule!=='reign'&&pct>0&&pct<100)return debateGate(amend,pct,te);
   window.scrollTo(0,0);
   const n=CAR.term+1,win=Math.random()*100<pct,jit=Math.random()*4-2;

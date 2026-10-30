@@ -82,7 +82,7 @@ const PAND_POST={
     ['독립기념일에 맞춰 선언한다',{a:4,e:3,i:2},'불꽃놀이가 밤하늘을 덮었다. 몇 주 뒤 변이 소식이 들렸다.'],
     ['수치가 더 내려갈 때까지 기다린다',{m:2,a:-1},'신중했다. 지루해하는 사람도 많았다.'],
     ['주마다 알아서 선언하게 한다',{u:-2,chk:2},'선언은 주마다 달랐다.']])]};
-const pandPick=(L,c,k)=>{const P=L[CP.id]||L.kr;if(c[k]==null)c[k]=Math.floor(Math.random()*P.length);return Object.assign({},P[c[k]%P.length]);};
+const pandPick=(L,c,k)=>{dcSeed('pand'+k);const P=L[CP.id]||L.kr;if(c[k]==null)c[k]=Math.floor(Math.random()*P.length);return Object.assign({},P[c[k]%P.length]);};
 function mkPand(id,n,endN,lead,prep,bn){return {id:id,n:n,k:'good',tro:[endN+' 선언','끝나지 않은 위기'],cond:()=>true,bn:bn,steps:[
   c=>spEv(n+' 준비',lead,prep),c=>pandPick(PAND_MID,c,'pm'),mgSlash(endN),c=>pandPick(PAND_POST,c,'pp'),
   c=>spEv(n+' 이후',c.endemic?'<em>S등급.</em> 확산이 잡혔다. 지금 '+endN+'을 선언할 수 있다. 선언에 성공하면 남은 임기 동안 위기가 다시 커지지 않고 해마다 내실이 쌓인다.':'위기는 아직 끝나지 않았다. 장기전을 준비해야 한다.',

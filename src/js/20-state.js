@@ -26,7 +26,7 @@ function stakeP(q,s){let [p0,p1,p2,p3]=tierP(q||0);
   return [p0,1-p0-p2-p3,p2,p3];}
 const pctTxt=P=>{const ok=Math.round((P[0]+P[1])*100),b=Math.round(P[0]*100),c=Math.round(P[3]*100);
   return '<b class="pp-ok">성공 '+ok+'%</b> <span class="pp-x">(대성공 '+b+'%)</span> · <span class="pp-c">'+(c?'대실패 '+c+'%':'대실패 없음')+'</span>';};
-const roll=(q,s)=>{const P=stakeP(q||0,s===undefined?1:s),x=Math.random();let a=0;for(let k=0;k<4;k++){a+=P[k];if(x<a)return k;}return 1;};
+const roll=(q,s)=>{dcSeed('roll');const P=stakeP(q||0,s===undefined?1:s),x=Math.random();let a=0;for(let k=0;k<4;k++){a+=P[k];if(x<a)return k;}return 1;};
 const bd=v=>Math.min(4,Math.floor(v/20));
 const pk=a=>a[Math.floor(Math.random()*a.length)];
 const db=v=>v<7?0:v<18?1:v<38?2:v<70?3:4;

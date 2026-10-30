@@ -1,5 +1,5 @@
 /* ---------- 특별 과제 진행: 시작 시점, 단계 만들기, 선택의 뒷일, 개헌·계엄 ---------- */
-function checkSpecial(){const y=Math.round(S.turn/PY);if(y>=YRS)return false;CAR.spDone=CAR.spDone||{};
+function checkSpecial(){dcSeed('spc');const y=Math.round(S.turn/PY);if(y>=YRS)return false;CAR.spDone=CAR.spDone||{};
   const key=sp=>sp.id+(sp.perTerm?'_'+CAR.term:'');
   const L=(SP[CP.id]||[]).filter(sp=>!CAR.spDone[key(sp)]&&(()=>{try{return sp.cond(y);}catch(e){return false;}})());
   if(!L.length)return false;
@@ -15,7 +15,7 @@ function spGen(g){const k=g[0];if(k[0]==='+')return spMake(SP_NEXT[k.slice(1)],g
 function spMake(f,i,label){const R0=CAR.spRun;const e=f(R0.ctx);e.sp={i:i,n:R0.total};
   e.tag='특별 이벤트 · '+R0.n+' '+(label||((i+1)+'/'+R0.total));e.tc='#8f6a12';return e;}
 // 고른 선택의 뒷일: 맥락 저장, 이어지는 단계, 국민투표, 연임 허용
-function spAct(a,t){const R0=CAR.spRun;if(!R0)return;R0.done++;if(t<=1)R0.ok++;
+function spAct(a,t){dcSeed('spa');const R0=CAR.spRun;if(!R0)return;R0.done++;if(t<=1)R0.ok++;
   if(a&&a.ctx)R0.ctx[a.ctx[0]]=a.ctx[1];
   // 판정이 실패·대실패면 발의는 좌초, 강행은 무산된다(버튼에 보이는 성공 확률 그대로).
   // 국민투표는 판정과 상관없이 화면에 보인 통과 가능성으로만 갈린다(판정은 효과 크기만 바꾼다).

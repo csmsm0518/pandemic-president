@@ -1,10 +1,11 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"bd9735212d","h":"f87737383d4b62a2"},"boxes":{"v":"ae544c3fad","h":"90cc2bc64ec1e74e"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"dex":{"v":"2a6897149d","h":"10d66cd2c1d2e3d2"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"ce0c046f9a","h":"6c15b2654d831ca0"},"sail":{"v":"52843663ea","h":"8feef78866c4c88b"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"05c38e8117","h":"cbc2e48319ab51e8"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
+const LZ_M={"board":{"v":"bd9735212d","h":"f87737383d4b62a2"},"boxes":{"v":"ae544c3fad","h":"90cc2bc64ec1e74e"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"daily":{"v":"3df0acdc03","h":"d53cbeb46a96c3a9"},"dex":{"v":"2a6897149d","h":"10d66cd2c1d2e3d2"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"ce0c046f9a","h":"6c15b2654d831ca0"},"sail":{"v":"52843663ea","h":"8feef78866c4c88b"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"05c38e8117","h":"cbc2e48319ab51e8"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
 function sugOpen(){return lzCall('boxes','sugOpen',arguments);}
 function cpnOpen(){return lzCall('boxes','cpnOpen',arguments);}
 function cardOpen(){return lzCall('card','cardOpen',arguments);}
+function dcOpen(){return lzCall('daily','dcOpen',arguments);}
 function dexScene(){return lzCall('dex','dexScene',arguments);}
 function mgWar(){return lzCall('games','mgWar',arguments);}
 function simWar(){return lzCall('games','simWar',arguments);}
@@ -1465,7 +1466,7 @@ function cnCard(c,body,extra){const kp=cnKeep(c),rk=cnRiskTxt(c),M=(CAR.cnMeta||
    (CN_SP[c.n]?'<div class="cn-sp"><b>특수능력 · '+CN_SP[c.n].n+'</b> '+CN_SP[c.n].d+'</div>':'')+
    '<div class="cn-e"><span class="cn-ep">'+cnEffTxt(c)+'</span>'+(rk?'<span class="cn-er">대가: 해마다 '+rk+'</span>':'')+(kp?'<span class="cn-ek'+(kp.ok?'':' bad')+'">'+(c.t===4?'임기 최대 2년 · 1년 뒤 연임 심사: ':'잔류 기준: ')+kp.txt+' (지금 '+kp.v+')'+(c.t===4&&M&&M.y>=1?' · 마지막 해':'')+'</span>':'')+'</div>'+(body||'')+'</div></div>';}
 // 비상소집: 커리어에 단 한 번, 전설 등급 후보 셋 가운데 한 명을 곧바로 앉힌다
-function cnEmerg(back){window.scrollTo(0,0);const RL=roleOf(),hired=new Set(CAR.cn.filter(i=>i!=null)),L=cnPool().filter(c=>c.t===4&&!hired.has(c.i)&&!CAR.cnGone.has(c.i)).sort(()=>Math.random()-.5),out=[],ds=new Set();
+function cnEmerg(back){dcSeed('cnem');window.scrollTo(0,0);const RL=roleOf(),hired=new Set(CAR.cn.filter(i=>i!=null)),L=cnPool().filter(c=>c.t===4&&!hired.has(c.i)&&!CAR.cnGone.has(c.i)).sort(()=>Math.random()-.5),out=[],ds=new Set();
   L.forEach(c=>{if(out.length<3&&!ds.has(c.d)){out.push(c);ds.add(c.d);}});L.forEach(c=>{if(out.length<3&&out.indexOf(c)<0)out.push(c);});
   out.forEach(c=>CAR.cnSeen.add(c.i));SFX.report();vib([40,30,40]);
   R.innerHTML='<div class="gcn deal"><div class="cn-em"><div class="cn-em-k">커리어에 단 한 번</div><div class="hd" style="font-size:28px;color:#fff">비상소집</div>'+
@@ -1477,7 +1478,7 @@ function cnEmerg(back){window.scrollTo(0,0);const RL=roleOf(),hired=new Set(CAR.
     CAR.cn[s]=c.i;CAR.cnMeta[c.i]={miss:0};CAR.cnEm=CAR.term+'기 '+y+'년 '+c.n;CAR.cnLog.push(CAR.term+'기 '+y+'년 비상소집: '+c.n+'(★4 '+CN_DOM[c.d].n+')'+(old!=null?' ← '+CN[old].n:''));back();});
   document.getElementById('emNo').onclick=()=>{SFX.back();back();};}
 const cnEmBtn=()=>CAR&&!CAR.cnEm?'<button id="cnEm" class="cn-embtn">비상소집 · 전설 '+roleOf().n+' 부르기 <small>커리어에 한 번</small></button>':'';
-function council(go){window.scrollTo(0,0);const RL=roleOf(),notes=cnYear();let cands=cnDraw(),arm=-1,enc=cnEnc(),dealt=false;const y=Math.round(S.turn/PY)+1;
+function council(go){dcSeed('council');window.scrollTo(0,0);const RL=roleOf(),notes=cnYear();let cands=cnDraw(),arm=-1,enc=cnEnc(),dealt=false;const y=Math.round(S.turn/PY)+1;
   const encHTML=()=>{if(!enc)return '';const X=CN_HID[enc.n],c=cnByName(enc.n);
     const sl=act=>'<div class="cn-b">'+[0,1].map(s=>'<button class="cn-btn pick" data-enc="'+act+','+s+'">'+(CAR.cn[s]==null?'빈 자리에 맞이한다':'<span>'+CN[CAR.cn[s]].n+'</span> 대신')+'</button>').join('')+'</div>';
     if(enc.kind==='done')return '<div class="cn-enc"><div class="cn-enc-k">만남</div>'+cnCard(c,'')+'<div class="cn-enc-t" style="margin-top:10px">'+enc.msg+'</div></div>';
@@ -4551,7 +4552,7 @@ const PAND_POST={
     ['독립기념일에 맞춰 선언한다',{a:4,e:3,i:2},'불꽃놀이가 밤하늘을 덮었다. 몇 주 뒤 변이 소식이 들렸다.'],
     ['수치가 더 내려갈 때까지 기다린다',{m:2,a:-1},'신중했다. 지루해하는 사람도 많았다.'],
     ['주마다 알아서 선언하게 한다',{u:-2,chk:2},'선언은 주마다 달랐다.']])]};
-const pandPick=(L,c,k)=>{const P=L[CP.id]||L.kr;if(c[k]==null)c[k]=Math.floor(Math.random()*P.length);return Object.assign({},P[c[k]%P.length]);};
+const pandPick=(L,c,k)=>{dcSeed('pand'+k);const P=L[CP.id]||L.kr;if(c[k]==null)c[k]=Math.floor(Math.random()*P.length);return Object.assign({},P[c[k]%P.length]);};
 function mkPand(id,n,endN,lead,prep,bn){return {id:id,n:n,k:'good',tro:[endN+' 선언','끝나지 않은 위기'],cond:()=>true,bn:bn,steps:[
   c=>spEv(n+' 준비',lead,prep),c=>pandPick(PAND_MID,c,'pm'),mgSlash(endN),c=>pandPick(PAND_POST,c,'pp'),
   c=>spEv(n+' 이후',c.endemic?'<em>S등급.</em> 확산이 잡혔다. 지금 '+endN+'을 선언할 수 있다. 선언에 성공하면 남은 임기 동안 위기가 다시 커지지 않고 해마다 내실이 쌓인다.':'위기는 아직 끝나지 않았다. 장기전을 준비해야 한다.',
@@ -4811,10 +4812,10 @@ function needEval(n){if(n[0]==='NOWAR')return {ok:SCX().id!=='war',txt:'전쟁 �
   if(n[0]==='UNIFY')return {ok:SCX().id==='unify',txt:'통일 위기 중'};
   const v=Math.round(n[0]==='I'?S.i:vVal(n[0])),nm=n[0]==='I'?'위기 지수':vName(n[0]),ok=n[1]==='>='?v>=n[2]:v<=n[2];
   return {ok:ok,txt:nm+' '+n[2]+(n[1]==='>='?' 이상':' 이하'),cur:v};}
-function startSpecial(sp,key,y){CAR.spDone[key]=1;wolyMark(sp,y);CAR.spLog=CAR.spLog||[];CAR.spLog.push(CAR.term+'기 '+(y+1)+'년 '+sp.n);
+function startSpecial(sp,key,y){dcSeed('sps'+key);CAR.spDone[key]=1;wolyMark(sp,y);CAR.spLog=CAR.spLog||[];CAR.spLog.push(CAR.term+'기 '+(y+1)+'년 '+sp.n);
   CAR.spRun={id:sp.id,n:sp.n,k:sp.k,tro:sp.tro,ok:0,done:0,total:sp.steps.length,ctx:{}};
   sp.steps.forEach((f,i)=>queue.splice(i,0,{sg:[sp.id,i]}));pendingNews=Object.assign({},sp.bn);bgmGame();}
-function spBoard(go){const y=Math.round(S.turn/PY);if(y>=YRS)return go();CAR.spDone=CAR.spDone||{};window.scrollTo(0,0);
+function spBoard(go){dcSeed('spb');const y=Math.round(S.turn/PY);if(y>=YRS)return go();CAR.spDone=CAR.spDone||{};window.scrollTo(0,0);
   if(wolyDue(y))return wolyOpen(go,y);   // 하계올림픽 2년 뒤: 그해는 판 대신 동계올림픽
   // 판의 과제는 임기마다 다시 할 수 있다(이 임기에 이미 치른 것만 막힌다)
   const L=boardIds().map(id=>{const sp=(SP[CP.id]||[]).find(s=>s.id===id);if(!sp)return null;const key=sp.id+'_'+CAR.term,nd=(NEED[id]||[]).map(needEval);
@@ -4862,7 +4863,7 @@ const MG_SPORT={
 // 메달 집계 한 줄(상황판·특집 머리에서도 쓴다)
 const olyTally=m=>'<span>메달 집계</span>'+['금','은','동'].map((x,k)=>'<i class="m'+k+'">'+x+'</i><b>'+m[k]+'</b>').join('');
 /* ---------- 특별 과제 진행: 시작 시점, 단계 만들기, 선택의 뒷일, 개헌·계엄 ---------- */
-function checkSpecial(){const y=Math.round(S.turn/PY);if(y>=YRS)return false;CAR.spDone=CAR.spDone||{};
+function checkSpecial(){dcSeed('spc');const y=Math.round(S.turn/PY);if(y>=YRS)return false;CAR.spDone=CAR.spDone||{};
   const key=sp=>sp.id+(sp.perTerm?'_'+CAR.term:'');
   const L=(SP[CP.id]||[]).filter(sp=>!CAR.spDone[key(sp)]&&(()=>{try{return sp.cond(y);}catch(e){return false;}})());
   if(!L.length)return false;
@@ -4878,7 +4879,7 @@ function spGen(g){const k=g[0];if(k[0]==='+')return spMake(SP_NEXT[k.slice(1)],g
 function spMake(f,i,label){const R0=CAR.spRun;const e=f(R0.ctx);e.sp={i:i,n:R0.total};
   e.tag='특별 이벤트 · '+R0.n+' '+(label||((i+1)+'/'+R0.total));e.tc='#8f6a12';return e;}
 // 고른 선택의 뒷일: 맥락 저장, 이어지는 단계, 국민투표, 연임 허용
-function spAct(a,t){const R0=CAR.spRun;if(!R0)return;R0.done++;if(t<=1)R0.ok++;
+function spAct(a,t){dcSeed('spa');const R0=CAR.spRun;if(!R0)return;R0.done++;if(t<=1)R0.ok++;
   if(a&&a.ctx)R0.ctx[a.ctx[0]]=a.ctx[1];
   // 판정이 실패·대실패면 발의는 좌초, 강행은 무산된다(버튼에 보이는 성공 확률 그대로).
   // 국민투표는 판정과 상관없이 화면에 보인 통과 가능성으로만 갈린다(판정은 효과 크기만 바꾼다).
@@ -5247,7 +5248,7 @@ function stakeP(q,s){let [p0,p1,p2,p3]=tierP(q||0);
   return [p0,1-p0-p2-p3,p2,p3];}
 const pctTxt=P=>{const ok=Math.round((P[0]+P[1])*100),b=Math.round(P[0]*100),c=Math.round(P[3]*100);
   return '<b class="pp-ok">성공 '+ok+'%</b> <span class="pp-x">(대성공 '+b+'%)</span> · <span class="pp-c">'+(c?'대실패 '+c+'%':'대실패 없음')+'</span>';};
-const roll=(q,s)=>{const P=stakeP(q||0,s===undefined?1:s),x=Math.random();let a=0;for(let k=0;k<4;k++){a+=P[k];if(x<a)return k;}return 1;};
+const roll=(q,s)=>{dcSeed('roll');const P=stakeP(q||0,s===undefined?1:s),x=Math.random();let a=0;for(let k=0;k<4;k++){a+=P[k];if(x<a)return k;}return 1;};
 const bd=v=>Math.min(4,Math.floor(v/20));
 const pk=a=>a[Math.floor(Math.random()*a.length)];
 const db=v=>v<7?0:v<18?1:v<38?2:v<70?3:4;
@@ -5600,7 +5601,7 @@ const gxSfx=(f,a)=>{try{SFX[f](a);}catch(e){}};
 const gxEnter=e=>e.key==='Enter'&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('.cine-back,.cine-x'));
 const GX_STEP=['무대','지도자','준비'];
 // 메인 메뉴 아이콘: 시작 · 왕관 · 책 · 나침반
-const GX_IC={new:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z"/></svg>',
+const GX_IC={daily:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="M12 12.2l1.1 2.2 2.4.3-1.7 1.7.4 2.4-2.2-1.1-2.2 1.1.4-2.4-1.7-1.7 2.4-.3z" fill="currentColor" stroke="none"/></svg>',new:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z"/></svg>',
   board:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></svg>',
   dex:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/></svg>',
   guide:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>',
@@ -5660,7 +5661,53 @@ function boxBind(pre,snd){const s=document.getElementById(pre+'Sug'),c=document.
   if(s)s.onclick=()=>{snd();sugOpen(s);};if(c)c.onclick=()=>{snd();cpnOpen(c);};}
 // 쿠폰으로 받아 둔 운명 개입: 다음 새 게임을 시작할 때 한 번에 꺼내 쓴다. 조성민(데우스 엑스 마키나) 판에는 쓰지 않고 남겨 둔다.
 // 공정한 비교를 위해 몇 개를 받았는지 연구 기록(RUN.cpTok → 요약 시트 '쿠폰 운명 개입')에 남긴다
-function cpTokUse(){const n=Math.max(0,Math.min(9,Math.floor(+MEM.cpTok||0)));if(!n||godRun())return 0;delete MEM.cpTok;msave();if(RUN)RUN.cpTok=n;return n;}
+function cpTokUse(){const n=Math.max(0,Math.min(9,Math.floor(+MEM.cpTok||0)));if(!n||godRun()||DC)return 0;delete MEM.cpTok;msave();if(RUN)RUN.cpTok=n;return n;}
+/* ---------- 오늘의 도전: 하루 한 판, 모두가 같은 조건 ----------
+   날짜(한국 시간)로 그날의 판을 정한다: 무대는 대한민국 · 조선 · 미국을 날마다 돌아가며, 출발 인물은 그 무대의 기본 인물 가운데 하나,
+   난이도 보통 · 속전속결 · 한 임기. 순위에는 그날 처음 시작한 판만 올라가고(첫 판), 그 판을 마친 뒤에는 같은 판을 연습할 수 있다.
+   같은 선택을 하면 같은 사건 · 같은 주사위가 나와야 비교가 공정하다. 그래서 도전 중에는 Math.random을 씨앗 있는 난수로 바꾸고,
+   무작위로 결과를 정하는 자리마다(사건 고르기 · 판정 주사위 · 연말 · 선거 · 국난 …) '날짜 + 지금 위치(임기 · 차례 · 선택 수 · 운명 개입 수)'로
+   씨앗을 다시 맞춘다(dcSeed). 화면 효과도 Math.random을 쓰지만, 결과를 정하기 직전에 씨앗을 다시 맞추므로 결과에는 끼어들지 못한다.
+   창(오늘의 조건 · 순위)은 나중에 받는 조각 lazy/daily(dcOpen)가 그린다. */
+const DC_CAMPS=['kr','joseon','usa'],DC_DAY0=Date.UTC(2026,0,1);
+let DC=null;   // 도전 중이면 {date, base, ranked}
+const DC_RAND0=Math.random;
+const dcToday=()=>new Date(Date.now()+9*36e5).toISOString().slice(0,10);   // 한국 시간 날짜
+const dcHash=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h>>>0;};
+let DC_S=0;
+// mulberry32: 씨앗 하나로 0~1 난수를 차례로 낸다
+function dcRand(){DC_S=(DC_S+0x6D2B79F5)>>>0;let t=DC_S;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296;}
+function dcSeed(tag){if(!DC)return;DC_S=dcHash(DC.base+'|'+tag+'|'+(CAR?CAR.term:0)+'|'+(S?S.turn:0)+'|'+(LOG?LOG.length:0)+'|'+(RUN?RUN.rr:0));}
+// 그날의 조건. 출발 인물은 비밀 · 한 번뿐 · 조건부 인물을 뺀 기본 인물에서(기기마다 풀린 인물이 달라도 같게)
+function dcConf(date){date=date||dcToday();const day=Math.floor((Date.parse(date+'T00:00:00Z')-DC_DAY0)/864e5),camp=DC_CAMPS[((day%3)+3)%3];
+  const L=CAMPS[camp].bg.map((b,i)=>[b,i]).filter(x=>!x[0].sec&&!x[0].once&&!x[0].al&&!x[0].god);
+  const pick=L[dcHash('pp-daily-bg|'+date)%L.length];
+  return {date:date,camp:camp,bg:pick[1],B:pick[0],dif:1,mode:1};}
+const dcRec=d=>(MEM.dc&&MEM.dc[d||dcToday()])||null;   // 이 기기의 그날 기록 {ranked:시작함, score, done}
+const dcMode=()=>MODE.findIndex(m=>m.n==='속전속결');
+// 도전 시작: ranked면 오늘의 첫 판(순위), 아니면 연습. 순위 판은 시작하는 순간 '오늘 첫 판'으로 적는다(중간에 나가도 다시 순위 판을 하지 못한다)
+function dcStart(ranked,date){const C=dcConf(date),r=dcRec(C.date);if(ranked&&r&&r.ranked)ranked=false;
+  camp=C.camp;bg=C.bg;dif=C.dif;mode=Math.max(0,dcMode());
+  DC={date:C.date,base:'pp-daily|'+C.date,ranked:!!ranked};Math.random=dcRand;
+  if(ranked){MEM.dc=MEM.dc||{};const keep={};Object.keys(MEM.dc).sort().slice(-13).forEach(k=>{keep[k]=MEM.dc[k];});MEM.dc=keep;MEM.dc[C.date]={ranked:1};msave();}
+  // 나중에 받는 조각(미니게임 · 특별 과제 등)을 모두 받은 뒤에 시작한다. 처음 쓰는 순간에 받으면 그 조각의 무작위가 한 박자 늦게 돌아
+  // 같은 선택에도 판이 달라졌다(같은 기기의 두 번째 판과 첫 판이 달랐다)
+  const N=Object.keys(LZ_M);let i=0;const nx=()=>{if(i<N.length)return lzThen(N[i++],nx);start();};nx();}
+// 도전이 끝나면(결산 · 메인 화면으로) 원래 난수로 되돌린다
+function dcEnd(){if(Math.random!==DC_RAND0)Math.random=DC_RAND0;DC=null;}
+// 결산: 순위 판의 점수를 이 기기에 남긴다(메인 화면 칸 · 도전 창에 보인다)
+function dcDone(score){if(!DC)return;if(DC.ranked){const r=MEM.dc&&MEM.dc[DC.date];if(r){r.score=score;r.done=1;msave();}}}
+const dcLabel=d=>{const p=String(d).split('-');return +p[1]+'월 '+(+p[2])+'일';};
+// 메인 메뉴 칸의 작은 글: 오늘의 무대 · 인물, 마쳤으면 내 점수
+function dcSub(){const C=dcConf(),r=dcRec();return r&&r.done?'오늘 '+Number(r.score).toLocaleString('ko-KR')+'점 · 순위 보기':r&&r.ranked?'오늘 도전함 · 순위 보기':CAMPS[C.camp].n+' · '+C.B.n+' · 속전속결';}
+// 소리 · 배경음악 · 감염 지도 · 명언 고르기는 화면 꾸밈이다. 도전 중에도 이것들은 원래 난수를 쓰게 감싼다.
+// 감싸지 않으면 소리를 켰는지, 앞 판에서 음악이 이미 골라졌는지에 따라 난수 줄이 밀려 같은 선택에도 시대 조건 · 결과가 달라졌다
+const dcIso=f=>function(){if(!DC)return f.apply(this,arguments);const m=Math.random;Math.random=DC_RAND0;try{return f.apply(this,arguments);}finally{Math.random=m;}};
+Object.keys(SFX).forEach(k=>{if(typeof SFX[k]==='function')SFX[k]=dcIso(SFX[k]);});
+bgmCue=dcIso(bgmCue);bgmHold=dcIso(bgmHold);bgmInfo=dcIso(bgmInfo);bgmSkip=dcIso(bgmSkip);bgmSync=dcIso(bgmSync);bgmSet=dcIso(bgmSet);
+bgmIntro=dcIso(bgmIntro);bgmGame=dcIso(bgmGame);bgmRamp=dcIso(bgmRamp);bgmLoad=dcIso(bgmLoad);
+mapReset=dcIso(mapReset);mapUpdate=dcIso(mapUpdate);mapDraw=dcIso(mapDraw);mapLoop=dcIso(mapLoop);mapStart=dcIso(mapStart);
+leaderQ=dcIso(leaderQ);quoteFx=dcIso(quoteFx);
 /* ---------- 화면 설정: 세로/가로 모드 · 라이트 모드 ----------
    시작 화면에서 고르고 메뉴에서 바꾼다. 기록(MEM)과 함께 이 브라우저에 남는다.
    ori: 'p' 세로(한 칸) · 'l' 가로(넓으면 상황판|사건 두 칸). lite: 예전 종이 메뉴 + 무거운 연출 끄기.
@@ -5745,6 +5792,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   lab('난이도')+'<div class="hl-dif" style="display:flex;gap:8px;margin-bottom:24px">'+dfb+'</div>'+
   '<div class="hl-go"><button id="st" class="pri"'+(B?'':' disabled')+' style="width:100%;padding:16px;font-size:16.5px;margin-bottom:12px">'+(!B?'인물을 선택하세요':camp==='joseon'?'즉위한다':camp==='zombie'?'지휘를 맡는다':'취임한다')+'</button></div>'+(P?bgHint+introH:'')+
   '<div class="hm-row"><button id="tutBtn" class="tgl" role="switch" aria-checked="'+tutOn()+'"><span class="tgl-k"></span><span>튜토리얼 '+(tutOn()?'켜짐':'꺼짐')+'</span></button></div>'+
+  '<button id="dcBtn" class="hm-card hm-daily"><span class="hm-i">'+GX_IC.daily+'</span><span class="hm-x"><b>오늘의 도전</b><span>'+gEsc(dcSub())+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="ldBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>불러오기</b><span>'+gEsc(svMenuTxt()||'저장된 게임이 없다')+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="lbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>명예의 전당</b><span>모두의 최고 기록</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="gbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>가이드북</b><span>판정 규칙, 지표, 대선, 점수 계산까지 한 번에</span></span><span class="hm-go">'+CHEV+'</span></button>'+boxTileLite()+
@@ -5765,6 +5813,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   $('tutBtn').onclick=()=>{SFX.click();MEM.tut=!tutOn();msave();homeLite();};
   $('lbBtn').onclick=()=>{SFX.click();openBoard({back:home});};
   $('miBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();stepMini();};
+  if($('dcBtn'))$('dcBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();dcOpen($('dcBtn'));};
   if($('ldBtn'))$('ldBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();svPicker();};   // 라이트 모드 메인 화면은 작은 창으로 연다
   $('gbBtn').onclick=()=>{SFX.click();guide(home);};
   boxBind('hl',()=>SFX.click());
@@ -5797,11 +5846,11 @@ function resetAsk(){const o=document.getElementById('rsAsk');if(o)o.remove();
   document.getElementById('rsYes').onclick=()=>{try{const L=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(RESET_KEYS(k))L.push(k);}L.forEach(k=>localStorage.removeItem(k));}catch(e){}
     location.reload();};
   setTimeout(()=>{const b=document.getElementById('rsNo');if(b)b.focus();},30);}
-function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
+function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp)||camp==='zombie')camp='kr';document.documentElement.dataset.camp='kr';
   R.innerHTML='<div style="min-height:70vh"></div>';
   const msg=HUB_MSG;HUB_MSG='';
-  const sv=svMenuTxt(),M=[].concat([['mmNew','새 게임','한 번의 인생을 시작한다','new'],['mmLoad','불러오기',sv||'저장된 게임이 없다','guide']],[['mmBoard','명예의 전당','모두의 최고 기록','board'],['mmDex','도감','만난 지도자와 임기 평가','dex'],['mmGuide','가이드북','처음이라면 여기부터','guide']]);
+  const sv=svMenuTxt(),M=[].concat([['mmNew','새 게임','한 번의 인생을 시작한다','new'],['mmDaily','오늘의 도전',dcSub(),'daily'],['mmLoad','불러오기',sv||'저장된 게임이 없다','guide']],[['mmBoard','명예의 전당','모두의 최고 기록','board'],['mmDex','도감','만난 지도자와 임기 평가','dex'],['mmGuide','가이드북','처음이라면 여기부터','guide']]);
   // 기록 카드: 닉네임, 최고 기록, 도감 진행도
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
   const st=(l,v,u)=>'<div><span>'+l+'</span><b>'+v+'</b>'+(u&&v!=='—'?'<small>'+u+'</small>':'')+'</div>';
@@ -5832,6 +5881,7 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   gxLattice(document.querySelector('.gx-bg'));
   $('snd').onclick=toggleSound;
   $('mmNew').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');stepCamp();};
+  $('mmDaily').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');dcOpen($('mmDaily'));};
   $('mmLoad').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');ldPanel();};
   $('mmBoard').onclick=()=>{gxSfx('click');cineClose();openBoard({back:home});};
   $('mmDex').onclick=()=>{gxSfx('click');dexScene();};
@@ -6134,7 +6184,7 @@ function pop(title,body){let o=document.querySelector('.svp-bg');if(o)o.remove()
   o.innerHTML='<div class="sndp svp" role="dialog" aria-label="'+title+'"><div class="sndp-h"><span>'+title+'</span><button class="sndp-x" aria-label="닫기">✕</button></div>'+body+'</div>';
   document.body.appendChild(o);const close=()=>o.remove();o.onclick=e=>{if(e.target===o)close();};o.querySelector('.sndp-x').onclick=close;
   o.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape')close();});o.close=close;return o;}
-function svAct(k){if(k==='pin')return pinSet();if(!SVAT){eggToast('지금은 할 수 없어요. 결정 화면이나 결과 화면에서 다시 눌러 주세요.');return;}
+function svAct(k){if(k==='pin')return pinSet();if(DC){eggToast('오늘의 도전은 저장할 수 없어요. 한 번에 끝까지 해 주세요.');return;}if(!SVAT){eggToast('지금은 할 수 없어요. 결정 화면이나 결과 화면에서 다시 눌러 주세요.');return;}
   if(k==='quit')return quitAsk();
   if(!svSave(SVAT)){eggToast('저장하지 못했어요. 브라우저 저장 공간을 확인해 주세요.');return;}
   if(k==='exit'){SFX.back();return home();}
@@ -6220,14 +6270,17 @@ function cfgApply(){CP=CAMPS[camp];document.documentElement.dataset.camp=CP.id;Y
 
 /* ---------- START / TERM ---------- */function start(){if(camp==='zombie')return zgOpen();
   PINH='';cfgApply();
+  if(DC)MAXT=1;   // 오늘의 도전은 한 임기로 끝난다
   if(!CP.bg[bg]||bgLock(CP.bg[bg])){bg=-1;return home();}
   const B=CP.bg[bg];if(B.once){MEM.secUsed=MEM.secUsed||{};MEM.secUsed[B.sec]=1;msave();}
   LOG=[];T0=Date.now();SHOWN=0;RUN={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),st:new Date().toISOString(),rr:0,pkP:0,pkC:0,crisis:[],sent:0};
   S=Object.assign({turn:0,quit:0},INIT,CP.init||{});B.f(S);for(const k in INIT)S[k]=cl(S[k]);
-  CAR={camp:CP.id,path:{hard:0,soft:0,eco:0},pstage:{},pathLog:[],news:0,term:1,age0:B.age,bg:(CP.id==='kr'?'':CP.n+' · ')+B.n,bgid:B.id,bgn:B.n,bgx:B.x||(B.n+' 출신'),terms:[],tro:[],amend:0,crush:0,exit:'',tEval:0,retireElig:false,cs:[],ts:[],us:[],ss:[],done:0,tt:[0,0,0,0],yrs:[],scen:[],elections:[]};cnStart();
+  CAR={camp:CP.id,path:{hard:0,soft:0,eco:0},pstage:{},pathLog:[],news:0,term:1,age0:B.age,bg:(CP.id==='kr'?'':CP.n+' · ')+B.n,bgid:B.id,bgn:B.n,bgx:B.x||(B.n+' 출신'),terms:[],tro:[],amend:0,crush:0,exit:'',tEval:0,retireElig:false,cs:[],ts:[],us:[],ss:[],done:0,tt:[0,0,0,0],yrs:[],scen:[],elections:[]};
+  dcSeed('start');   // 오늘의 도전: 새 판의 상태(S · CAR · LOG · RUN)를 다 만든 뒤에 씨앗을 맞춘다(앞 판의 남은 값이 섞이지 않게)
+  cnStart();
   // 배경음악은 새 커리어를 만든 뒤에 고른다(앞 판의 올림픽 응원가가 이어지지 않게)
   bgmGame();histArm();
-  SEENT={};SEENN=0;MOD=pk(MODS);tok=2+(B.t||0)+cpTokUse();streak=0;snap=null;peakI=S.i;hist=[];TH=[{a:S.a,i:S.i}];SEEN=new Set();   // 운명 개입: 기본 2 + 인물 보너스 + 쿠폰으로 받아 둔 것(cpTokUse)
+  dcSeed('mod');SEENT={};SEENN=0;MOD=pk(MODS);tok=2+(B.t||0)+cpTokUse();streak=0;snap=null;peakI=S.i;hist=[];TH=[{a:S.a,i:S.i}];SEEN=new Set();   // 운명 개입: 기본 2 + 인물 보너스 + 쿠폰으로 받아 둔 것(cpTokUse)
   base=S.chk+S.trn+S.saf;pool=CP.ev.slice();last=null;tally=[0,0,0,0];yTally=[0,0,0,0];chron=[];prev=null;queue=[];deaths=0;yd=0;cDeaths=0;covD=0;setTroName();
   YS=Object.assign({},S);
   mapReset();MAP.tgt=S.i;mapStart();
@@ -6238,7 +6291,7 @@ function cfgApply(){CP=CAMPS[camp];document.documentElement.dataset.camp=CP.id;Y
    ['질병관리청에 전권을 위임한다',{trn:11,chk:9,p:-7,i:-5},'대통령이 한 발 물러섰고 전문가가 마이크를 잡았다.']],bn:FIRSTBN};
   bnSeen=null;pendingNews=null;pickAdv();quoteFx('임기의 시작',ev,leaderQ(1));
 }
-function newTerm(){
+function newTerm(){dcSeed('term');
   CAR.ttT=(CAR.ttT||[]).concat([CAR.tt.slice()]);CAR.term++;CAR.tt=[0,0,0,0];CAR.path={hard:0,soft:0,eco:0};CAR.pstage={};S.turn=0;tok+=1;base=S.chk+S.trn+S.saf;deaths=0;yd=0;hist=[];chron=[];prev=null;queue=[];pool=CP.ev.slice();CAR.spRun=null;
   // 아직 겪지 않은 위기 하나를 고른다. 위기 지수는 새로 시작하지만 임기가 거듭될수록 출발점이 높다.
   const left=CP.post.filter(k=>CAR.scen.indexOf(k)<0);CAR.scen.push(pk(left.length?left:CP.post));setTroName();
@@ -6295,7 +6348,7 @@ function breaking(n,cb){window.scrollTo(0,0);CAR.news=(CAR.news||0)+1;const y=Ma
   afterFx(()=>{const w=R.querySelector('.np-wrap');if(!w||!w.contains(b))return;w.classList.remove('np-hold');
     SFX.news(how===jobo?'jobo':how===tvDesk?(CP.id==='zombie'?'radio':'tv'):'paper',n.k!=='good');vib([40,30,40]);setTimeout(()=>{try{b.focus({preventScroll:true});}catch(e){}},700);});}
 function variantHit(){S.i=cl(Math.max(S.i+12,28));if(S.i>peakI)peakI=S.i;MAP.tgt=S.i;bnSeen=null;cur=VARIANT;}
-function pickAdv(){const L=CP.adv?(SCX().adv||[]).concat(CP.adv):isCov()?ADV:(SCX().adv||[]).concat(ADV.filter(a=>a.who!=='방역청장'));
+function pickAdv(){dcSeed('adv');const L=CP.adv?(SCX().adv||[]).concat(CP.adv):isCov()?ADV:(SCX().adv||[]).concat(ADV.filter(a=>a.who!=='방역청장'));
   for(const a of L){if(a.c(S)){adv={who:a.who,l:pk(a.l)};return;}}}
 
 /* ---------- PLAY SCREENS ---------- */
@@ -6723,7 +6776,7 @@ function res(){const T=TIER[last.t],wc=last.x.split(' ').length,dl=Math.min(650,
 // 결과 화면의 '계속': 다음 결정으로, 해가 끝났으면 연간 결산으로
 // 조선은 결정마다 국난의 조짐이 쌓이고, 문턱을 넘으면 다음 결정 대신 국난이 온다(36b-joseon-crisis.js)
 function goNext(){S.turn++;const kg=kgTick();if(S.turn%PY===0)return report();if(kg)return kgOpen(kg);next();pickAdv();ev();}
-function next(){bnSeen=null;if(queue.length){cur=queue.shift();if(cur.sg)cur=spGen(cur.sg);return;}
+function next(){dcSeed('next');bnSeen=null;if(queue.length){cur=queue.shift();if(cur.sg)cur=spGen(cur.sg);return;}
   {const L=(MILEV[CP.id]||[]).filter(e=>!SEEN.has(e.t));if(L.length&&Math.random()<.11){cur=pk(L);SEEN.add(cur.t);return;}}
   if(S.u>44&&Math.random()<Math.pow(S.u/100,2)*(.35+S.c/110)*(1-S.chk/180)*.22*(cnHas('upr')?.5:1)){cur=(S.chk>=48&&CP.id!=='joseon')?IMP:UPR;return;}
   const y=Math.floor(S.turn/PY)+1,T=CAR.term;
@@ -6780,7 +6833,7 @@ const sbar=(n,v,mx,col,sub,k)=>'<div style="margin-top:8px"><div style="display:
 const chip=(t,col,ex)=>'<span style="display:inline-block;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;margin:0 6px 6px 0;background:color-mix(in srgb,'+col+' 14%,var(--surface-1));border:1px solid color-mix(in srgb,'+col+' 45%,transparent);'+(ex||'')+'">'+t+'</span>';
 
 /* ---------- 연간 결산 ---------- */
-function report(){SFX.report();window.scrollTo(0,0);
+function report(){dcSeed('report');SFX.report();window.scrollTo(0,0);
   const y=S.turn/PY,fin=S.turn>=YRS*PY,sc=score();let tr='';
   if(prev!==null){const d=sc-prev;tr=d>3?'전체적으로 작년보다 나아지고 있습니다.':d<-3?'솔직히 말씀드리면, <em>작년보다 나빠지고 있습니다</em>.':'작년과 크게 다르지 않습니다.';}
   prev=sc;
@@ -6871,7 +6924,8 @@ function termEnd(){window.scrollTo(0,0);
   if(CP.rule==='reign')return reignEnd(te);
   // 개헌(amendPerm)이나 영구집권(dict)이면 임기 한도가 두 배로 늘어난다
   const av=Math.round(cl(S.a)),pct=winPct(av),amended=!!CAR.amendPerm||CAR.amendOK===CAR.term,limit=CP.rule==='single'?!amended:CP.rule==='two'?(CAR.term>=2&&!amended):false;
-  const capT=amended||CAR.dict?MAXT*2:MAXT,isLast=CAR.term>=capT||limit,can=!CAR.dict&&pct>0&&!isLast,n=CAR.term+1;
+  const capT=DC?1:amended||CAR.dict?MAXT*2:MAXT,   // 오늘의 도전은 개헌 · 계엄이 있어도 한 임기로 끝난다
+    isLast=CAR.term>=capT||limit,can=!CAR.dict&&pct>0&&!isLast,n=CAR.term+1;
   const risk=av>=35?0:av<15?100:Math.round((35-av)*5);
   // 마지막 승부: 헌법이 막고 있어도 임기 말에 한 번, 개헌을 밀어붙일 수 있다(커리어에 한 번, 지지율 35 이상)
   const lsOK=limit&&!CAR.lastShot&&CAR.amendFail!==CAR.term&&CAR.term<MAXT&&av>=35,lsP=Math.max(.1,Math.min(.8,.15+(av-35)/90+(vVal('P')-40)/160+.05*cnPow('S')));
@@ -6914,7 +6968,7 @@ function termEnd(){window.scrollTo(0,0);
   if(b('retire'))b('retire').onclick=()=>{SFX.click();te.decision='퇴임 (출마 가능했음)';CAR.retireElig=true;logSpecial('퇴임 (출마 가능했음)',-10,'견제·분산');careerEnd('retire');};
   if(b('last'))b('last').onclick=()=>{SFX.click();lastShot(te,lsP,n);};
   if(b('stay'))b('stay').onclick=()=>{SFX.click();te.decision='무투표 집권 연장';logSpecial(te.decision,30,'권력 집중');
-    if(Math.random()*100>=risk){te.elect=risk?'봉기 진압':'무투표';CAR.elections.push(n+'기 '+te.elect);
+    dcSeed('rev');if(Math.random()*100>=risk){te.elect=risk?'봉기 진압':'무투표';CAR.elections.push(n+'기 '+te.elect);
       if(!risk)return newTerm();
       S.a=cl(S.a-3);S.chk=cl(S.chk-4);
       return breaking({k:'bad',h:'전국 동시 집회, 계엄군 투입으로 해산',s:'비상통치기구 "질서 회복"… 사상자 집계는 발표되지 않아',b:'광장은 비워졌다. '+n+'기 집권이 시작됐지만, 그날의 사진은 지워지지 않는다.'},()=>newTerm());}
@@ -6922,7 +6976,7 @@ function termEnd(){window.scrollTo(0,0);
     breaking({k:'bad',h:'민중 봉기… 군, 시위대에 발포 거부',s:'비상통치기구 붕괴, 대통령 행방 묘연',b:'총을 든 사람들이 끝내 등을 돌렸다. 영구집권은 '+CAR.term+'기에서 끝났다.'},()=>careerEnd('ousted'));};
   if(b('dep'))b('dep').onclick=()=>{SFX.click();te.decision='민중 봉기';careerEnd('ousted');};
   if(b('fin'))b('fin').onclick=()=>{SFX.click();te.decision=CAR.dict?'종신 집권 끝에 퇴장':limit?'임기 완료 (연임 불가)':isLast?'임기 한도로 퇴장':'출마 불가 (지지율 35 미만)';careerEnd(CAR.dict?'lifelong':limit?'served':isLast?'limit':'lost');};}
-function lastShot(te,p,n){CAR.lastShot=1;const ok=Math.random()<p,us=CP.id==='usa';RUN.lastShot=(ok?'성공':'실패')+' ('+Math.round(p*100)+'%)';
+function lastShot(te,p,n){dcSeed('last');CAR.lastShot=1;const ok=Math.random()<p,us=CP.id==='usa';RUN.lastShot=(ok?'성공':'실패')+' ('+Math.round(p*100)+'%)';
   logSpecial('임기 말 개헌 강행 · '+(ok?'통과':'부결'),30,'권력 집중');
   if(!ok){SFX.voteFail();te.decision='임기 말 개헌 강행 → 부결';
     return breaking({k:'bad',h:us?'수정헌법 22조 폐지안 부결… "3선 야욕" 역풍':'임기 말 개헌안 부결… 대통령 퇴진 요구 확산',s:'마지막 승부가 무너졌다. 여당마저 등을 돌렸다.',b:'광장은 "헌법을 지켜라"는 구호로 가득 찼다. 임기는 불명예 속에 끝났다.'},()=>careerEnd('amendfail'));}
@@ -6993,7 +7047,7 @@ function debateGate(amend,pct,te){window.scrollTo(0,0);const n=CAR.term+1;
   document.getElementById('dbNo').onclick=()=>{SFX.click();te.dbD=-3;go(Math.max(1,pct-3),'거부');};
   document.getElementById('dbIn').onclick=()=>{SFX.click();window.scrollTo(0,0);R.innerHTML='<div style="animation:fdIn .35s ease-out">'+lab('대선 TV 토론 · 생중계')+'<div id="dbBox"></div></div>';
     debateRun(document.getElementById('dbBox'),{pct:pct,amend:amend},(t,v)=>{te.dbD=DB_D[t];go(Math.max(1,Math.min(99,pct+DB_D[t])),['압승','우세','열세','완패'][t]+' '+v+'%');});};}
-function election(amend,pct,te,deb){
+function election(amend,pct,te,deb){dcSeed('elect');
   if(!deb&&CP.rule!=='reign'&&pct>0&&pct<100)return debateGate(amend,pct,te);
   window.scrollTo(0,0);
   const n=CAR.term+1,win=Math.random()*100<pct,jit=Math.random()*4-2;
@@ -7169,7 +7223,9 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   const SC=careerScore(kind,years),csc=SC.total;
   const newBest=!god&&csc>(MEM.best100||0),newLead=!god&&!(MEM.leaders||{})[lid];
   if(!god){MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=(+MEM.leaders[lid]||0)+1;msave();}
-  sendCareer(EXH[kind]||kind,{lid:lid,csc:csc,years:years,good:good,bad:badN,SC:SC});
+  // 오늘의 도전: 기록에 도전 날짜가 붙어 나간 뒤 원래 난수로 되돌린다(결산 화면의 꾸밈은 보통 난수로)
+  const dcI=DC?{date:DC.date,ranked:DC.ranked}:null;dcDone(csc);
+  sendCareer(EXH[kind]||kind,{lid:lid,csc:csc,years:years,good:good,bad:badN,SC:SC});dcEnd();
 
   const ct=CAR.terms.map((t,j)=>'<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);opacity:0;animation:fdIn .35s ease-out forwards;animation-delay:'+(j*90)+'ms">'+
     '<span style="font-size:12px;color:var(--text-muted);width:30px">'+(CP.id==='joseon'?'치세'+t.term:t.term+'기')+'</span><span style="font-size:18px;font-weight:700;color:'+GCOL[t.g]+';width:22px">'+t.g+'</span><span style="flex:1;min-width:0"><span style="display:block;font-size:13px;color:'+t.col+'">'+t.ti+'</span><span style="display:block;font-size:11px;color:var(--text-muted)">'+t.scenario+(t.elect?' · 다음 대선 '+t.winP+'% '+t.elect:'')+'</span></span></div>').join('');
@@ -7181,13 +7237,14 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   const bt=CAR.terms.reduce((a,t)=>!a||t.sc>a.sc?t:a,null);
   // 기록 카드(lazy/card): 사진 한 장에 들어갈 것만 추린다
   const now=new Date(),jo=CP.id==='joseon';
-  const CARD={who:NICK+' '+CP.role+'의 인생',bg:CAR.bgx||CAR.bg+' 출신',stageTag:CP.id==='kr'?'대한민국':CP.tag+' · '+CP.n,ending:EXH[kind]||kind,
+  const CARD={who:NICK+' '+CP.role+'의 인생',bg:CAR.bgx||CAR.bg+' 출신',stageTag:dcI?'오늘의 도전 · '+CP.n:CP.id==='kr'?'대한민국':CP.tag+' · '+CP.n,ending:EXH[kind]||kind,
     sub:jo?CAR.term+'번의 치세 · '+years+'년':CAR.term+'선 · '+years+'년 재임',age:CAR.age0+'세 취임 → '+age1+'세',scen:CAR.terms.map(t=>t.scenario).join(' → '),
     grades:CAR.terms.map(t=>[jo?'치세'+t.term:t.term+'기',t.g]),best:(bt||{g:'-'}).g,L:{n:L.n,k:L.k,col:L.col,era:L.era},good:good,bad:badN,score:csc,newBest:newBest,
     date:now.getFullYear()+'.'+String(now.getMonth()+1).padStart(2,'0')+'.'+String(now.getDate()).padStart(2,'0')};
   const medalH=(bt?'<div class="chr-md" aria-hidden="true"><svg viewBox="0 0 70 34" width="70" height="34"><path d="M18 0H33L38 34H23Z" fill="#a8321f"/><path d="M52 0H37L32 34H47Z" fill="#2f4a6b"/></svg><div class="disc"><b>'+bt.g+'</b><span>최고 임기</span></div></div>':'');
   const show=first=>{window.scrollTo(0,0);
   R.innerHTML='<div style="animation:fdIn .45s ease-out">'+
+   (dcI?'<div class="dc-res"><div><b>오늘의 도전 · '+dcLabel(dcI.date)+'</b><span>'+(dcI.ranked?'순위 판 · 오늘의 순위에 올라가요':'연습 판 · 순위에는 오르지 않아요')+'</span></div><button id="dcRank" type="button">오늘의 순위</button></div>':'')+
    lab(NICK+' 대통령의 인생 · '+(CAR.bgx||CAR.bg+' 출신'))+
    '<div style="font-size:27px;font-family:var(--font-voice);font-weight:800;line-height:1.25;margin-bottom:6px">'+(EXH[kind]||kind)+'</div>'+
    '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">'+CAR.term+'선 · '+years+'년 재임 · '+CAR.age0+'세에 취임해 '+age1+'세에 물러남<div style="margin-top:4px;color:var(--text-muted)">겪은 위기 · '+CAR.terms.map(t=>t.scenario).join(' → ')+'</div></div>'+
@@ -7228,6 +7285,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   if(document.getElementById('rhine'))document.getElementById('rhine').onclick=()=>{SFX.click();rhineGo();};
   if(!god)document.getElementById('lbMine').onclick=()=>{SFX.click();openBoard({back:()=>show(false),id:RUN.id,nick:NICK});};
   document.getElementById('cp').onclick=function(){copyText(summary,this);};
+  if(document.getElementById('dcRank'))document.getElementById('dcRank').onclick=function(){SFX.click();dcOpen(this,{score:csc,ranked:dcI.ranked});};
   document.getElementById('cdShareBtn').onclick=function(){SFX.click();cardOpen(CARD,'share');};
   document.getElementById('cdSaveBtn').onclick=function(){SFX.click();cardOpen(CARD,'save');};};
   show(false);
@@ -7935,7 +7993,7 @@ const kgList=()=>(KG_ERA[CAR&&CAR.bgid]||KG_ERA.seonjo).map(id=>Object.assign({i
 const KG_TH=[90,160];   // 문턱: 판마다 국난마다 이 사이에서 무작위로 정한다(언제 올지 미리 알 수 없게)
 const KG_B=45;   // 왕권을 지킬 기본 가능성(양위 강요는 40)
 const kgT=()=>(CAR.term-1)*YRS*PY+S.turn;   // 커리어 전체에서 몇 번째 결정인가
-function kgInit(){if(CAR.kg)return CAR.kg;const th={};kgList().forEach(K=>{th[K.id]=KG_TH[0]+Math.random()*(KG_TH[1]-KG_TH[0]);});
+function kgInit(){if(CAR.kg)return CAR.kg;dcSeed('kgi');const th={};kgList().forEach(K=>{th[K.id]=KG_TH[0]+Math.random()*(KG_TH[1]-KG_TH[0]);});
   return CAR.kg={a:{},th:th,done:{},win:[],last:-99,forced:0};}
 // 결정 하나가 끝날 때마다 조짐을 쌓고(한 결정 = TPT달), 문턱을 넘은 국난이 있으면 돌려준다.
 // 첫해에는 오지 않고, 한 번 오면 1년은 쉰다. 여럿이 넘었으면 가장 많이 넘친 것부터
@@ -7962,7 +8020,7 @@ function kgOpen(K){window.scrollTo(0,0);SVAT=null;const G=kgInit();G.done[K.id]=
   if(CP.dict)skinNode(R);
   try{SFX.gate();vib([90,60,120]);}catch(e){}
   let gone=0;K.o.forEach((o,j)=>{document.getElementById('kgA'+j).onclick=()=>{if(gone++)return;SFX.click();const P=kgOddsOf(K,j);apply(o[3],1);kgRoll(K,j,P.p);};});}
-function kgRoll(K,j,p){window.scrollTo(0,0);const win=Math.random()*100<p,o=K.o[j],G=CAR.kg,y=Math.min(YRS,Math.floor(S.turn/PY)+1);
+function kgRoll(K,j,p){dcSeed('kgr'+K.id);window.scrollTo(0,0);const win=Math.random()*100<p,o=K.o[j],G=CAR.kg,y=Math.min(YRS,Math.floor(S.turn/PY)+1);
   R.innerHTML='<div style="animation:fdIn .35s ease-out;padding-top:10px">'+lab(K.n+' · '+K.y+'년의 일')+
    '<div id="vt" style="font-size:24px;font-weight:600;margin-bottom:6px">'+o[0]+'</div>'+
    '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:18px">'+o[1]+'. <span style="color:var(--text-muted)">· 왕권을 지킬 가능성 '+p+'%</span></div>'+
@@ -8110,7 +8168,7 @@ function acEnter(id,p){PF={school:p.school,name:p.name,phone:p.phone||'',agree:t
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v4.4';
+const GAME_VER='v4.5';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -8186,7 +8244,7 @@ function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.len
     ins:Math.round(lt.ins),peakP:Math.round(RUN.pkP),peakC:Math.round(RUN.pkC),auth:lt.auth?'예':'아니오',
     nChoices:N.length,nConc:cnt('권력 집중'),nDisp:cnt('견제·분산'),nNeut:cnt('중립'),avgDir:avg(N.map(z=>z.dirScore)),
     dirY1:yr(1),dirY2:yr(2),dirY3:yr(3),dirY4:yr(4),firstConcTurn:fc?fc.cturn:'',crisis:RUN.crisis.join(' / '),
-    dice0:tally[0],dice1:tally[1],dice2:tally[2],dice3:tally[3],rerolls:RUN.rr,tokensLeft:tok,couponTok:RUN.cpTok||0,mid:PF.mid||'',mtok:acTok(),
+    dice0:tally[0],dice1:tally[1],dice2:tally[2],dice3:tally[3],rerolls:RUN.rr,tokensLeft:tok,couponTok:RUN.cpTok||0,dcDate:DC?DC.date:'',dcRanked:DC&&DC.ranked?'예':'',mid:PF.mid||'',mtok:acTok(),
     mode:MODE[mode].n,terms:CAR.term,careerYears:years,exitType:exitLabel,scenarios:terms.map(t=>t.scenario).join(' → '),elections:CAR.elections.join(' / '),pathEvents:(CAR.pathLog||[]).join(' / '),tutorial:tutOn()?'켬':'끔',avgFit:avg(N.map(z=>typeof z.fit==='number'?z.fit:0)),amendCount:CAR.amend,retireEligible:CAR.retireElig?'예':'아니오',
     leaderId:x.lid,leader:LEAD[x.lid].n,careerScore:x.csc===undefined?'':x.csc,scorePerf:x.SC?x.SC.perf:'',scoreCont:x.SC?x.SC.cont:'',scoreHonor:x.SC?x.SC.honor:'',trophiesGood:good,trophiesBad:CAR.tro.length-good,
     trophyList:CAR.tro.map(t=>(t.g?'+':'-')+t.n+'('+t.term+'-'+t.year+')').join(', '),

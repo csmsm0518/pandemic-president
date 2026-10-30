@@ -475,7 +475,7 @@ const kgList=()=>(KG_ERA[CAR&&CAR.bgid]||KG_ERA.seonjo).map(id=>Object.assign({i
 const KG_TH=[90,160];   // 문턱: 판마다 국난마다 이 사이에서 무작위로 정한다(언제 올지 미리 알 수 없게)
 const KG_B=45;   // 왕권을 지킬 기본 가능성(양위 강요는 40)
 const kgT=()=>(CAR.term-1)*YRS*PY+S.turn;   // 커리어 전체에서 몇 번째 결정인가
-function kgInit(){if(CAR.kg)return CAR.kg;const th={};kgList().forEach(K=>{th[K.id]=KG_TH[0]+Math.random()*(KG_TH[1]-KG_TH[0]);});
+function kgInit(){if(CAR.kg)return CAR.kg;dcSeed('kgi');const th={};kgList().forEach(K=>{th[K.id]=KG_TH[0]+Math.random()*(KG_TH[1]-KG_TH[0]);});
   return CAR.kg={a:{},th:th,done:{},win:[],last:-99,forced:0};}
 // 결정 하나가 끝날 때마다 조짐을 쌓고(한 결정 = TPT달), 문턱을 넘은 국난이 있으면 돌려준다.
 // 첫해에는 오지 않고, 한 번 오면 1년은 쉰다. 여럿이 넘었으면 가장 많이 넘친 것부터
@@ -502,7 +502,7 @@ function kgOpen(K){window.scrollTo(0,0);SVAT=null;const G=kgInit();G.done[K.id]=
   if(CP.dict)skinNode(R);
   try{SFX.gate();vib([90,60,120]);}catch(e){}
   let gone=0;K.o.forEach((o,j)=>{document.getElementById('kgA'+j).onclick=()=>{if(gone++)return;SFX.click();const P=kgOddsOf(K,j);apply(o[3],1);kgRoll(K,j,P.p);};});}
-function kgRoll(K,j,p){window.scrollTo(0,0);const win=Math.random()*100<p,o=K.o[j],G=CAR.kg,y=Math.min(YRS,Math.floor(S.turn/PY)+1);
+function kgRoll(K,j,p){dcSeed('kgr'+K.id);window.scrollTo(0,0);const win=Math.random()*100<p,o=K.o[j],G=CAR.kg,y=Math.min(YRS,Math.floor(S.turn/PY)+1);
   R.innerHTML='<div style="animation:fdIn .35s ease-out;padding-top:10px">'+lab(K.n+' · '+K.y+'년의 일')+
    '<div id="vt" style="font-size:24px;font-weight:600;margin-bottom:6px">'+o[0]+'</div>'+
    '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:18px">'+o[1]+'. <span style="color:var(--text-muted)">· 왕권을 지킬 가능성 '+p+'%</span></div>'+

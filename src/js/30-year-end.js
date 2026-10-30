@@ -1,5 +1,5 @@
 /* ---------- 연간 결산 ---------- */
-function report(){SFX.report();window.scrollTo(0,0);
+function report(){dcSeed('report');SFX.report();window.scrollTo(0,0);
   const y=S.turn/PY,fin=S.turn>=YRS*PY,sc=score();let tr='';
   if(prev!==null){const d=sc-prev;tr=d>3?'전체적으로 작년보다 나아지고 있습니다.':d<-3?'솔직히 말씀드리면, <em>작년보다 나빠지고 있습니다</em>.':'작년과 크게 다르지 않습니다.';}
   prev=sc;

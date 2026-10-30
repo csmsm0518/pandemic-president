@@ -366,3 +366,8 @@ button:hover{border-color:var(--gold)}
 .cd-btns{display:grid;grid-template-columns:1.25fr 1fr;gap:8px;margin-bottom:8px}
 .cd-btns button{display:flex;align-items:center;justify-content:center;gap:7px;padding:14px 8px;font-size:14.5px;font-weight:700;white-space:nowrap}
 .cd-btns svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+/* 결산 화면 위: 오늘의 도전 판이면 띠 하나(순위 판 · 연습 판, 오늘의 순위 단추) */
+.dc-res{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px;padding:12px 14px;border-radius:12px;background:#fbf4e1;box-shadow:inset 0 0 0 1px var(--gold)}
+.dc-res b{display:block;font-size:14.5px;font-family:var(--font-voice);font-weight:800}
+.dc-res span{display:block;font-size:12.5px;color:var(--text-secondary);margin-top:2px}
+.dc-res button{flex:none;padding:9px 12px;font-size:13px;font-weight:700}

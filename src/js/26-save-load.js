@@ -83,7 +83,7 @@ function pop(title,body){let o=document.querySelector('.svp-bg');if(o)o.remove()
   o.innerHTML='<div class="sndp svp" role="dialog" aria-label="'+title+'"><div class="sndp-h"><span>'+title+'</span><button class="sndp-x" aria-label="닫기">✕</button></div>'+body+'</div>';
   document.body.appendChild(o);const close=()=>o.remove();o.onclick=e=>{if(e.target===o)close();};o.querySelector('.sndp-x').onclick=close;
   o.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape')close();});o.close=close;return o;}
-function svAct(k){if(k==='pin')return pinSet();if(!SVAT){eggToast('지금은 할 수 없어요. 결정 화면이나 결과 화면에서 다시 눌러 주세요.');return;}
+function svAct(k){if(k==='pin')return pinSet();if(DC){eggToast('오늘의 도전은 저장할 수 없어요. 한 번에 끝까지 해 주세요.');return;}if(!SVAT){eggToast('지금은 할 수 없어요. 결정 화면이나 결과 화면에서 다시 눌러 주세요.');return;}
   if(k==='quit')return quitAsk();
   if(!svSave(SVAT)){eggToast('저장하지 못했어요. 브라우저 저장 공간을 확인해 주세요.');return;}
   if(k==='exit'){SFX.back();return home();}

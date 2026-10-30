@@ -194,10 +194,10 @@ function needEval(n){if(n[0]==='NOWAR')return {ok:SCX().id!=='war',txt:'전쟁 �
   if(n[0]==='UNIFY')return {ok:SCX().id==='unify',txt:'통일 위기 중'};
   const v=Math.round(n[0]==='I'?S.i:vVal(n[0])),nm=n[0]==='I'?'위기 지수':vName(n[0]),ok=n[1]==='>='?v>=n[2]:v<=n[2];
   return {ok:ok,txt:nm+' '+n[2]+(n[1]==='>='?' 이상':' 이하'),cur:v};}
-function startSpecial(sp,key,y){CAR.spDone[key]=1;wolyMark(sp,y);CAR.spLog=CAR.spLog||[];CAR.spLog.push(CAR.term+'기 '+(y+1)+'년 '+sp.n);
+function startSpecial(sp,key,y){dcSeed('sps'+key);CAR.spDone[key]=1;wolyMark(sp,y);CAR.spLog=CAR.spLog||[];CAR.spLog.push(CAR.term+'기 '+(y+1)+'년 '+sp.n);
   CAR.spRun={id:sp.id,n:sp.n,k:sp.k,tro:sp.tro,ok:0,done:0,total:sp.steps.length,ctx:{}};
   sp.steps.forEach((f,i)=>queue.splice(i,0,{sg:[sp.id,i]}));pendingNews=Object.assign({},sp.bn);bgmGame();}
-function spBoard(go){const y=Math.round(S.turn/PY);if(y>=YRS)return go();CAR.spDone=CAR.spDone||{};window.scrollTo(0,0);
+function spBoard(go){dcSeed('spb');const y=Math.round(S.turn/PY);if(y>=YRS)return go();CAR.spDone=CAR.spDone||{};window.scrollTo(0,0);
   if(wolyDue(y))return wolyOpen(go,y);   // 하계올림픽 2년 뒤: 그해는 판 대신 동계올림픽
   // 판의 과제는 임기마다 다시 할 수 있다(이 임기에 이미 치른 것만 막힌다)
   const L=boardIds().map(id=>{const sp=(SP[CP.id]||[]).find(s=>s.id===id);if(!sp)return null;const key=sp.id+'_'+CAR.term,nd=(NEED[id]||[]).map(needEval);

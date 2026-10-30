@@ -15,4 +15,4 @@ function boxBind(pre,snd){const s=document.getElementById(pre+'Sug'),c=document.
   if(s)s.onclick=()=>{snd();sugOpen(s);};if(c)c.onclick=()=>{snd();cpnOpen(c);};}
 // 쿠폰으로 받아 둔 운명 개입: 다음 새 게임을 시작할 때 한 번에 꺼내 쓴다. 조성민(데우스 엑스 마키나) 판에는 쓰지 않고 남겨 둔다.
 // 공정한 비교를 위해 몇 개를 받았는지 연구 기록(RUN.cpTok → 요약 시트 '쿠폰 운명 개입')에 남긴다
-function cpTokUse(){const n=Math.max(0,Math.min(9,Math.floor(+MEM.cpTok||0)));if(!n||godRun())return 0;delete MEM.cpTok;msave();if(RUN)RUN.cpTok=n;return n;}
+function cpTokUse(){const n=Math.max(0,Math.min(9,Math.floor(+MEM.cpTok||0)));if(!n||godRun()||DC)return 0;delete MEM.cpTok;msave();if(RUN)RUN.cpTok=n;return n;}

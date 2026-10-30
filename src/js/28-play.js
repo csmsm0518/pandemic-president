@@ -423,7 +423,7 @@ function res(){const T=TIER[last.t],wc=last.x.split(' ').length,dl=Math.min(650,
 // 결과 화면의 '계속': 다음 결정으로, 해가 끝났으면 연간 결산으로
 // 조선은 결정마다 국난의 조짐이 쌓이고, 문턱을 넘으면 다음 결정 대신 국난이 온다(36b-joseon-crisis.js)
 function goNext(){S.turn++;const kg=kgTick();if(S.turn%PY===0)return report();if(kg)return kgOpen(kg);next();pickAdv();ev();}
-function next(){bnSeen=null;if(queue.length){cur=queue.shift();if(cur.sg)cur=spGen(cur.sg);return;}
+function next(){dcSeed('next');bnSeen=null;if(queue.length){cur=queue.shift();if(cur.sg)cur=spGen(cur.sg);return;}
   {const L=(MILEV[CP.id]||[]).filter(e=>!SEEN.has(e.t));if(L.length&&Math.random()<.11){cur=pk(L);SEEN.add(cur.t);return;}}
   if(S.u>44&&Math.random()<Math.pow(S.u/100,2)*(.35+S.c/110)*(1-S.chk/180)*.22*(cnHas('upr')?.5:1)){cur=(S.chk>=48&&CP.id!=='joseon')?IMP:UPR;return;}
   const y=Math.floor(S.turn/PY)+1,T=CAR.term;

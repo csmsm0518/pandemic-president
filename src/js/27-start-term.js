@@ -1,13 +1,16 @@
 /* ---------- START / TERM ---------- */function start(){if(camp==='zombie')return zgOpen();
   PINH='';cfgApply();
+  if(DC)MAXT=1;   // 오늘의 도전은 한 임기로 끝난다
   if(!CP.bg[bg]||bgLock(CP.bg[bg])){bg=-1;return home();}
   const B=CP.bg[bg];if(B.once){MEM.secUsed=MEM.secUsed||{};MEM.secUsed[B.sec]=1;msave();}
   LOG=[];T0=Date.now();SHOWN=0;RUN={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),st:new Date().toISOString(),rr:0,pkP:0,pkC:0,crisis:[],sent:0};
   S=Object.assign({turn:0,quit:0},INIT,CP.init||{});B.f(S);for(const k in INIT)S[k]=cl(S[k]);
-  CAR={camp:CP.id,path:{hard:0,soft:0,eco:0},pstage:{},pathLog:[],news:0,term:1,age0:B.age,bg:(CP.id==='kr'?'':CP.n+' · ')+B.n,bgid:B.id,bgn:B.n,bgx:B.x||(B.n+' 출신'),terms:[],tro:[],amend:0,crush:0,exit:'',tEval:0,retireElig:false,cs:[],ts:[],us:[],ss:[],done:0,tt:[0,0,0,0],yrs:[],scen:[],elections:[]};cnStart();
+  CAR={camp:CP.id,path:{hard:0,soft:0,eco:0},pstage:{},pathLog:[],news:0,term:1,age0:B.age,bg:(CP.id==='kr'?'':CP.n+' · ')+B.n,bgid:B.id,bgn:B.n,bgx:B.x||(B.n+' 출신'),terms:[],tro:[],amend:0,crush:0,exit:'',tEval:0,retireElig:false,cs:[],ts:[],us:[],ss:[],done:0,tt:[0,0,0,0],yrs:[],scen:[],elections:[]};
+  dcSeed('start');   // 오늘의 도전: 새 판의 상태(S · CAR · LOG · RUN)를 다 만든 뒤에 씨앗을 맞춘다(앞 판의 남은 값이 섞이지 않게)
+  cnStart();
   // 배경음악은 새 커리어를 만든 뒤에 고른다(앞 판의 올림픽 응원가가 이어지지 않게)
   bgmGame();histArm();
-  SEENT={};SEENN=0;MOD=pk(MODS);tok=2+(B.t||0)+cpTokUse();streak=0;snap=null;peakI=S.i;hist=[];TH=[{a:S.a,i:S.i}];SEEN=new Set();   // 운명 개입: 기본 2 + 인물 보너스 + 쿠폰으로 받아 둔 것(cpTokUse)
+  dcSeed('mod');SEENT={};SEENN=0;MOD=pk(MODS);tok=2+(B.t||0)+cpTokUse();streak=0;snap=null;peakI=S.i;hist=[];TH=[{a:S.a,i:S.i}];SEEN=new Set();   // 운명 개입: 기본 2 + 인물 보너스 + 쿠폰으로 받아 둔 것(cpTokUse)
   base=S.chk+S.trn+S.saf;pool=CP.ev.slice();last=null;tally=[0,0,0,0];yTally=[0,0,0,0];chron=[];prev=null;queue=[];deaths=0;yd=0;cDeaths=0;covD=0;setTroName();
   YS=Object.assign({},S);
   mapReset();MAP.tgt=S.i;mapStart();
@@ -18,7 +21,7 @@
    ['질병관리청에 전권을 위임한다',{trn:11,chk:9,p:-7,i:-5},'대통령이 한 발 물러섰고 전문가가 마이크를 잡았다.']],bn:FIRSTBN};
   bnSeen=null;pendingNews=null;pickAdv();quoteFx('임기의 시작',ev,leaderQ(1));
 }
-function newTerm(){
+function newTerm(){dcSeed('term');
   CAR.ttT=(CAR.ttT||[]).concat([CAR.tt.slice()]);CAR.term++;CAR.tt=[0,0,0,0];CAR.path={hard:0,soft:0,eco:0};CAR.pstage={};S.turn=0;tok+=1;base=S.chk+S.trn+S.saf;deaths=0;yd=0;hist=[];chron=[];prev=null;queue=[];pool=CP.ev.slice();CAR.spRun=null;
   // 아직 겪지 않은 위기 하나를 고른다. 위기 지수는 새로 시작하지만 임기가 거듭될수록 출발점이 높다.
   const left=CP.post.filter(k=>CAR.scen.indexOf(k)<0);CAR.scen.push(pk(left.length?left:CP.post));setTroName();
@@ -75,6 +78,6 @@ function breaking(n,cb){window.scrollTo(0,0);CAR.news=(CAR.news||0)+1;const y=Ma
   afterFx(()=>{const w=R.querySelector('.np-wrap');if(!w||!w.contains(b))return;w.classList.remove('np-hold');
     SFX.news(how===jobo?'jobo':how===tvDesk?(CP.id==='zombie'?'radio':'tv'):'paper',n.k!=='good');vib([40,30,40]);setTimeout(()=>{try{b.focus({preventScroll:true});}catch(e){}},700);});}
 function variantHit(){S.i=cl(Math.max(S.i+12,28));if(S.i>peakI)peakI=S.i;MAP.tgt=S.i;bnSeen=null;cur=VARIANT;}
-function pickAdv(){const L=CP.adv?(SCX().adv||[]).concat(CP.adv):isCov()?ADV:(SCX().adv||[]).concat(ADV.filter(a=>a.who!=='방역청장'));
+function pickAdv(){dcSeed('adv');const L=CP.adv?(SCX().adv||[]).concat(CP.adv):isCov()?ADV:(SCX().adv||[]).concat(ADV.filter(a=>a.who!=='방역청장'));
   for(const a of L){if(a.c(S)){adv={who:a.who,l:pk(a.l)};return;}}}
 
