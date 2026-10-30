@@ -1,0 +1,100 @@
+/* ---------- 국난 직접 지휘: 국난 화면(.kg-sc)과 같은 먹빛 판 위에서 ---------- */
+.km-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+.km-h b{font:900 26px/1.2 var(--font-voice);color:#fff3e4;text-shadow:0 0 18px rgba(255,90,50,.45)}
+.km-h span{font-size:13px;color:#d9bca4}
+.km-how{margin:0 0 12px;font-size:13px;line-height:1.65;color:#cdbda9}
+.km-st{position:relative;border-radius:12px;overflow:hidden;background:rgba(0,0,0,.35);box-shadow:inset 0 0 0 1px rgba(255,200,170,.18);touch-action:none;user-select:none;-webkit-user-select:none}
+.km-st[data-cd]::after{content:attr(data-cd);position:absolute;inset:0;display:grid;place-items:center;z-index:9;background:rgba(10,6,4,.55);
+  font:900 76px/1 var(--font-voice);color:#ffd98a;text-shadow:0 0 30px rgba(255,140,60,.7);animation:kmCd .6s ease-out both}
+@keyframes kmCd{from{opacity:0;transform:scale(1.4)}}
+.km-cv{display:block;width:100%}
+.km-hud{display:flex;align-items:center;gap:12px;margin:10px 0 0;font-size:12.5px;color:#cdbda9;min-height:22px}
+.km-hud>span:first-child{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.km-hud>span:first-child>span{margin-left:10px}
+.km-hud b{color:#fff3e4;font-variant-numeric:tabular-nums}
+.km-lf{font-style:normal;font-size:11px;color:#ff7a5a;text-shadow:0 0 6px rgba(255,90,50,.6)}.km-lf.x{color:#4a3a33;text-shadow:none}
+.km-tm{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+.km-tm i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#b3261e,#d9a441);border-radius:3px;transition:width .2s linear}
+.km-go{width:100%;margin-top:12px;padding:15px;font-size:16px}
+.km-tier{margin-top:12px;padding:12px 14px;border-radius:12px;text-align:center;animation:fdIn .35s ease-out both}
+.km-tier b{display:block;font:900 30px/1.3 var(--font-voice);letter-spacing:6px}
+.km-tier span{display:block;margin:2px 0 4px;font-size:13.5px;color:#e6d9c5}
+.km-tier em{font-style:normal;font-size:12.5px;font-weight:800}
+.km-tier.t0{background:rgba(63,195,143,.14);box-shadow:inset 0 0 0 1px rgba(63,195,143,.45)}.km-tier.t0 b,.km-tier.t0 em{color:#8be4b8}
+.km-tier.t1{background:rgba(217,164,65,.14);box-shadow:inset 0 0 0 1px rgba(217,164,65,.45)}.km-tier.t1 b,.km-tier.t1 em{color:#ffd98a}
+.km-tier.t2{background:rgba(240,130,60,.14);box-shadow:inset 0 0 0 1px rgba(240,130,60,.45)}.km-tier.t2 b,.km-tier.t2 em{color:#ffaf7a}
+.km-tier.t3{background:rgba(224,50,40,.18);box-shadow:inset 0 0 0 1px rgba(255,90,80,.5)}.km-tier.t3 b,.km-tier.t3 em{color:#ff9488}
+
+/* 성벽 수비: 돌 성벽 다섯 칸, 위에 성가퀴, 칸마다 사다리 */
+.kw{display:grid;grid-template-columns:repeat(5,1fr);height:min(360px,82vw);
+  background:linear-gradient(180deg,transparent 0 16%,#4b4036 16%),#1b1411}
+.kw-c{position:relative;padding:0;border:0;border-radius:0;overflow:hidden;cursor:pointer;touch-action:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 2px,transparent 2px 26px),repeating-linear-gradient(90deg,rgba(0,0,0,.18) 0 2px,transparent 2px 34px) 0 13px,linear-gradient(180deg,#6b5a4a,#4a3d33);
+  border-right:1px solid rgba(0,0,0,.4)}
+.kw-c:hover{background-color:transparent}
+.kw-c::before{content:'';position:absolute;left:0;right:0;top:0;height:16%;background:linear-gradient(90deg,#7a6856 0 28%,transparent 28% 72%,#7a6856 72%);box-shadow:inset 0 -3px 0 rgba(0,0,0,.35);z-index:2}
+.kw-lad{position:absolute;left:30%;right:30%;top:10%;bottom:0;opacity:0;transition:opacity .2s;
+  background:linear-gradient(90deg,#8a5a2b 0 12%,transparent 12% 88%,#8a5a2b 88%),repeating-linear-gradient(180deg,transparent 0 14px,#8a5a2b 14px 18px)}
+.kw-c.on .kw-lad{opacity:1}
+.kw-e{position:absolute;left:0;right:0;top:4%;height:100%;transform:translateY(100%);transition:transform .06s linear;opacity:0}
+.kw-c.on .kw-e{opacity:1}
+.kw-e i{position:absolute;left:50%;top:0;width:26px;height:34px;margin-left:-13px;border-radius:12px 12px 4px 4px;
+  background:radial-gradient(circle at 50% 22%,#d9b48a 0 6px,transparent 7px),linear-gradient(180deg,transparent 0 40%,#6a2a1c 40%);box-shadow:0 0 0 0 rgba(255,80,60,0)}
+.kw-e i::before{content:'';position:absolute;left:4px;right:4px;top:-3px;height:9px;border-radius:9px 9px 2px 2px;background:#2b2320}
+.kw-e.ar i{background:radial-gradient(circle at 50% 22%,#d9b48a 0 6px,transparent 7px),linear-gradient(180deg,transparent 0 40%,#4a5058 40%);box-shadow:0 0 0 2px #9aa3ad}
+.kw-e.ar i::before{background:#8b939c}
+.kw-e.hit i{filter:brightness(1.8)}
+.kw-c.brk{animation:kwBrk .5s ease-out}
+@keyframes kwBrk{0%,40%{box-shadow:inset 0 0 0 3px #ff4a3a,inset 0 0 40px rgba(255,60,40,.6)}}
+.kw-c.fall::after{content:'떨어뜨림';position:absolute;left:0;right:0;top:40%;text-align:center;font-size:11px;font-weight:800;color:#ffd98a;animation:kwF .38s ease-out both}
+@keyframes kwF{from{opacity:1;transform:none}to{opacity:0;transform:translateY(30px)}}
+
+/* 역모 색출: 대신 아홉, 3×3. 자리를 바꿀 때 left/top이 미끄러진다 */
+.ks{position:relative;height:min(330px,80vw);margin:8px}
+.ks-o{position:absolute;width:33.33%;height:30%;padding:0;border:0;background:none;display:grid;place-items:center;
+  transition:left var(--sp,.5s) cubic-bezier(.5,0,.3,1),top var(--sp,.5s) cubic-bezier(.5,0,.3,1)}
+.ks-o:hover{background:none}
+.ks-hat,.ks-face,.ks-robe{position:absolute;left:50%;transform:translateX(-50%)}
+.ks-robe{bottom:6%;width:58px;height:34px;border-radius:26px 26px 6px 6px;background:linear-gradient(180deg,#2f4a6b,#22364f);box-shadow:inset 0 -4px 0 rgba(0,0,0,.25)}
+.ks-face{bottom:calc(6% + 28px);width:28px;height:30px;border-radius:50%;background:#e2c29a}
+.ks-hat{bottom:calc(6% + 50px);width:34px;height:15px;border-radius:12px 12px 3px 3px;background:#1c1714;z-index:1}
+.ks-hat::after{content:'';position:absolute;top:4px;left:-9px;right:-9px;height:5px;border-radius:3px;background:#1c1714}
+.ks-m{position:absolute;top:2%;right:16%;z-index:2;width:26px;height:26px;border-radius:5px;display:grid;place-items:center;font:900 15px var(--font-voice);color:#fff;background:#b3261e;opacity:0;transform:scale(.4) rotate(-10deg);transition:opacity .2s,transform .2s}
+.ks-o.show .ks-robe,.ks-o.tr .ks-robe{background:linear-gradient(180deg,#a8321f,#7a1f12);box-shadow:0 0 18px rgba(255,70,40,.7)}
+.ks-o.show .ks-m,.ks-o.tr .ks-m{opacity:1;transform:none}
+.ks-o.lost::after{content:'놓침';position:absolute;top:8%;font-size:11px;font-weight:800;color:#ff9488}
+.ks-o.no .ks-robe{background:#4a4642;filter:grayscale(1)}.ks-o.no::after{content:'무고';position:absolute;top:8%;font-size:11px;font-weight:800;color:#c8b7a3}
+.ks-tx{position:absolute;left:0;right:0;bottom:-30px;margin:0;text-align:center;font-size:13px;font-weight:700;color:#ffd98a}
+.ks{margin-bottom:38px}
+
+/* 봉기 진무: 도 다섯, 끓는 정도가 아래에서 차오른다 */
+.kr-rice{display:flex;align-items:center;gap:4px;padding:10px 12px 0;font-size:12px;font-weight:700;color:#d9bca4}
+.kr-rice i{width:14px;height:12px;border-radius:3px 3px 5px 5px;background:#3b2c22}.kr-rice i.on{background:linear-gradient(180deg,#f4e6c2,#c9a96a)}
+.kr-rice.emp{animation:kwBrk .3s}
+.kr{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:10px;height:min(300px,70vw)}
+.kr-c{position:relative;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:2px;padding:0 0 8px;overflow:hidden;border-radius:10px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,200,170,.18);color:#f6ecdc;touch-action:none}
+.kr-c:hover{background:rgba(255,255,255,.07)}
+.kr-g{position:absolute;inset:0;z-index:0}
+.kr-g i{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(0deg,#b3261e,#e07a2e 70%,#f2b35a);opacity:.75;transition:height .12s linear}
+.kr-c b,.kr-c small{position:relative;z-index:1}
+.kr-c b{font:800 15px var(--font-voice)}.kr-c small{font-size:10.5px;color:#f1e4d0}
+.kr-c.hot{border-color:#ff6a4a;animation:krH .5s ease-in-out infinite alternate}
+@keyframes krH{to{box-shadow:0 0 14px rgba(255,80,40,.6)}}
+.kr-c.give{background:rgba(143,220,180,.2)}
+.kr-c.sg::before{content:'격문!';position:absolute;top:8px;left:0;right:0;z-index:2;text-align:center;font-size:11px;font-weight:800;color:#ffd98a;animation:kwF .5s ease-out both}
+.kr-c.brk{animation:kwBrk .6s ease-out}
+
+/* 담판: 막대 위 금빛 칸과 오가는 바늘 */
+.kt{padding:18px 14px 14px}
+.kt-k{margin-bottom:10px;text-align:center;font:900 22px var(--font-voice);color:#ffd98a;letter-spacing:4px}
+.kt-bar{position:relative;height:46px;border-radius:10px;background:linear-gradient(90deg,rgba(179,38,30,.35),rgba(60,40,30,.35) 50%,rgba(179,38,30,.35));box-shadow:inset 0 0 0 1px rgba(255,200,170,.2)}
+.kt-z{position:absolute;top:0;bottom:0;border-radius:8px;background:rgba(217,164,65,.35);box-shadow:inset 0 0 0 2px #d9a441;transition:left .25s,width .25s}
+.kt-z i{position:absolute;left:34%;right:34%;top:0;bottom:0;background:rgba(255,230,150,.55)}
+.kt-n{position:absolute;top:-6px;bottom:-6px;width:4px;margin-left:-2px;border-radius:2px;background:#fff;box-shadow:0 0 10px rgba(255,255,255,.8)}
+.kt-n.st{background:#ffd98a;box-shadow:0 0 16px #ffb04a}
+.kt-sc{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:12px 0;font-size:11.5px;text-align:center;color:#a99a8a}
+.kt-sc span{padding:5px 2px;border-radius:6px;background:rgba(255,255,255,.04)}
+.kt-sc .r2{color:#8be4b8;background:rgba(63,195,143,.14)}.kt-sc .r1{color:#ffd98a;background:rgba(217,164,65,.14)}.kt-sc .r0{color:#ff9488;background:rgba(224,50,40,.16)}
+.kt-b{width:100%;padding:16px;font-size:18px;font-weight:800;color:#2a1a0e;background:linear-gradient(180deg,#f3cf7a,#c9962e);border:0;touch-action:none}
+.kt-b small{font-size:11px;font-weight:600;opacity:.7}

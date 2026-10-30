@@ -5,6 +5,8 @@
 // 어떤 국난이 오는지는 출발 인물의 시대로 정한다(세종이면 대마도 정벌 · 파저강 여진 …, 선조면 임진왜란 · 정여립 …).
 // 국난은 일곱 갈래(KGK)로 나뉘고, 갈래마다 조짐이 차는 까닭(rate)과 왕권을 지킬 가능성(odds)이 같다. 사건(KGE)은 이름 · 상황 · 맞서는 길 · 실제 역사만 다르다.
 // 외세 압박(foreign)은 지면 폐위 대신 굴욕을 겪고(불명예 · 지표 손실), 그 뒤로 반정과 양위 강요의 조짐이 빠르게 찬다.
+// v4.6: 가능성은 네 단계(유리 · 반반 · 불리 · 위태)로만 보이고, 길의 값은 1.5배로 치르며, 국난을 넘길수록 다음 국난이 어려워진다.
+// 국난의 절반쯤은 길을 고른 뒤 그 싸움을 직접 지휘하는 짧은 경기(lazy/kgmini)가 붙는다.
 // o: [길, 설명, 가능성 보정, 바로 바뀌는 지표, 이겼을 때 붙는 불명예]
 const KG_LAST=()=>{const l=LOG[LOG.length-1];return l&&typeof l.dirScore==='number'?l.dirScore:0;};
 const KG_HUMB=()=>CAR.kg&&CAR.kg.forced?1:0;   // 외세에 굴복한 적이 있는가
@@ -27,7 +29,7 @@ const KGK={
  foreign:{soft:1,bad:{p:-12,a:-8,e:-6},why:S=>[['군사가 약하다',50-S.mil],['언로가 막혔다',50-S.trn],['국고가 비었다',50-S.e]],
   rate:S=>.7+Math.max(0,50-S.mil)*.06+Math.max(0,50-S.trn)*.07+Math.max(0,50-S.e)*.04,
   odds:S=>[['군사',(S.mil-50)*.45],['국고',(S.e-50)*.25],['언로',(S.trn-50)*.25],['당쟁',-(S.u-40)*.25]]},
- oust:{b:40,why:S=>[['외세에 굴복했다',KG_HUMB()*30],['군사가 무너졌다',35-S.mil],['왕권이 꺾였다',35-S.p]],
+ oust:{b:30,why:S=>[['외세에 굴복했다',KG_HUMB()*30],['군사가 무너졌다',35-S.mil],['왕권이 꺾였다',35-S.p]],
   rate:S=>KG_HUMB()*2.5+Math.max(0,35-S.mil)*.1+Math.max(0,35-S.p)*.1,
   odds:S=>[['군사',(S.mil-50)*.4],['왕권',(S.p-50)*.35],['민심',(S.a-50)*.3]]}};
 const KGE={
@@ -472,8 +474,18 @@ const KG_ERA={taejo:['waegu','pyojeon','wangja1','yeojinNE','wangssi'],taejong:[
  heungseon:['byeongin','sinmi','oppert','choik','imsul'],gojong:['ganghwa','imo','gapsin','donghak','eulsa','hague']};
 // 같은 임금으로 다시 해도 언제 · 무엇이 먼저 오는지는 조짐과 문턱으로 판마다 달라진다
 const kgList=()=>(KG_ERA[CAR&&CAR.bgid]||KG_ERA.seonjo).map(id=>Object.assign({id:id},KGK[KGE[id].k],KGE[id]));
-const KG_TH=[90,160];   // 문턱: 판마다 국난마다 이 사이에서 무작위로 정한다(언제 올지 미리 알 수 없게)
-const KG_B=45;   // 왕권을 지킬 기본 가능성(양위 강요는 40)
+const KG_TH=[75,135];   // 문턱: 판마다 국난마다 이 사이에서 무작위로 정한다(언제 올지 미리 알 수 없게)
+const KG_B=36;   // 왕권을 지킬 기본 가능성(양위 강요는 30)
+const KG_P=[5,80];   // 가능성의 바닥과 천장. 직접 지휘를 잘하면 천장을 10 넘을 수 있다
+const KG_TIRE=6;   // 국난을 하나 넘길 때마다 다음 국난은 이만큼 어려워진다(나라가 지쳤다)
+// 가끔(국난의 45%) 맞서는 길을 고른 뒤 직접 지휘한다(lazy/kgmini). 지휘 결과(0 대승 ~ 3 참패)만큼 가능성이 오르내린다
+const KG_MGP=.45,KG_MG=[15,5,-8,-20],KG_MGT=['대승','선전','고전','참패'];
+const KG_MGK={sea:'sea',north:'wall',coup:'spy',palace:'spy',oust:'spy',revolt:'riot',foreign:'talk'};
+// 가능성은 숫자 대신 네 단계로만 보여 준다(가장 높은 숫자만 고르면 끝나지 않게)
+const kgBand=p=>p>=65?['유리','g']:p>=48?['반반','m']:p>=30?['불리','o']:['위태','r'];
+// 맞서는 길의 값: 잃는 쪽은 1.5배로 치른다
+const kgCost=d=>{const o={};Object.keys(d||{}).forEach(k=>{o[k]=d[k]<0?Math.round(d[k]*1.5):d[k];});return o;};
+let KG_CUR=null;
 const kgT=()=>(CAR.term-1)*YRS*PY+S.turn;   // 커리어 전체에서 몇 번째 결정인가
 function kgInit(){if(CAR.kg)return CAR.kg;dcSeed('kgi');const th={};kgList().forEach(K=>{th[K.id]=KG_TH[0]+Math.random()*(KG_TH[1]-KG_TH[0]);});
   return CAR.kg={a:{},th:th,done:{},win:[],last:-99,forced:0};}
@@ -486,51 +498,61 @@ function kgTick(){if(!CAR||CP.id!=='joseon'||godRun())return null;const G=kgInit
   return due[0]||null;}
 // 조짐이 얼마나 찼는가(0~100, 치세 끝 화면에 보여 준다)
 const kgLv=K=>{const G=CAR.kg;return G?Math.min(100,Math.round((G.a[K.id]||0)/G.th[K.id]*100)):0;};
-const kgOddsOf=(K,j)=>{const F=K.odds(S).map(x=>[x[0],Math.round(x[1])]),m=K.o[j][2],mv=typeof m==='function'?m(S):m;
-  return {p:Math.max(8,Math.min(92,(K.b||KG_B)+F.reduce((s,x)=>s+x[1],0)+mv)),f:F,m:mv};};
-function kgOpen(K){window.scrollTo(0,0);SVAT=null;const G=kgInit();G.done[K.id]=1;G.last=kgT();
-  const why=K.why(S).filter(x=>x[1]>0).map(x=>x[0]),F=kgOddsOf(K,0).f.filter(x=>x[1]);
-  const fx=F.map(x=>'<span style="display:inline-block;margin:0 10px 4px 0">'+x[0]+' <b style="color:'+(x[1]>=0?'#2e7d55':'#b3261e')+'">'+(x[1]>=0?'+':'')+x[1]+'%p</b></span>').join('');
-  R.innerHTML='<div style="animation:fdIn .4s ease-out">'+lab('국난 · '+CAR.term+'번째 치세 '+(Math.floor(S.turn/PY)+1)+'년 · '+ageNow()+'세')+
-   card('<div style="font-size:12px;font-weight:700;color:#a8321f;letter-spacing:.04em;margin-bottom:6px">'+K.h+'</div><div class="hd" style="font-size:25px;margin-bottom:8px">'+K.n+' <span style="font-size:13px;font-weight:600;color:var(--text-muted)">'+K.y+'</span></div>'+
-     '<div style="font-size:14px;line-height:1.75;color:var(--text-secondary)">'+K.d+'</div>'+
-     (why.length?'<div style="font-size:12.5px;color:var(--text-muted);margin-top:10px">쌓인 조짐 · '+why.join(' · ')+'</div>':'')+
-     '<div style="font-size:12.5px;color:var(--text-muted);margin-top:6px">기본 '+(K.b||KG_B)+'% · '+fx+'</div>'+
-     '<div style="font-size:13.5px;margin-top:8px;line-height:1.6">이 국난에서 <b>왕권을 지켜야</b> 치세가 이어진다. '+(K.soft?'지키지 못하면 굴욕을 겪고 왕권이 크게 꺾인다.':'지키지 못하면 폐위된다.')+'</div>')+
-   K.o.map((o,j)=>{const P=kgOddsOf(K,j);return '<button id="kgA'+j+'" style="width:100%;text-align:left;padding:14px 15px;margin-bottom:8px"><span style="display:flex;justify-content:space-between;gap:10px;align-items:baseline"><span style="font-size:15px;font-weight:600">'+o[0]+'</span><span style="font-size:13px;font-weight:700;white-space:nowrap">'+P.p+'%</span></span>'+
-     '<span style="display:block;font-size:12px;color:var(--text-muted);margin-top:3px">'+o[1]+' · 왕권을 지킬 가능성 '+P.p+'%'+(o[4]?' · 지켜도 불명예 「'+o[4]+'」':'')+'</span></button>';}).join('')+'</div>';
+const kgOddsOf=(K,j)=>{const G=CAR.kg,F=K.odds(S).map(x=>[x[0],Math.round(x[1])]),m=K.o[j][2],mv=typeof m==='function'?m(S):m,n=G?G.win.length:0;
+  if(n)F.push(['연이은 국난',-KG_TIRE*n]);
+  return {p:Math.max(KG_P[0],Math.min(KG_P[1],(K.b||KG_B)+F.reduce((s,x)=>s+x[1],0)+mv)),f:F,m:mv};};
+// 먹빛 국난 화면의 틀: 봉화(봉수 3~5거) · 불티 · '國難' 낙관
+const kgEmbers=()=>'<div class="kg-em" aria-hidden="true">'+Array.from({length:14},(_,i)=>'<i style="--x:'+(4+i*7)%96+'%;--d:'+(3.4+(i*37%17)/10)+'s;--s:'+((i*53%29)/10)+'s;--dx:'+((i%5)-2)*18+'px"></i>').join('')+'</div>';
+const kgTop=(lv,t)=>'<div class="kg-top"><span class="kg-bong" aria-hidden="true">'+[1,2,3,4,5].map(k=>'<i'+(k<=lv?' class="on"':'')+'></i>').join('')+'</span><span><b class="kg-lv">봉수 '+lv+'거</b> · '+t+'</span></div>';
+const kgArrow=v=>v>=8?'▲▲':v>=3?'▲':v<=-8?'▼▼':v<=-3?'▼':'';
+function kgOpen(K){window.scrollTo(0,0);SVAT=null;const G=kgInit();G.done[K.id]=1;G.last=kgT();KG_CUR=K;
+  dcSeed('kgm'+K.id);const mg=KG_MGK[K.k]&&Math.random()<KG_MGP?KG_MGK[K.k]:'';
+  const why=K.why(S).filter(x=>x[1]>0).map(x=>x[0]),F=kgOddsOf(K,0).f.filter(x=>kgArrow(x[1]));
+  const P=K.o.map((o,j)=>kgOddsOf(K,j).p),best=Math.max.apply(null,P),lv=best>=65?3:best>=40?4:5;
+  const fx=F.map(x=>'<span>'+x[0]+' <b class="'+(x[1]>0?'u':'d')+'">'+kgArrow(x[1])+'</b></span>').join('');
+  const cost=d=>{const c=kgCost(d);return Object.keys(c).filter(k=>c[k]).map(k=>'<b'+(c[k]>0?' class="p"':'')+'>'+kName(k)+' '+(c[k]>0?'+':'−')+Math.abs(c[k])+'</b>').join(' · ');};
+  R.innerHTML='<div class="kg-sc"><div class="kg-flash" aria-hidden="true"></div>'+kgEmbers()+'<div class="kg-wm" aria-hidden="true">國難</div>'+
+   kgTop(lv,'국난 · '+CAR.term+'번째 치세 '+(Math.floor(S.turn/PY)+1)+'년 · '+ageNow()+'세')+
+   '<div class="kg-h">'+K.h+'</div><h2 class="kg-n">'+K.n+'<small>'+K.y+'</small></h2>'+
+   '<p class="kg-d">'+K.d+'</p>'+
+   (why.length?'<div class="kg-why"><span>쌓인 조짐</span>'+why.map(w=>'<i>'+w+'</i>').join('')+'</div>':'')+
+   (fx?'<div class="kg-fx"><span class="kg-fx-k">형세</span>'+fx+'</div>':'')+
+   '<div class="kg-stake">이 국난에서 <b>왕권을 지켜야</b> 치세가 이어진다. '+(K.soft?'지키지 못하면 굴욕을 겪고 왕권이 크게 꺾인다.':'지키지 못하면 <b>폐위</b>된다.')+'</div>'+
+   (mg?'<div class="kg-mg"><b>직접 지휘</b> · 길을 고르면 그 싸움을 직접 이끈다. 잘 이끌면 가능성이 오르고, 그르치면 크게 떨어진다.</div>':'')+
+   '<div class="kg-os">'+K.o.map((o,j)=>{const b=kgBand(P[j]),c=cost(o[3]);
+     return '<button type="button" class="kg-o" id="kgA'+j+'"><span class="kg-ot"><b>'+o[0]+'</b><em class="kg-band '+b[1]+'">'+b[0]+'</em></span><small>'+o[1]+'</small>'+
+       (c?'<span class="kg-cost">치르는 값 · '+c+'</span>':'')+(o[4]?'<span class="kg-dis">지켜도 불명예 「'+o[4]+'」</span>':'')+'</button>';}).join('')+'</div></div>';
   if(CP.dict)skinNode(R);
-  try{SFX.gate();vib([90,60,120]);}catch(e){}
-  let gone=0;K.o.forEach((o,j)=>{document.getElementById('kgA'+j).onclick=()=>{if(gone++)return;SFX.click();const P=kgOddsOf(K,j);apply(o[3],1);kgRoll(K,j,P.p);};});}
-function kgRoll(K,j,p){dcSeed('kgr'+K.id);window.scrollTo(0,0);const win=Math.random()*100<p,o=K.o[j],G=CAR.kg,y=Math.min(YRS,Math.floor(S.turn/PY)+1);
-  R.innerHTML='<div style="animation:fdIn .35s ease-out;padding-top:10px">'+lab(K.n+' · '+K.y+'년의 일')+
-   '<div id="vt" style="font-size:24px;font-weight:600;margin-bottom:6px">'+o[0]+'</div>'+
-   '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:18px">'+o[1]+'. <span style="color:var(--text-muted)">· 왕권을 지킬 가능성 '+p+'%</span></div>'+
-   card('<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:6px"><span>지켜 낸 왕권</span><span id="vp">0%</span></div>'+
-     '<div style="position:relative;height:20px;border-radius:10px;background:rgba(29,27,24,.07);overflow:hidden"><span id="vb" style="position:absolute;left:0;top:0;bottom:0;width:0;background:#2f4a6b;border-radius:10px;transition:width 1.6s cubic-bezier(.2,.8,.2,1)"></span>'+
-     '<span style="position:absolute;left:calc(50% - 1px);top:0;bottom:0;width:2px;background:#fff;opacity:.8"></span></div>')+
-   '<div id="won" style="text-align:center;margin:22px 0;min-height:70px"></div><div id="wtx"></div>'+
-   '<button id="kgNx" class="pri" style="width:100%;padding:15px;font-size:15px;opacity:0;pointer-events:none">'+(win||K.soft?'치세를 이어 간다':'커리어 결산 보기')+'</button></div>';
+  try{SFX.gate();SFX.alert(.5);vib([120,60,160,60,220]);}catch(e){}
+  let gone=0;K.o.forEach((o,j)=>{document.getElementById('kgA'+j).onclick=()=>{if(gone++)return;SFX.click();const p=kgOddsOf(K,j).p;apply(kgCost(o[3]),1);
+    if(mg)kgMini(mg,K,j,R,t=>kgRoll(K,j,Math.max(KG_P[0],Math.min(KG_P[1]+10,p+KG_MG[t])),t));else kgRoll(K,j,p);};});}
+function kgRoll(K,j,p,mt){dcSeed('kgr'+K.id);window.scrollTo(0,0);const win=Math.random()*100<p,o=K.o[j],G=CAR.kg,y=Math.min(YRS,Math.floor(S.turn/PY)+1);
+  R.innerHTML='<div class="kg-sc kg-roll">'+kgEmbers()+'<div class="kg-wm" aria-hidden="true">國難</div>'+kgTop(win?3:5,K.n+' · '+K.y)+
+   '<div id="vt" class="kg-rt">'+o[0]+'</div>'+
+   '<div class="kg-rs">'+o[1]+'.'+(mt!=null?' <span class="kg-mt t'+mt+'">직접 지휘 '+KG_MGT[mt]+' '+(KG_MG[mt]>0?'+':'−')+Math.abs(KG_MG[mt])+'%p</span>':'')+' <span>· 왕권을 지킬 가능성 '+p+'%</span></div>'+
+   '<div class="kg-bar"><div class="kg-bar-h"><span>지켜 낸 왕권</span><span id="vp">0%</span></div><div class="kg-bar-t"><span id="vb"></span><i></i></div></div>'+
+   '<div id="won" class="kg-won"></div><div id="wtx"></div>'+
+   '<button id="kgNx" class="pri kg-nx">'+(win||K.soft?'치세를 이어 간다':'커리어 결산 보기')+'</button></div>';
   const share=win?52+Math.random()*20:28+Math.random()*20;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{const vb=document.getElementById('vb');if(vb)vb.style.width=share+'%';}));
   const t0=performance.now();(function f(){const k=Math.min(1,(performance.now()-t0)/1600),el=document.getElementById('vp');if(!el)return;el.textContent=(share*(1-Math.pow(1-k,3))).toFixed(1)+'%';if(k<1)requestAnimationFrame(f);})();
   SFX.roll(1.7);
   setTimeout(()=>{const w=document.getElementById('won');if(!w)return;const tx=document.getElementById('wtx');
-    const stamp=(t,c)=>'<div style="display:inline-block;font-size:40px;font-weight:800;color:'+c+';letter-spacing:6px;border:3px solid '+c+';border-radius:10px;padding:4px 18px;animation:stamp .6s cubic-bezier(.2,1.4,.4,1) both">'+t+'</div>';
-    const hist='<div style="margin:0 0 14px;padding:11px 13px;border:1px solid rgba(143,106,18,.32);background:rgba(143,106,18,.06);border-radius:10px;font-size:13.5px;line-height:1.65;color:var(--text-secondary)"><b style="color:#8f6a12">실제 역사</b> · '+K.hist+'</div>';
+    const stamp=(t,c)=>'<div class="kg-stamp" style="--c:'+c+'">'+t+'</div>';
+    const say=t=>'<div class="kg-say">'+t+'</div>',hist='<div class="kg-hist"><b>실제 역사</b> · '+K.hist+'</div>';
     if(win){G.win.push({k:K.id,p:p});CAR.elections.push(K.n+' '+p+'% 극복');logSpecial(K.n+' 극복 · '+o[0],0,'중립');apply(K.ok||{},1);
       if(o[4])CAR.tro.push({id:'kg_'+K.id,n:o[4],g:0,term:CAR.term,year:y});
-      document.getElementById('vt').textContent=K.n+'에서 왕권을 지켰다';SFX.stamp(.3);SFX.win(.3);w.innerHTML=stamp('수성','#2e7d55');
-      tx.innerHTML=card('<div style="font-size:14px;line-height:1.75;color:var(--text-secondary)">'+K.win+'</div>')+hist;}
+      document.getElementById('vt').textContent=K.n+'에서 왕권을 지켰다';SFX.stamp(.3);SFX.win(.3);w.innerHTML=stamp('수성','#5fd39a');
+      tx.innerHTML=say(K.win)+hist;}
     else if(K.soft){G.forced=1;CAR.elections.push(K.n+' '+p+'% 굴복');logSpecial(K.n+' 굴복 · '+o[0],0,'중립');apply(K.bad,1);
       CAR.tro.push({id:'kg_'+K.id,n:K.n+' 굴복',g:0,term:CAR.term,year:y});
-      document.getElementById('vt').textContent=K.n+'에서 굴복했다';SFX.stamp(.3);SFX.lose(.3);vib([90,60,120]);w.innerHTML=stamp('굴복','#9a6400');
-      tx.innerHTML=card('<div style="font-size:14px;line-height:1.75;color:var(--text-secondary)">'+K.lose+'</div>')+hist;}
+      document.getElementById('vt').textContent=K.n+'에서 굴복했다';SFX.stamp(.3);SFX.lose(.3);vib([90,60,120]);w.innerHTML=stamp('굴복','#f0b04a');
+      tx.innerHTML=say(K.lose)+hist;}
     else{CAR.elections.push(K.n+' '+p+'% 폐위');logSpecial(K.n+' 폐위 · '+o[0],0,'중립');
-      document.getElementById('vt').textContent=K.n+'에서 옥좌를 잃었다';SFX.stamp(.3);SFX.lose(.3);vib([90,60,120]);w.innerHTML=stamp('폐위','#b3261e');
-      tx.innerHTML=card('<div style="font-size:14px;line-height:1.75;color:var(--text-secondary)">'+K.lose+'</div>')+hist;}
+      document.getElementById('vt').textContent=K.n+'에서 옥좌를 잃었다';SFX.stamp(.3);SFX.lose(.3);vib([90,60,120]);w.innerHTML=stamp('폐위','#ff6a5a');
+      tx.innerHTML=say(K.lose)+hist;}
     if(CP.dict)skinNode(tx);
-    const g=document.getElementById('kgNx');g.style.opacity=1;g.style.pointerEvents='auto';g.style.transition='opacity .3s';
+    const g=document.getElementById('kgNx');g.classList.add('on');
     let gone=0;g.onclick=()=>{if(gone++)return;SFX.click();if(win||K.soft){next();pickAdv();ev();}else careerEnd('deposed');};},1800);}
 // 치세 끝 화면: 민심의 심판 대신 지금 차오른 국난의 조짐을 보여 준다(가장 짙은 셋)
 function kgOmen(){if(CP.id!=='joseon')return '';kgInit();const KL=kgList();
