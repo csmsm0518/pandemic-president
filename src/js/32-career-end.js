@@ -109,20 +109,19 @@ function leadWhy(F){if(!F)return '';const w=[F.d>=4?'권력을 모은 통치':F.
    [F.crush>0,'강제 진압'],[F.mil>=75,'강한 군'],[F.bw>=2&&F.bw>F.bl,'승부수가 통함'],[F.bl>=2&&F.bl>F.bw,'무리수가 잦음'],[F.cor>=45,'부패의 그늘'],[F.war,'전쟁을 겪음'],
    [F.pr,F.pr+' 우선']];
   for(const [ok,t] of c){if(w.length>=3)break;if(ok)w.push(t);}return w.join(' · ');}// 커리어 점수: 상한 없이 이룬 것은 더하고 무너진 것은 뺀다. 모든 항목이 정수라 합계도 정수다.
-// 임기 점수가 가장 크고, 임기가 거듭될수록 1 · 0.7 · 0.45 · 0.3 · 0.2배로 줄어든다(조선은 1 · 0.6 · 0.3 · 0.15배). 아주 잘한 긴 커리어여야 10,000점 언저리에 닿는다.
-// 조선은 민심만 지키면 개헌(−500)도 선거도 없이 치세를 이어 가서, 같은 4임기여도 다른 나라보다 2,000점 넘게 앞섰다.
-// 그래서 조선만 두 번째 치세부터 비율을 더 빨리 줄인다(첫 치세는 그대로라 한 번만 하는 사람의 점수는 바뀌지 않는다)
-const TERMW_J=[1,.6,.3,.15];
+// 임기 점수가 가장 크고, 임기가 거듭될수록 1 · 0.7 · 0.45 · 0.3 · 0.2배로 줄어든다. 아주 잘한 긴 커리어여야 10,000점 언저리에 닿는다.
 const TERMW=[1,.7,.45,.3,.2],GRADEPT={S:500,A:300,B:150,C:0,D:-150,F:-300},TIERPT=[40,5,-15,-50],
   EXITPT={retire:600,served:400,limit:300,lost:0,defeated:-100,lifelong:-300,quit:-500,ousted:-800,deposed:-800,medfail:-800,ecofail:-800,amendfail:-1000,coupfail:-1500,purged:-800,defeat:-600},
   TROX=new Set(['coup','coupfail','coupx','selfcoup','martial']);   // 헌정을 무너뜨린 기록은 더 크게 뺀다
 function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if(v)it.push([n,v,note||'']);return v;},jo=CP.id==='joseon';
-  let perf=0;const TW=jo?TERMW_J:TERMW;CAR.terms.forEach((t,i)=>{const w=TW[Math.min(i,TW.length-1)],s=Math.round(cl(t.sc));
+  let perf=0;CAR.terms.forEach((t,i)=>{const w=TERMW[Math.min(i,TERMW.length-1)],s=Math.round(cl(t.sc));
     perf+=add((jo?(i+1)+'번째 치세':(i+1)+'기')+' · '+t.g+'등급',(s*30+(GRADEPT[t.g]||0))*w,'임기 점수 '+s+'×30'+(GRADEPT[t.g]?' '+(GRADEPT[t.g]>0?'+':'−')+Math.abs(GRADEPT[t.g]):'')+(w<1?', ×'+w:''));});
   const wins=CAR.terms.filter(t=>t.elect==='당선'||t.elect==='반정 진압'||t.elect==='쿠데타 진압'||t.elect==='승전'),up=wins.filter(t=>t.winP<50).length;
-  const cont=add(jo?'반정 진압':CP.id==='reich'?'승전 · 쿠데타 진압':'선거 승리',wins.length*300+up*200,wins.length+'번'+(up?' (열세를 뒤집은 '+up+'번 +200씩)':''));
+  // 조선은 선거 대신 국난에서 왕권을 지킨 횟수(36b-joseon-crisis.js)
+  const kw=jo&&CAR.kg?CAR.kg.win:[],nw=wins.length+kw.length,nu=up+kw.filter(w=>w.p<50).length;
+  const cont=add(jo?'국난 극복':CP.id==='reich'?'승전 · 쿠데타 진압':'선거 승리',nw*300+nu*200,nw+'번'+(nu?' (열세를 뒤집은 '+nu+'번 +200씩)':''));
   // 판정과 업적·불명예도 그 일이 있었던 임기의 비율(TERMW)을 따른다
-  const tw=k=>TW[Math.min(Math.max(0,(k||1)-1),TW.length-1)],TT=(CAR.ttT||[]).concat([CAR.tt||[0,0,0,0]]),tt=[0,1,2,3].map(k=>TT.reduce((s,a)=>s+(a[k]||0),0));
+  const tw=k=>TERMW[Math.min(Math.max(0,(k||1)-1),TERMW.length-1)],TT=(CAR.ttT||[]).concat([CAR.tt||[0,0,0,0]]),tt=[0,1,2,3].map(k=>TT.reduce((s,a)=>s+(a[k]||0),0));
   add('판정',TT.reduce((s,a,i)=>s+tw(i+1)*a.reduce((q,v,k)=>q+v*TIERPT[k],0),0),TIER.map((T,k)=>T.n+' '+tt[k]).join(' · '));
   const tro=CAR.tro||[],sp=t=>/^sp_/.test(t.id),gN=tro.filter(t=>t.g&&!sp(t)).length,gS=tro.filter(t=>t.g&&sp(t)).length,
     bX=tro.filter(t=>!t.g&&TROX.has(t.id)).length,bS=tro.filter(t=>!t.g&&sp(t)).length,bN=tro.length-gN-gS-bX-bS;

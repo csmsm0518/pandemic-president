@@ -116,7 +116,8 @@ function lastShot(te,p,n){CAR.lastShot=1;const ok=Math.random()<p,us=CP.id==='us
       '<button id="lsOut" style="width:100%;padding:13px;font-size:14px">'+(pct>0?'개헌만 남기고 물러난다':'커리어 결산 보기')+'</button></div>';
     const r=document.getElementById('lsRun');if(r)r.onclick=()=>{SFX.click();te.decision='임기 말 개헌 후 '+n+'선 도전';election(true,pct,te);};
     document.getElementById('lsOut').onclick=()=>{SFX.click();te.decision+=pct>0?' 후 퇴임':' 후 출마 불가';careerEnd(pct>0?'retire':'lost');};});}
-// 조선: 치세가 끝날 때마다 민심의 심판. 민심 60 이상이면 민심 탓의 위험은 없고, 30~60은 반정 위험이 비례해서 오르며, 30 미만이면 반정.
+// 선거 없는 나라(전쟁기 독일)의 임기 끝 심판. 민심 60 이상이면 민심 탓의 위험은 없고, 30~60은 쿠데타 위험이 비례해서 오르며, 30 미만이면 쿠데타.
+// (조선은 v4.1부터 이 심판 대신 국난으로 치세가 갈린다: 36b-joseon-crisis.js)
 // 여기에 조정의 불안이 더해진다: 세 번째 치세부터 오래 앉은 임금을 끌어내리려는 움직임(3번째 +10% · 4번째 +20%),
 // 당쟁이 45를 넘으면 넘은 만큼 ×0.8, 세도가 35를 넘으면 넘은 만큼 ×0.6. 모두 합쳐 95%까지(민심 30 미만은 100%).
 const RG_SAFE=60,RG_DEAD=30;
@@ -126,13 +127,14 @@ function rgRisk(n){const av=Math.round(cl(S.a));if(av<RG_DEAD)return {r:100,base
 // 선거 없는 나라(조선 · 전쟁기 독일)의 임기 끝 화면 낱말. 조선이 기본이고, 다른 나라는 CP.rgT로 바꿔 쓴다.
 const RGT0={termL:n=>n+'번째 치세',lastMsg:'옥좌에 오른 지 {Y}년. <b>이제 세자에게 자리를 물려줄 때다.</b>',heir:'세자에게 선위한다',finSub:'치세를 마친다',heirSub:'스스로 물러나 상왕이 된다',
  dead:'민심이 완전히 떠났다. <b>반정의 칼날이 대궐 문 앞에 와 있다.</b>',deadBtn:'운명을 맞는다',deadSub:'반정이 일어난다',shaky:'민심이 흔들린다',shaky2:'민심은 버티지만 조정이 술렁인다',
- cont:'치세를 이어 가면',risk:'반정이 일어날 가능성',riskS:'반정 위험',why:['민심','오래된 치세','당쟁 · 세도'],calm:'민심이 안정돼 있다. <b>치세를 이어 갈 수 있다.</b>',run:n=>n+'번째 치세를 이어 간다',
+ cont:'치세를 이어 가면',risk:'반정이 일어날 가능성',riskS:'반정 위험',why:['민심','오래된 치세','당쟁 · 세도'],calm:'선거도 민심의 심판도 없다. <b>치세를 이어 갈 수 있다.</b> 다만 쌓인 조짐이 다 차면 국난이 닥친다.',run:n=>n+'번째 치세를 이어 간다',
  runSub:'다음 치세에는 새로운 시련이 온다',evalN:'치세 평가',evalT:'이번 치세의 평가',endA:'치세 끝의 민심',deadMark:'반정',dRun:'치세를 이어 감',dRetire:'선위 (이어 갈 수 있었음)',dDead:'반정',dFin:'치세 완료',
  plotLab:n=>'반정 모의 · '+n+'번째 치세의 문턱',plotH:'궐 밖이 술렁인다',plotD:'반정을 꾀하는 무리가 있다는 밀고가 들어왔다. 군사와 대신들은 누구 편에 설 것인가.',plotBar:'임금 편에 선 군사',
  won:'반정 모의를 진압했다',lost:'반정이 일어났다',wonS:'진압',lostS:'폐위',ok:'반정 진압',fail:'반정',stab:n=>n+'번째 치세 안정',elT:n=>n+'번째 치세 ',start:n=>n+'번째 치세 시작',kind:'deposed'};
 const rgt=k=>CP.rgT&&CP.rgT[k]!=null?CP.rgT[k]:RGT0[k];
-function reignEnd(te){const av=Math.round(cl(S.a)),isLast=CAR.term>=MAXT,n=CAR.term+1,RK=rgRisk(n),risk=isLast?0:RK.r;
-  te.winP=isLast?'':100-risk;
+// 조선은 치세 끝에 민심의 심판(반정 위험)이 없다. 치세는 국난에서 왕권을 지키는 동안 이어지고, 이 화면에는 국난의 조짐을 보여 준다
+function reignEnd(te){const av=Math.round(cl(S.a)),isLast=CAR.term>=MAXT,n=CAR.term+1,jo=CP.id==='joseon',RK=jo?{r:0,base:0,old:0,fac:0}:rgRisk(n),risk=isLast?0:RK.r;
+  te.winP=isLast||jo?'':100-risk;
   const acol=av>=RG_SAFE?'#2e7d55':av>=RG_DEAD?'#9a6400':'#b3261e';
   const opt=(id,t,sub,col)=>'<button id="'+id+'" style="width:100%;text-align:left;padding:14px 15px;margin-bottom:8px;'+(col?'border-color:'+col+'99;':'')+'"><span style="display:block;font-size:15px;font-weight:600">'+t+'</span><span style="display:block;font-size:12px;color:var(--text-muted);margin-top:3px">'+sub+'</span></button>';
   let msg,btns;const W=rgt('why');
@@ -147,9 +149,9 @@ function reignEnd(te){const av=Math.round(cl(S.a)),isLast=CAR.term>=MAXT,n=CAR.t
    '<div style="font-size:11px;color:var(--text-muted);margin-bottom:6px">'+rgt('evalT')+' · '+te.scenario+'</div>'+
    '<div style="font-size:22px;font-weight:600;color:'+te.col+';line-height:1.3;margin-bottom:8px;padding-right:80px">'+te.ti+'</div>'+
    '<div style="font-size:14px;color:var(--text-secondary);line-height:1.75">'+words(te.ds,200)+'</div></div>'+
-   card(lab(rgt('endA'))+'<div style="position:relative;height:16px;border-radius:8px;background:linear-gradient(90deg,rgba(179,38,30,.14) 0 '+RG_DEAD+'%,rgba(179,38,30,.08) '+RG_DEAD+'% '+RG_SAFE+'%,rgba(46,125,85,.10) '+RG_SAFE+'% 100%);margin:4px 0 8px"><span style="position:absolute;left:0;top:0;bottom:0;width:'+av+'%;border-radius:8px;background:'+acol+';animation:barG 1.3s cubic-bezier(.2,.8,.2,1) both"></span></div>'+
+   (jo?kgOmen():card(lab(rgt('endA'))+'<div style="position:relative;height:16px;border-radius:8px;background:linear-gradient(90deg,rgba(179,38,30,.14) 0 '+RG_DEAD+'%,rgba(179,38,30,.08) '+RG_DEAD+'% '+RG_SAFE+'%,rgba(46,125,85,.10) '+RG_SAFE+'% 100%);margin:4px 0 8px"><span style="position:absolute;left:0;top:0;bottom:0;width:'+av+'%;border-radius:8px;background:'+acol+';animation:barG 1.3s cubic-bezier(.2,.8,.2,1) both"></span></div>'+
      '<div style="position:relative;height:14px;font-size:11px;color:var(--text-muted)"><span style="position:absolute;left:'+RG_DEAD+'%;transform:translateX(-50%)">'+RG_DEAD+' '+rgt('deadMark')+'</span><span style="position:absolute;left:'+RG_SAFE+'%;transform:translateX(-50%);color:var(--text-secondary);font-weight:600">'+RG_SAFE+' 안전</span><span style="position:absolute;right:0">100</span></div>'+
-     '<div style="font-size:14px;margin-top:10px;line-height:1.7">'+msg+'</div>')+btns+'</div>';
+     '<div style="font-size:14px;margin-top:10px;line-height:1.7">'+msg+'</div>'))+(jo?card('<div style="font-size:14px;line-height:1.7">'+msg+'</div>'):'')+btns+'</div>';
   SFX.stamp(.78);SFX.grade(te.g,.78);termCine(te);
   // 두 번 눌러 임기가 두 번 넘어가지 않게 한 번만 받는다
   const b=id=>document.getElementById(id);let gone=0;const one=f=>()=>{if(gone++)return;f();};
