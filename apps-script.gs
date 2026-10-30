@@ -22,7 +22,7 @@
 //
 // 열은 항상 예전 버전 뒤에 이어 붙이므로, 이미 쌓인 기록과 줄이 어긋나지 않는다. 머리글(1행)은 자동으로 새 버전으로 바뀐다.
 
-const SCRIPT_VER = 'v18';
+const SCRIPT_VER = 'v19';
 // [비밀 게임 기록] v13: 좀비 서바이벌 「방역선」과 비밀 모드 「대항해」의 점수가 "비밀 게임 기록" 탭에 쌓이고, 명예의 전당 오른쪽 두 칸에 순위가 나온다.
 const ARCADE = [['판ID', 'id'], ['게임', 'game'], ['닉네임', 'nickname'], ['학교', 'school'], ['점수', 'score'], ['시간(초)', 'sec'], ['성공', 'win'], ['세부', 'detail'], ['게임 버전', 'gv'],
   // ----- v15: 숨김(관리자가 아무 글자나 적으면 그 줄은 순위에서 빠진다. 서버가 말이 안 되는 기록을 받으면 스스로 사유를 적는다) -----
@@ -33,6 +33,143 @@ const ARCADE_GAMES = {zg: '방역선', sail: '대항해', star: '별똥별'};
 const SUGGEST = [['분류', 'cat'], ['내용', 'text'], ['닉네임', 'nickname'], ['학교', 'school'], ['게임 버전', 'gv'], ['화면', 'view'], ['브라우저', 'ua'],
   ['플레이어ID', 'pid'], ['접수ID', 'id'], ['처리 · 답변', 'reply']];
 const SUGGEST_CATS = {'건의': 1, '버그': 1, '질문': 1, '기타': 1};
+
+// [회원] v19: 아이디 · 비밀번호로 들어오는 회원. "회원(비공개)" 탭에 한 사람 = 한 줄. 명예의 전당 · 분석 · 기록 비우기에는 쓰지 않는다.
+//   비밀번호는 그대로 두지 않고, 사람마다 다른 소금(무작위 값)을 섞어 HMAC-SHA256을 PW_ROUNDS번 거친 지문만 남긴다.
+//   로그인하면 무작위 토큰을 주고, 탭에는 그 지문과 만료일만 적는다(토큰이 새도 비밀번호는 알 수 없다).
+//   게임은 kind: 'member'와 op(signup 가입 · login 로그인 · me 자동 로그인 확인 · update 정보 고치기 · logout · leave 탈퇴)를 보내고 JSON 답을 읽는다.
+//   비밀번호를 잊으면 관리자가 메뉴 '회원 비밀번호 초기화'로 임시 비밀번호를 만든다. 탈퇴하면 그 줄을 바로 지운다.
+const MEMBER_SHEET = '회원(비공개)';
+const MEMBER = [['아이디', 'id'], ['소금', 'salt'], ['비밀번호 지문', 'hash'], ['학교', 'school'], ['이름', 'name'], ['닉네임', 'nick'], ['전화번호', 'phone'],
+  ['개인정보 동의', 'consent'], ['가입 시각', 'created'], ['마지막 로그인', 'last'], ['토큰 지문', 'tok'], ['토큰 만료', 'exp'], ['회원 키', 'mkey']];
+const MEMBER_DAYS = 60;      // 로그인을 유지하는 날 수(그 뒤에는 비밀번호를 다시 묻는다)
+const PW_ROUNDS = 400;       // 비밀번호 지문을 만들 때 거치는 횟수(많을수록 하나씩 넣어 보는 공격이 느려진다)
+const MEMBER_FAILS = 8;      // 같은 아이디로 15분 안에 이만큼 틀리면 잠시 막는다
+const RATE_SIGNUP = 40;      // 모든 가입을 합쳐 10분에 이만큼까지
+const ID_RE = /^[a-z][a-z0-9_]{3,15}$/;   // 아이디: 영문 소문자로 시작(숫자로만 된 아이디는 시트가 숫자로 바꿔 버린다)
+const json_ = o => ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
+const hex_ = b => b.map(x => ((x + 256) % 256).toString(16).padStart(2, '0')).join('');
+const rnd_ = () => (Utilities.getUuid() + Utilities.getUuid()).replace(/-/g, '');
+function pwHash_(pw, salt) {
+  const k = Utilities.newBlob(salt).getBytes();
+  let v = Utilities.newBlob(salt + ':' + pw).getBytes();
+  for (let i = 0; i < PW_ROUNDS; i++) v = Utilities.computeHmacSha256Signature(v, k);
+  return hex_(v);
+}
+const sha_ = s => hex_(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, String(s), Utilities.Charset.UTF_8));
+// 회원 키: 같은 회원의 여러 판을 명예의 전당에서 한 사람으로 묶는 표시(아이디가 드러나지 않게 지문으로)
+const memberKey_ = id => 'm' + sha_('pp-member:' + id).slice(0, 19);
+function memberSheet_(ss) {
+  const sh = ss.getSheetByName(MEMBER_SHEET) || ss.insertSheet(MEMBER_SHEET);
+  if (sh.getLastRow() === 0) { sh.appendRow(MEMBER.map(c => c[0])); sh.setFrozenRows(1); }
+  return sh;
+}
+function memberFind_(sh, id) {
+  const n = sh.getLastRow() - 1;
+  if (n < 1) return null;
+  const ids = sh.getRange(2, 1, n, 1).getValues();
+  for (let i = 0; i < n; i++) {
+    if (String(ids[i][0]).toLowerCase() !== id) continue;
+    const v = sh.getRange(i + 2, 1, 1, MEMBER.length).getValues()[0], o = {row: i + 2};
+    MEMBER.forEach((c, j) => { o[c[1]] = v[j]; });
+    return o;
+  }
+  return null;
+}
+function memberSet_(sh, row, o) {
+  MEMBER.forEach((c, j) => { if (o[c[1]] !== undefined) sh.getRange(row, j + 1).setValue(o[c[1]] instanceof Date ? o[c[1]] : safe_(o[c[1]])); });
+}
+const prof_ = o => ({id: String(o.id), school: String(o.school || '').replace(/^'/, ''), name: String(o.name || '').replace(/^'/, ''), nick: String(o.nick || '').replace(/^'/, ''), phone: String(o.phone || '')});
+function failCount_(id, add) {
+  try {
+    const c = CacheService.getScriptCache(), k = 'mf_' + id;
+    let n = Number(c.get(k) || 0);
+    if (add) { n++; c.put(k, String(n), 900); }
+    return n;
+  } catch (e) { return 0; }
+}
+function tokOk_(o, tok) { return !!o && !!o.tok && String(o.tok) === sha_(tok || '') && o.exp instanceof Date && o.exp.getTime() > Date.now(); }
+function newTok_(sh, o) {
+  const tok = rnd_(), exp = new Date(Date.now() + MEMBER_DAYS * 864e5);
+  memberSet_(sh, o.row, {tok: sha_(tok), exp: exp, last: new Date()});
+  return {tok: tok, exp: exp.getTime()};
+}
+// 가입 · 고치기에서 받는 칸을 다듬는다. 틀리면 [칸 이름]을 돌려준다
+function memberFields_(d, need) {
+  const f = {school: String(d.school || '').trim().slice(0, 30), name: String(d.name || '').trim().slice(0, 20),
+    nick: clean_(String(d.nick || '').trim().slice(0, 20)), phone: String(d.phone || '').replace(/[^0-9\-]/g, '').slice(0, 13)};
+  if (need && !f.school) return ['school'];
+  if (need && !f.name) return ['name'];
+  if (f.phone && !/^01[016789]-?\d{3,4}-?\d{4}$/.test(f.phone)) return ['phone'];
+  return f;
+}
+function memberApi_(d) {
+  const op = String(d.op || ''), id = String(d.id || '').trim().toLowerCase(), pw = String(d.pw || '');
+  if (!ID_RE.test(id)) return json_({ok: false, err: 'badid'});
+  if ((op === 'login' || op === 'leave') && failCount_(id) >= MEMBER_FAILS) return json_({ok: false, err: 'locked'});
+  if (op === 'signup' && !rateOk_('ms_all', RATE_SIGNUP, 600)) return json_({ok: false, err: 'busy'});
+  if ((op === 'signup' || op === 'login' || op === 'leave') && (pw.length < 6 || pw.length > 64)) return json_({ok: false, err: 'badpw'});
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const sh = memberSheet_(SpreadsheetApp.getActiveSpreadsheet()), o = memberFind_(sh, id);
+    if (op === 'signup') {
+      if (o) return json_({ok: false, err: 'exists'});
+      if (!d.agree) return json_({ok: false, err: 'consent'});
+      const f = memberFields_(d, true);
+      if (Array.isArray(f)) return json_({ok: false, err: 'field', field: f[0]});
+      const salt = rnd_().slice(0, 32), now = new Date();
+      sh.appendRow([id, salt, pwHash_(pw, salt), safe_(f.school), safe_(f.name), safe_(f.nick), f.phone, '동의', now, now, '', '', memberKey_(id)]);
+      const m = memberFind_(sh, id), t = newTok_(sh, m);
+      return json_({ok: true, token: t.tok, exp: t.exp, prof: prof_(Object.assign({}, f, {id: id}))});
+    }
+    if (!o) {
+      if (op === 'login' || op === 'leave') failCount_(id, true);
+      return json_({ok: false, err: op === 'login' || op === 'leave' ? 'nomatch' : 'expired'});
+    }
+    if (op === 'login') {
+      if (pwHash_(pw, String(o.salt)) !== String(o.hash)) { failCount_(id, true); return json_({ok: false, err: 'nomatch'}); }
+      const t = newTok_(sh, o);
+      return json_({ok: true, token: t.tok, exp: t.exp, prof: prof_(o)});
+    }
+    if (!tokOk_(o, d.token)) return json_({ok: false, err: 'expired'});
+    if (op === 'me') { memberSet_(sh, o.row, {last: new Date()}); return json_({ok: true, prof: prof_(o)}); }
+    if (op === 'update') {
+      const f = memberFields_(d, true);
+      if (Array.isArray(f)) return json_({ok: false, err: 'field', field: f[0]});
+      memberSet_(sh, o.row, f);
+      return json_({ok: true, prof: prof_(Object.assign({}, o, f))});
+    }
+    if (op === 'logout') { memberSet_(sh, o.row, {tok: '', exp: ''}); return json_({ok: true}); }
+    if (op === 'leave') {
+      if (pwHash_(pw, String(o.salt)) !== String(o.hash)) { failCount_(id, true); return json_({ok: false, err: 'nomatch'}); }
+      sh.deleteRow(o.row);
+      return json_({ok: true});
+    }
+    return json_({ok: false, err: 'badop'});
+  } finally { lock.releaseLock(); }
+}
+// 커리어 기록에 붙어 온 회원: 토큰이 맞을 때만 회원으로 본다(남의 아이디를 적어 보내도 묶이지 않게)
+function memberOfRun_(ss, mid, mtok) {
+  mid = String(mid || '').trim().toLowerCase();
+  if (!ID_RE.test(mid) || !mtok) return '';
+  const sh = ss.getSheetByName(MEMBER_SHEET);
+  if (!sh) return '';
+  const o = memberFind_(sh, mid);
+  return tokOk_(o, mtok) ? mid : '';
+}
+// 관리자 메뉴: 비밀번호를 잊은 회원에게 임시 비밀번호를 만들어 준다(로그인 상태도 풀린다)
+function memberResetPw() {
+  const ui = SpreadsheetApp.getUi();
+  const r = ui.prompt('회원 비밀번호 초기화', '비밀번호를 잊은 회원의 아이디를 적어 주세요.', ui.ButtonSet.OK_CANCEL);
+  if (r.getSelectedButton() !== ui.Button.OK) return;
+  const id = String(r.getResponseText() || '').trim().toLowerCase();
+  const sh = memberSheet_(SpreadsheetApp.getActiveSpreadsheet()), o = ID_RE.test(id) ? memberFind_(sh, id) : null;
+  if (!o) { ui.alert('그런 아이디가 없어요: ' + id); return; }
+  const temp = rnd_().slice(0, 8), salt = rnd_().slice(0, 32);
+  memberSet_(sh, o.row, {salt: salt, hash: pwHash_(temp, salt), tok: '', exp: ''});
+  ui.alert('임시 비밀번호: ' + temp + '\n\n이 비밀번호를 회원에게 알려 주세요. 로그인한 뒤에는 탈퇴 후 다시 가입하거나 그대로 써도 됩니다.');
+}
 
 const SUMMARY = [
   ['판ID', 'id'], ['시작 시각', 'startedAt'], ['닉네임', 'nickname'],
@@ -87,10 +224,12 @@ const SUMMARY = [
   // ----- 플레이어ID: 기기마다 만든 무작위 표시. 같은 사람의 여러 판을 한 사람으로 묶는 데만 쓴다(공개 순위에는 나가지 않는다) -----
   ['플레이어ID', 'pid'],
   // ----- 쿠폰(메인 화면 쿠폰함)으로 받아 이 판에 더해진 운명 개입 수. '운명 개입 사용' · '남은 개입'을 비교할 때 뺀다 -----
-  ['쿠폰 운명 개입', 'couponTok']
+  ['쿠폰 운명 개입', 'couponTok'],
+  // ----- v19: 회원으로 한 판이면 회원 키(아이디의 지문). 같은 회원의 여러 기기 판을 한 사람으로 묶는다 -----
+  ['회원 키', 'mkey']
 ];
 // 상품 연락용 참가자 정보. 분석 시트와 따로 둔다.
-const PRIVATE = [['판ID', 'id'], ['시작 시각', 'startedAt'], ['닉네임', 'nickname'], ['학교', 'school'], ['이름', 'realName'], ['전화번호', 'phone'], ['개인정보 동의', 'consent'], ['게임 버전', 'gv'], ['학교(적은 그대로)', 'schoolRaw']];
+const PRIVATE = [['판ID', 'id'], ['시작 시각', 'startedAt'], ['닉네임', 'nickname'], ['학교', 'school'], ['이름', 'realName'], ['전화번호', 'phone'], ['개인정보 동의', 'consent'], ['게임 버전', 'gv'], ['학교(적은 그대로)', 'schoolRaw'], ['회원 아이디', 'mid']];
 
 const DETAIL = [
   ['판ID', 'id'], ['닉네임', 'nickname'], ['순서', 'seq'], ['임기 내 턴', 'turn'], ['연차', 'year'],
@@ -264,6 +403,7 @@ function doPost(e) {
   let d;
   try { d = JSON.parse(raw); } catch (err) { return out_('bad json'); }
   if (!d || typeof d !== 'object' || Array.isArray(d)) return out_('bad');
+  if (d.kind === 'member') return memberApi_(d);
   // 모르는 종류는 받지 않는다(커리어 기록은 kind가 없다). 예전 스크립트는 모르는 종류를 커리어로 읽어 '요약'에 빈 줄을 썼다
   if (d.kind !== undefined && d.kind !== 'arcade' && d.kind !== 'suggest') return out_('bad kind');
   // 같은 닉네임 제한은 비밀 게임 기록에만, 그리고 닉네임을 적은 사람에게만 건다('익명'은 여러 사람이 함께 쓰므로 빼고, 전체 제한만 받는다)
@@ -325,8 +465,12 @@ function doPost(e) {
     d.choices = cap(d.choices, 800); d.terms = cap(d.terms, 14); d.years = cap(d.years, 80);
     run.v = d.v || '';
     run.gv = run.gv || d.gv || '';
+    // 회원 판: 토큰이 맞으면 참가자 탭에 아이디, 요약 탭에 회원 키를 남긴다(토큰은 어디에도 적지 않는다)
+    const mid = memberOfRun_(ss, run.mid, run.mtok);
+    run.mkey = mid ? memberKey_(mid) : '';
+    delete run.mid; delete run.mtok;
     // 이름·전화번호는 분석 기록에서 떼어 내 참가자 탭에만 둔다
-    const who = {id: run.id, startedAt: run.startedAt, nickname: run.nickname, school: run.school, schoolRaw: run.schoolRaw, realName: run.realName, phone: run.phone, consent: run.consent, gv: run.gv};
+    const who = {id: run.id, startedAt: run.startedAt, nickname: run.nickname, school: run.school, schoolRaw: run.schoolRaw, realName: run.realName, phone: run.phone, consent: run.consent, gv: run.gv, mid: mid};
     delete run.realName; delete run.phone;
     const ctx = {id: run.id, nickname: run.nickname, difficulty: run.difficulty, mode: run.mode, perk: run.perk, era: run.era};
     const withCtx = list => (list || []).map(o => Object.assign({}, o, ctx));
@@ -361,6 +505,8 @@ function onOpen() {
     .addItem('차트 다시 만들기', 'rebuildCharts')
     .addSeparator()
     .addItem('기록 백업 후 새로 시작', 'archiveAndReset')
+    .addSeparator()
+    .addItem('회원 비밀번호 초기화', 'memberResetPw')
     .addToUi();
 }
 // 지금까지의 기록을 통째로 사본(내 드라이브)으로 떠 둔 뒤, 이 시트는 머리글만 남기고 비운다.
@@ -814,7 +960,7 @@ function buildBoard_() {
     rows.push({
       id: id,
       nick: pubNick_(g(r, '닉네임')),
-      who: personKey_(g(r, '플레이어ID'), g(r, '닉네임'), sch, id),
+      who: personKey_(g(r, '플레이어ID'), g(r, '닉네임'), sch, id, g(r, '회원 키')),
       score: sc,
       terms: num(g(r, '임기 수(선)')) || 1,
       years: num(g(r, '총 재임(년)')) || 0,
@@ -978,7 +1124,8 @@ function schoolBase_(v) {
 // 학교별 평균 커리어 점수(사람마다 가장 좋은 기록 하나로 센다). 참가자 수와 학교 최고 기록도 함께 낸다.
 // 한 사람을 가리키는 열쇠: 플레이어ID(기기) + 닉네임. 플레이어ID가 없는 예전 기록은 학교 + 닉네임이고, 그중 '익명'은 판마다 다른 사람으로 본다
 // (예전에는 같은 학교의 익명 학생들이 모두 한 사람으로 뭉쳐, 학교 인원이 줄고 평균이 그중 가장 좋은 판 하나로 계산됐다)
-function personKey_(pid, nick, school, id) {
+function personKey_(pid, nick, school, id, mkey) {
+  if (mkey && String(mkey).trim()) return 'u:' + String(mkey).trim();   // 회원은 기기 · 닉네임이 달라도 한 사람
   pid = String(pid || '').trim();
   const nk = String(nick || '').replace(/^'/, '').trim(), anon = !nk || nk === '익명';
   if (pid) return 'p:' + pid + (anon ? '' : '|' + nk);
