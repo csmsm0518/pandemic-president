@@ -9,7 +9,9 @@
    o.cls: 무대에 붙일 클래스('gm'이면 장면이 화면 전체를 쓴다) · o.key(e): 키 입력을 먼저 받는다. true를 돌려주면 기본 동작을 막는다 */
 let CINE=null;
 function cineClose(){if(!CINE)return;const c=CINE;CINE=null;document.body.style.overflow='';c.el.classList.add('out');setTimeout(()=>c.el.remove(),450);}
-function cine(scenes,o){o=o||{};if(CINE){CINE.el.remove();CINE=null;}
+// 새 장면을 열 때 사라지는 중(cineClose)인 예전 장면도 바로 걷어 낸다. 남아 있으면 같은 id · 같은 칸이 둘이 되어
+// 새 화면이 예전 화면의 버튼을 잡거나(getElementById), 칸 번호가 넘쳐 없는 무대 · 미니게임을 고르다 멈췄다
+function cine(scenes,o){o=o||{};if(CINE){CINE.el.remove();CINE=null;}document.querySelectorAll('.cine.out').forEach(x=>x.remove());
   const n=scenes.length,many=n>8,el=document.createElement('div');
   el.className='cine'+(o.nav===false?' nonav':'')+(o.cls?' '+o.cls:'');el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');
   el.innerHTML='<div class="cine-tr">'+scenes.map(s=>'<section class="cs" aria-label="'+s.t+'"><div class="dk-rays"></div><div class="cs-in">'+s.h+'</div></section>').join('')+'</div>'+
