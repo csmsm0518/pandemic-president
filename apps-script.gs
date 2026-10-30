@@ -22,7 +22,7 @@
 //
 // 열은 항상 예전 버전 뒤에 이어 붙이므로, 이미 쌓인 기록과 줄이 어긋나지 않는다. 머리글(1행)은 자동으로 새 버전으로 바뀐다.
 
-const SCRIPT_VER = 'v19';
+const SCRIPT_VER = 'v20';
 // [비밀 게임 기록] v13: 좀비 서바이벌 「방역선」과 비밀 모드 「대항해」의 점수가 "비밀 게임 기록" 탭에 쌓이고, 명예의 전당 오른쪽 두 칸에 순위가 나온다.
 const ARCADE = [['판ID', 'id'], ['게임', 'game'], ['닉네임', 'nickname'], ['학교', 'school'], ['점수', 'score'], ['시간(초)', 'sec'], ['성공', 'win'], ['세부', 'detail'], ['게임 버전', 'gv'],
   // ----- v15: 숨김(관리자가 아무 글자나 적으면 그 줄은 순위에서 빠진다. 서버가 말이 안 되는 기록을 받으면 스스로 사유를 적는다) -----
@@ -157,6 +157,62 @@ function memberOfRun_(ss, mid, mtok) {
   if (!sh) return '';
   const o = memberFind_(sh, mid);
   return tokOk_(o, mtok) ? mid : '';
+}
+// [조선 점수 조정] v20: 조선 밸런스를 바꾸기 전(게임 v4.0 전) 조선 판의 커리어 점수를 2/3로(반올림). 2026-10-30 관리자 요청.
+//   편집기에서 joseonAdjustPreview를 먼저 실행해 몇 판이 바뀌는지 보고(실행 로그), joseonAdjustApply로 바꾼다.
+//   원래 점수는 '조선 점수 조정 기록' 탭에 판마다 남긴다. 이미 그 탭에 있는 판은 건너뛰므로 두 번 실행해도 두 번 깎이지 않는다.
+//   커리어 점수와 그 세부(성과 · 연임 · 명예) 세 칸을 각각 2/3로 반올림한다. 임기 점수(0~100) 같은 다른 칸은 그대로다.
+const JO_ADJ_SHEET = '조선 점수 조정 기록';
+const JO_ADJ_COLS = ['커리어 점수', '커리어 점수: 성과(70)', '커리어 점수: 연임(15)', '커리어 점수: 명예(15)'];
+// 게임 버전 'v3.9' 같은 글자 → 4.0보다 앞인가. 버전 칸이 비어 있으면(버전을 적기 전의 판) 앞으로 본다
+function joOld_(gv) {
+  const m = String(gv || '').match(/v?(\d+)\.(\d+)/);
+  if (!m) return true;
+  return Number(m[1]) < 4;
+}
+function joAdjustScan_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet(), sh = ss.getSheetByName('요약');
+  if (!sh || sh.getLastRow() < 2) return {ss: ss, sh: sh, rows: []};
+  const v = sh.getDataRange().getValues(), h = v[0], ix = n => h.indexOf(n);
+  const iId = ix('판ID'), iCamp = ix('무대'), iGv = ix('게임 버전'), cols = JO_ADJ_COLS.map(ix);
+  const lg = ss.getSheetByName(JO_ADJ_SHEET), done = {};
+  if (lg && lg.getLastRow() > 1) lg.getRange(2, 1, lg.getLastRow() - 1, 1).getValues().forEach(r => { done[String(r[0])] = 1; });
+  const rows = [];
+  for (let i = 1; i < v.length; i++) {
+    const r = v[i], id = String(r[iId]);
+    if (String(r[iCamp]) !== '조선' || !joOld_(r[iGv]) || done[id]) continue;
+    const sc = r[cols[0]];
+    if (sc === '' || sc === null || isNaN(Number(sc))) continue;   // 중도 이탈 등 점수 없는 줄
+    rows.push({row: i + 1, id: id, gv: String(r[iGv] || ''), old: cols.map(c => (c < 0 ? '' : r[c])), cols: cols});
+  }
+  return {ss: ss, sh: sh, rows: rows};
+}
+const joNew_ = x => (x === '' || x === null || isNaN(Number(x)) ? x : Math.round(Number(x) * 2 / 3));
+function joseonAdjustPreview() {
+  const S = joAdjustScan_();
+  Logger.log('바뀔 조선 판: ' + S.rows.length + '판');
+  S.rows.slice(0, 15).forEach(r => Logger.log(r.id + ' (' + (r.gv || '버전 없음') + ') 커리어 점수 ' + r.old[0] + ' → ' + joNew_(r.old[0])));
+  return S.rows.length;
+}
+function joseonAdjustApply() {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    const S = joAdjustScan_(), now = new Date();
+    if (!S.rows.length) { Logger.log('바꿀 판이 없다(이미 조정했거나 해당 판이 없음)'); return 0; }
+    const lg = S.ss.getSheetByName(JO_ADJ_SHEET) || S.ss.insertSheet(JO_ADJ_SHEET);
+    if (lg.getLastRow() === 0) { lg.appendRow(['판ID', '게임 버전', '조정 시각'].concat(JO_ADJ_COLS.map(n => '원래 ' + n), JO_ADJ_COLS.map(n => '바뀐 ' + n))); lg.setFrozenRows(1); }
+    const log = [];
+    S.rows.forEach(r => {
+      const nw = r.old.map(joNew_);
+      r.cols.forEach((c, k) => { if (c >= 0 && r.old[k] !== '') S.sh.getRange(r.row, c + 1).setValue(nw[k]); });
+      log.push([r.id, r.gv, now].concat(r.old, nw));
+    });
+    lg.getRange(lg.getLastRow() + 1, 1, log.length, log[0].length).setValues(log);
+    try { CacheService.getScriptCache().remove('board_v15_n'); } catch (e) {}   // 명예의 전당을 바로 새로 계산하게
+    Logger.log('조정한 조선 판: ' + log.length + '판');
+    return log.length;
+  } finally { lock.releaseLock(); }
 }
 // 관리자 메뉴: 비밀번호를 잊은 회원에게 임시 비밀번호를 만들어 준다(로그인 상태도 풀린다)
 function memberResetPw() {
