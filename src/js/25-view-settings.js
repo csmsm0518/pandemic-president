@@ -84,7 +84,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   '<div class="hm-row"><button id="tutBtn" class="tgl" role="switch" aria-checked="'+tutOn()+'"><span class="tgl-k"></span><span>튜토리얼 '+(tutOn()?'켜짐':'꺼짐')+'</span></button></div>'+
   '<button id="ldBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>불러오기</b><span>'+gEsc(svMenuTxt()||'저장된 게임이 없다')+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="lbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>명예의 전당</b><span>모두의 최고 기록</span></span><span class="hm-go">'+CHEV+'</span></button>'+
-  '<button id="gbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>가이드북</b><span>판정 규칙, 지표, 대선, 점수 계산까지 한 번에</span></span><span class="hm-go">'+CHEV+'</span></button>'+
+  '<button id="gbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>가이드북</b><span>판정 규칙, 지표, 대선, 점수 계산까지 한 번에</span></span><span class="hm-go">'+CHEV+'</span></button>'+boxTileLite()+
   '<div style="height:16px"></div>'+vwHTML()+
   lab('지도자 도감 '+lg+' / '+LEADK.length)+'<div style="margin-bottom:22px">'+ldex+'</div>'+
   lab('임기 평가 도감 '+got+' / '+ENDC.length)+'<div style="margin-bottom:22px">'+dex+'</div>'+
@@ -104,6 +104,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   $('miBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();stepMini();};
   if($('ldBtn'))$('ldBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();svPicker();};   // 라이트 모드 메인 화면은 작은 창으로 연다
   $('gbBtn').onclick=()=>{SFX.click();guide(home);};
+  boxBind('hl',()=>SFX.click());
   $('edBtn').onclick=()=>{SFX.click();intro();};
   vwBind(R,k=>{if(k==='lite')home();});
   // 이스터에그: 제목을 3초 안에 7번 누르면 좀비 무대가 열린다
@@ -121,7 +122,7 @@ const RESET_KEYS=k=>/^pandemic_|^pp_zombie_/.test(k);
 function resetAsk(){const o=document.getElementById('rsAsk');if(o)o.remove();
   const w=document.createElement('div');w.id='rsAsk';w.className='rs-ask';w.setAttribute('role','dialog');w.setAttribute('aria-modal','true');w.setAttribute('aria-labelledby','rsT');
   w.innerHTML='<div class="rs-card"><span class="rs-k">이 기기 기록 초기화</span><h2 id="rsT">처음처럼 다시 시작할까요?</h2>'+
-    '<p>이 기기(브라우저)에 저장된 것을 모두 지워요.</p><ul><li>최고 기록 · 도감 · 기록 보관소</li><li>저장한 게임</li><li>인적사항(학교 · 이름 · 닉네임)</li><li>화면 · 소리 설정, 연 이스터에그, 좀비 게임 기록</li></ul>'+
+    '<p>이 기기(브라우저)에 저장된 것을 모두 지워요.</p><ul><li>최고 기록 · 도감 · 기록 보관소</li><li>저장한 게임</li><li>인적사항(학교 · 이름 · 닉네임)</li><li>화면 · 소리 설정, 연 이스터에그, 좀비 게임 기록</li><li>받은 쿠폰과 그 보상(지운 뒤 같은 쿠폰을 다시 넣을 수 있어요)</li></ul>'+
     '<p class="rs-keep">명예의 전당(구글 시트)에 이미 올라간 기록은 지워지지 않아요.</p>'+
     '<div class="rs-b"><button type="button" id="rsNo">취소</button><button type="button" id="rsYes" class="rs-yes">모두 지우고 처음부터</button></div></div>';
   document.body.appendChild(w);const no=()=>{w.remove();document.removeEventListener('keydown',kd,true);},
@@ -154,10 +155,13 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
     '<div class="gx-tl"><div class="emb go gx-logo">'+emblemSvg()+'<div><h1 class="emb-t"><span>팬데믹</span> <span>대통령</span></h1><p class="emb-s">한 번의 인생, 한 나라의 운명</p></div></div>'+
     (msg?'<div class="gx-msg">'+msg+'</div>':'')+
     '<div class="gx-row2"><nav class="gx-menu" aria-label="메인 메뉴">'+M.map((m,i)=>'<button class="gx-mi" id="'+m[0]+'" style="--i:'+i+'"><span class="gx-ic" aria-hidden="true">'+GX_IC[m[3]]+'</span><span class="gx-mt"><b>'+m[1]+'</b><small>'+m[2]+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>').join('')+
-    '<button class="gx-mi sub" id="mmView" style="--i:'+(M.length-1)+'">화면 설정 · 세로/가로 · 라이트</button><button class="gx-mi sub" id="mmEdit" style="--i:'+M.length+'">인적사항 바꾸기</button></nav>'+pc+'</div></div>'+
+    boxTileGx(M.length)+'<button class="gx-mi sub" id="mmView" style="--i:'+M.length+'">화면 설정 · 세로/가로 · 라이트</button><button class="gx-mi sub" id="mmEdit" style="--i:'+(M.length+1)+'">인적사항 바꾸기</button></nav>'+pc+'</div></div>'+
     '<div class="gx-foot"><span class="gx-keys"><kbd>↑</kbd><kbd>↓</kbd> 고르기 &nbsp;<kbd>Enter</kbd> 결정</span><span>'+GAME_VER+'</span></div></div>'}],
     {nav:false,cls:'gm',top:'<button id="snd" class="cine-x cine-snd" aria-label="소리 설정">'+sndIco()+'</button>',
-     key:e=>{const n=MI.length;if(e.key==='ArrowDown'){mark((sel+1)%n,1);return true;}if(e.key==='ArrowUp'){mark((sel-1+n)%n,1);return true;}
+     key:e=>{if(document.querySelector('.bx-bg'))return false;   // 건의사항 · 쿠폰 창이 떠 있으면 뒤의 메뉴는 키를 받지 않는다
+       const n=MI.length;if(e.key==='ArrowDown'){mark((sel+1)%n,1);return true;}if(e.key==='ArrowUp'){mark((sel-1+n)%n,1);return true;}
+       // 건의사항 | 쿠폰함 반쪽 칸에서는 ← → 로 옆 칸
+       if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&MI[sel].classList.contains('gx-half')){const h=[...MI[sel].parentNode.children];mark(MI.indexOf(h[e.key==='ArrowRight'?1:0]),1);return true;}
        if(gxEnter(e)){MI[sel].click();return true;}}});
   const $=id=>document.getElementById(id),MI=[...document.querySelectorAll('.gx-mi')];
   const mark=(i,snd)=>{if(snd&&i!==sel)gxSfx('tick',i);sel=i;MI.forEach((b,j)=>b.classList.toggle('on',j===i));};
@@ -171,6 +175,7 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   $('mmGuide').onclick=()=>{gxSfx('click');cineClose();guide(home);};
   $('mmEdit').onclick=()=>{gxSfx('click');cineClose();intro();};
   $('mmView').onclick=()=>{gxSfx('click');viewPage(home);};
+  boxBind('mm',()=>gxSfx('click'));
   // 이스터에그: 로고의 나침반을 다섯 바퀴 돌리면 비밀 모드 「대항해」가 새 게임의 무대 고르기에 생긴다
   compassSpin(document.querySelector('.cine .gx-logo svg'),()=>{
     if(eggOn('sail')){eggToast('⚓ 대항해는 이미 열려 있어요. 새 게임의 미니게임 탭에서 고르세요.');return;}

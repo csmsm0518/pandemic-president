@@ -1,7 +1,9 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"bd9735212d","h":"f87737383d4b62a2"},"dex":{"v":"2a6897149d","h":"10d66cd2c1d2e3d2"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"ad9c17b828","h":"eba55cee8be0cbe1"},"sail":{"v":"52843663ea","h":"8feef78866c4c88b"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"05c38e8117","h":"cbc2e48319ab51e8"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
+const LZ_M={"board":{"v":"bd9735212d","h":"f87737383d4b62a2"},"boxes":{"v":"ae544c3fad","h":"90cc2bc64ec1e74e"},"dex":{"v":"2a6897149d","h":"10d66cd2c1d2e3d2"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"ad9c17b828","h":"eba55cee8be0cbe1"},"sail":{"v":"52843663ea","h":"8feef78866c4c88b"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"05c38e8117","h":"cbc2e48319ab51e8"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
+function sugOpen(){return lzCall('boxes','sugOpen',arguments);}
+function cpnOpen(){return lzCall('boxes','cpnOpen',arguments);}
 function dexScene(){return lzCall('dex','dexScene',arguments);}
 function mgWar(){return lzCall('games','mgWar',arguments);}
 function simWar(){return lzCall('games','simWar',arguments);}
@@ -5310,7 +5312,8 @@ const campOn=id=>id==='bonn'?!!MEM.bonn:id==='reich'?eggOn('reich'):id!=='zombie
 // 잠긴 비밀 인물이면 {h:힌트, used:이미 씀}을, 고를 수 있으면 null을 돌려준다
 function bgLock(q){if(!q.sec)return null;
   if(q.once&&MEM.secUsed&&MEM.secUsed[q.sec])return {used:1,h:'이미 한 번 함께했다. 단 한 번뿐인 만남이었다.'};
-  if(q.sec==='jyw')return /hafs/i.test(String((PF&&PF.school)||''))?null:{h:q.hint};
+  // 정영우는 학교 이름으로 열린다(쿠폰 fig:jyw로도 한 번 더 만날 수 있다)
+  if(q.sec==='jyw')return /hafs/i.test(String((PF&&PF.school)||''))||(MEM.sec&&MEM.sec.jyw)?null:{h:q.hint};
   return MEM.sec&&MEM.sec[q.sec]?null:{h:q.hint};}
 // 데우스 엑스 마키나: 닉네임을 '조성민잘생겼다'로 넣으면 대한민국 · 조선 · 미국 지도자 명단 맨 끝에 조성민이 선다(지도자 고르기에서 처음부터 골라져 있다).
 // 좋은 지표(지지율 · 경제 · 방역 · 군사 · 권력 · 견제 · 투명성 · 안전망)는 100, 나쁜 지표(위기 · 갈등 · 부패)는 0에서 시작한다.
@@ -5639,6 +5642,24 @@ function gxLattice(cv){const ctx=cv.getContext&&cv.getContext('2d');if(!ctx)retu
   (function loop(now){if(!cv.isConnected){window.removeEventListener('resize',onR);return;}
     if(now-lastDraw>=32&&!document.hidden){const dt=Math.min(64,now-prev);prev=now;lastDraw=now;step(now,dt);draw(now);}requestAnimationFrame(loop);})(prev);}
 
+/* ---------- 메인 화면의 건의사항함 · 쿠폰함 ----------
+   메뉴 한 칸 자리를 가로로 반씩 나눠 두 상자를 나란히 둔다(주인 요청: 건의사항 | 쿠폰함). 영화식 메뉴와 라이트 메인 화면 둘 다에 둔다.
+   상자를 누르면 나중에 받는 조각(lazy/boxes)이 창을 띄운다(sugOpen · cpnOpen). 여기에는 메뉴 칸과,
+   새 게임을 시작할 때 쿠폰으로 받아 둔 운명 개입을 꺼내는 부분만 둔다(start가 바로 값을 받아야 해서 조각에 둘 수 없다). */
+const BOX_IC={sug:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M4 4.5h16v11.5H10l-6 4.5z"/><path d="M8.5 9h7M8.5 12h4.5"/></svg>',
+  cpn:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M3 6.5h18V10a2 2 0 0 0 0 4v3.5H3V14a2 2 0 0 0 0-4z"/><path d="M15 7.5v1.6M15 11.2v1.6M15 14.9v1.6"/></svg>'};
+// 쿠폰함 칸의 작은 글: 받아 둔 운명 개입이 있으면 그것을 알려 준다
+const boxCpnSub=()=>(+MEM.cpTok>0)?'운명 개입 +'+MEM.cpTok+' 대기 중':'코드로 선물 받기';
+const BOX_M=()=>[['Sug','건의사항','의견 · 버그 제보','sug'],['Cpn','쿠폰함',boxCpnSub(),'cpn']];
+// 영화식 메인 메뉴: 보통 칸(.gx-mi) 하나의 자리에 반쪽 칸 둘. 반쪽도 .gx-mi라서 ↑↓ 고르기 · Enter에 그대로 들어간다(← →는 옆 칸으로)
+function boxTileGx(i){return '<div class="gx-mi2" role="group" aria-label="건의사항함 · 쿠폰함">'+BOX_M().map(m=>'<button class="gx-mi gx-half" id="mm'+m[0]+'" style="--i:'+i+'"><span class="gx-ic" aria-hidden="true">'+BOX_IC[m[3]]+'</span><span class="gx-mt"><b>'+m[1]+'</b><small>'+m[2]+'</small></span></button>').join('')+'</div>';}
+// 라이트 메인 화면: 보통 카드(.hm-card) 하나의 자리에 반쪽 카드 둘
+function boxTileLite(){return '<div class="hm-split" role="group" aria-label="건의사항함 · 쿠폰함">'+BOX_M().map(m=>'<button id="hl'+m[0]+'" class="hm-card hm-half"><span class="hm-i">'+BOX_IC[m[3]]+'</span><span class="hm-x"><b>'+m[1]+'</b><span>'+m[2]+'</span></span></button>').join('')+'</div>';}
+function boxBind(pre,snd){const s=document.getElementById(pre+'Sug'),c=document.getElementById(pre+'Cpn');
+  if(s)s.onclick=()=>{snd();sugOpen(s);};if(c)c.onclick=()=>{snd();cpnOpen(c);};}
+// 쿠폰으로 받아 둔 운명 개입: 다음 새 게임을 시작할 때 한 번에 꺼내 쓴다. 조성민(데우스 엑스 마키나) 판에는 쓰지 않고 남겨 둔다.
+// 공정한 비교를 위해 몇 개를 받았는지 연구 기록(RUN.cpTok → 요약 시트 '쿠폰 운명 개입')에 남긴다
+function cpTokUse(){const n=Math.max(0,Math.min(9,Math.floor(+MEM.cpTok||0)));if(!n||godRun())return 0;delete MEM.cpTok;msave();if(RUN)RUN.cpTok=n;return n;}
 /* ---------- 화면 설정: 세로/가로 모드 · 라이트 모드 ----------
    시작 화면에서 고르고 메뉴에서 바꾼다. 기록(MEM)과 함께 이 브라우저에 남는다.
    ori: 'p' 세로(한 칸) · 'l' 가로(넓으면 상황판|사건 두 칸). lite: 예전 종이 메뉴 + 무거운 연출 끄기.
@@ -5725,7 +5746,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   '<div class="hm-row"><button id="tutBtn" class="tgl" role="switch" aria-checked="'+tutOn()+'"><span class="tgl-k"></span><span>튜토리얼 '+(tutOn()?'켜짐':'꺼짐')+'</span></button></div>'+
   '<button id="ldBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>불러오기</b><span>'+gEsc(svMenuTxt()||'저장된 게임이 없다')+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="lbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>명예의 전당</b><span>모두의 최고 기록</span></span><span class="hm-go">'+CHEV+'</span></button>'+
-  '<button id="gbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>가이드북</b><span>판정 규칙, 지표, 대선, 점수 계산까지 한 번에</span></span><span class="hm-go">'+CHEV+'</span></button>'+
+  '<button id="gbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>가이드북</b><span>판정 규칙, 지표, 대선, 점수 계산까지 한 번에</span></span><span class="hm-go">'+CHEV+'</span></button>'+boxTileLite()+
   '<div style="height:16px"></div>'+vwHTML()+
   lab('지도자 도감 '+lg+' / '+LEADK.length)+'<div style="margin-bottom:22px">'+ldex+'</div>'+
   lab('임기 평가 도감 '+got+' / '+ENDC.length)+'<div style="margin-bottom:22px">'+dex+'</div>'+
@@ -5745,6 +5766,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   $('miBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();stepMini();};
   if($('ldBtn'))$('ldBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();svPicker();};   // 라이트 모드 메인 화면은 작은 창으로 연다
   $('gbBtn').onclick=()=>{SFX.click();guide(home);};
+  boxBind('hl',()=>SFX.click());
   $('edBtn').onclick=()=>{SFX.click();intro();};
   vwBind(R,k=>{if(k==='lite')home();});
   // 이스터에그: 제목을 3초 안에 7번 누르면 좀비 무대가 열린다
@@ -5762,7 +5784,7 @@ const RESET_KEYS=k=>/^pandemic_|^pp_zombie_/.test(k);
 function resetAsk(){const o=document.getElementById('rsAsk');if(o)o.remove();
   const w=document.createElement('div');w.id='rsAsk';w.className='rs-ask';w.setAttribute('role','dialog');w.setAttribute('aria-modal','true');w.setAttribute('aria-labelledby','rsT');
   w.innerHTML='<div class="rs-card"><span class="rs-k">이 기기 기록 초기화</span><h2 id="rsT">처음처럼 다시 시작할까요?</h2>'+
-    '<p>이 기기(브라우저)에 저장된 것을 모두 지워요.</p><ul><li>최고 기록 · 도감 · 기록 보관소</li><li>저장한 게임</li><li>인적사항(학교 · 이름 · 닉네임)</li><li>화면 · 소리 설정, 연 이스터에그, 좀비 게임 기록</li></ul>'+
+    '<p>이 기기(브라우저)에 저장된 것을 모두 지워요.</p><ul><li>최고 기록 · 도감 · 기록 보관소</li><li>저장한 게임</li><li>인적사항(학교 · 이름 · 닉네임)</li><li>화면 · 소리 설정, 연 이스터에그, 좀비 게임 기록</li><li>받은 쿠폰과 그 보상(지운 뒤 같은 쿠폰을 다시 넣을 수 있어요)</li></ul>'+
     '<p class="rs-keep">명예의 전당(구글 시트)에 이미 올라간 기록은 지워지지 않아요.</p>'+
     '<div class="rs-b"><button type="button" id="rsNo">취소</button><button type="button" id="rsYes" class="rs-yes">모두 지우고 처음부터</button></div></div>';
   document.body.appendChild(w);const no=()=>{w.remove();document.removeEventListener('keydown',kd,true);},
@@ -5795,10 +5817,13 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
     '<div class="gx-tl"><div class="emb go gx-logo">'+emblemSvg()+'<div><h1 class="emb-t"><span>팬데믹</span> <span>대통령</span></h1><p class="emb-s">한 번의 인생, 한 나라의 운명</p></div></div>'+
     (msg?'<div class="gx-msg">'+msg+'</div>':'')+
     '<div class="gx-row2"><nav class="gx-menu" aria-label="메인 메뉴">'+M.map((m,i)=>'<button class="gx-mi" id="'+m[0]+'" style="--i:'+i+'"><span class="gx-ic" aria-hidden="true">'+GX_IC[m[3]]+'</span><span class="gx-mt"><b>'+m[1]+'</b><small>'+m[2]+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>').join('')+
-    '<button class="gx-mi sub" id="mmView" style="--i:'+(M.length-1)+'">화면 설정 · 세로/가로 · 라이트</button><button class="gx-mi sub" id="mmEdit" style="--i:'+M.length+'">인적사항 바꾸기</button></nav>'+pc+'</div></div>'+
+    boxTileGx(M.length)+'<button class="gx-mi sub" id="mmView" style="--i:'+M.length+'">화면 설정 · 세로/가로 · 라이트</button><button class="gx-mi sub" id="mmEdit" style="--i:'+(M.length+1)+'">인적사항 바꾸기</button></nav>'+pc+'</div></div>'+
     '<div class="gx-foot"><span class="gx-keys"><kbd>↑</kbd><kbd>↓</kbd> 고르기 &nbsp;<kbd>Enter</kbd> 결정</span><span>'+GAME_VER+'</span></div></div>'}],
     {nav:false,cls:'gm',top:'<button id="snd" class="cine-x cine-snd" aria-label="소리 설정">'+sndIco()+'</button>',
-     key:e=>{const n=MI.length;if(e.key==='ArrowDown'){mark((sel+1)%n,1);return true;}if(e.key==='ArrowUp'){mark((sel-1+n)%n,1);return true;}
+     key:e=>{if(document.querySelector('.bx-bg'))return false;   // 건의사항 · 쿠폰 창이 떠 있으면 뒤의 메뉴는 키를 받지 않는다
+       const n=MI.length;if(e.key==='ArrowDown'){mark((sel+1)%n,1);return true;}if(e.key==='ArrowUp'){mark((sel-1+n)%n,1);return true;}
+       // 건의사항 | 쿠폰함 반쪽 칸에서는 ← → 로 옆 칸
+       if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&MI[sel].classList.contains('gx-half')){const h=[...MI[sel].parentNode.children];mark(MI.indexOf(h[e.key==='ArrowRight'?1:0]),1);return true;}
        if(gxEnter(e)){MI[sel].click();return true;}}});
   const $=id=>document.getElementById(id),MI=[...document.querySelectorAll('.gx-mi')];
   const mark=(i,snd)=>{if(snd&&i!==sel)gxSfx('tick',i);sel=i;MI.forEach((b,j)=>b.classList.toggle('on',j===i));};
@@ -5812,6 +5837,7 @@ function home(){bgmIntro(true);if(viewGet().lite)return homeLite();
   $('mmGuide').onclick=()=>{gxSfx('click');cineClose();guide(home);};
   $('mmEdit').onclick=()=>{gxSfx('click');cineClose();intro();};
   $('mmView').onclick=()=>{gxSfx('click');viewPage(home);};
+  boxBind('mm',()=>gxSfx('click'));
   // 이스터에그: 로고의 나침반을 다섯 바퀴 돌리면 비밀 모드 「대항해」가 새 게임의 무대 고르기에 생긴다
   compassSpin(document.querySelector('.cine .gx-logo svg'),()=>{
     if(eggOn('sail')){eggToast('⚓ 대항해는 이미 열려 있어요. 새 게임의 미니게임 탭에서 고르세요.');return;}
@@ -6197,7 +6223,7 @@ function cfgApply(){CP=CAMPS[camp];document.documentElement.dataset.camp=CP.id;Y
   CAR={camp:CP.id,path:{hard:0,soft:0,eco:0},pstage:{},pathLog:[],news:0,term:1,age0:B.age,bg:(CP.id==='kr'?'':CP.n+' · ')+B.n,bgid:B.id,bgn:B.n,bgx:B.x||(B.n+' 출신'),terms:[],tro:[],amend:0,crush:0,exit:'',tEval:0,retireElig:false,cs:[],ts:[],us:[],ss:[],done:0,tt:[0,0,0,0],yrs:[],scen:[],elections:[]};cnStart();
   // 배경음악은 새 커리어를 만든 뒤에 고른다(앞 판의 올림픽 응원가가 이어지지 않게)
   bgmGame();histArm();
-  SEENT={};SEENN=0;MOD=pk(MODS);tok=2+(B.t||0);streak=0;snap=null;peakI=S.i;hist=[];TH=[{a:S.a,i:S.i}];SEEN=new Set();
+  SEENT={};SEENN=0;MOD=pk(MODS);tok=2+(B.t||0)+cpTokUse();streak=0;snap=null;peakI=S.i;hist=[];TH=[{a:S.a,i:S.i}];SEEN=new Set();   // 운명 개입: 기본 2 + 인물 보너스 + 쿠폰으로 받아 둔 것(cpTokUse)
   base=S.chk+S.trn+S.saf;pool=CP.ev.slice();last=null;tally=[0,0,0,0];yTally=[0,0,0,0];chron=[];prev=null;queue=[];deaths=0;yd=0;cDeaths=0;covD=0;setTroName();
   YS=Object.assign({},S);
   mapReset();MAP.tgt=S.i;mapStart();
@@ -7488,7 +7514,7 @@ function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.len
     ins:Math.round(lt.ins),peakP:Math.round(RUN.pkP),peakC:Math.round(RUN.pkC),auth:lt.auth?'예':'아니오',
     nChoices:N.length,nConc:cnt('권력 집중'),nDisp:cnt('견제·분산'),nNeut:cnt('중립'),avgDir:avg(N.map(z=>z.dirScore)),
     dirY1:yr(1),dirY2:yr(2),dirY3:yr(3),dirY4:yr(4),firstConcTurn:fc?fc.cturn:'',crisis:RUN.crisis.join(' / '),
-    dice0:tally[0],dice1:tally[1],dice2:tally[2],dice3:tally[3],rerolls:RUN.rr,tokensLeft:tok,
+    dice0:tally[0],dice1:tally[1],dice2:tally[2],dice3:tally[3],rerolls:RUN.rr,tokensLeft:tok,couponTok:RUN.cpTok||0,
     mode:MODE[mode].n,terms:CAR.term,careerYears:years,exitType:exitLabel,scenarios:terms.map(t=>t.scenario).join(' → '),elections:CAR.elections.join(' / '),pathEvents:(CAR.pathLog||[]).join(' / '),tutorial:tutOn()?'켬':'끔',avgFit:avg(N.map(z=>typeof z.fit==='number'?z.fit:0)),amendCount:CAR.amend,retireEligible:CAR.retireElig?'예':'아니오',
     leaderId:x.lid,leader:LEAD[x.lid].n,careerScore:x.csc===undefined?'':x.csc,scorePerf:x.SC?x.SC.perf:'',scoreCont:x.SC?x.SC.cont:'',scoreHonor:x.SC?x.SC.honor:'',trophiesGood:good,trophiesBad:CAR.tro.length-good,
     trophyList:CAR.tro.map(t=>(t.g?'+':'-')+t.n+'('+t.term+'-'+t.year+')').join(', '),

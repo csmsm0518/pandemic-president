@@ -28,6 +28,11 @@ const ARCADE = [['판ID', 'id'], ['게임', 'game'], ['닉네임', 'nickname'], 
   // ----- v15: 숨김(관리자가 아무 글자나 적으면 그 줄은 순위에서 빠진다. 서버가 말이 안 되는 기록을 받으면 스스로 사유를 적는다) -----
   ['숨김', 'hidden'], ['학교(적은 그대로)', 'schoolRaw'], ['플레이어ID', 'pid']];
 const ARCADE_GAMES = {zg: '방역선', sail: '대항해', star: '별똥별'};
+// [건의사항] 메인 화면 '건의사항함'에서 보낸 글(kind: 'suggest')이 "건의사항" 탭에 한 줄씩 쌓인다. 명예의 전당 · 분석 · 기록 비우기(archiveAndReset)에는 쓰지 않는다.
+//   맨 끝 '처리 · 답변' 칸은 비워 두고 관리자가 적는다(게임은 이 칸을 읽지 않는다).
+const SUGGEST = [['분류', 'cat'], ['내용', 'text'], ['닉네임', 'nickname'], ['학교', 'school'], ['게임 버전', 'gv'], ['화면', 'view'], ['브라우저', 'ua'],
+  ['플레이어ID', 'pid'], ['접수ID', 'id'], ['처리 · 답변', 'reply']];
+const SUGGEST_CATS = {'건의': 1, '버그': 1, '질문': 1, '기타': 1};
 
 const SUMMARY = [
   ['판ID', 'id'], ['시작 시각', 'startedAt'], ['닉네임', 'nickname'],
@@ -80,7 +85,9 @@ const SUMMARY = [
   // ----- 학교: '학교' 칸에는 같은 학교끼리 합친 이름(예: 경기과고 → 경기과학고), 이 칸에는 학생이 적은 그대로 -----
   ['학교(적은 그대로)', 'schoolRaw'],
   // ----- 플레이어ID: 기기마다 만든 무작위 표시. 같은 사람의 여러 판을 한 사람으로 묶는 데만 쓴다(공개 순위에는 나가지 않는다) -----
-  ['플레이어ID', 'pid']
+  ['플레이어ID', 'pid'],
+  // ----- 쿠폰(메인 화면 쿠폰함)으로 받아 이 판에 더해진 운명 개입 수. '운명 개입 사용' · '남은 개입'을 비교할 때 뺀다 -----
+  ['쿠폰 운명 개입', 'couponTok']
 ];
 // 상품 연락용 참가자 정보. 분석 시트와 따로 둔다.
 const PRIVATE = [['판ID', 'id'], ['시작 시각', 'startedAt'], ['닉네임', 'nickname'], ['학교', 'school'], ['이름', 'realName'], ['전화번호', 'phone'], ['개인정보 동의', 'consent'], ['게임 버전', 'gv'], ['학교(적은 그대로)', 'schoolRaw']];
@@ -143,9 +150,9 @@ const YEARS = CONTEXT.concat([
   ['연말 군사', 'mil']
 ]);
 
-function sheetWithHeader_(ss, name, cols) {
+function sheetWithHeader_(ss, name, cols, first) {
   const sh = ss.getSheetByName(name) || ss.insertSheet(name);
-  const header = ['기록 시각'].concat(cols.map(c => c[0]));
+  const header = [first || '기록 시각'].concat(cols.map(c => c[0]));
   if (sh.getLastRow() === 0) {
     sh.appendRow(header);
     sh.setFrozenRows(1);
@@ -177,6 +184,9 @@ const MAX_CELL = 3000;       // 한 칸의 최대 글자 수
 const SCORE_MAX = 60000;     // 커리어 점수의 절댓값이 이보다 크면 조작으로 보고 순위에서 뺀다
 const ZG_MAX = 120000;       // 방역선 점수 상한(10분을 다 버텨도 4만 점 안팎)
 const STAR_MAX = 200000;     // 별똥별 점수 상한
+const RATE_SUGGEST = 6;      // 같은 기기(플레이어ID)의 건의는 10분에 이만큼까지(게임은 10분에 다섯 번까지만 보낸다)
+const RATE_SUGGEST_ALL = 120; // 모든 건의를 합쳐 10분에 이만큼까지(주소를 아는 누군가가 건의를 쏟아붓는 것 막기)
+const SUGGEST_MAX = 1000;    // 건의 내용의 최대 글자 수(게임은 500자까지 받는다)
 function out_(s) { return ContentService.createTextOutput(s); }
 // 시간 칸(sec초)마다 key로 들어온 수를 센다. CacheService라 아주 정확하지는 않지만 쏟아붓는 요청은 충분히 막는다
 function rateOk_(key, max, sec) {
@@ -239,10 +249,10 @@ function dropAbandoned_(ss, id) {
   });
 }
 
-function appendRows_(ss, name, cols, list, now) {
+function appendRows_(ss, name, cols, list, now, first) {
   if (!list || !list.length) return;
   const rows = list.map(o => [now].concat(cols.map(c => safe_(o[c[1]]))));
-  const sh = sheetWithHeader_(ss, name, cols);
+  const sh = sheetWithHeader_(ss, name, cols, first);
   sh.getRange(sh.getLastRow() + 1, 1, rows.length, rows[0].length).setValues(rows);
 }
 
@@ -254,10 +264,17 @@ function doPost(e) {
   let d;
   try { d = JSON.parse(raw); } catch (err) { return out_('bad json'); }
   if (!d || typeof d !== 'object' || Array.isArray(d)) return out_('bad');
+  // 모르는 종류는 받지 않는다(커리어 기록은 kind가 없다). 예전 스크립트는 모르는 종류를 커리어로 읽어 '요약'에 빈 줄을 썼다
+  if (d.kind !== undefined && d.kind !== 'arcade' && d.kind !== 'suggest') return out_('bad kind');
   // 같은 닉네임 제한은 비밀 게임 기록에만, 그리고 닉네임을 적은 사람에게만 건다('익명'은 여러 사람이 함께 쓰므로 빼고, 전체 제한만 받는다)
   if (d.kind === 'arcade') {
     const nk = String((d.rec && d.rec.nickname) || '').trim().slice(0, 20);
     if (nk && nk !== '익명' && !rateOk_('a_' + nk, RATE_ARCADE, 600)) return out_('busy');
+  }
+  // 건의는 전체 · 기기마다 10분 단위로 센다(플레이어ID가 없으면 한 묶음으로)
+  if (d.kind === 'suggest') {
+    const sp = String((d.rec && d.rec.pid) || '').replace(/[^0-9a-z]/gi, '').slice(0, 24) || 'none';
+    if (!rateOk_('s_all', RATE_SUGGEST_ALL, 600) || !rateOk_('s_' + sp, RATE_SUGGEST, 600)) return out_('busy');
   }
   // 같은 조각을 다시 보낸 것이면(게임의 다시 보내기) 한 번만 쓴다
   if (d.k && seen_(d.k)) return out_('dup');
@@ -280,6 +297,17 @@ function doPost(e) {
         : a.game === 'sail' && (rec.sec < SAIL_MIN_SEC || rec.sec > 1200) ? '자동: 시간 이상'
         : a.game === 'star' && (rec.score < 0 || rec.score > STAR_MAX || rec.sec > 3600) ? '자동: 점수 이상' : '';
       appendRows_(ss, '비밀 게임 기록', ARCADE, [rec], now);
+      return out_('ok');
+    }
+    // 건의: 한 건 = 한 줄. 분류는 정해진 넷 중 하나, 내용은 비어 있으면 버린다. 수식 막기 · 칸 길이는 safe_가 맡는다. 분석은 돌리지 않는다
+    if (d.kind === 'suggest') {
+      const a = d.rec && typeof d.rec === 'object' ? d.rec : {};
+      const text = String(a.text || '').replace(/\r\n?/g, '\n').trim().slice(0, SUGGEST_MAX);
+      if (!text) return out_('empty');
+      const sr = String(a.school || '').slice(0, 30);
+      appendRows_(ss, '건의사항', SUGGEST, [{cat: SUGGEST_CATS[a.cat] ? a.cat : '기타', text: text, nickname: String(a.nickname || '익명').slice(0, 20), school: sr,
+        gv: String(a.gv || '').slice(0, 20), view: String(a.view || '').slice(0, 60), ua: String(a.ua || '').slice(0, 200),
+        pid: String(a.pid || '').replace(/[^0-9a-z]/gi, '').slice(0, 24), id: String(a.id || '').slice(0, 40), reply: ''}], now, '받은 시각');
       return out_('ok');
     }
     const run = d.run && typeof d.run === 'object' && !Array.isArray(d.run) ? d.run : {};

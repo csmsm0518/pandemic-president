@@ -1588,3 +1588,25 @@ html[data-ori="p"] .gcn .cn-cand>.cn>.pf{width:48px;height:48px}
 html[data-ori="p"] .gcn .cn-cand>.cn-s{flex:1 0 100%}
 html[data-ori="p"] .gcn .cn-cand .cn-q{font-size:12.5px;margin-top:4px}
 html[data-ori="p"] .gcn .cn-cand .cn-sp{font-size:12px;padding:6px 9px}
+/* ---------- 메인 화면의 건의사항함 · 쿠폰함: 메뉴 한 칸 자리를 가로로 반씩 나눈 두 칸(주인 요청) ---------- */
+/* 영화식 메뉴: 반쪽도 .gx-mi라 고르기 · 빛 · 왼쪽 막대가 다른 칸과 같다. 글자는 줄여도 줄 높이는 보통 칸과 같게 두어 칸 높이가 똑같다 */
+.gx-mi2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-bottom:1px solid rgba(201,162,74,.1)}
+.gx-mi.gx-half{grid-template-columns:30px minmax(0,1fr);gap:10px;padding-left:14px;padding-right:10px;border-bottom:0}
+.gx-mi.gx-half+.gx-half{border-left:1px solid rgba(201,162,74,.1)}
+.gx-mi.gx-half+.gx-half::before{left:0;width:2px}
+.gx-half .gx-ic{width:30px;height:30px}.gx-half .gx-ic svg{width:15px;height:15px}
+.gx-half .gx-mt b{font-size:clamp(15px,2.3vh,19px);line-height:calc(clamp(17px,2.7vh,23px) * 1.25);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (orientation:landscape) and (max-height:540px){
+  .gx-mi.gx-half{grid-template-columns:24px minmax(0,1fr);gap:8px;padding-left:10px;padding-right:8px}
+  .gx-half .gx-ic{width:24px;height:24px}.gx-half .gx-ic svg{width:13px;height:13px}
+  .gx-half .gx-mt b{font-size:14px;line-height:1.35}}
+/* 휴대폰 가로: 메뉴가 두 줄 격자가 되면 반쪽 둘이 격자 한 칸을 나눠 쓴다. 칸이 좁아 그림은 뺀다 */
+@media (orientation:landscape) and (max-height:420px){
+  html:not([data-ori="p"]) .gx-mi2{border-right:1px solid rgba(201,162,74,.1)}
+  html:not([data-ori="p"]) .gx-mi.gx-half{grid-template-columns:minmax(0,1fr);padding:5px 8px;border-right:0;text-align:center}
+  html:not([data-ori="p"]) .gx-half .gx-ic{display:none}}
+/* 라이트 메인 화면: 보통 카드 하나 자리에 반쪽 카드 둘. 안쪽 여백 · 그림 크기는 보통 카드와 같아 높이도 같다 */
+.hm-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-bottom:8px}
+.hm-split .hm-card{margin:0;gap:10px;padding:13px 12px;min-width:0}
+.hm-half .hm-x span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:370px){.hm-split .hm-card{gap:8px;padding:13px 10px}.hm-half .hm-i{width:32px;height:32px}}

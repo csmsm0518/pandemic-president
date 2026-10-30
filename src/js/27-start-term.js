@@ -7,7 +7,7 @@
   CAR={camp:CP.id,path:{hard:0,soft:0,eco:0},pstage:{},pathLog:[],news:0,term:1,age0:B.age,bg:(CP.id==='kr'?'':CP.n+' · ')+B.n,bgid:B.id,bgn:B.n,bgx:B.x||(B.n+' 출신'),terms:[],tro:[],amend:0,crush:0,exit:'',tEval:0,retireElig:false,cs:[],ts:[],us:[],ss:[],done:0,tt:[0,0,0,0],yrs:[],scen:[],elections:[]};cnStart();
   // 배경음악은 새 커리어를 만든 뒤에 고른다(앞 판의 올림픽 응원가가 이어지지 않게)
   bgmGame();histArm();
-  SEENT={};SEENN=0;MOD=pk(MODS);tok=2+(B.t||0);streak=0;snap=null;peakI=S.i;hist=[];TH=[{a:S.a,i:S.i}];SEEN=new Set();
+  SEENT={};SEENN=0;MOD=pk(MODS);tok=2+(B.t||0)+cpTokUse();streak=0;snap=null;peakI=S.i;hist=[];TH=[{a:S.a,i:S.i}];SEEN=new Set();   // 운명 개입: 기본 2 + 인물 보너스 + 쿠폰으로 받아 둔 것(cpTokUse)
   base=S.chk+S.trn+S.saf;pool=CP.ev.slice();last=null;tally=[0,0,0,0];yTally=[0,0,0,0];chron=[];prev=null;queue=[];deaths=0;yd=0;cDeaths=0;covD=0;setTroName();
   YS=Object.assign({},S);
   mapReset();MAP.tgt=S.i;mapStart();

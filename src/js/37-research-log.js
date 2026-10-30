@@ -77,7 +77,7 @@ function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.len
     ins:Math.round(lt.ins),peakP:Math.round(RUN.pkP),peakC:Math.round(RUN.pkC),auth:lt.auth?'예':'아니오',
     nChoices:N.length,nConc:cnt('권력 집중'),nDisp:cnt('견제·분산'),nNeut:cnt('중립'),avgDir:avg(N.map(z=>z.dirScore)),
     dirY1:yr(1),dirY2:yr(2),dirY3:yr(3),dirY4:yr(4),firstConcTurn:fc?fc.cturn:'',crisis:RUN.crisis.join(' / '),
-    dice0:tally[0],dice1:tally[1],dice2:tally[2],dice3:tally[3],rerolls:RUN.rr,tokensLeft:tok,
+    dice0:tally[0],dice1:tally[1],dice2:tally[2],dice3:tally[3],rerolls:RUN.rr,tokensLeft:tok,couponTok:RUN.cpTok||0,
     mode:MODE[mode].n,terms:CAR.term,careerYears:years,exitType:exitLabel,scenarios:terms.map(t=>t.scenario).join(' → '),elections:CAR.elections.join(' / '),pathEvents:(CAR.pathLog||[]).join(' / '),tutorial:tutOn()?'켬':'끔',avgFit:avg(N.map(z=>typeof z.fit==='number'?z.fit:0)),amendCount:CAR.amend,retireEligible:CAR.retireElig?'예':'아니오',
     leaderId:x.lid,leader:LEAD[x.lid].n,careerScore:x.csc===undefined?'':x.csc,scorePerf:x.SC?x.SC.perf:'',scoreCont:x.SC?x.SC.cont:'',scoreHonor:x.SC?x.SC.honor:'',trophiesGood:good,trophiesBad:CAR.tro.length-good,
     trophyList:CAR.tro.map(t=>(t.g?'+':'-')+t.n+'('+t.term+'-'+t.year+')').join(', '),

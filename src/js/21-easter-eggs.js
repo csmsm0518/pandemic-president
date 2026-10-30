@@ -7,7 +7,8 @@ const campOn=id=>id==='bonn'?!!MEM.bonn:id==='reich'?eggOn('reich'):id!=='zombie
 // 잠긴 비밀 인물이면 {h:힌트, used:이미 씀}을, 고를 수 있으면 null을 돌려준다
 function bgLock(q){if(!q.sec)return null;
   if(q.once&&MEM.secUsed&&MEM.secUsed[q.sec])return {used:1,h:'이미 한 번 함께했다. 단 한 번뿐인 만남이었다.'};
-  if(q.sec==='jyw')return /hafs/i.test(String((PF&&PF.school)||''))?null:{h:q.hint};
+  // 정영우는 학교 이름으로 열린다(쿠폰 fig:jyw로도 한 번 더 만날 수 있다)
+  if(q.sec==='jyw')return /hafs/i.test(String((PF&&PF.school)||''))||(MEM.sec&&MEM.sec.jyw)?null:{h:q.hint};
   return MEM.sec&&MEM.sec[q.sec]?null:{h:q.hint};}
 // 데우스 엑스 마키나: 닉네임을 '조성민잘생겼다'로 넣으면 대한민국 · 조선 · 미국 지도자 명단 맨 끝에 조성민이 선다(지도자 고르기에서 처음부터 골라져 있다).
 // 좋은 지표(지지율 · 경제 · 방역 · 군사 · 권력 · 견제 · 투명성 · 안전망)는 100, 나쁜 지표(위기 · 갈등 · 부패)는 0에서 시작한다.
