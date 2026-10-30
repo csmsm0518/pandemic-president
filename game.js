@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"bd9735212d","h":"f87737383d4b62a2"},"boxes":{"v":"ae544c3fad","h":"90cc2bc64ec1e74e"},"dex":{"v":"2a6897149d","h":"10d66cd2c1d2e3d2"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"ad9c17b828","h":"eba55cee8be0cbe1"},"sail":{"v":"52843663ea","h":"8feef78866c4c88b"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"05c38e8117","h":"cbc2e48319ab51e8"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
+const LZ_M={"board":{"v":"bd9735212d","h":"f87737383d4b62a2"},"boxes":{"v":"ae544c3fad","h":"90cc2bc64ec1e74e"},"dex":{"v":"2a6897149d","h":"10d66cd2c1d2e3d2"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"c3a95f448d","h":"c1382659614ffce4"},"sail":{"v":"52843663ea","h":"8feef78866c4c88b"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"05c38e8117","h":"cbc2e48319ab51e8"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
 function sugOpen(){return lzCall('boxes','sugOpen',arguments);}
 function cpnOpen(){return lzCall('boxes','cpnOpen',arguments);}
@@ -5989,7 +5989,10 @@ function stepLeader(){if(camp==='zombie')return zgOpen();const C=CAMPS[camp],BGS
   fitR();addEventListener('resize',fitR);
   const ok=()=>{if(spin)return;if(k===RI)return roll();if(bgLock(BGS[k]))return gxSfx('lock');gxSfx('coin');bg=k;stepSetup();};
   // 금테가 명단 순서대로 한 칸씩 돌며 점점 느려지다가, 미리 뽑아 둔 사람의 칸에서 정확히 멈춘다(마지막에 건너뛰지 않는다)
-  const roll=()=>{if(!pool.length)return;spin=true;root.classList.add('spin');const L=pool.length,fi=Math.floor(Math.random()*L),s0=Math.floor(Math.random()*L),
+  const roll=()=>{if(!pool.length)return;spin=true;root.classList.add('spin');
+    // 도는 동안 오른쪽 단추가 그대로 '운에 맡긴다'로 남아 다시 누를 수 있어 보였다. 멈출 때(draw) 새 인물 설명으로 바뀐다
+    {const b=info.querySelector('.gx-ok');if(b){b.disabled=true;b.textContent='고르는 중…';}}
+    const L=pool.length,fi=Math.floor(Math.random()*L),s0=Math.floor(Math.random()*L),
       N=L*Math.max(1,Math.ceil(16/L))+((fi-s0+L)%L)+1,seq=[];
     for(let s=0;s<N;s++){const r=N>1?s/(N-1):1;seq.push([pool[(s0+s)%L],34+Math.pow(r,3)*400]);}
     let t=0;seq.forEach(([i,dl],s)=>{t+=dl;setTimeout(()=>{if(!root.isConnected)return;const end=s===seq.length-1;
@@ -6569,7 +6572,7 @@ const ADVN0=['비서실장','정무수석'];
 // 튜토리얼: 커리어마다 처음 한 번씩만 뜨는 짧은 안내. 홈에서 켜고 끌 수 있다.
 const TIPS={
  choose:['선택하는 법','선택지 아래 <b>지표 이름과 화살표</b>는 그 선택이 움직이는 지표다. <b style="color:#2a6e4b">초록</b> 화살표는 나라에 좋은 변화, <b style="color:#a8321f">빨강</b>은 나쁜 변화. <b>지금 급한 문제</b>를 겨냥하는 지표에는 형광펜 밑줄이 그어지고, 그런 선택일수록 오른쪽 <b>성공 확률</b>이 높다. 막대는 대성공·성공·실패·대실패의 비율이다. <b>승부수</b>는 크게 얻거나 크게 잃고, <b>안전책</b>은 크게 틀리지 않는다. 고민되면 선택지 바로 위에 모인 조언과 ★표시를 참고하자.'],
- result:['결과 읽는 법','칩은 이번 선택으로 바뀐 지표와 그 크기다. 아래 <b>판정에 영향을 준 것</b>을 보면 왜 성공했는지, 왜 실패했는지 알 수 있다.'],
+ result:['결과 읽는 법','칩은 이번 선택으로 바뀐 지표와 그 크기다. 위쪽 지표 칸의 변화에는 그사이 흐른 시간(감염 확산 · 지지율 하락 등)까지 더해져 칩과 조금 다를 수 있다. 아래 <b>판정에 영향을 준 것</b>을 보면 왜 성공했는지, 왜 실패했는지 알 수 있다.'],
  reroll:['운명 개입','실패나 대실패가 나오면 보라색 버튼으로 <b>한 번 더 굴릴 수</b> 있다. 횟수가 적으니 정말 중요한 순간에 쓰자.'],
  board:['특별 국정 과제','한 해를 시작하기 전에 큰일을 하나 벌일 수 있다. <b>조건을 채운 칸만 색이 들어온다.</b> 회색 칸도 무엇이고 무엇이 모자란지 보인다. 어떤 과제는 선택지 대신 <b>직접 경기를 치러야</b> 한다.'],
  council:['인사의 시간','해마다 결산 뒤 곁에 둘 사람을 고른다. 나라가 잘하는 분야일수록 거물이 찾아오지만, 거물일수록 <b>대가</b>가 있고 기대에 못 미치면 <b>떠난다</b>. 전설은 정말 잘 다스린 해에만 드물게 오고, 많아야 2년 머문다. 가끔은 이름 모를 사람이 찾아오기도 한다. 후보 카드의 버튼을 누르면 그 자리 사람과 바뀐다.'],
@@ -7121,17 +7124,20 @@ function leadWhy(F){if(!F)return '';const w=[F.d>=4?'권력을 모은 통치':F.
    [F.crush>0,'강제 진압'],[F.mil>=75,'강한 군'],[F.bw>=2&&F.bw>F.bl,'승부수가 통함'],[F.bl>=2&&F.bl>F.bw,'무리수가 잦음'],[F.cor>=45,'부패의 그늘'],[F.war,'전쟁을 겪음'],
    [F.pr,F.pr+' 우선']];
   for(const [ok,t] of c){if(w.length>=3)break;if(ok)w.push(t);}return w.join(' · ');}// 커리어 점수: 상한 없이 이룬 것은 더하고 무너진 것은 뺀다. 모든 항목이 정수라 합계도 정수다.
-// 임기 점수가 가장 크고, 임기가 거듭될수록 1 · 0.7 · 0.45 · 0.3 · 0.2배로 줄어든다. 아주 잘한 긴 커리어여야 10,000점 언저리에 닿는다.
+// 임기 점수가 가장 크고, 임기가 거듭될수록 1 · 0.7 · 0.45 · 0.3 · 0.2배로 줄어든다(조선은 1 · 0.6 · 0.3 · 0.15배). 아주 잘한 긴 커리어여야 10,000점 언저리에 닿는다.
+// 조선은 민심만 지키면 개헌(−500)도 선거도 없이 치세를 이어 가서, 같은 4임기여도 다른 나라보다 2,000점 넘게 앞섰다.
+// 그래서 조선만 두 번째 치세부터 비율을 더 빨리 줄인다(첫 치세는 그대로라 한 번만 하는 사람의 점수는 바뀌지 않는다)
+const TERMW_J=[1,.6,.3,.15];
 const TERMW=[1,.7,.45,.3,.2],GRADEPT={S:500,A:300,B:150,C:0,D:-150,F:-300},TIERPT=[40,5,-15,-50],
   EXITPT={retire:600,served:400,limit:300,lost:0,defeated:-100,lifelong:-300,quit:-500,ousted:-800,deposed:-800,medfail:-800,ecofail:-800,amendfail:-1000,coupfail:-1500,purged:-800,defeat:-600},
   TROX=new Set(['coup','coupfail','coupx','selfcoup','martial']);   // 헌정을 무너뜨린 기록은 더 크게 뺀다
 function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if(v)it.push([n,v,note||'']);return v;},jo=CP.id==='joseon';
-  let perf=0;CAR.terms.forEach((t,i)=>{const w=TERMW[Math.min(i,TERMW.length-1)],s=Math.round(cl(t.sc));
+  let perf=0;const TW=jo?TERMW_J:TERMW;CAR.terms.forEach((t,i)=>{const w=TW[Math.min(i,TW.length-1)],s=Math.round(cl(t.sc));
     perf+=add((jo?(i+1)+'번째 치세':(i+1)+'기')+' · '+t.g+'등급',(s*30+(GRADEPT[t.g]||0))*w,'임기 점수 '+s+'×30'+(GRADEPT[t.g]?' '+(GRADEPT[t.g]>0?'+':'−')+Math.abs(GRADEPT[t.g]):'')+(w<1?', ×'+w:''));});
   const wins=CAR.terms.filter(t=>t.elect==='당선'||t.elect==='반정 진압'||t.elect==='쿠데타 진압'||t.elect==='승전'),up=wins.filter(t=>t.winP<50).length;
   const cont=add(jo?'반정 진압':CP.id==='reich'?'승전 · 쿠데타 진압':'선거 승리',wins.length*300+up*200,wins.length+'번'+(up?' (열세를 뒤집은 '+up+'번 +200씩)':''));
   // 판정과 업적·불명예도 그 일이 있었던 임기의 비율(TERMW)을 따른다
-  const tw=k=>TERMW[Math.min(Math.max(0,(k||1)-1),TERMW.length-1)],TT=(CAR.ttT||[]).concat([CAR.tt||[0,0,0,0]]),tt=[0,1,2,3].map(k=>TT.reduce((s,a)=>s+(a[k]||0),0));
+  const tw=k=>TW[Math.min(Math.max(0,(k||1)-1),TW.length-1)],TT=(CAR.ttT||[]).concat([CAR.tt||[0,0,0,0]]),tt=[0,1,2,3].map(k=>TT.reduce((s,a)=>s+(a[k]||0),0));
   add('판정',TT.reduce((s,a,i)=>s+tw(i+1)*a.reduce((q,v,k)=>q+v*TIERPT[k],0),0),TIER.map((T,k)=>T.n+' '+tt[k]).join(' · '));
   const tro=CAR.tro||[],sp=t=>/^sp_/.test(t.id),gN=tro.filter(t=>t.g&&!sp(t)).length,gS=tro.filter(t=>t.g&&sp(t)).length,
     bX=tro.filter(t=>!t.g&&TROX.has(t.id)).length,bS=tro.filter(t=>!t.g&&sp(t)).length,bN=tro.length-gN-gS-bX-bS;

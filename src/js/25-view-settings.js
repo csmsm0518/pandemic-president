@@ -327,7 +327,10 @@ function stepLeader(){if(camp==='zombie')return zgOpen();const C=CAMPS[camp],BGS
   fitR();addEventListener('resize',fitR);
   const ok=()=>{if(spin)return;if(k===RI)return roll();if(bgLock(BGS[k]))return gxSfx('lock');gxSfx('coin');bg=k;stepSetup();};
   // 금테가 명단 순서대로 한 칸씩 돌며 점점 느려지다가, 미리 뽑아 둔 사람의 칸에서 정확히 멈춘다(마지막에 건너뛰지 않는다)
-  const roll=()=>{if(!pool.length)return;spin=true;root.classList.add('spin');const L=pool.length,fi=Math.floor(Math.random()*L),s0=Math.floor(Math.random()*L),
+  const roll=()=>{if(!pool.length)return;spin=true;root.classList.add('spin');
+    // 도는 동안 오른쪽 단추가 그대로 '운에 맡긴다'로 남아 다시 누를 수 있어 보였다. 멈출 때(draw) 새 인물 설명으로 바뀐다
+    {const b=info.querySelector('.gx-ok');if(b){b.disabled=true;b.textContent='고르는 중…';}}
+    const L=pool.length,fi=Math.floor(Math.random()*L),s0=Math.floor(Math.random()*L),
       N=L*Math.max(1,Math.ceil(16/L))+((fi-s0+L)%L)+1,seq=[];
     for(let s=0;s<N;s++){const r=N>1?s/(N-1):1;seq.push([pool[(s0+s)%L],34+Math.pow(r,3)*400]);}
     let t=0;seq.forEach(([i,dl],s)=>{t+=dl;setTimeout(()=>{if(!root.isConnected)return;const end=s===seq.length-1;
