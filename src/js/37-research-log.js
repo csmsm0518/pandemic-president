@@ -3,7 +3,7 @@ const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDF
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
 const GAME_VER='v3.9';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
-// 참가자 정보: 이 창을 닫으면 사라진다(같은 기기를 여러 사람이 쓰므로 브라우저에 저장하지 않는다)
+// 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
 const NM={i:'확산',m:'의료',a:'지지율',e:'경제',p:'행정권한',c:'유착',u:'갈등',chk:'견제',trn:'투명성',saf:'안전망',mil:'군사'};
 const PRI={i:[-1,'방역'],e:[1,'경제'],a:[1,'여론'],m:[1,'의료'],saf:[1,'복지'],u:[-1,'사회 통합']};
@@ -131,16 +131,16 @@ function bindIntro(){const $=id=>document.getElementById(id),err=$('pfErr');
       if(bad){err.textContent=bad[1];err.style.display='block';try{$(bad[0]).focus();}catch(e){}return;}
       PF={school:school,name:name,phone:phone,agree:true};}
     err.style.display='none';NICK=nick||'익명';PINH='';   // 저장 비밀번호는 판마다 게임 안에서 건다
-    // 같은 기기에서는 다음 판부터 인적사항을 그대로 채워 둔다
-    try{localStorage.setItem(PF_KEY,JSON.stringify({school:PF.school,nick:nick}));}catch(e){}
+    // 같은 기기에서는 다음 판부터 인적사항을 그대로 채워 둔다(다른 사람이면 첫 화면의 '내가 아니에요 · 지우기')
+    try{localStorage.setItem(PF_KEY,JSON.stringify({school:PF.school,name:PF.name,nick:nick,agree:PF.agree?1:0}));}catch(e){}
     try{aInit();SFX.coin();}catch(e){}viewSetup(hub);};
-  // 지난번 인적사항 채우기
+  // 지난번 인적사항 채우기: 이 창에서 이미 적었으면 그것(전화번호 포함), 아니면 이 기기에 남은 것
   let mem=null;try{mem=JSON.parse(localStorage.getItem(PF_KEY)||'null');}catch(e){}
-  // 예전 판이 이름·전화번호까지 남겨 두었으면 지금 지운다
-  if(mem&&(mem.name||mem.phone||mem.agree)){try{localStorage.setItem(PF_KEY,JSON.stringify({school:mem.school||'',nick:mem.nick||''}));}catch(e){}}
-  if(mem&&(mem.school||mem.nick)){if($('pfSchool'))$('pfSchool').value=mem.school||'';$('nick').value=mem.nick||'';
-    const box=$('pfMem');box.style.display='flex';box.innerHTML='<span>지난번에 적은 학교와 닉네임을 채워 두었어요. 이름과 동의는 같은 기기를 쓰는 다른 사람을 위해 매번 새로 받아요.</span><button id="pfClear">내가 아니에요 · 지우기</button>';
-    $('pfClear').onclick=()=>{try{localStorage.removeItem(PF_KEY);}catch(e){}['pfSchool','pfName','pfPhone','nick'].forEach(id=>{if($(id))$(id).value='';});if($('pfAgree'))$('pfAgree').checked=false;box.style.display='none';};}}
+  if(PF.name)mem={school:PF.school,name:PF.name,phone:PF.phone,nick:NICK==='익명'?'':NICK,agree:PF.agree};
+  if(mem&&(mem.school||mem.name||mem.nick)){const set=(id,v)=>{if($(id))$(id).value=v||'';};
+    set('pfSchool',mem.school);set('pfName',mem.name);set('pfPhone',mem.phone);set('nick',mem.nick);if($('pfAgree'))$('pfAgree').checked=!!mem.agree;
+    const box=$('pfMem');box.style.display='flex';box.innerHTML='<span>지난번에 적은 정보를 채워 두었어요. 그대로 <b>다음</b>을 누르면 돼요.</span><button id="pfClear">내가 아니에요 · 지우기</button>';
+    $('pfClear').onclick=()=>{try{localStorage.removeItem(PF_KEY);}catch(e){}PF={school:'',name:'',phone:'',agree:false};['pfSchool','pfName','pfPhone','nick'].forEach(id=>{if($(id))$(id).value='';});if($('pfAgree'))$('pfAgree').checked=false;box.style.display='none';};}}
 const PF_KEY='pandemic_pf_v1';
 // 인적사항 다음 화면: 가이드북과 게임 시작
 // 이스터에그: 특별한 닉네임을 넣으면 인사말이 바뀐다(일부는 비밀 무대를 연다)
