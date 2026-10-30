@@ -362,3 +362,7 @@ button:hover{border-color:var(--gold)}
 .pf-acc-me b{color:var(--text-primary)}
 .pf-acc .pri{width:100%;padding:16px;font-size:16px}
 .pf-acc-sw{text-align:center;margin-top:14px;font-size:12px}
+/* 결산 화면: 기록 카드 공유 · 사진으로 저장(두 칸) */
+.cd-btns{display:grid;grid-template-columns:1.25fr 1fr;gap:8px;margin-bottom:8px}
+.cd-btns button{display:flex;align-items:center;justify-content:center;gap:7px;padding:14px 8px;font-size:14.5px;font-weight:700;white-space:nowrap}
+.cd-btns svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}

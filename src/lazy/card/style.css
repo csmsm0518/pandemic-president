@@ -1,0 +1,29 @@
+/* ---------- 기록 카드 창: 소리 · 불러오기 창(.sndp)과 같은 종이 창. 위에 카드 미리 보기, 가운데 디자인 고르기, 아래 공유 · 저장 ---------- */
+.sndp.cd{width:min(460px,100%);max-height:calc(100vh - 24px);max-height:calc(100svh - 24px);overflow-y:auto;overscroll-behavior:contain}
+.cd-pv{position:relative;margin:4px 0 12px;border-radius:10px;overflow:hidden;background:var(--surface-1);box-shadow:inset 0 0 0 1px var(--border)}
+.cd-pv img{display:block;width:100%;aspect-ratio:4/5;object-fit:contain;-webkit-touch-callout:default;user-select:auto}
+.cd-pv img.st{aspect-ratio:9/16;max-height:62vh;max-height:62svh;margin:0 auto;width:auto}
+.cd-wait{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text-muted);background:var(--surface-1)}
+/* 디자인 고르기: 네 칸, 칸마다 그 디자인의 색 견본 */
+.cd-th{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:10px}
+.cd-th button{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;padding:8px 2px 7px;font-size:12px;font-weight:600;border-radius:9px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cd-th button[aria-checked="true"]{border-color:var(--gold);background:#fbf4e1;color:var(--text-primary);box-shadow:inset 0 0 0 1px var(--gold)}
+.cd-sw{display:block;width:34px;height:42px;border-radius:5px;box-shadow:0 0 0 1px rgba(0,0,0,.12)}
+.cd-sw-hanji{background:linear-gradient(#f6efe1,#ebe1cf);box-shadow:inset 0 0 0 2px #a8832f,0 0 0 1px rgba(0,0,0,.1)}
+.cd-sw-night{background:radial-gradient(circle at 50% 35%,rgba(241,213,137,.55),transparent 55%),linear-gradient(#1d1912,#0a0907)}
+.cd-sw-news{background:linear-gradient(#1d1b18 0 4px,#f3efe4 4px 7px,#1d1b18 7px 8px,#f3efe4 8px);box-shadow:inset 0 -12px 0 -6px #b3261e,0 0 0 1px rgba(0,0,0,.12)}
+.cd-sw-poster{background:linear-gradient(135deg,#3d5a80,#1b2a3d)}
+.cd-fmt{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.cd-fmt button{padding:9px;font-size:13px;font-weight:600;border-radius:9px;color:var(--text-secondary)}
+.cd-fmt button[aria-checked="true"]{border-color:var(--gold);background:#fbf4e1;color:var(--text-primary);box-shadow:inset 0 0 0 1px var(--gold)}
+.cd-go{width:100%;padding:14px;font-size:15px}
+/* 공유: 네 칸 둥근 단추(카카오 노랑 · 인스타 무지개는 그 앱의 색) */
+.cd-sh{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:2px 0 6px}
+.cd-sh button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 2px;border:0;background:none;font-size:12px;font-weight:600;color:var(--text-secondary);min-width:0}
+.cd-sh i{display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:var(--surface-1);color:var(--text-primary);box-shadow:inset 0 0 0 1px var(--border)}
+.cd-sh i svg{width:26px;height:26px}
+.cd-sh .cd-k i{background:#fee500;color:#191919;box-shadow:none}
+.cd-sh .cd-i i{background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%);color:#fff;box-shadow:none}
+.cd-sh button span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.cd-tip{margin:8px 0 0;font-size:12px;line-height:1.6;color:var(--text-muted)}
+.cd-tip b{color:var(--text-secondary)}

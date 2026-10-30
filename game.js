@@ -1,9 +1,10 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"bd9735212d","h":"f87737383d4b62a2"},"boxes":{"v":"ae544c3fad","h":"90cc2bc64ec1e74e"},"dex":{"v":"2a6897149d","h":"10d66cd2c1d2e3d2"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"ce0c046f9a","h":"6c15b2654d831ca0"},"sail":{"v":"52843663ea","h":"8feef78866c4c88b"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"05c38e8117","h":"cbc2e48319ab51e8"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
+const LZ_M={"board":{"v":"bd9735212d","h":"f87737383d4b62a2"},"boxes":{"v":"ae544c3fad","h":"90cc2bc64ec1e74e"},"card":{"v":"b4e1414c39","h":"bf99000166e4dace"},"dex":{"v":"2a6897149d","h":"10d66cd2c1d2e3d2"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"ce0c046f9a","h":"6c15b2654d831ca0"},"sail":{"v":"52843663ea","h":"8feef78866c4c88b"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"05c38e8117","h":"cbc2e48319ab51e8"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
 function sugOpen(){return lzCall('boxes','sugOpen',arguments);}
 function cpnOpen(){return lzCall('boxes','cpnOpen',arguments);}
+function cardOpen(){return lzCall('card','cardOpen',arguments);}
 function dexScene(){return lzCall('dex','dexScene',arguments);}
 function mgWar(){return lzCall('games','mgWar',arguments);}
 function simWar(){return lzCall('games','simWar',arguments);}
@@ -7178,6 +7179,12 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   const summary=(CP.id==='kr'?'팬데믹 대통령':'팬데믹 대통령 DLC · '+CP.n)+' — '+NICK+'의 인생\n'+(CAR.bgx||CAR.bg+' 출신')+' · '+CAR.term+'선 · '+years+'년 재임 ('+CAR.age0+'–'+age1+'세)\n겪은 위기: '+CAR.terms.map(t=>t.scenario).join(' → ')+'\n결말: '+(EXH[kind]||kind)+'\n닮은 지도자: '+L.n+' ('+L.k+')\n임기별 평가: '+tg+'\n업적 '+good+' · 불명예 '+badN+'\n커리어 점수 '+csc+'점 (임기 '+SC.perf+' · 선거 '+SC.cont+' · 업적과 그 밖의 것 '+SC.honor+')';
   // 리더보드에 갔다가 돌아오면 이 화면을 다시 그린다
   const bt=CAR.terms.reduce((a,t)=>!a||t.sc>a.sc?t:a,null);
+  // 기록 카드(lazy/card): 사진 한 장에 들어갈 것만 추린다
+  const now=new Date(),jo=CP.id==='joseon';
+  const CARD={who:NICK+' '+CP.role+'의 인생',bg:CAR.bgx||CAR.bg+' 출신',stageTag:CP.id==='kr'?'대한민국':CP.tag+' · '+CP.n,ending:EXH[kind]||kind,
+    sub:jo?CAR.term+'번의 치세 · '+years+'년':CAR.term+'선 · '+years+'년 재임',age:CAR.age0+'세 취임 → '+age1+'세',scen:CAR.terms.map(t=>t.scenario).join(' → '),
+    grades:CAR.terms.map(t=>[jo?'치세'+t.term:t.term+'기',t.g]),best:(bt||{g:'-'}).g,L:{n:L.n,k:L.k,col:L.col,era:L.era},good:good,bad:badN,score:csc,newBest:newBest,
+    date:now.getFullYear()+'.'+String(now.getMonth()+1).padStart(2,'0')+'.'+String(now.getDate()).padStart(2,'0')};
   const medalH=(bt?'<div class="chr-md" aria-hidden="true"><svg viewBox="0 0 70 34" width="70" height="34"><path d="M18 0H33L38 34H23Z" fill="#a8321f"/><path d="M52 0H37L32 34H47Z" fill="#2f4a6b"/></svg><div class="disc"><b>'+bt.g+'</b><span>최고 임기</span></div></div>':'');
   const show=first=>{window.scrollTo(0,0);
   R.innerHTML='<div style="animation:fdIn .45s ease-out">'+
@@ -7208,7 +7215,10 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
    '<button id="again" style="width:100%;margin-bottom:8px;padding:14px;font-weight:600;background:#2f4a6b;border-color:#2f4a6b">새 인생 시작</button>'+
    (god?'<p style="margin:0 0 8px;padding:12px;border-radius:10px;font-size:13px;line-height:1.6;text-align:center;color:var(--text-secondary);border:1px dashed var(--border)">⚡ 데우스 엑스 마키나의 판은 명예의 전당과 이 기기의 기록에 남지 않는다.</p>':
    '<button id="lbMine" style="display:block;width:100%;margin-bottom:8px;padding:13px;border-radius:10px;font-size:14px;font-weight:600;color:#8f6a12;border:1px solid rgba(143,106,18,.45);background:rgba(143,106,18,.08)">명예의 전당에서 내 순위 보기</button>')+
-   '<button id="cp" style="width:100%;font-size:13px">결과 복사하기</button></div>';
+   // 기록 카드: 공유(카카오톡 · 인스타 스토리 · 다른 앱) · 사진으로 저장. 둘 다 같은 카드 창을 열고, 디자인 넷 가운데 고른다
+   '<div class="cd-btns"><button id="cdShareBtn" class="pri"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>기록 카드 공유</button>'+
+     '<button id="cdSaveBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>사진으로 저장</button></div>'+
+   '<button id="cp" style="width:100%;font-size:13px">결과 글 복사하기</button></div>';
   // 두루마리 펼침과 점수 올라가기(처음 그릴 때만)
   const openChr=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{const c=document.getElementById('chr');if(c)c.classList.add('open');}));
   let counted=!first;const runScore=()=>{if(counted)return;counted=true;setTimeout(()=>{const el=document.getElementById('scn');if(el)countUp(el,csc,1400);},400);};
@@ -7217,7 +7227,9 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   document.getElementById('again').onclick=()=>{SFX.click();home();};
   if(document.getElementById('rhine'))document.getElementById('rhine').onclick=()=>{SFX.click();rhineGo();};
   if(!god)document.getElementById('lbMine').onclick=()=>{SFX.click();openBoard({back:()=>show(false),id:RUN.id,nick:NICK});};
-  document.getElementById('cp').onclick=function(){copyText(summary,this);};};
+  document.getElementById('cp').onclick=function(){copyText(summary,this);};
+  document.getElementById('cdShareBtn').onclick=function(){SFX.click();cardOpen(CARD,'share');};
+  document.getElementById('cdSaveBtn').onclick=function(){SFX.click();cardOpen(CARD,'save');};};
   show(false);
   // 화면을 꽉 채운 엔딩 장면: 결말 → 닮은 지도자 → 연대기 → 커리어 점수. 마지막 버튼을 누르면 자세한 결과 화면이 보인다.
   let scored=false;SFX.ending(kind);
