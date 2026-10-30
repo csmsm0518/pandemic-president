@@ -1669,7 +1669,7 @@ html[data-ori="p"] .gcn .cn-cand .cn-sp{font-size:12px;padding:6px 9px}
 .kg-why i{font-style:normal;padding:2px 9px;border-radius:999px;background:rgba(190,40,28,.25);box-shadow:inset 0 0 0 1px rgba(255,120,90,.38);color:#ffc9b8}
 .kg-fx>span:not(.kg-fx-k){padding:2px 8px;border-radius:6px;background:rgba(255,255,255,.05)}
 .kg-fx b{font-size:10.5px;letter-spacing:-.5px}.kg-fx b.u{color:#86deb2}.kg-fx b.d{color:#ff8d7c}
-.kg-stake{margin:12px 0 0;padding:10px 12px;border-left:3px solid #d0331f;border-radius:0 8px 8px 0;background:rgba(0,0,0,.32);font-size:13.5px;line-height:1.6;color:#f1e4d0}
+.kg-stake{margin:12px 0 0;padding:10px 12px;border-radius:10px;background:linear-gradient(180deg,rgba(150,24,14,.28),rgba(0,0,0,.3));box-shadow:inset 0 0 0 1px rgba(255,110,80,.28);font-size:13.5px;line-height:1.6;color:#f1e4d0}
 .kg-stake b{color:#ffb49c}
 .kg-mg{margin-top:10px;padding:10px 12px;border-radius:10px;background:linear-gradient(90deg,rgba(217,164,65,.24),rgba(217,164,65,.05));box-shadow:inset 0 0 0 1px rgba(217,164,65,.5);font-size:13px;line-height:1.55;color:#f2dfb4}
 .kg-mg b{color:#ffd98a}
