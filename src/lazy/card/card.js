@@ -1,12 +1,15 @@
 /* ---------- 기록 카드: 커리어 결과를 사진 한 장으로(공유 · 저장) ----------
    결산 화면의 '기록 카드 공유'와 '사진으로 저장'이 연다(32-career-end.js가 cardOpen(D, 'share' | 'save')를 부른다).
-   카드는 캔버스로 그린다. 기본은 1080×1350(4:5, 카톡 · 피드)이고, 인스타 스토리는 1080×1920(9:16) 한가운데에 같은 카드를 두고
-   위아래(스토리 화면의 글자 · 단추가 덮는 자리)에는 짧은 글만 둔다.
+   카드는 캔버스로 그린다. 기본은 1080×1350(4:5, 카톡 · 피드)이고, 인스타 스토리는 1080×1920(9:16)에 같은 카드를 조금 줄여 올리고
+   그 아래에 게임으로 오는 QR 코드를 둔다(웹에서는 스토리에 링크 스티커를 자동으로 붙일 수 없어서). 인스타 단추는 게임 주소도 복사해 두어
+   스토리 편집 화면에서 '스티커 → 링크'에 붙여 넣기만 하면 되게 한다.
    디자인 넷: 한지(기본) · 집무실의 밤 · 호외 · 포스터. 고른 디자인은 이 기기에 기억한다(MEM.cardTh).
    공유: 휴대폰은 사진 파일을 붙여 운영체제 공유 창을 연다(카카오톡 · 인스타그램이 그 창에 있다. 인스타는 '스토리'를 고르면 된다).
    공유 창이 없는 PC는 사진을 내려받고 결과 글을 복사한다. */
 const CD_TH=[['hanji','한지'],['night','집무실의 밤'],['news','호외'],['poster','포스터']];
 const CD_URL='csmsm0518.github.io/pandemic-president';
+// 게임 주소(https://csmsm0518.github.io/pandemic-president/)의 QR 코드(오류 정정 M, 33×33). 주소가 늘 같으므로 미리 만들어 둔다(python qrcode)
+const CD_QR=["111111101100000010111011101111111","100000101110001001001111101000001","101110100101011010111010101011101","101110101000000100100011101011101","101110100100100010100010101011101","100000100000010110000010101000001","111111101010101010101010101111111","000000001101000111010001100000000","101101110011101101101110001001011","100100000001110011011111001101101","001110110101010010100011101111011","001110000010100101010011011101000","010000101001001010011000110011010","000101011111111001001000100100110","001110111011001000111000001011000","111001010010110100000110011101100","001011101101110000101101111011100","111100000111011110001101111011011","110011100110010110101010010110110","011001010111001111110011111010001","010000111000101110010011000101100","100101001111001110001101011000001","000011111001100100011001101100011","010001011001111100001000001101001","101101100101101001110001111110011","000000001101001110010111100011000","111111101110010001110101101010000","100000101111101101111001100011101","101110100110000111110011111110110","101110101110001011010111100100011","101110101000101111001100111101000","100000100010100001001001101111001","111111101111110011110111001010100"];
 const CD_SERIF='"Noto Serif KR","Apple Myungjo",serif',CD_SANS='"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic",sans-serif';
 let CD_D=null,CD_MODE='share',CD_FMT='card',CD_IMG={};   // CD_IMG: 디자인 · 판형마다 그린 그림(다시 그리지 않게)
 const cdTh=()=>CD_TH.some(t=>t[0]===MEM.cardTh)?MEM.cardTh:'hanji';
@@ -49,19 +52,28 @@ function cdFiber(c,W,H,col,n,seed){let s=seed||7;const r=()=>{s=(s*16807)%214748
   for(let i=0;i<n;i++){const x=r()*W,y=r()*H,l=6+r()*22,a=r()*6.28;c.globalAlpha=.05+r()*.08;c.beginPath();c.moveTo(x,y);c.lineTo(x+Math.cos(a)*l,y+Math.sin(a)*l);c.stroke();}c.restore();}
 function cdMix(hex,k,to){const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),a=p(hex),b=p(to||'#000000');return 'rgb('+a.map((v,i)=>Math.round(v+(b[i]-v)*k)).join(',')+')';}
 const cdSc=n=>Number(n).toLocaleString('ko-KR');
-// 스토리 판형: 카드 위아래 빈자리에 넣는 짧은 글
-function cdStoryText(c,W,H,col,sub){if(H<=1350)return;const oy=(H-1350)/2;
-  cdText(c,'나의 인생 결과',W/2,oy*.62,{s:44,w:'800',f:CD_SERIF,c:col,a:'center'});
-  cdText(c,'팬데믹 대통령에서 당신도 한 번의 인생을',W/2,H-oy*.62,{s:34,w:'600',c:sub,a:'center'});
-  cdText(c,CD_URL,W/2,H-oy*.62+52,{s:28,w:'500',c:sub,a:'center'});}
-
+function cdQR(c,x,y,sz){const n=CD_QR.length,m=sz/(n+4);c.fillStyle='#fff';cdRound(c,x,y,sz,sz,sz*.06);c.fill();c.fillStyle='#111';
+  CD_QR.forEach((r,i)=>{for(let j=0;j<n;j++)if(r[j]==='1')c.fillRect(Math.floor(x+(j+2)*m),Math.floor(y+(i+2)*m),Math.ceil(m),Math.ceil(m));});}
+// 인스타 스토리 판형: 카드를 흐리게 깐 바탕 위에 카드를 82%로 올리고, 아래에 QR 판. 맨 위 · 맨 아래는 스토리 화면의 글자 · 단추가 덮으므로 비운다
+function cdStory(card){const cv=document.createElement('canvas');cv.width=1080;cv.height=1920;const c=cv.getContext('2d'),W=1080,H=1920;
+  c.save();c.filter='blur(36px) brightness(.55) saturate(1.1)';c.drawImage(card,-W*.25,0,W*1.5,H);c.restore();c.fillStyle='rgba(0,0,0,.18)';c.fillRect(0,0,W,H);
+  const k=.82,cw=W*k,ch=1350*k,x=(W-cw)/2,y=236;
+  cdText(c,'나의 인생 결과',W/2,y-36,{s:40,w:'800',f:CD_SERIF,c:'#fff',a:'center'});
+  c.save();c.shadowColor='rgba(0,0,0,.45)';c.shadowBlur=40;c.shadowOffsetY=14;cdRound(c,x,y,cw,ch,22);c.fillStyle='#000';c.fill();c.restore();
+  c.save();cdRound(c,x,y,cw,ch,22);c.clip();c.drawImage(card,x,y,cw,ch);c.restore();
+  // QR 판: 흰 바탕 둥근 상자에 QR과 안내
+  const py=y+ch+36,pw=cw,ph=200;c.save();c.shadowColor='rgba(0,0,0,.3)';c.shadowBlur=24;cdRound(c,x,py,pw,ph,22);c.fillStyle='#fff';c.fill();c.restore();
+  cdQR(c,x+18,py+18,ph-36);
+  cdText(c,'카메라로 찍으면 바로 시작',x+ph+14,py+76,{s:36,w:'800',c:'#1d1b18'});
+  cdText(c,'팬데믹 대통령 · 한 번의 인생, 한 나라의 운명',x+ph+14,py+122,{s:24,w:'600',c:'#55504a'});
+  cdText(c,CD_URL,x+ph+14,py+160,{s:22,w:'500',c:'#8a7f6d'});
+  return cv;}
 /* ----- 디자인 1 · 한지: 게임의 종이 화면을 그대로. 금 테두리 두 겹, 붉은 낙관 도장 ----- */
 function cdHanji(c,W,H,D,im){const oy=(H-1350)/2;
   const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#f6efe1');g.addColorStop(1,'#ebe1cf');c.fillStyle=g;c.fillRect(0,0,W,H);
   cdFiber(c,W,H,'#8a6a24',900,11);
   const vg=c.createRadialGradient(W/2,H/2,H*.35,W/2,H/2,H*.75);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(90,60,20,.12)');c.fillStyle=vg;c.fillRect(0,0,W,H);
   c.strokeStyle='#a8832f';c.lineWidth=4;c.strokeRect(36,36,W-72,H-72);c.lineWidth=1.5;c.strokeRect(52,52,W-104,H-104);
-  cdStoryText(c,W,H,'#3a332a','#6e675c');
   const y=oy;
   cdText(c,'팬데믹 대통령',96,y+132,{s:30,w:'800',c:'#a8321f',ls:6});
   cdPill(c,D.stageTag,W-96,y+100,{s:24,px:16,c:'#2f4a6b',st:'#2f4a6b',lw:2,a:'right'});
@@ -98,7 +110,6 @@ function cdNight(c,W,H,D,im){const oy=(H-1350)/2;
   c.save();c.translate(W/2,oy+470);for(let i=0;i<18;i++){c.rotate(Math.PI/9);c.beginPath();c.moveTo(0,0);c.lineTo(-90,-1400);c.lineTo(90,-1400);c.closePath();c.fillStyle='rgba(241,213,137,'+(i%2?.035:.06)+')';c.fill();}c.restore();
   const gl=c.createRadialGradient(W/2,oy+470,40,W/2,oy+470,520);gl.addColorStop(0,'rgba(241,213,137,.28)');gl.addColorStop(1,'rgba(241,213,137,0)');c.fillStyle=gl;c.fillRect(0,0,W,H);
   c.strokeStyle='rgba(201,162,74,.55)';c.lineWidth=2;c.strokeRect(40,40,W-80,H-80);
-  cdStoryText(c,W,H,'#f1d589','rgba(239,231,214,.7)');
   const y=oy;
   cdText(c,'팬데믹 대통령 · '+D.stageTag,W/2,y+120,{s:26,w:'700',c:'#c9a24a',a:'center',ls:6});
   cdText(c,D.who,W/2,y+180,{s:36,w:'600',f:CD_SERIF,c:'#efe7d6',a:'center'});
@@ -121,7 +132,6 @@ function cdNight(c,W,H,D,im){const oy=(H-1350)/2;
 /* ----- 디자인 3 · 호외: 게임 속 '위기일보' 신문 1면처럼 ----- */
 function cdNews(c,W,H,D,im){const oy=(H-1350)/2;
   c.fillStyle='#f3efe4';c.fillRect(0,0,W,H);cdFiber(c,W,H,'#3a332a',500,23);
-  cdStoryText(c,W,H,'#1d1b18','#55504a');
   const y=oy,L=70,R=W-70;
   cdText(c,'위기일보',W/2,y+170,{s:118,w:'800',f:CD_SERIF,c:'#1d1b18',a:'center',ls:10});
   c.save();c.translate(R-70,y+96);c.rotate(.08);cdRound(c,-62,-40,124,80,6);c.fillStyle='#b3261e';c.fill();cdText(c,'號外',0,3,{s:44,w:'800',f:CD_SERIF,c:'#fff',a:'center',b:'middle'});c.restore();
@@ -158,7 +168,6 @@ function cdPoster(c,W,H,D,im){const oy=(H-1350)/2,col=D.L.col||'#2f4a6b';
   const g=c.createLinearGradient(0,0,W,H);g.addColorStop(0,cdMix(col,.1));g.addColorStop(1,cdMix(col,.55));c.fillStyle=g;c.fillRect(0,0,W,H);
   c.fillStyle='rgba(255,255,255,.07)';c.beginPath();c.arc(W*.86,oy+300,330,0,6.2832);c.fill();c.beginPath();c.arc(W*.1,H-oy-120,260,0,6.2832);c.fill();
   c.save();c.translate(0,oy+560);c.rotate(-.12);c.fillStyle='rgba(0,0,0,.14)';c.fillRect(-100,0,W+300,190);c.restore();
-  cdStoryText(c,W,H,'#ffffff','rgba(255,255,255,.8)');
   const y=oy,L=84;
   cdText(c,'팬데믹 대통령',L,y+128,{s:34,w:'900',c:'#fff',ls:2});
   cdPill(c,D.stageTag,W-84,y+96,{s:24,px:16,st:'rgba(255,255,255,.8)',c:'#fff',a:'right'});
@@ -183,9 +192,14 @@ function cdPoster(c,W,H,D,im){const oy=(H-1350)/2,col=D.L.col||'#2f4a6b';
 const CD_DRAW={hanji:cdHanji,night:cdNight,news:cdNews,poster:cdPoster};
 // 그림 한 장: 디자인 th, 판형 fmt('card' 1080×1350 · 'story' 1080×1920). 결과는 canvas
 async function cdRender(D,th,fmt){const key=th+':'+fmt;if(CD_IMG[key])return CD_IMG[key];
+  if(fmt==='story')return CD_IMG[key]=cdStory(await cdRender(D,th,'card'));
   await cdFonts(D);const im=await cdPortrait(D.L.n);
-  const cv=document.createElement('canvas');cv.width=1080;cv.height=fmt==='story'?1920:1350;const c=cv.getContext('2d');
+  const cv=document.createElement('canvas');cv.width=1080;cv.height=1350;const c=cv.getContext('2d');
   (CD_DRAW[th]||cdHanji)(c,cv.width,cv.height,D,im);return CD_IMG[key]=cv;}
+// 공유 창은 누른 순간(사용자 동작 안)에 열어야 아이폰 사파리가 막지 않는다. 그래서 고른 디자인의 사진 파일을 창이 열릴 때 미리 만들어 둔다
+let CD_FILE={};
+async function cdPrep(D,th){for(const fmt of ['card','story']){const key=th+':'+fmt;if(CD_FILE[key])continue;
+  const b=await cdBlob(await cdRender(D,th,fmt));if(b)CD_FILE[key]=new File([b],cdName(fmt),{type:'image/png'});}}
 const cdBlob=cv=>new Promise(r=>{try{cv.toBlob(b=>r(b),'image/png');}catch(e){r(null);}});
 const cdName=fmt=>'pandemic-president-'+(fmt==='story'?'story':'card')+'-'+D_STAMP()+'.png';
 const D_STAMP=()=>{const d=new Date();return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');};
@@ -195,7 +209,7 @@ function cdCanFiles(f){try{return !!(navigator.canShare&&navigator.canShare({fil
 function cdDownload(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);}
 const cdIOS=()=>/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 /* ----- 창 ----- */
-function cardOpen(D,mode){CD_D=D;CD_MODE=mode||'share';CD_FMT='card';CD_IMG={};
+function cardOpen(D,mode){CD_D=D;CD_MODE=mode||'share';CD_FMT='card';CD_IMG={};CD_FILE={};
   const old=document.querySelector('.cd-bg');if(old)old.remove();
   const o=document.createElement('div');o.className='sndp-bg cd-bg';
   o.innerHTML='<div class="sndp cd" role="dialog" aria-modal="true" aria-labelledby="cdT"><div class="sndp-h"><span id="cdT">'+(CD_MODE==='save'?'사진으로 저장':'기록 카드 공유')+'</span><button type="button" class="sndp-x" aria-label="닫기">✕</button></div>'+
@@ -208,7 +222,7 @@ function cardOpen(D,mode){CD_D=D;CD_MODE=mode||'share';CD_FMT='card';CD_IMG={};
       '<button type="button" id="cdInsta" class="cd-i"><i aria-hidden="true">'+CD_IC.insta+'</i><span>인스타 스토리</span></button>'+
       '<button type="button" id="cdMore"><i aria-hidden="true">'+CD_IC.more+'</i><span>다른 앱</span></button>'+
       '<button type="button" id="cdCopy"><i aria-hidden="true">'+CD_IC.link+'</i><span>글 · 링크 복사</span></button></div>'+
-      '<p class="cd-tip" id="cdTip">카카오톡 · 다른 앱: 공유 창에서 앱을 고르면 카드 사진과 결과 글이 함께 가요. 인스타 스토리: 공유 창에서 <b>Instagram → 스토리</b>를 고르세요.</p>')+
+      '<p class="cd-tip" id="cdTip">카카오톡 · 다른 앱: 공유 창에서 앱을 고르면 카드 사진과 결과 글이 함께 가요. 인스타 스토리: 공유 창에서 <b>Instagram → 스토리</b>를 고르세요. 게임 주소가 복사되니 스토리에서 <b>스티커 → 링크</b>에 붙여 넣으면 링크가 걸려요.</p>')+
     '</div>';
   document.body.appendChild(o);const $=s=>o.querySelector(s),img=$('#cdImg'),wait=$('#cdWait');
   const x=()=>{try{SFX.back();}catch(e){}o.remove();};let dn=null;
@@ -219,28 +233,38 @@ function cardOpen(D,mode){CD_D=D;CD_MODE=mode||'share';CD_FMT='card';CD_IMG={};
     o.querySelectorAll('.cd-th button').forEach(b=>b.setAttribute('aria-checked',b.dataset.t===th));
     o.querySelectorAll('.cd-fmt button').forEach(b=>b.setAttribute('aria-checked',b.dataset.f===CD_FMT));
     const cv=await cdRender(D,th,CD_MODE==='save'?CD_FMT:'card');if(my!==busy)return;
-    img.src=cv.toDataURL('image/png');img.className=CD_MODE==='save'&&CD_FMT==='story'?'st':'';wait.style.display='none';};
+    img.src=cv.toDataURL('image/png');img.className=CD_MODE==='save'&&CD_FMT==='story'?'st':'';wait.style.display='none';cdPrep(D,th);};
   o.querySelectorAll('.cd-th button').forEach(b=>b.onclick=()=>{try{SFX.click();}catch(e){}MEM.cardTh=b.dataset.t;msave();draw();});
   o.querySelectorAll('.cd-fmt button').forEach(b=>b.onclick=()=>{try{SFX.click();}catch(e){}CD_FMT=b.dataset.f;draw();});
   const tip=(t)=>{const p=$('#cdTip');if(p)p.innerHTML=t;};
-  // 파일을 붙여 공유 창을 연다. 공유 창이 없으면(PC) 내려받고 글을 복사한다
-  const send=async(fmt,how)=>{const cv=await cdRender(D,cdTh(),fmt),b=await cdBlob(cv);if(!b)return tip('사진을 만들지 못했어요. 위 카드를 길게 눌러 저장해 주세요.');
-    const f=new File([b],cdName(fmt),{type:'image/png'}),text=cdShareText(D);
-    if(cdCanFiles(f)){try{await navigator.share(how==='insta'?{files:[f]}:{files:[f],text:text,title:'팬데믹 대통령 — 나의 인생 결과'});return;}catch(e){if(e&&e.name==='AbortError')return;}}
-    cdDownload(b,cdName(fmt));try{await navigator.clipboard.writeText(text);}catch(e){}
-    tip(how==='insta'?'이 기기에서는 인스타그램 공유 창을 열 수 없어서 <b>스토리용 사진(9:16)</b>을 내려받았어요. 휴대폰에서 열면 바로 스토리로 보낼 수 있어요.':
+  // 파일을 붙여 공유 창을 연다. 공유 창이 없으면(PC) 내려받고 글을 복사한다.
+  // 미리 만든 파일이 있으면 기다리지 않고 바로 연다(아이폰은 누른 뒤 시간이 지나면 공유 창을 막는다)
+  const send=async(fmt,how)=>{const key=cdTh()+':'+fmt,text=cdShareText(D),link='https://'+CD_URL+'/';
+    if(how==='insta')try{navigator.clipboard.writeText(link).catch(()=>{});}catch(e){}   // 기다리지 않는다(공유 창을 먼저 연다)
+    const go=f=>navigator.share(how==='insta'?{files:[f]}:{files:[f],text:text,title:'팬데믹 대통령 — 나의 인생 결과'});
+    // 공유 창을 한 번만 연다. 사용자가 닫으면(AbortError) 그대로 끝, 그 밖의 이유로 막히면 아래처럼 내려받기 + 복사로 넘어간다
+    let f=CD_FILE[key];
+    if(!f){const bl=await cdBlob(await cdRender(D,cdTh(),fmt));if(!bl)return tip('사진을 만들지 못했어요. 위 카드를 길게 눌러 저장해 주세요.');f=CD_FILE[key]=new File([bl],cdName(fmt),{type:'image/png'});}
+    if(cdCanFiles(f)){try{await go(f);if(how==='insta')tip(CD_INSTA_TIP);return;}catch(e){if(e&&e.name==='AbortError')return;}}
+    const b=f;
+    cdDownload(b,cdName(fmt));try{await navigator.clipboard.writeText(how==='insta'?link:text);}catch(e){}
+    tip(how==='insta'?'이 기기에서는 인스타그램 공유 창을 열 수 없어서 <b>스토리용 사진(9:16)</b>을 내려받고 게임 주소를 복사했어요. 휴대폰에서 열면 바로 스토리로 보낼 수 있어요.':
       '이 기기에서는 공유 창을 열 수 없어서 <b>카드 사진을 내려받고 결과 글을 복사</b>했어요. 카카오톡 대화방에 사진과 글을 붙여 넣으세요.');};
   if($('#cdKakao'))$('#cdKakao').onclick=()=>{try{SFX.click();}catch(e){}send('card','kakao');};
   if($('#cdInsta'))$('#cdInsta').onclick=()=>{try{SFX.click();}catch(e){}send('story','insta');};
   if($('#cdMore'))$('#cdMore').onclick=()=>{try{SFX.click();}catch(e){}send('card','more');};
-  if($('#cdCopy'))$('#cdCopy').onclick=async()=>{try{SFX.click();}catch(e){}try{await navigator.clipboard.writeText(cdShareText(D));tip('결과 글과 게임 주소를 복사했어요. 원하는 곳에 붙여 넣으세요.');}catch(e){tip('복사하지 못했어요.');}};
-  if($('#cdSave'))$('#cdSave').onclick=async()=>{try{SFX.click();}catch(e){}const cv=await cdRender(D,cdTh(),CD_FMT),b=await cdBlob(cv);if(!b)return;
+  // 복사는 결산 화면의 copyText를 쓴다(클립보드가 막힌 브라우저는 숨은 글 칸으로 복사)
+  if($('#cdCopy'))$('#cdCopy').onclick=()=>{try{SFX.click();}catch(e){}copyText(cdShareText(D),$('#cdCopy span'));tip('결과 글과 게임 주소를 복사했어요. 원하는 곳에 붙여 넣으세요.');};
+  if($('#cdSave'))$('#cdSave').onclick=async()=>{try{SFX.click();}catch(e){}
+    const pre=CD_FILE[cdTh()+':'+CD_FMT];if(pre&&cdIOS()&&cdCanFiles(pre)){try{await navigator.share({files:[pre]});return;}catch(e){if(e&&e.name==='AbortError')return;}}
+    const cv=await cdRender(D,cdTh(),CD_FMT),b=await cdBlob(cv);if(!b)return;
     const f=new File([b],cdName(CD_FMT),{type:'image/png'});
     // 아이폰 사파리는 내려받기가 '파일' 앱으로 가므로, 공유 창의 '이미지 저장'으로 사진첩에 넣는다
     if(cdIOS()&&cdCanFiles(f)){try{await navigator.share({files:[f]});return;}catch(e){if(e&&e.name==='AbortError')return;}}
     cdDownload(b,cdName(CD_FMT));tip('사진을 저장했어요. 앨범이나 다운로드 폴더에서 찾을 수 있어요.');};
   draw();
   try{$('.sndp-x').focus({preventScroll:true});}catch(e){}}
+const CD_INSTA_TIP='게임 주소를 복사해 두었어요. 스토리 편집 화면에서 <b>스티커 → 링크</b>를 누르고 붙여 넣으면 친구가 눌러서 바로 들어올 수 있어요. 사진 아래 QR 코드로도 들어올 수 있어요.';
 const CD_IC={kakao:'<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.9 5.3 4.7 6.7l-1 3.6c-.1.3.3.6.6.4l4.2-2.8c.5.1 1 .1 1.5.1 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg>',
   insta:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>',
   more:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 15V3M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>',
