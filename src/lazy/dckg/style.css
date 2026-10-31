@@ -199,3 +199,32 @@ html.kgd-on,html.kgd-on body{overflow:hidden}
 /* 좁은 화면: 첫 화면 글이 그림 상자보다 길어 위가 잘렸다. 그림 아래로 내리고 그림 끝에 살짝 겹친다 */
 @media(max-width:700px){#kgd .hero .over{position:relative;inset:auto;margin-top:-64px;padding-top:28px;background:linear-gradient(180deg,transparent,#000d 46px,#000e)}}
 @media(max-width:560px){#kgd .topbar{flex-wrap:wrap}#kgd .tb-right{width:100%;justify-content:flex-end}}
+
+/* ---------- 참모 회의(v4.9 쉬운 판): 선택지 = 그 길을 내세우는 참모, 오를(▲) · 내릴(▼) 지표 미리 보기 ---------- */
+#kgd .council{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:4px 2px 2px}
+#kgd .council b{font-family:var(--serif);font-weight:900;font-size:18px;color:var(--gold2);letter-spacing:.04em}
+#kgd .council span{font-size:13px;color:#b9c3d3}
+#kgd .choice.adv{align-items:flex-start}
+#kgd .choice .ab{display:block;flex:1;min-width:0}
+#kgd .choice .who{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+#kgd .av{flex:none;width:30px;height:30px;border-radius:50%;background:var(--red);color:#f6e7d0;display:inline-grid;place-items:center;font-family:var(--serif);font-weight:900;font-size:15px;font-style:normal;box-shadow:inset 0 0 0 2px #0003}
+#kgd .choice .who b{font-size:14px;color:#f3ead6}
+#kgd .choice .who small{font-size:12px;color:#9aa6b8}
+#kgd .acs{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+#kgd .ac{font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;border:1px solid #ffffff22;color:#c9d2e0;background:#ffffff0a;white-space:nowrap}
+#kgd .ac.up{color:#7be0ae;border-color:#7be0ae55;background:#7be0ae14}
+#kgd .ac.dn{color:#ff8b82;border-color:#ff8b8255;background:#ff8b8214}
+#kgd .followed{display:flex;align-items:center;gap:9px;margin-bottom:10px;font-size:14px;color:#6d6250}
+#kgd .followed b{color:#1c1813}
+#kgd .extra.save{border-color:#c9a24a;background:#c9a24a22}
+#kgd .bar{position:relative;overflow:visible}
+#kgd .bar i{overflow:hidden}
+#kgd .bar .goal{position:absolute;left:55%;top:-3px;bottom:-3px;width:2px;border-radius:1px;background:#f3ead6aa;box-shadow:0 0 0 1px #0006}
+#kgd .goals{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:-4px 0 14px;font-size:12px}
+#kgd .goals .gt{color:#c9d2e0;font-weight:700;margin-right:2px}
+#kgd .goals .gt b{color:var(--gold2)}
+#kgd .goals .gc{padding:3px 9px;border-radius:999px;border:1px dashed #ffffff33;color:#9aa6b8;white-space:nowrap}
+#kgd .goals .gc.ok{border-style:solid;border-color:var(--gold);color:var(--gold2);background:#c9a24a1a}
+#kgd .goals .sv{padding:3px 9px;border-radius:999px;background:#2f7d5b33;border:1px solid #2f7d5b88;color:#a6e6c6;white-space:nowrap}
+#kgd .goals .sv.used{background:#ffffff08;border-color:#ffffff22;color:#7d8798}
+#kgd .goals .gh{flex-basis:100%;color:#7d8798;font-size:11px}

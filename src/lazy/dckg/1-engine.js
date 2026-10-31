@@ -21,11 +21,11 @@ const KGD_E = (function () {
     { n: 1, title: '충칭의 첫 겨울', period: '1940.9 – 1941.8',
       intro: '3년의 피난 끝에 닿은 충칭. 빈손으로 임시정부의 불씨를 다시 지펴야 한다.',
       news: ['1940.9 일본·독일·이탈리아, 삼국동맹 체결', '1940.9 일본군, 프랑스령 인도차이나 북부 진주', '1941.4 소련·일본, 중립조약 체결', '1941.6 독일, 소련 침공 개시'],
-      fx: { f: -4, p: -1 }, note: '충칭의 물가는 하루가 다르게 올랐다. 가진 것을 쪼개 쓰는 겨울이 길었다.' },
+      fx: { f: -2, p: -1 }, note: '충칭의 물가는 하루가 다르게 올랐다. 가진 것을 쪼개 쓰는 겨울이 길었다.' },
     { n: 2, title: '선전포고의 해', period: '1941.9 – 1942.8',
       intro: '진주만의 포성이 세계전쟁의 판을 바꾼다. 임시정부도 이름을 걸어야 할 때가 온다.',
       news: ['1941.12.7 일본, 진주만 기습', '1941.12.9 대한민국 임시정부, 대일 선전성명 발표', '1942.2 싱가포르 함락', '1942.6 미드웨이 해전, 일본 해군 대패'],
-      fx: { f: -3, u: -1 },
+      fx: { f: -2, u: -1 },
       cond: [
         { c: ['declared'], fx: { d: 3 }, t: '연합국의 일원이라는 이름이 외교의 문턱을 낮추었다.' },
         { c: ['!declared'], fx: { d: -2 }, t: '선전포고를 하지 않은 임정은 연합국의 시야에서 멀어졌다.' }
@@ -34,13 +34,13 @@ const KGD_E = (function () {
     { n: 3, title: '좌우가 한 지붕 아래', period: '1942.9 – 1943.8',
       intro: '전세는 서서히 기운다. 이제 필요한 것은 하나로 모인 임시정부다.',
       news: ['1942.11 연합군, 북아프리카 상륙', '1943.2 스탈린그라드 독일군 항복', '1943.7 무솔리니 실각', '1943.8 영국군 동남아 사령부, 한국인 요원 요청'],
-      fx: { f: -3, u: -1 },
+      fx: { f: -2, u: -1 },
       cond: [{ c: ['education'], fx: { p: 2 }, t: '세운 학교에서 아이들이 한글을 배운다. 동포의 신뢰가 쌓였다.' }],
       note: '충칭의 세 번째 겨울이 지나가고 있다.' },
     { n: 4, title: '카이로의 약속', period: '1943.9 – 1944.8',
       intro: '“적당한 시기”라는 단서가 붙은 약속. 약속을 현실로 만드는 일은 우리 몫이다.',
       news: ['1943.9 이탈리아, 연합군에 항복', '1943.11 카이로·테헤란 회담', '1944.6 노르망디 상륙작전', '1944.7 사이판 함락, 도조 내각 총사퇴'],
-      fx: { f: -3, u: -1 },
+      fx: { f: -2, u: -1 },
       cond: [{ c: ['burma'], fx: { d: 2 }, t: '인도·미얀마 전선의 공작대가 영국군 사이에서 좋은 평판을 얻고 있다.' }],
       note: '약속은 받았지만, 아직 아무것도 이루어지지 않았다.' },
     { n: 5, title: '광복의 해', period: '1944.9 – 1945.8',
@@ -640,9 +640,10 @@ const KGD_E = (function () {
 
   /* ---------- 게임 상태 ---------- */
   function newGame() {
-    return { st: cp(START), flags: {}, log: [], idx: 0, year: 1, histCount: 0, minStat: 50, over: null, done: false, yearLog: [] };
+    return { st: cp(START), flags: {}, log: [], idx: 0, year: 1, histCount: 0, minStat: 50, over: null, done: false, yearLog: [], saved: null, savedNow: null };
   }
 
+  var SAVE_TO = 10;
   function addFx(tot, fx) { for (var k in fx) tot[k] = (tot[k] || 0) + fx[k]; }
   function applyTotal(S, tot) {
     var old = cp(S.st), k, v;
@@ -650,7 +651,14 @@ const KGD_E = (function () {
     var real = {};
     for (k in S.st) real[k] = S.st[k] - old[k];
     for (k in S.st) { if (S.st[k] < S.minStat) S.minStat = S.st[k]; }
-    for (k in S.st) { if (S.st[k] <= 0 && !S.over) S.over = k; }
+    // 지표가 처음 바닥나면 한 번은 동지들이 버텨 낸다(10으로 되살림). 두 번째부터 임기가 끝난다
+    S.savedNow = null;
+    for (k in S.st) {
+      if (S.st[k] <= 0 && !S.over) {
+        if (!S.saved) { S.saved = k; S.savedNow = k; real[k] += SAVE_TO - S.st[k]; S.st[k] = SAVE_TO; }
+        else S.over = k;
+      }
+    }
     return real;
   }
 
@@ -670,7 +678,7 @@ const KGD_E = (function () {
     var rec = { id: ev.id, ci: ci, label: ch.t, net: net, hist: !!ch.hist, y: ev.y };
     S.log.push(rec);
     S.idx++;
-    return { fx: real, texts: texts, r: ch.r, note: ch.note, hist: !!ch.hist, net: net, over: S.over, rec: rec };
+    return { fx: real, texts: texts, r: ch.r, note: ch.note, hist: !!ch.hist, net: net, over: S.over, saved: S.savedNow, rec: rec };
   }
 
   function yearEnd(S, y) {
@@ -678,7 +686,12 @@ const KGD_E = (function () {
     addFx(tot, Y.fx || {});
     (Y.cond || []).forEach(function (c) { if (condOK(c.c, S)) { addFx(tot, c.fx || {}); texts.push(c.t); } });
     var real = applyTotal(S, tot);
-    return { fx: real, note: Y.note, texts: texts, over: S.over };
+    return { fx: real, note: Y.note, texts: texts, over: S.over, saved: S.savedNow };
+  }
+  // 참모 회의: 지금 상황에서 이 선택을 하면 지표가 실제로 어떻게 바뀌는지(조건부 효과 · 구제까지 그대로 계산해 본다)
+  function preview(S, ev, ci) {
+    var T = cp(S), r = choose(T, ev, ci);
+    return { fx: r.fx, over: r.over, saved: r.saved };
   }
 
   /* ---------- 결말/점수 ---------- */
@@ -711,9 +724,9 @@ const KGD_E = (function () {
   }
   var GRADES = [
     { min: 860, g: 'S', n: '광복의 주석', d: '역사가 기억할 최고의 임기였습니다.' },
-    { min: 740, g: 'A', n: '충칭의 등대', d: '흔들림 없이 임시정부를 이끌었습니다.' },
-    { min: 600, g: 'B', n: '임정의 버팀목', d: '어려운 시대를 훌륭히 견뎌 냈습니다.' },
-    { min: 460, g: 'C', n: '흔들린 주석', d: '시대의 무게에 자주 휘청였습니다.' },
+    { min: 720, g: 'A', n: '충칭의 등대', d: '흔들림 없이 임시정부를 이끌었습니다.' },
+    { min: 560, g: 'B', n: '임정의 버팀목', d: '어려운 시대를 훌륭히 견뎌 냈습니다.' },
+    { min: 420, g: 'C', n: '흔들린 주석', d: '시대의 무게에 자주 휘청였습니다.' },
     { min: 0, g: 'D', n: '꺼져 가는 불씨', d: '불씨는 남았으나 많은 것을 놓쳤습니다.' }
   ];
   function grade(total) { for (var i = 0; i < GRADES.length; i++) if (total >= GRADES[i].min) return GRADES[i]; return GRADES[GRADES.length - 1]; }
@@ -729,7 +742,7 @@ const KGD_E = (function () {
   return {
     STATS: STATS, START: START, YEARS: YEARS, EVENTS: EVENTS, ACH: ACH, GRADES: GRADES, EPILOGUE: EPILOGUE,
     newGame: newGame, choose: choose, yearEnd: yearEnd, eventsOfYear: eventsOfYear, condOK: condOK,
-    POS: 0.6, ending: ending, score: score, grade: grade, order: order, conditionCount: conditionCount, TOTAL_YEARS: TOTAL_YEARS
+    POS: 0.8, preview: preview, ending: ending, score: score, grade: grade, order: order, conditionCount: conditionCount, TOTAL_YEARS: TOTAL_YEARS
   };
 })();
 

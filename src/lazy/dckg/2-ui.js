@@ -92,9 +92,16 @@ function dckgOpen(C) {
     var Y = E.YEARS[year - 1];
     var st = E.STATS.map(function (t) {
       var v = S.st[t.k];
-      return '<div class="stat ' + (v < 25 ? 'low' : '') + '" data-k="' + t.k + '" title="' + t.d + '"><div class="row"><span class="gl">' + t.g + '</span><span class="nm">' + t.n + '</span><span class="v">' + v + '</span></div><div class="bar"><i style="width:' + v + '%"></i></div><span class="delta"></span></div>';
+      return '<div class="stat ' + (v < 25 ? 'low' : '') + '" data-k="' + t.k + '" title="' + t.d + '"><div class="row"><span class="gl">' + t.g + '</span><span class="nm">' + t.n + '</span><span class="v">' + v + '</span></div><div class="bar"><i style="width:' + v + '%"></i>' + (t.k !== 'f' ? '<b class="goal" title="목표 55"></b>' : '') + '</div><span class="delta"></span></div>';
     }).join('');
-    return '<div class="term">' + segs + '</div><div class="term-meta"><span><b>' + year + '년차</b> · ' + esc(Y.title) + '</span><span>' + esc(Y.period) + ' · 결정 ' + S.log.length + '/' + E.EVENTS.length + '</span></div><div class="stats">' + st + '</div>';
+    return '<div class="term">' + segs + '</div><div class="term-meta"><span><b>' + year + '년차</b> · ' + esc(Y.title) + '</span><span>' + esc(Y.period) + ' · 결정 ' + S.log.length + '/' + E.EVENTS.length + '</span></div><div class="stats">' + st + '</div>' + goals();
+  }
+  // 광복 준비도: 결말을 정하는 네 조건(민심 · 외교 · 단합 55, 군사 55 + 독수리 작전)과 남은 위기 구제를 늘 보여 준다
+  function goals() {
+    var G = [['p', '민심 55'], ['d', '외교 55'], ['u', '단합 55'], ['a', '군사 55 · 독수리 작전']], n = 0;
+    var cs = G.map(function (g) { var ok = S.st[g[0]] >= 55 && (g[0] !== 'a' || S.flags.eagle); if (ok) n++; return '<span class="gc' + (ok ? ' ok' : '') + '">' + (ok ? '✓ ' : '') + g[1] + '</span>'; }).join('');
+    return '<div class="goals"><span class="gt">광복 준비도 <b>' + n + '/4</b></span>' + cs + '<span class="sv' + (S.saved ? ' used' : '') + '">' + (S.saved ? '위기 구제 다 씀' : '⚑ 위기 구제 1회') + '</span>' +
+      '<span class="gh">채운 개수가 결말을 정해요 · 4개 S · 3개 A · 2개 B</span></div>';
   }
   function topbar() {
     return '<div class="topbar"><div class="brand"><div class="kgd-seal">史</div><div>펜데믹 대통령<small>오늘의 도전 · 11월 1일</small></div></div><div class="tb-right"><button class="chip-btn" data-act="codex">인물 도감</button><button class="chip-btn" data-act="home">처음으로</button><button class="chip-btn" data-act="exit">로비로</button></div></div>';
@@ -106,6 +113,7 @@ function dckgOpen(C) {
       var d = real && real[t.k];
       if (d) { var de = el.querySelector('.delta'); de.textContent = (d > 0 ? '+' : '') + d; de.className = 'delta show ' + (d > 0 ? 'up' : 'dn'); }
     });
+    var gl = $('.goals'); if (gl) gl.outerHTML = goals();
   }
 
   /* ---------- 타자기 ---------- */
@@ -129,7 +137,7 @@ function dckgOpen(C) {
       '<div class="kicker"><span class="dot"></span>11월 1일 · 오늘의 도전</div>' +
       '<h1>김구,<br><em>대한민국 독립</em></h1>' +
       '<p class="sub">전염병이 아닌 역사 속 한 인물이 마주친 시대. 1940년 가을, 충칭에 닿은 임시정부의 주석이 되어 5년 단임의 임기 동안 광복을 향해 나아가세요.</p>' +
-      '<div class="pills"><span class="pill">⏳ 5년 단임 (1940.9 – 1945.8)</span><span class="pill">🚫 아이템 없음</span><span class="pill">🧭 오직 선택</span><span class="pill">📜 실제 역사 기반</span></div>' +
+      '<div class="pills"><span class="pill">⏳ 5년 단임 (1940.9 – 1945.8)</span><span class="pill">🚫 아이템 없음</span><span class="pill">🗣 참모 회의</span><span class="pill">📜 실제 역사 기반</span></div>' +
       '<div class="cta"><button class="btn primary" data-act="brief">도전 시작하기</button>' + best + '</div></div></div>' +
       '<div class="teaser"><span class="lock">🔒</span><span>내일의 도전은 아직 비밀입니다. 오늘의 임기를 마치고 기록을 남겨 보세요.</span></div>';
   }
@@ -143,7 +151,7 @@ function dckgOpen(C) {
       '<p>동학 농민군에서 의병, 교육 운동, 신민회를 거쳐 1919년 상하이 임시정부에 합류했다. 1932년 이봉창·윤봉길 의거를 이끈 뒤 일본의 끈질긴 추격을 받으며 난징, 창사, 광저우, 류저우, 치장으로 피난을 거듭했고, 1940년 9월 마침내 충칭에 닿았다. 어머니와 아들을 먼저 잃은 노(老)투사에게 남은 것은 가난한 정부와 흩어진 동지들, 그리고 광복이라는 한 가지 목표다.</p></div>' +
       '<div class="brief">' +
       '<div class="panel"><h3>시대 배경</h3><ul><li>중일전쟁 3년째, 충칭은 장제스 정부의 전시 수도이자 일본군 폭격의 표적이다.</li><li>유럽에서는 나치 독일이 서유럽을 휩쓸고, 태평양에는 전운이 짙어진다.</li><li>임시정부는 중국의 지원 없이는 한 달도 버티기 어렵지만, 지원받는 만큼 자주성은 흔들린다.</li><li>미국, 영국, 소련 어느 나라도 임정을 승인하지 않았다.</li></ul></div>' +
-      '<div class="panel"><h3>규칙</h3><ul><li>5년의 임기 동안 <b>23번의 결정</b>을 내립니다.</li><li><b>아이템은 쓸 수 없습니다.</b> 오직 선택만으로 시대를 헤쳐 나갑니다.</li><li>선택의 결과는 미리 알려 주지 않습니다. 앞선 선택이 뒤의 사건에 영향을 줍니다.</li><li>다섯 지표 중 하나라도 0이 되면 임기가 그 자리에서 끝납니다.</li><li>임기가 끝나면 커리어 점수, 등급, 결말이 정해집니다.</li></ul></div>' +
+      '<div class="panel"><h3>규칙</h3><ul><li>5년의 임기 동안 <b>23번의 결정</b>을 내립니다.</li><li><b>아이템은 쓸 수 없습니다.</b> 오직 선택만으로 시대를 헤쳐 나갑니다.</li><li>결정마다 <b>참모 회의</b>가 열립니다. 참모마다 자기 제안을 따르면 무엇이 오르고(▲) 내리는지(▼) 말해 줍니다. 누구의 말을 따를지 고르세요.</li><li><b>광복 준비도</b>: 민심 · 외교 · 단합 55 이상, 군사 55 이상과 독수리 작전. 많이 채울수록 좋은 결말을 맞습니다.</li><li>지표가 0이 되면 <b>한 번은</b> 동지들이 버텨 줍니다. 두 번째에는 임기가 끝납니다.</li><li>임기가 끝나면 커리어 점수, 등급, 결말이 정해집니다.</li></ul></div>' +
       '<div class="panel full"><h3>다섯 가지 지표</h3><div class="rule-stats">' + rs + '</div></div></div>' +
       '<div class="nextbar"><button class="btn ghost" data-act="home" style="margin-right:10px">뒤로</button><button class="btn primary" data-act="start">1940년 9월, 충칭으로</button></div>';
   }
@@ -168,13 +176,38 @@ function dckgOpen(C) {
     typeInto($('#story'), text, showChoices);
     root.scrollTo({ top: 0, behavior: 'smooth' });
   }
+  // 참모 회의: 선택지마다 그 길을 내세우는 임정 인물을 붙인다. 지금 상황에서 실제로 오를(▲) · 내릴(▼) 지표를 미리 계산해 보여 준다(숫자 대신 크기만)
+  var ADV = { p: ['엄항섭', '차리석'], d: ['조소앙', '이승만', '김규식'], a: ['지청천', '이범석', '김원봉'], f: ['차리석', '엄항섭'], u: ['김규식', '조소앙', '차리석'] };
+  var ADV_FROM = { '김규식': 3, '김원봉': 2 };   // 임정에 합류한 해(년차) 전에는 내세우지 않는다
+  function person(n) { for (var i = 0; i < PEOPLE.length; i++) if (PEOPLE[i][1] === n) return PEOPLE[i]; return ['議', n, '국무위원', '']; }
+  function council(ev) {
+    var used = {};
+    return ev.ch.map(function (c, i) {
+      var P = E.preview(S, ev, i), fx = P.fx, who = null;
+      var ks = E.STATS.map(function (t) { return t.k; }).sort(function (a, b) { return (fx[b] || 0) - (fx[a] || 0); });
+      for (var j = 0; j < ks.length && !who; j++) (ADV[ks[j]] || []).some(function (n) { if (!used[n] && (ADV_FROM[n] || 0) <= ev.y) { who = n; return true; } return false; });
+      who = who || '국무위원 회의'; used[who] = 1;
+      return { p: person(who), pv: P };
+    });
+  }
+  function advChips(P) {
+    var h = E.STATS.filter(function (t) { return P.fx[t.k]; }).map(function (t) { var d = P.fx[t.k], a = d > 0 ? (d >= 6 ? '▲▲' : '▲') : (d <= -6 ? '▼▼' : '▼'); return '<span class="ac ' + (d > 0 ? 'up' : 'dn') + '">' + t.g + ' ' + t.n + ' ' + a + '</span>'; }).join('');
+    if (P.over) h += '<span class="ac dn">⚠ 임기가 끝난다</span>'; else if (P.saved) h += '<span class="ac dn">⚑ 위기 구제를 쓴다</span>';
+    return h || '<span class="ac">큰 변화 없음</span>';
+  }
+  var CN = [];
   function showChoices() {
-    var box = $('#choices'); if (!box) return; var h = '';
+    var box = $('#choices'); if (!box) return; var h = '<div class="council"><b>참모 회의</b><span>누구의 말을 따르시겠습니까?</span></div>';
+    CN = council(curEv);
     order.forEach(function (ci, pos) {
-      var c = curEv.ch[ci];
-      h += '<button class="choice" data-ci="' + ci + '" style="animation-delay:' + pos * 90 + 'ms"><span class="no">' + (pos + 1) + '</span><span><div class="t">' + esc(c.t) + '</div><div class="d">' + esc(c.d) + '</div></span></button>';
+      var c = curEv.ch[ci], A = CN[ci], P = A.p;
+      h += '<button class="choice adv" data-ci="' + ci + '" style="animation-delay:' + pos * 90 + 'ms"><span class="no">' + (pos + 1) + '</span><span class="ab">' +
+        '<span class="who"><i class="av">' + esc(P[0]) + '</i><b>' + esc(P[1]) + '</b><small>' + esc(P[2]) + '</small></span>' +
+        '<div class="t">' + esc(c.t) + '</div><div class="d">' + esc(c.d) + '</div><div class="acs">' + advChips(A.pv) + '</div></span></button>';
     });
     box.innerHTML = h; box.style.display = 'grid';
+    // 참모 카드가 화면 아래에 숨어 있으면, 회의 제목이 화면 위쪽 1/3쯤 오도록 내려 준다
+    setTimeout(function () { var c = $('.council'); if (c && c.getBoundingClientRect().top > root.clientHeight * 0.6) root.scrollTo({ top: Math.max(0, c.offsetTop - root.clientHeight * 0.3), behavior: reduce ? 'auto' : 'smooth' }); }, 80);
     var hn = $('.hint'); if (hn) hn.textContent = '숫자 키 1~' + order.length + '로도 선택할 수 있습니다';
   }
 
@@ -182,14 +215,16 @@ function dckgOpen(C) {
     if (phase !== 'event') return; phase = 'result'; stopTyping();
     var box = $('#choices'); box.classList.add('locked');
     [].forEach.call(box.children, function (b) { if (+b.dataset.ci === ci) b.classList.add('picked'); });
-    var res = E.choose(S, curEv, ci);
+    var res = E.choose(S, curEv, ci), AP = (CN[ci] || {}).p || person('국무위원 회의');
+    S.log[S.log.length - 1].adv = AP[1];
     setStats(res.fx);
     var chips = E.STATS.filter(function (t) { return res.fx[t.k]; }).map(function (t) { var d = res.fx[t.k]; return '<span class="dchip ' + (d > 0 ? 'up' : 'dn') + '">' + t.g + ' ' + t.n + ' ' + (d > 0 ? '▲' : '▼') + Math.abs(d) + '</span>'; }).join('');
     var extra = res.texts.map(function (t) { return '<div class="extra">' + esc(t) + '</div>'; }).join('');
     var hist = res.note || res.hist ? '<div class="histbox">' + (res.hist ? '<span class="badge">실제 역사와 같은 선택</span>' : '') + (res.note ? '<b>역사 속에서는</b> — ' + esc(res.note) : '') + '</div>' : '';
     var overTxt = '';
     if (S.over) { var st = E.STATS.filter(function (t) { return t.k === S.over; })[0]; overTxt = '<div class="extra" style="border-color:#b3302c;background:#b3302c22"><b>⚠ ' + st.n + ' 지표가 바닥났습니다.</b> 임기가 여기서 끝납니다.</div>'; }
-    $('#res').innerHTML = '<div class="result"><div class="card"><div class="rt">' + esc(res.r) + '</div>' + extra + overTxt + '<div class="deltas">' + chips + '</div>' + hist + '</div>' +
+    if (res.saved) { var sv = E.STATS.filter(function (t) { return t.k === res.saved; })[0]; overTxt += '<div class="extra save"><b>⚑ ' + sv.n + '이(가) 바닥날 뻔했지만 동지들이 십시일반 버텨 냈습니다.</b> 이 구제는 한 번뿐입니다. 다음에 바닥나면 임기가 끝납니다.</div>'; }
+    $('#res').innerHTML = '<div class="result"><div class="card"><div class="followed"><i class="av">' + esc(AP[0]) + '</i><span><b>' + esc(AP[1]) + '</b>의 말을 따랐다</span></div><div class="rt">' + esc(res.r) + '</div>' + extra + overTxt + '<div class="deltas">' + chips + '</div>' + hist + '</div>' +
       '<div class="nextbar"><button class="btn primary" data-act="next">' + (S.over ? '결과 보기' : '다음 ›') + '</button></div></div>';
     setTimeout(function () { var r = $('#res'); if (r) r.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 120);
   }
@@ -209,7 +244,7 @@ function dckgOpen(C) {
     var news = Y.news.map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('');
     var chips = E.STATS.filter(function (t) { return res.fx[t.k]; }).map(function (t) { var d = res.fx[t.k]; return '<span class="dchip ' + (d > 0 ? 'up' : 'dn') + '" style="background:#ffffff10;border-color:#ffffff22;color:' + (d > 0 ? '#7be0ae' : '#ff8b82') + '">' + t.g + ' ' + t.n + ' ' + (d > 0 ? '▲' : '▼') + Math.abs(d) + '</span>'; }).join('');
     app.innerHTML = topbar() + hud(y) + '<div class="fade"><div class="news"><div class="mast"><b>世 界 日 報</b><small>' + esc(Y.period) + ' · ' + y + '년차 결산</small></div><ul>' + news + '</ul></div>' +
-      '<div class="ye-note"><b style="color:var(--gold2);font-family:var(--serif)">임기 ' + y + '년차를 마치며.</b> ' + esc(res.note) + ' ' + res.texts.map(esc).join(' ') + '<div class="deltas" style="margin-top:10px">' + chips + '</div></div>' +
+      '<div class="ye-note"><b style="color:var(--gold2);font-family:var(--serif)">임기 ' + y + '년차를 마치며.</b> ' + esc(res.note) + ' ' + res.texts.map(esc).join(' ') + (res.saved ? ' <b style="color:#ffd27a">⚑ 연말에 지표가 바닥날 뻔했지만 동지들이 버텨 냈습니다. 구제는 이제 남지 않았습니다.</b>' : '') + '<div class="deltas" style="margin-top:10px">' + chips + '</div></div>' +
       (S.over ? '' : '<div class="next-ch"><small>NEXT CHAPTER</small><h3>' + (y + 1) + '년차 · ' + esc(N.title) + '</h3><p>' + esc(N.intro) + '</p></div>') +
       '<div class="nextbar"><button class="btn primary" data-act="next2">' + (S.over ? '결과 보기' : (y + 1) + '년차 시작') + '</button></div></div>';
     setStats(res.fx);
@@ -251,13 +286,18 @@ function dckgOpen(C) {
       '<div class="panel" style="margin-top:16px"><p class="endtext">' + esc(en.text) + '</p>' + (en.alt ? '<span class="alt">※ 실제 역사와 다른 가상의 결말입니다</span>' : '') + '</div>' +
       '<div class="grid2"><div class="panel"><h3>최종 지표</h3>' + radar(S.st, E.START) + '<div class="hint" style="color:#9aa6b8;text-align:center">점선은 임기 시작 시점</div></div>' +
       '<div class="panel"><h3>커리어 점수</h3><div class="breakdown"><div><span>지표 합산</span><b>' + sc.core + '</b></div><div><span>임기 진행도</span><b>' + sc.prog + '</b></div><div><span>결말 보너스</span><b>' + sc.bonus + '</b></div><div><span>업적</span><b>' + sc.apts + '</b></div><div style="border:0;font-size:16px"><span>합계</span><b style="color:var(--gold2)">' + sc.total + '</b></div></div>' +
-      '<div class="hint" style="color:#9aa6b8;text-align:left;margin-top:8px">실제 역사와 같은 선택: ' + S.histCount + '/' + E.EVENTS.length + '</div></div></div>' +
+      '<div class="hint" style="color:#9aa6b8;text-align:left;margin-top:8px">실제 역사와 같은 선택: ' + S.histCount + '/' + E.EVENTS.length + trust() + '</div></div></div>' +
       '<div class="grid2"><div class="panel"><h3>업적</h3><div class="ach">' + ach + '</div></div><div class="panel"><h3>나의 임기 기록</h3><div class="tl">' + tl + '</div><div class="hint" style="text-align:left;color:#9aa6b8">🟩 큰 성과 · 🟨 무난 · 🟥 손실 · 史 = 실제 역사와 같은 선택</div></div></div>' +
       '<div class="epi"><b style="color:var(--gold2)">그 후의 역사.</b> ' + esc(E.EPILOGUE) + '</div>' +
       '<div class="panel" style="margin-top:14px"><h3>결과 공유</h3><div class="share">' + esc(shareTxt) + '</div><div class="nextbar" style="justify-content:flex-start;gap:10px;flex-wrap:wrap"><button class="btn primary" data-act="copy">결과 복사</button><button class="btn ghost" data-act="start">다시 도전</button><button class="btn ghost" data-act="rank">오늘의 순위</button><button class="btn ghost" data-act="exit">로비로</button></div></div></div>';
     root.scrollTo({ top: 0 });
   }
 
+  // 가장 많이 말을 따른 참모
+  function trust() {
+    var c = {}, top = null; S.log.forEach(function (l) { if (l.adv) { c[l.adv] = (c[l.adv] || 0) + 1; if (!top || c[l.adv] > c[top]) top = l.adv; } });
+    return top ? '<br>가장 믿은 참모: <b style="color:var(--gold2)">' + esc(top) + '</b> (' + c[top] + '번)' : '';
+  }
   /* ---------- 도감 ---------- */
   var PEOPLE = [
     ['金', '김구', '임시정부 주석', '1940년 10월 주석에 선출되어 1945년 광복까지 임시정부를 이끌었다. 한인애국단을 조직해 이봉창·윤봉길 의거를 지휘했다.'],
