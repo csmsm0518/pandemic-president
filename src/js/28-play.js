@@ -5,7 +5,7 @@ let hpMap=false;
 function hudP(o){o=o||{};const y=Math.floor(S.turn/PY)+1,v=Math.round(S.i),X=SCX(),hs=hudStats();
   const lb=X.lv[Math.min(4,Math.floor(v/20))],cL=v<20?'#7fd8a8':v<40?'#f0c060':v<60?'#f39a62':'#ff8f86',c=v<20?'#2e7d55':v<40?'#9a6400':v<60?'#b8541e':'#b3261e';
   let seg='';for(let k=0;k<YRS*PY;k++){const col=k<hist.length?TIER[hist[k]].bd:(k===S.turn?c:'rgba(29,27,24,.09)');seg+='<span style="background:'+col+';'+(k===S.turn&&k>=hist.length?'animation:pls 1.2s infinite;':'')+(k%PY===PY-1&&k<YRS*PY-1?'margin-right:3px;':'')+'"></span>';}
-  return '<div class="hp-top"><span class="hp-k">'+(CP.id==='joseon'?'치세 '+CAR.term:CAR.term+'기')+'</span><b>'+y+'년차</b><span>'+(S.turn%PY+1)+'/'+PY+'</span><span class="hp-m">'+ageNow()+'세 · '+DIFF[dif].n+(CAR.term>1?' +'+(CAR.term-1):'')+'</span>'+
+  return dcStrip()+'<div class="hp-top"><span class="hp-k">'+(CP.id==='joseon'?'치세 '+CAR.term:CAR.term+'기')+'</span><b>'+y+'년차</b><span>'+(S.turn%PY+1)+'/'+PY+'</span><span class="hp-m">'+ageNow()+'세 · '+DIFF[dif].n+(CAR.term>1?' +'+(CAR.term-1):'')+'</span>'+
    (streak>=2?'<span class="hp-st">연속 '+streak+'</span>':'')+
    '<span class="hp-r">'+(tok?'<span class="dots" title="운명 개입 '+tok+'회" aria-label="운명 개입 '+tok+'회">'+'<i></i>'.repeat(tok)+'</span>':'')+
    (o.em&&!CAR.cnEm?'<button id="cnEm" class="hp-em" aria-label="비상소집: 전설 '+roleOf().n+' 부르기, 커리어에 한 번">비상소집</button>':'')+
@@ -41,7 +41,7 @@ function hud(o){if(isP())return hudP(o);const y=Math.floor(S.turn/PY)+1,v=Math.r
   const c=v<20?'#2e7d55':v<40?'#9a6400':v<60?'#b8541e':'#b3261e';const cL={'#2e7d55':'#7fd8a8','#9a6400':'#f0c060','#b8541e':'#f39a62','#b3261e':'#ff8f86'}[c];
   let seg='';for(let k=0;k<YRS*PY;k++){const col=k<hist.length?TIER[hist[k]].bd:(k===S.turn?c:'rgba(29,27,24,.09)');seg+='<span style="flex:1;height:4px;border-radius:2px;background:'+col+';'+(k===S.turn&&k>=hist.length?'animation:pls 1.2s infinite;':'')+(k%PY===PY-1&&k<YRS*PY-1?'margin-right:4px;':'')+'"></span>';}
   const coins='<span class="dots" aria-label="'+tok+'회">'+'<i></i>'.repeat(tok)+'</span>';
-  return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'+
+  return dcStrip()+'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'+
   '<span style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="background:rgba(47,74,107,.18);color:#3d5a80;font-weight:700;padding:2px 8px;border-radius:6px">'+(CP.id==='joseon'?'치세 '+CAR.term:CAR.term+'기')+'</span><span style="color:var(--text-secondary);font-weight:600">'+y+'년차</span><span>'+(S.turn%PY+1)+'/'+PY+'</span><span style="opacity:.75">· '+ageNow()+'세 · '+DIFF[dif].n+(CAR.term>1?' +'+(CAR.term-1):'')+'</span></span>'+
   '<span style="display:flex;gap:6px"><button id="snd" style="width:32px;height:28px;padding:0;display:flex;align-items:center;justify-content:center" aria-label="소리 설정">'+sndIco()+'</button>'+moreBtn()+'</span></div>'+
   '<div style="display:flex;gap:2px;margin-bottom:10px">'+seg+'</div>'+
@@ -67,6 +67,7 @@ function vign(){const i=S.i,a=Math.min(.62,Math.max(0,(i-10)/90)*.62),c=Math.rou
   return '<div style="position:absolute;inset:-6px;pointer-events:none;border-radius:12px;background:radial-gradient(ellipse at center,transparent '+c+'%,rgba(196,22,20,'+a.toFixed(3)+') 100%)'+beat+'"></div>';}
 function bindSnd(){const b=document.getElementById('snd');if(b)b.onclick=toggleSound;
   document.querySelectorAll('[data-sv]').forEach(x=>x.onclick=()=>{SFX.click();svAct(x.dataset.sv);});document.querySelectorAll('.g-more').forEach(x=>x.onclick=()=>{SFX.click();gameMenu();});odoRun();bindTips();
+  const ds=document.getElementById('dcStrip');if(ds)ds.onclick=()=>{SFX.click();dcObjSheet(ds);};
   const lv=document.getElementById('hpLive');if(lv)lv.onclick=()=>{hpMap=!hpMap;lv.setAttribute('aria-expanded',hpMap);const m=lv.nextElementSibling;if(m)m.hidden=!hpMap;fitP();};}
 
 // 특별 이벤트 무대: 이벤트마다 고유한 색과 상징을 사건 카드 뒤에 깐다. 처음 보는 사람도 "평소와 다른 순간"임을 알아보도록.
@@ -110,7 +111,7 @@ function ev(){if(pendingNews){const n=pendingNews;pendingNews=null;return breaki
   R.innerHTML='<div id="wrap"'+(cur.mg?'':' class="fit"')+' style="position:relative;--tfd:'+tfd+'ms">'+vign()+'<div class="g-hud">'+hud({em:1})+sideHTML()+'</div><div class="g-main"><div class="g-sc">'+
   (bn?'<div style="font-size:12px;color:#a8321f;background:rgba(179,38,30,.12);border:1px solid rgba(179,38,30,.3);border-radius:8px;padding:7px 11px;margin-bottom:10px;animation:fdIn .3s ease-out">'+bn+'</div>':'')+
   tip('choose')+(cur.path?tip('path'):'')+(cur.sp?tip('special'):'')+(P?'':urgentHTML())+
-  (cur.sp?spxOpen():'')+'<div class="evc go'+(cur.sp?' evsp':'')+'" style="background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:18px 18px 17px;margin-bottom:14px;animation:fdIn .3s ease-out">'+
+  (cur.sp?spxOpen():DC?dcCase():'')+'<div class="evc go'+(cur.sp?' evsp':DC?' dc-evc':'')+'" style="background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:18px 18px 17px;margin-bottom:14px;animation:fdIn .3s ease-out">'+
   '<div class="hd evt" style="font-size:21px;line-height:1.38;text-wrap:balance">'+cur.t+'</div>'+
   (tag&&!cur.sp?'<div class="evg" style="font-size:12.5px;font-weight:600;color:'+tc+';margin-top:4px">'+tag+'</div>':'')+
   '<div class="evd" style="font-size:15px;color:var(--text-secondary);line-height:1.75;margin-top:12px">'+cur.d+'</div></div>'+(cur.sp?'</div>':'')+

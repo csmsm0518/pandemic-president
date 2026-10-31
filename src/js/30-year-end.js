@@ -21,7 +21,7 @@ function report(){dcSeed('report');SFX.report();window.scrollTo(0,0);
    '<div class="hd rp-h" style="font-size:24px;margin-bottom:8px">'+(fin?'임기 마지막 결산':'연간 총결산')+'</div>'+
    '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"><span style="font-size:11px;padding:4px 9px;border-radius:999px;background:rgba(179,38,30,.14);color:#a8321f;font-weight:600">'+(isCov()?(y>=3?'신종 변이':'코로나19'):X.n)+'</span>'+
    hs.map(q=>'<span style="font-size:11px;padding:4px 9px;border-radius:999px;background:var(--surface-1);color:var(--text-secondary)">'+q[0]+' <b style="color:var(--text-primary)">'+fmtStat(q)+'</b></span>').join('')+'</div>'+
-   tip('report')+card(lab('올해의 기록')+tro)+
+   tip('report')+dcYearCard()+card(lab('올해의 기록')+tro)+
    (PO?card(lab('국정 지표 · 작년 대비')+tiles(rows.concat(pw))+'<div class="rp-ch">'+chart.replace('<svg ','<svg preserveAspectRatio="none" ')+'</div>'+legend):
    card(lab('국정 지표 · 흰 눈금은 작년')+bars(rows)+'<div style="height:1px;background:var(--border);margin:6px 0 12px"></div>'+bars(pw)+
      '<div style="font-size:11px;color:var(--text-muted);line-height:1.6;margin-top:4px">'+vName('P')+'이 크면 일이 빨라지지만 견제가 사라지고 '+vName('X')+'도 함께 자란다.</div>')+

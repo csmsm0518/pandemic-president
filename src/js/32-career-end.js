@@ -154,7 +154,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   const newBest=!god&&csc>(MEM.best100||0),newLead=!god&&!(MEM.leaders||{})[lid];
   if(!god){MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=(+MEM.leaders[lid]||0)+1;MEM.leadPct=MEM.leadPct||{};try{MEM.leadPct[lid]=Math.max(+MEM.leadPct[lid]||0,leadPct(lid,LEADF));}catch(e){}msave();}
   // 오늘의 도전: 기록에 도전 날짜가 붙어 나간 뒤 원래 난수로 되돌린다(결산 화면의 꾸밈은 보통 난수로)
-  const dcI=DC?{date:DC.date,ranked:DC.ranked}:null;dcDone(csc);
+  const dcI=DC?{date:DC.date,ranked:DC.ranked,obj:dcObjRes(kind)}:null;dcDone(csc,dcI&&dcI.obj);
   sendCareer(EXH[kind]||kind,{lid:lid,csc:csc,years:years,good:good,bad:badN,SC:SC});dcEnd();
 
   const ct=CAR.terms.map((t,j)=>'<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);opacity:0;animation:fdIn .35s ease-out forwards;animation-delay:'+(j*90)+'ms">'+
@@ -174,7 +174,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   const medalH=(bt?'<div class="chr-md" aria-hidden="true"><svg viewBox="0 0 70 34" width="70" height="34"><path d="M18 0H33L38 34H23Z" fill="#a8321f"/><path d="M52 0H37L32 34H47Z" fill="#2f4a6b"/></svg><div class="disc"><b>'+bt.g+'</b><span>최고 임기</span></div></div>':'');
   const show=first=>{window.scrollTo(0,0);
   R.innerHTML='<div style="animation:fdIn .45s ease-out">'+
-   (dcI?'<div class="dc-res"><div><b>오늘의 도전 · '+dcLabel(dcI.date)+'</b><span>'+(dcI.ranked?'순위 판 · 오늘의 순위에 올라가요':'연습 판 · 순위에는 오르지 않아요')+'</span></div><button id="dcRank" type="button">오늘의 순위</button></div>':'')+
+   (dcI?dcResHTML(dcI):'')+
    lab(NICK+' 대통령의 인생 · '+(CAR.bgx||CAR.bg+' 출신'))+
    '<div style="font-size:27px;font-family:var(--font-voice);font-weight:800;line-height:1.25;margin-bottom:6px">'+(EXH[kind]||kind)+'</div>'+
    '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">'+CAR.term+'선 · '+years+'년 재임 · '+CAR.age0+'세에 취임해 '+age1+'세에 물러남<div style="margin-top:4px;color:var(--text-muted)">겪은 위기 · '+CAR.terms.map(t=>t.scenario).join(' → ')+'</div></div>'+
