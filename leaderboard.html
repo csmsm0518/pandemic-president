@@ -360,7 +360,7 @@ Object.assign(PF_HAT,{
 PF_ACC.fan=()=>'<path d="M47 63L50 46" stroke="#6b4a2a" stroke-width="1.6"/>'+pfFill('M50 46C42 42 42 30 48 26C52 30 58 30 60 34C60 40 56 46 50 46Z','#f3eee2',1)+pfLine('M50 46L49 29M50 46L54 30M50 46L58 35',.6);
 
 // 난이도별 순위: 주소의 ?diff=로 처음 볼 난이도를 정한다(없으면 보통). 색은 게임의 난이도 칸과 같다(전체 보기의 난이도 딱지).
-const DIFS=['쉬움','보통','어려움','지옥','전체'],DCOL={'쉬움':'#3fc38f','보통':'#e3b341','어려움':'#e0604f','지옥':'#ff4d4d','전체':'#c9a24a'};
+const DIFS=['쉬움','보통','어려움','전체'],DCOL={'쉬움':'#3fc38f','보통':'#e3b341','어려움':'#e0604f','전체':'#c9a24a'};
 let diff=DIFS.indexOf(Q.get('diff'))>=0?Q.get('diff'):'보통';
 const GC={S:'#1d5a3c',A:'#1d5a3c',B:'#1f3f6b',C:'#4a4438',D:'#7a3410',F:'#7a1a14'};
 let OPEN=null;   // 세부 수치를 펼친 명판의 판ID
@@ -502,15 +502,15 @@ function demo(){const L=Object.keys(LCOL),BGS=['감염병 학자','기업인','�
   const NK=['백신대통령','민준','서연','하준','지우','도윤','서윤','예준','하은','시우','지호','수아'];const rows=[];
   for(let i=0;i<30;i++){const terms=1+Math.floor(Math.random()*4),gs='SABCDF';rows.push({id:'d'+i,nick:NK[i%NK.length]+(i>=NK.length?String(Math.floor(i/NK.length)+1):''),score:Math.round(800+terms*1800*Math.random()+terms*600),terms:terms,
     years:terms*4-Math.floor(Math.random()*2),exit:EX[Math.floor(Math.random()*EX.length)],leader:L[Math.floor(Math.random()*L.length)],bg:BGS[i%5],grades:Array.from({length:terms},()=>gs[Math.floor(Math.random()*5)]).join('/'),
-    amend:terms>=3?terms-2:0,diff:['쉬움','보통','보통','어려움','지옥'][i%5],t:new Date(Date.now()-i*420000).toISOString()});
+    amend:terms>=3?terms-2:0,diff:['쉬움','보통','보통','어려움','어려움'][i%5],t:new Date(Date.now()-i*420000).toISOString()});
     const R=()=>Math.round(15+Math.random()*80);rows[i].det={stat:{a:R(),e:R(),m:R(),c:R(),u:R(),chk:R(),trn:R(),saf:R()},part:[Math.round(rows[i].score*.7),terms>1?(terms-1)*300:0,Math.round(rows[i].score*.3)-(terms>1?(terms-1)*300:0)],
       dice:[3+terms,12*terms,4*terms,terms],dir:[6*terms,5*terms,Math.round((Math.random()*16-8)*10)/10],tro:[3*terms,terms],camp:'대한민국',scen:'코로나·변이 → 전쟁',titles:'위기의 선장 / 흔들린 두 번째 임기',avg:Math.round(50+Math.random()*30),sec:900,n:15*terms};}
   const board=rs=>{const by=rs.slice().sort((a,b)=>b.score-a.score),cnt=f=>rs.reduce((m,r)=>{m[f(r)]=(m[f(r)]||0)+1;return m;},{});
     return {careers:rs.length,players:new Set(rs.map(r=>r.nick)).size,order:by.map(r=>r.id),top:by.slice(0,30),longest:rs.slice().sort((a,b)=>b.years-a.years||b.score-a.score).slice(0,15),recent:rs.slice(0,15),
       stats:{avgTerms:2.4,reelectRate:58,amendRate:21,retireRate:25,leaders:cnt(r=>r.leader),exits:cnt(r=>r.exit),backgrounds:cnt(r=>r.bg),
         dirByTerm:[{term:1,n:24,avg:-4.2},{term:2,n:14,avg:-1.1},{term:3,n:7,avg:3.6},{term:4,n:3,avg:6.8},{term:5,n:1,avg:9.5}]}};};
-  const byDiff={};DIFS.slice(0,4).forEach(d=>byDiff[d]=board(rows.filter(r=>r.diff===d)));
-  return Object.assign({updated:new Date().toISOString(),diffs:DIFS.slice(0,4),byDiff:byDiff},board(rows));}
+  const byDiff={};DIFS.slice(0,3).forEach(d=>byDiff[d]=board(rows.filter(r=>r.diff===d)));
+  return Object.assign({updated:new Date().toISOString(),diffs:DIFS.slice(0,3),byDiff:byDiff},board(rows));}
 
 // 게임 안에 띄울 때(?embed=1): 위쪽 단추는 '게임으로', 출마하기 단추들은 새 게임 고르기. Esc도 돌아가기.
 const EMBED=Q.get('embed')==='1',tell=k=>{try{parent.postMessage({lb:k},'*');}catch(e){}};

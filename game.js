@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"c00012fc7d","h":"36258d130deedbab"},"boxes":{"v":"09b35e2a73","h":"53ed3fa93c762d78"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"daily":{"v":"3df0acdc03","h":"d53cbeb46a96c3a9"},"dex":{"v":"2a6897149d","h":"10d66cd2c1d2e3d2"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"e6c3091727","h":"d51b1bc3363ada34"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"sail":{"v":"52843663ea","h":"8feef78866c4c88b"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"05c38e8117","h":"cbc2e48319ab51e8"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
+const LZ_M={"board":{"v":"c00012fc7d","h":"36258d130deedbab"},"boxes":{"v":"09b35e2a73","h":"53ed3fa93c762d78"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"daily":{"v":"3df0acdc03","h":"d53cbeb46a96c3a9"},"dex":{"v":"8502491d36","h":"b272c2e51c86e311"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"e6c3091727","h":"d51b1bc3363ada34"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"sail":{"v":"52843663ea","h":"8feef78866c4c88b"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"05c38e8117","h":"cbc2e48319ab51e8"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
 function sugOpen(){return lzCall('boxes','sugOpen',arguments);}
 function cpnOpen(){return lzCall('boxes','cpnOpen',arguments);}
@@ -8406,6 +8406,7 @@ const PATCHES=[
   ['난이도 재조정','지옥이 없어졌어요. 쉬움 · 보통 · 어려움 세 단계이고, 예전 보통은 쉬움으로, 예전 어려움은 보통으로, 예전 지옥은 어려움으로 한 단계씩 올라갔어요. 저장해 둔 게임은 같은 수치로 이어져요.'],
   ['보관함 (스텟 펌핑 쿠폰)','쿠폰으로 지지율 · 경제 · 방역 · 군사 · 권력 · 혼란 중 하나를 올릴 기회를 받아요. 게임 중 메뉴(≡)의 보관함에서 한 판 안에 아무 때나 쓸 수 있어요.'],
   ['홈 화면 정리','게임(새 게임 · 불러오기) · 오늘의 도전 · 기록(명예의 전당 · 도감) · 기타(가이드북 · 건의사항 · 쿠폰함 · 설정) 네 묶음으로 간단하게 바꿨어요.'],
+  ['도감 · 명예의 전당','도감에서 아직 못 만난 닮은 지도자 카드에 "이름이 드러나지 않았다" 대신 어떤 결말과 성향이면 만날 수 있는지 조건이 보여요. 명예의 전당의 지옥 탭은 없어졌어요.'],
   ['세로 화면','세로 모드에서 홈 화면이 잘려 아래가 안 보이던 문제를 고쳤어요.']]},
  {v:'v4.6',t:'조선 국난',d:'2026-10-31',l:[['더 무섭고 직접 지휘','국난 화면을 새로 그리고, 난이도를 올리고, 해전 · 성벽 수비 등 직접 지휘 미니게임 다섯 가지를 더했어요.']]},
  {v:'v4.5',t:'오늘의 도전',d:'2026-10-31',l:[['하루 한 판','날마다 무대와 인물이 정해지고 모두가 같은 조건으로 겨뤄요. 순위에는 그날 처음 한 판만 올라가요.']]},
