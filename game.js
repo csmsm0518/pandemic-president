@@ -8241,7 +8241,7 @@ function acEnter(id,p){PF={school:p.school,name:p.name,phone:p.phone||'',agree:t
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v4.7';
+const GAME_VER='v4.8';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -8404,11 +8404,17 @@ function hub(){window.scrollTo(0,0);document.documentElement.dataset.camp='kr';g
   home();}
 function intro(){bgmIntro(true);window.scrollTo(0,0);document.documentElement.dataset.camp="kr";R.innerHTML=INTRO;bindIntro();}
 bgmIntro(true);bindIntro();
+// 이미 로그인한 회원이면 첫 화면(인적사항)을 건너뛰고 바로 로비로. 기기에 남은 정보로 먼저 들어가고, 서버 확인은 뒤에서 한다(토큰이 끝났으면 첫 화면으로)
+setTimeout(()=>{try{const me=!IN_ART&&acGet();if(!me||!me.prof||!me.prof.name)return;
+  acEnter(me.id,me.prof);
+  acApi('me',{id:me.id,token:me.token}).then(r=>{if(r.ok){try{acPut({id:me.id,token:r.token||me.token,exp:r.exp||me.exp||0,prof:{school:r.prof.school,name:r.prof.name,nick:r.prof.nick}});}catch(e){}return;}
+    if(r.err==='net')return;acPut(null);PF={school:'',name:'',phone:'',agree:false};intro();});}catch(e){}},0);
 /* ---------- 업데이트 소식 ----------
    새 버전을 올릴 때 PATCHES 맨 위에 항목을 더한다(GAME_VER와 같은 이름). 업데이트 뒤 처음 홈 화면에 오면 한 번 자동으로 뜨고,
    홈 메뉴 「기타 → 업데이트 소식」에서 언제든 다시 볼 수 있다. 처음 온 사람(기록이 전혀 없음)에게는 띄우지 않고 읽은 것으로 쳐 둔다.
-   v1부터 v4.7까지 모든 업데이트를 넣었다(v4.7은 크게, 나머지는 접어서 짧게). */
+   v1부터 v4.8까지 모든 업데이트를 넣었다(v4.7은 크게, 나머지는 접어서 짧게). */
 const PATCHES=[
+ {v:'v4.8',t:'자동 로그인',d:'2026-11-01',l:[['바로 로비로','이미 회원으로 로그인한 기기는 첫 화면(인적사항)을 건너뛰고 바로 로비에서 시작해요. 로그인이 끝났으면 첫 화면으로 돌아와요.']]},
  {v:'v4.7',t:'핫패치 · 난이도 · 보관함 · 홈 화면',d:'2026-10-31',big:1,l:[
   ['난이도 재조정','지옥이 없어졌어요. 쉬움 · 보통 · 어려움 세 단계이고, 예전 보통은 쉬움으로, 예전 어려움은 보통으로, 예전 지옥은 어려움으로 한 단계씩 올라갔어요. 저장해 둔 게임은 같은 수치로 이어져요.'],
   ['보관함 (스텟 펌핑 쿠폰)','쿠폰으로 지지율 · 경제 · 방역 · 군사 · 권력 · 혼란 중 하나를 올릴 기회를 받아요. 게임 중 메뉴(≡)의 보관함에서 한 판 안에 아무 때나 쓸 수 있어요.'],

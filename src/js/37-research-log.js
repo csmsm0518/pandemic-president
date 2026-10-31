@@ -1,7 +1,7 @@
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v4.7';
+const GAME_VER='v4.8';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -164,3 +164,8 @@ function hub(){window.scrollTo(0,0);document.documentElement.dataset.camp='kr';g
   home();}
 function intro(){bgmIntro(true);window.scrollTo(0,0);document.documentElement.dataset.camp="kr";R.innerHTML=INTRO;bindIntro();}
 bgmIntro(true);bindIntro();
+// 이미 로그인한 회원이면 첫 화면(인적사항)을 건너뛰고 바로 로비로. 기기에 남은 정보로 먼저 들어가고, 서버 확인은 뒤에서 한다(토큰이 끝났으면 첫 화면으로)
+setTimeout(()=>{try{const me=!IN_ART&&acGet();if(!me||!me.prof||!me.prof.name)return;
+  acEnter(me.id,me.prof);
+  acApi('me',{id:me.id,token:me.token}).then(r=>{if(r.ok){try{acPut({id:me.id,token:r.token||me.token,exp:r.exp||me.exp||0,prof:{school:r.prof.school,name:r.prof.name,nick:r.prof.nick}});}catch(e){}return;}
+    if(r.err==='net')return;acPut(null);PF={school:'',name:'',phone:'',agree:false};intro();});}catch(e){}},0);
