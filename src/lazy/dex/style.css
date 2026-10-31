@@ -49,3 +49,10 @@
 .dx-q{font-style:normal;font:800 30px var(--font-voice);color:rgba(241,213,137,.45)}
 .dx-d .dx-rn{font:700 14px var(--font-ui);color:#f1d589}
 .dx-ini.sh{align-items:flex-end;background:radial-gradient(circle at 50% 35%,#3a2f20,#15110c)}.dx-ini.sh svg{width:86%;height:86%;fill:rgba(241,213,137,.3)}
+
+/* 카드를 누르면 아래에서 올라오는 창: 해금 조건 · 이야기가 그 안에 나온다 */
+.dx-d.on{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(680px,100%);max-height:58vh;overflow-y:auto;margin:0;z-index:6;border-radius:18px 18px 0 0;padding:18px 20px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -18px 40px -10px rgba(0,0,0,.85);animation:dxSheet .26s ease-out}
+@keyframes dxSheet{from{opacity:0;transform:translate(-50%,24px)}to{opacity:1;transform:translate(-50%,0)}}
+.dexs:has(.dx-d.on) .dx-g{padding-bottom:46vh}
+.dx-dx{position:absolute;top:10px;right:12px;width:32px;height:32px;padding:0;border-radius:50%;font-size:15px;line-height:1;color:#d8c9a6;background:rgba(255,255,255,.07);border:1px solid rgba(201,162,74,.35)}
+.dx-d .dx-pc2{margin:8px 0 2px;font-size:14px;color:#f1d589}.dx-d .dx-pc2 b{font:800 20px var(--font-voice)}

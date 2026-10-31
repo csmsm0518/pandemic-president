@@ -79,10 +79,10 @@ const DX_CD={cinc:{x:"명예로운 퇴임",t:["권력을 나누고 견제받는 
  gorby:{x:"스스로 하야 · 경제 붕괴",t:["투명한 정부", "권력을 나누고 견제받는 통치", "나쁜 경제"]},
  louis16:{x:"거리로 쫓겨남 · 반정으로 폐위",t:["치우치지 않은 균형 통치", "나쁜 경제", "성과가 낮은 임기"]}};
 // 임기 평가: 설명과 받는 조건. hid는 숨겨진 평가라 받기 전에는 이름 대신 수수께끼만 보인다
-const DX_E={legend:['세계가 이 나라의 사례를 인용했다. 그리고 실제로 사람이 덜 죽었다.','임기 점수 80 이상'],reelect:['완벽하지 않았지만 국민은 이 정부를 믿었다.','임기 점수 66 이상'],
-  modest:['큰 실패도 큰 성취도 없었다. 위기의 시대 대통령에게 이것이 나쁜 성적인지는 애매하다.','임기 점수 52 이상'],judged:['사람들은 이 시절을 되도록 이야기하지 않으려 한다.','임기 점수 36 이상'],
-  failfp:['막을 수 있었던 죽음이 너무 많았다. 그것이 이 임기에 대한 유일한 요약이다.','임기 점수 36 미만'],inst:['개인의 판단이 아니라 구조를 바꿨다. 다음 위기에 이 나라가 덜 다친다면 그건 이 임기 덕분이다.','제도를 크게 남기고 지지율 45 이상'],
-  auth:['위기를 이유로 얻은 권한을 끝내 돌려주지 않았다. 다음 대통령도 그 권한을 쓴다.','권위주의로 기울고 점수 70 미만'],ousted:['여론과 광장이 정권을 먼저 끝냈다. 위기 대응의 성패를 따지기도 전에 정부가 사라졌다.','민심이 무너져 쫓겨난다'],
+const DX_E={legend:['세계가 이 나라의 사례를 인용했다. 그리고 실제로 사람이 덜 죽었다.','나라를 가장 훌륭하게 이끈 임기'],reelect:['완벽하지 않았지만 국민은 이 정부를 믿었다.','매우 좋은 성과로 마친 임기'],
+  modest:['큰 실패도 큰 성취도 없었다. 위기의 시대 대통령에게 이것이 나쁜 성적인지는 애매하다.','무난한 성과로 마친 임기'],judged:['사람들은 이 시절을 되도록 이야기하지 않으려 한다.','아쉬움이 남는 성과로 마친 임기'],
+  failfp:['막을 수 있었던 죽음이 너무 많았다. 그것이 이 임기에 대한 유일한 요약이다.','성과가 크게 모자란 임기'],inst:['개인의 판단이 아니라 구조를 바꿨다. 다음 위기에 이 나라가 덜 다친다면 그건 이 임기 덕분이다.','제도를 크게 남기고 지지율도 지킨다'],
+  auth:['위기를 이유로 얻은 권한을 끝내 돌려주지 않았다. 다음 대통령도 그 권한을 쓴다.','권위주의로 기울고 성과도 높지 않다'],ousted:['여론과 광장이 정권을 먼저 끝냈다. 위기 대응의 성패를 따지기도 전에 정부가 사라졌다.','민심이 무너져 쫓겨난다'],
   medfail:['병상도 인력도 남지 않았다. 이 시기의 사망자 수는 이후 어떤 통계에서도 정상으로 분류되지 않는다.','의료가 바닥나 정권이 무너진다'],ecofail:['위기는 어떻게든 버텼다. 사람들이 돌아갈 일자리가 남지 않았을 뿐이다.','경제가 바닥나 정권이 무너진다'],
   quit:['스스로 내려왔다. 그 판단이 옳았는지는 오래 논쟁거리로 남는다.','임기 도중 스스로 물러난다'],
   shadow:['유착은 극에 달했는데 지지율은 무너지지 않았다. 부패한 정부가 사랑받을 수 있다는 가장 불편한 증명이 됐다.','썩었는데도 사랑받는 정부',1],
@@ -147,12 +147,12 @@ function dexScene(){dexClose();window.scrollTo(0,0);try{if(CINE)cineClose();}cat
     '<span class="dx-av">'+(o.on||o.lav?o.av:sil)+'</span><b class="dx-n">'+o.n+'</b><span class="dx-s">'+o.s+'</span>'+(o.cnt?'<i class="dx-x">×'+o.cnt+'</i>':'')+'</button>';
   const D={};   // 카드 key → 펼쳐 볼 자세한 이야기
   const grid={
-    lead:()=>LEADK.map((id,i)=>{const L=LEAD[id],c=n(MEM.leaders&&MEM.leaders[id]),key='l'+id;
+    lead:()=>LEADK.slice().sort((a,b)=>(n(MEM.leaders&&MEM.leaders[b])>0)-(n(MEM.leaders&&MEM.leaders[a])>0)).map((id,i)=>{const L=LEAD[id],c=n(MEM.leaders&&MEM.leaders[id]),key='l'+id,pc=n(MEM.leadPct&&MEM.leadPct[id]);
       // 별칭이 이름 자리에 서고, 실명과 시대는 만난 뒤에만 드러난다
       const md=DX_MOD[id]||L.k;
-      D[key]=c?'<b>「'+E(md)+'」</b><p><b class="dx-rn">'+E(L.n)+'</b> · '+E(L.era)+'</p><p>'+E(L.d)+'</p><small>커리어 끝에 '+c+'번 닮았다고 평가받았다</small>'
+      D[key]=c?'<b>「'+E(md)+'」</b><p><b class="dx-rn">'+E(L.n)+'</b> · '+E(L.era)+'</p><p>'+E(L.d)+'</p><small>커리어 끝에 '+c+'번 닮았다고 평가받았다</small>'+(pc?'<p class="dx-pc2">일치율 <b>'+pc+'%</b> <small>(지금까지 가장 가까웠던 판)</small></p>':'<small>일치율은 다음 판부터 기록돼요</small>')
         :'<b>「'+E(md)+'」</b><p>이런 길을 걸으면 커리어 끝에 이 지도자를 닮았다고 평가받는다.</p>'+(DX_CD[id]?'<p><b>해금 조건</b><br>결말 · '+E(DX_CD[id].x)+'<br>성향 · '+DX_CD[id].t.map(t=>E(t)).join(' / ')+'</p><small>가장 잘 맞는 지도자가 뽑히니, 조건이 겹칠수록 가능성이 커진다</small>':'')+(DX_LH[id]?'<small>어렴풋한 길: '+E(DX_LH[id])+'</small>':'');
-      return card({i:i,key:key,on:c>0,c:L.col,av:av(L.n,78),n:E(md),s:c?E(L.n):(DX_CD[id]?E(DX_CD[id].x.split(' · ')[0]+' · '+DX_CD[id].t[0]):'이름이 드러나지 않았다'),cnt:c,top:c?'<span class="dx-era">'+E(L.era.split(' · ')[0])+'</span>':''});}).join(''),
+      return card({i:i,key:key,on:c>0,c:L.col,av:av(L.n,78),n:E(md),s:c?E(L.n)+(pc?' · '+pc+'%':''):'이름이 드러나지 않았다',cnt:c,top:c?'<span class="dx-era">'+E(L.era.split(' · ')[0])+'</span>':''});}).join(''),
     end:()=>ENDC.map((e,i)=>{const id=e[0],c=n(MEM.ends[id]),X=DX_E[id]||['',''],hid=!!X[2],nm=HNAME[id]||e[1],key='e'+id;
       D[key]=c?'<b>'+E(nm)+'</b><p>'+E(X[0])+'</p><small>받는 길 · '+E(X[1])+' · 지금까지 '+c+'번 받았다</small>':hid?'<b>숨겨진 평가</b><p>수수께끼: '+E(X[1])+'</p><small>받으면 비밀 인물 「단군왕검」이 깨어난다</small>':'<b>'+E(nm)+'</b><p>아직 받지 못한 평가다.</p><small>받는 길 · '+E(X[1])+'</small>';
       return card({i:i,key:key,on:c>0,hid:hid,c:DX_EC[id]||'#6e675c',av:'<span class="dx-seal">'+(hid&&!c?'<i class="dx-q">?</i>':(DX_IC[id]||''))+'</span>',lav:1,n:c||!hid?E(nm):'???',s:c||!hid?E(X[1]):'수수께끼 · '+E(X[1]),cnt:c,top:hid?'<span class="dx-era">숨김</span>':''});}).join(''),
@@ -176,9 +176,8 @@ function dexScene(){dexClose();window.scrollTo(0,0);try{if(CINE)cineClose();}cat
   const show=k=>{tab=k;sel='';$('dxG').innerHTML=grid[k]();$('dxD').innerHTML='';$('dxD').classList.remove('on');w.querySelectorAll('.dx-tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===k));
     $('dxG').querySelectorAll('.dx-c').forEach(b=>b.onclick=()=>{try{SFX.click();}catch(e){}const k2=b.dataset.k;
       if(sel===k2){sel='';$('dxD').classList.remove('on');b.classList.remove('sel');return;}sel=k2;$('dxG').querySelectorAll('.dx-c').forEach(x=>x.classList.toggle('sel',x===b));
-      const d=$('dxD');d.style.setProperty('--c',b.style.getPropertyValue('--c'));d.innerHTML=D[k2]||'';d.classList.add('on');
-      // 넓은 화면은 아래 칸이 보이게, 좁은 화면은 펼친 이야기로 내려간다
-      if(innerWidth<640)try{d.scrollIntoView({behavior:'smooth',block:'nearest'});}catch(e){}});};
+      const d=$('dxD');d.style.setProperty('--c',b.style.getPropertyValue('--c'));d.innerHTML='<button type="button" class="dx-dx" aria-label="닫기">✕</button>'+(D[k2]||'');d.classList.add('on');d.querySelector('.dx-dx').onclick=()=>{try{SFX.back();}catch(e){}sel='';d.classList.remove('on');$('dxG').querySelectorAll('.dx-c').forEach(x=>x.classList.remove('sel'));};
+      });};
   w.querySelectorAll('.dx-tabs button').forEach(b=>b.onclick=()=>{try{SFX.tick?SFX.tick(1):SFX.click();}catch(e){}show(b.dataset.t);});
   $('dxBk').onclick=()=>{try{SFX.back();}catch(e){}dexClose();home();};
   DEX.key=e=>{if(e.key==='Escape'){$('dxBk').click();return;}if(e.key==='ArrowRight'||e.key==='ArrowLeft'){const i=T.findIndex(x=>x.k===tab),j=(i+(e.key==='ArrowRight'?1:T.length-1))%T.length;show(T[j].k);}};

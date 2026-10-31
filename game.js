@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"c00012fc7d","h":"36258d130deedbab"},"boxes":{"v":"09b35e2a73","h":"53ed3fa93c762d78"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"daily":{"v":"3df0acdc03","h":"d53cbeb46a96c3a9"},"dex":{"v":"8502491d36","h":"b272c2e51c86e311"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"e6c3091727","h":"d51b1bc3363ada34"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"sail":{"v":"52843663ea","h":"8feef78866c4c88b"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"05c38e8117","h":"cbc2e48319ab51e8"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
+const LZ_M={"board":{"v":"c00012fc7d","h":"36258d130deedbab"},"boxes":{"v":"09b35e2a73","h":"53ed3fa93c762d78"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"daily":{"v":"3df0acdc03","h":"d53cbeb46a96c3a9"},"dex":{"v":"f9d1146254","h":"3263b159d916cd6a"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"e6c3091727","h":"d51b1bc3363ada34"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"sail":{"v":"52843663ea","h":"8feef78866c4c88b"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"05c38e8117","h":"cbc2e48319ab51e8"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
 function sugOpen(){return lzCall('boxes','sugOpen',arguments);}
 function cpnOpen(){return lzCall('boxes','cpnOpen',arguments);}
@@ -5606,6 +5606,10 @@ const GX_IC={daily:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" s
   board:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></svg>',
   dex:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/></svg>',
   guide:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>',
+  ld:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M3.5 7.5A1.5 1.5 0 0 1 5 6h4.5l2 2.5H19A1.5 1.5 0 0 1 20.5 10v8A1.5 1.5 0 0 1 19 19.5H5A1.5 1.5 0 0 1 3.5 18z"/></svg>',
+  news:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15zM10 20.5h4"/></svg>',
+  view:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="12" rx="2"/><path d="M9 20h6M12 16.5V20"/></svg>',
+  user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c.8-4 3.6-5.5 7-5.5s6.2 1.5 7 5.5"/></svg>',
   sail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3v13M12 4l7 10h-7M12 6L6 14h6M3 17h18l-2.5 4h-13z"/></svg>',
   mini:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5l2.3 5.4 5.8.5-4.4 3.8 1.3 5.7-5-3-5 3 1.3-5.7-4.4-3.8 5.8-.5z"/></svg>'};
 function gxTop(n,right){return '<div class="gx-top"><ol class="gx-steps">'+GX_STEP.map((t,i)=>'<li class="'+(i<n?'done':i===n?'on':'')+'"><i>'+(i+1)+'</i>'+t+'</li>').join('')+'</ol>'+(right?'<span class="gx-tag">'+right+'</span>':'')+'</div>';}
@@ -5883,12 +5887,12 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   const msg=HUB_MSG;HUB_MSG='';
   // 홈 메뉴는 네 묶음: 게임(새 게임 · 불러오기) · 오늘의 도전 · 기록(명예의 전당 · 도감) · 기타(가이드북 · 건의사항 · 쿠폰함 · 화면 설정 · 인적사항). 묶음을 누르면 그 아래가 펼쳐진다(하나만 열림).
   const sv=svMenuTxt(),item=(id,t,s,ic)=>[id,t,s,ic],
-    G=[{id:'game',t:'게임',s:'새 게임 · 불러오기',ic:'new',open:1,it:[item('mmNew','새 게임','한 번의 인생을 시작한다'),item('mmLoad','불러오기',sv||'저장된 게임이 없다')]},
+    G=[{id:'game',t:'게임',s:'새 게임 · 불러오기',ic:'new',it:[item('mmNew','새 게임','한 번의 인생을 시작한다','new'),item('mmLoad','불러오기',sv||'저장된 게임이 없다','ld')]},
        {id:'daily',t:'오늘의 도전',s:dcSub(),ic:'daily',one:'mmDaily'},
-       {id:'rec',t:'기록',s:'명예의 전당 · 도감',ic:'board',it:[item('mmBoard','명예의 전당','모두의 최고 기록'),item('mmDex','도감','만난 지도자와 임기 평가')]},
-       {id:'etc',t:'기타',s:'가이드북 · 건의사항 · 쿠폰함 · 설정',ic:'guide',it:[item('mmGuide','가이드북','처음이라면 여기부터'),item('mmNews','업데이트 소식',GAME_VER+' 바뀐 내용')].concat(BOX_M().map(m=>item('mm'+m[0],m[1],m[2])),[item('mmView','화면 설정','세로/가로 · 라이트'),item('mmEdit','인적사항 바꾸기','학교 · 이름 · 닉네임')])}];
-  const MROW=(g,i)=>'<button class="gx-mi gx-g'+(g.open?' open':'')+'" id="'+(g.one||'mmG_'+g.id)+'" style="--i:'+i+'"'+(g.one?'':' aria-expanded="'+(g.open?'true':'false')+'" data-g="'+g.id+'"')+'><span class="gx-ic" aria-hidden="true">'+GX_IC[g.ic]+'</span><span class="gx-mt"><b>'+g.t+'</b><small>'+g.s+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>'+
-    (g.it?'<div class="gx-sl'+(g.open?' open':'')+'" data-g="'+g.id+'">'+g.it.map(m=>'<button class="gx-mi gx-s" id="'+m[0]+'"><span class="gx-mt"><b>'+m[1]+'</b><small>'+m[2]+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>').join('')+'</div>':'');
+       {id:'rec',t:'기록',s:'명예의 전당 · 도감',ic:'board',it:[item('mmBoard','명예의 전당','모두의 최고 기록','board'),item('mmDex','도감','만난 지도자와 임기 평가','dex')]},
+       {id:'etc',t:'기타',s:'가이드북 · 건의사항 · 쿠폰함 · 설정',ic:'guide',it:[item('mmGuide','가이드북','처음이라면 여기부터','guide'),item('mmNews','업데이트 소식',GAME_VER+' 바뀐 내용','news')].concat(BOX_M().map(m=>item('mm'+m[0],m[1],m[2],m[3])),[item('mmView','화면 설정','세로/가로 · 라이트','view'),item('mmEdit','인적사항 바꾸기','학교 · 이름 · 닉네임','user')])}];
+  const MROW=(g,i)=>'<button class="gx-mi gx-g'+(g.one?' gx-nx':'')+(g.open?' open':'')+'" id="'+(g.one||'mmG_'+g.id)+'" style="--i:'+i+'"'+(g.one?'':' aria-expanded="'+(g.open?'true':'false')+'" data-g="'+g.id+'"')+'><span class="gx-ic" aria-hidden="true">'+GX_IC[g.ic]+'</span><span class="gx-mt"><b>'+g.t+'</b><small>'+g.s+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>'+
+    (g.it?'<div class="gx-sl'+(g.open?' open':'')+'" data-g="'+g.id+'">'+g.it.map(m=>'<button class="gx-mi gx-s" id="'+m[0]+'"><span class="gx-ic" aria-hidden="true">'+(GX_IC[m[3]]||(typeof BOX_IC!=='undefined'&&BOX_IC[m[3]])||'')+'</span><span class="gx-mt"><b>'+m[1]+'</b><small>'+m[2]+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>').join('')+'</div>':'');
   // 기록 카드: 닉네임, 최고 기록, 도감 진행도
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
   const st=(l,v,u)=>'<div><span>'+l+'</span><b>'+v+'</b>'+(u&&v!=='—'?'<small>'+u+'</small>':'')+'</div>';
@@ -7213,6 +7217,9 @@ const LFIT={
  edward8:{x:{quit:20},s:F=>lup(F.a,40,70)*8+(F.n===1?5:0)+lup(F.f,40,60)*2},
  chamb:{x:{quit:20,ousted:8},s:F=>(F.war?10:0)+lup(F.d,0,-6)*5+lup(F.mil,50,25)*5},
  gorby:{x:{quit:18,ecofail:10,ousted:8},s:F=>lup(F.trn,60,90)*6+lup(F.d,0,-8)*6+lup(F.e,50,25)*5+(F.turn===-1?4:0)}, louis16:{x:{ousted:18,deposed:18,quit:10,ecofail:10,medfail:10},s:F=>lup(Math.abs(F.d),6,0)*8+lup(F.e,50,20)*6+lup(F.f,50,30)*4+(F.am||F.dict?-10:0)}};
+// 일치율(%): 이 커리어가 그 지도자의 판정표 점수에서 얼마나 가까웠는가. 판정표의 가중치를 다 채우는 일은 드무니 최대치의 80%를 100%로 본다
+function leadPct(id,F){const L=LFIT[id];if(!L||!F||L.x[F.ex]==null)return 0;let mx=0;const src=String(L.s);src.replace(/\)\*(\d+)/g,(m,w)=>{mx+=+w;return m;});src.replace(/\?(\d+):0/g,(m,w)=>{mx+=+w;return m;});
+  const v=L.x[F.ex]+L.s(F),den=L.x[F.ex]+mx*.8;return Math.max(1,Math.min(99,Math.round(v/den*100)));}
 function leaderOf(C){const F=LEADF=leadF(C),seen=MEM.leaders||{};
   const sc=LEADK.map(id=>{const L=LFIT[id];if(!L||L.x[F.ex]==null)return [id,-1e9];
     let v=L.x[F.ex]+L.s(F);if(LNOAM.has(id)&&(F.am||F.dict))v-=25;return [id,v];}).sort((a,b)=>b[1]-a[1]);
@@ -7266,7 +7273,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   const years=(CAR.term-1)*YRS+Math.max(1,Math.ceil(S.turn/PY)),age1=CAR.age0+years;
   const SC=careerScore(kind,years),csc=SC.total;
   const newBest=!god&&csc>(MEM.best100||0),newLead=!god&&!(MEM.leaders||{})[lid];
-  if(!god){MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=(+MEM.leaders[lid]||0)+1;msave();}
+  if(!god){MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=(+MEM.leaders[lid]||0)+1;MEM.leadPct=MEM.leadPct||{};try{MEM.leadPct[lid]=Math.max(+MEM.leadPct[lid]||0,leadPct(lid,LEADF));}catch(e){}msave();}
   // 오늘의 도전: 기록에 도전 날짜가 붙어 나간 뒤 원래 난수로 되돌린다(결산 화면의 꾸밈은 보통 난수로)
   const dcI=DC?{date:DC.date,ranked:DC.ranked}:null;dcDone(csc);
   sendCareer(EXH[kind]||kind,{lid:lid,csc:csc,years:years,good:good,bad:badN,SC:SC});dcEnd();
@@ -8406,7 +8413,7 @@ const PATCHES=[
   ['난이도 재조정','지옥이 없어졌어요. 쉬움 · 보통 · 어려움 세 단계이고, 예전 보통은 쉬움으로, 예전 어려움은 보통으로, 예전 지옥은 어려움으로 한 단계씩 올라갔어요. 저장해 둔 게임은 같은 수치로 이어져요.'],
   ['보관함 (스텟 펌핑 쿠폰)','쿠폰으로 지지율 · 경제 · 방역 · 군사 · 권력 · 혼란 중 하나를 올릴 기회를 받아요. 게임 중 메뉴(≡)의 보관함에서 한 판 안에 아무 때나 쓸 수 있어요.'],
   ['홈 화면 정리','게임(새 게임 · 불러오기) · 오늘의 도전 · 기록(명예의 전당 · 도감) · 기타(가이드북 · 건의사항 · 쿠폰함 · 설정) 네 묶음으로 간단하게 바꿨어요.'],
-  ['도감 · 명예의 전당','도감에서 아직 못 만난 닮은 지도자 카드에 "이름이 드러나지 않았다" 대신 어떤 결말과 성향이면 만날 수 있는지 조건이 보여요. 명예의 전당의 지옥 탭은 없어졌어요.'],
+  ['도감 · 명예의 전당','닮은 지도자 도감에서 만난 지도자가 위로 올라오고, 못 만난 지도자 카드를 누르면 아래에서 창이 올라와 어떤 결말과 성향이면 만날 수 있는지 조건이 나와요. 만난 지도자에는 가장 가까웠던 일치율(%)이 붙어요(다음 판부터 기록). 임기 평가 조건은 점수 숫자 대신 말로 바꿨고, 명예의 전당의 지옥 탭은 없어졌어요.'],
   ['세로 화면','세로 모드에서 홈 화면이 잘려 아래가 안 보이던 문제를 고쳤어요.']]},
  {v:'v4.6',t:'조선 국난',d:'2026-10-31',l:[['더 무섭고 직접 지휘','국난 화면을 새로 그리고, 난이도를 올리고, 해전 · 성벽 수비 등 직접 지휘 미니게임 다섯 가지를 더했어요.']]},
  {v:'v4.5',t:'오늘의 도전',d:'2026-10-31',l:[['하루 한 판','날마다 무대와 인물이 정해지고 모두가 같은 조건으로 겨뤄요. 순위에는 그날 처음 한 판만 올라가요.']]},

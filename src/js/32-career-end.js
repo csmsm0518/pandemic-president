@@ -96,6 +96,9 @@ const LFIT={
  edward8:{x:{quit:20},s:F=>lup(F.a,40,70)*8+(F.n===1?5:0)+lup(F.f,40,60)*2},
  chamb:{x:{quit:20,ousted:8},s:F=>(F.war?10:0)+lup(F.d,0,-6)*5+lup(F.mil,50,25)*5},
  gorby:{x:{quit:18,ecofail:10,ousted:8},s:F=>lup(F.trn,60,90)*6+lup(F.d,0,-8)*6+lup(F.e,50,25)*5+(F.turn===-1?4:0)}, louis16:{x:{ousted:18,deposed:18,quit:10,ecofail:10,medfail:10},s:F=>lup(Math.abs(F.d),6,0)*8+lup(F.e,50,20)*6+lup(F.f,50,30)*4+(F.am||F.dict?-10:0)}};
+// 일치율(%): 이 커리어가 그 지도자의 판정표 점수에서 얼마나 가까웠는가. 판정표의 가중치를 다 채우는 일은 드무니 최대치의 80%를 100%로 본다
+function leadPct(id,F){const L=LFIT[id];if(!L||!F||L.x[F.ex]==null)return 0;let mx=0;const src=String(L.s);src.replace(/\)\*(\d+)/g,(m,w)=>{mx+=+w;return m;});src.replace(/\?(\d+):0/g,(m,w)=>{mx+=+w;return m;});
+  const v=L.x[F.ex]+L.s(F),den=L.x[F.ex]+mx*.8;return Math.max(1,Math.min(99,Math.round(v/den*100)));}
 function leaderOf(C){const F=LEADF=leadF(C),seen=MEM.leaders||{};
   const sc=LEADK.map(id=>{const L=LFIT[id];if(!L||L.x[F.ex]==null)return [id,-1e9];
     let v=L.x[F.ex]+L.s(F);if(LNOAM.has(id)&&(F.am||F.dict))v-=25;return [id,v];}).sort((a,b)=>b[1]-a[1]);
@@ -149,7 +152,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   const years=(CAR.term-1)*YRS+Math.max(1,Math.ceil(S.turn/PY)),age1=CAR.age0+years;
   const SC=careerScore(kind,years),csc=SC.total;
   const newBest=!god&&csc>(MEM.best100||0),newLead=!god&&!(MEM.leaders||{})[lid];
-  if(!god){MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=(+MEM.leaders[lid]||0)+1;msave();}
+  if(!god){MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=(+MEM.leaders[lid]||0)+1;MEM.leadPct=MEM.leadPct||{};try{MEM.leadPct[lid]=Math.max(+MEM.leadPct[lid]||0,leadPct(lid,LEADF));}catch(e){}msave();}
   // 오늘의 도전: 기록에 도전 날짜가 붙어 나간 뒤 원래 난수로 되돌린다(결산 화면의 꾸밈은 보통 난수로)
   const dcI=DC?{date:DC.date,ranked:DC.ranked}:null;dcDone(csc);
   sendCareer(EXH[kind]||kind,{lid:lid,csc:csc,years:years,good:good,bad:badN,SC:SC});dcEnd();

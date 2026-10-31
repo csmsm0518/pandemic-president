@@ -798,6 +798,12 @@ html:has(.npl.on) #app{padding-top:max(34px,calc(env(safe-area-inset-top) + 30px
 .pn-b{position:sticky;bottom:0;padding:10px 0 2px;background:linear-gradient(0deg,var(--surface-0,#f5f0e1) 70%,transparent)}
 .pn-b button{width:100%;padding:12px;font-size:15px}
 @media (orientation:landscape) and (max-height:540px){.gx-sl .gx-mi.gx-s{padding:3px 12px 3px 40px}.gx-mi.gx-s .gx-mt b{font-size:13.5px;line-height:1.25}}
+/* 오늘의 도전은 펼쳐지지 않으니 화살표가 없다 · 펼친 칸에도 작은 마크 */
+.gx-mi.gx-nx{grid-template-columns:34px minmax(0,1fr)}.gx-mi.gx-nx .gx-ar2{display:none}
+.gx-mi.gx-s{grid-template-columns:26px minmax(0,1fr) 14px;gap:12px;padding-left:34px}
+.gx-mi.gx-s .gx-ic{width:26px;height:26px;border-color:rgba(201,162,74,.28)}.gx-mi.gx-s .gx-ic svg{width:14px;height:14px}
+.gx-mi.gx-s.on .gx-ic{background:#c9a24a;border-color:#c9a24a;color:#15120e}
+@media (orientation:landscape) and (max-height:540px){.gx-sl .gx-mi.gx-s{padding-left:22px;gap:8px}.gx-mi.gx-s .gx-ic{width:20px;height:20px}.gx-mi.gx-s .gx-ic svg{width:11px;height:11px}}
 /* ---------- 전체 화면 연출(시네마) ---------- */
 .cine{position:fixed;inset:0;z-index:75;overflow:hidden;color:var(--dk-text);background:radial-gradient(ellipse at 50% 38%,#3a2e1c 0%,#1b1610 55%,#0b0907 100%);animation:dkFade .45s both}
 .cine.out{opacity:0;transition:opacity .45s ease;pointer-events:none}
