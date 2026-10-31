@@ -5,5 +5,6 @@
    h 지문 · r 보상(종류:대상, 여러 개는 +로 잇는다) · u 마지막 날(한국 시간, 그날까지 쓸 수 있다. 없으면 기한 없음) · l 받을 때 보이는 이름 */
 const CPN=[
 // @coupons-begin (tools/coupon.py가 이 사이를 고친다)
+{"h":"4e6597bb7759f1a627addaa2261295fc","r":"tok:3","l":"Claude 선물: 운명 개입 +3"},
 // @coupons-end
 ];

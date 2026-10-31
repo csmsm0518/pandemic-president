@@ -30,7 +30,7 @@ function svPut(a){for(let k=0;k<3;k++){try{localStorage.setItem(SAVES_KEY,JSON.s
 function svSave(at){if(!CAR||CAR.done||!S||!RUN)return false;try{const bad=[];
   const G={S:S,pool:pool,cur:cur,last:last,tally:tally,chron:chron,queue:queue,base:base,deaths:deaths,yd:yd,MOD:MOD,tok:tok,streak:streak,lastT:lastT,lastO:lastO,
     peakI:peakI,hist:hist,adv:adv,CAR:CAR,TH:TH,SEEN:SEEN,YS:YS,yTally:yTally,cDeaths:cDeaths,covD:covD,SEENT:SEENT,SEENN:SEENN,banner:banner,pendingNews:pendingNews,LOG:LOG,RUN:RUN};
-  const d={v:1,id:RUN.id,at:at,t:Date.now(),camp:camp,bg:bg,mode:mode,dif:dif,nick:NICK,pf:PF,pin:PINH,el:Date.now()-T0,bn:!!cur&&bnSeen===cur,dt:MAP.dtgt,
+  const d={v:1,dv:2,id:RUN.id,at:at,t:Date.now(),camp:camp,bg:bg,mode:mode,dif:dif,nick:NICK,pf:PF,pin:PINH,el:Date.now()-T0,bn:!!cur&&bnSeen===cur,dt:MAP.dtgt,
     meta:{n:CP.n,who:CAR.bgn,term:CAR.term,year:Math.min(YRS,Math.floor(S.turn/PY)+1),jo:CP.id==='joseon',dif:DIFF[dif].n},g:svEnc(G,bad,'')};
   if(bad.length)console.warn('[저장] 저장할 수 없는 값',bad.slice(0,8));
   return svPut([d].concat(svList().filter(x=>x.id!==d.id)).slice(0,SV_MAX));}catch(e){return false;}}
@@ -77,18 +77,19 @@ let SVAT=null;
 const ICO_MENU='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
 const moreBtn=()=>'<button class="g-more" aria-label="게임 메뉴">'+ICO_MENU+'</button>';
 const svActs=()=>'<div class="gs-act"><button data-sv="save">저장하기</button><button data-sv="exit">저장하고 나가기</button><button data-sv="quit" class="gs-quit">하야하기</button>'+
+  '<button data-sv="bag" class="gs-bag">보관함'+bagBadge()+'</button>'+
   '<button data-sv="pin" class="gs-pin">'+ICO2.lock+'<span>'+pinLabel()+'</span></button></div>';
 // 작은 창(소리 설정과 같은 모양). 바깥을 누르거나 Esc·✕로 닫는다.
 function pop(title,body){let o=document.querySelector('.svp-bg');if(o)o.remove();o=document.createElement('div');o.className='sndp-bg svp-bg';
   o.innerHTML='<div class="sndp svp" role="dialog" aria-label="'+title+'"><div class="sndp-h"><span>'+title+'</span><button class="sndp-x" aria-label="닫기">✕</button></div>'+body+'</div>';
   document.body.appendChild(o);const close=()=>o.remove();o.onclick=e=>{if(e.target===o)close();};o.querySelector('.sndp-x').onclick=close;
   o.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape')close();});o.close=close;return o;}
-function svAct(k){if(k==='pin')return pinSet();if(DC){eggToast('오늘의 도전은 저장할 수 없어요. 한 번에 끝까지 해 주세요.');return;}if(!SVAT){eggToast('지금은 할 수 없어요. 결정 화면이나 결과 화면에서 다시 눌러 주세요.');return;}
+function svAct(k){if(k==='pin')return pinSet();if(k==='bag')return bagOpen();if(DC){eggToast('오늘의 도전은 저장할 수 없어요. 한 번에 끝까지 해 주세요.');return;}if(!SVAT){eggToast('지금은 할 수 없어요. 결정 화면이나 결과 화면에서 다시 눌러 주세요.');return;}
   if(k==='quit')return quitAsk();
   if(!svSave(SVAT)){eggToast('저장하지 못했어요. 브라우저 저장 공간을 확인해 주세요.');return;}
   if(k==='exit'){SFX.back();return home();}
   SFX.coin();eggToast('저장했어요. 메인 화면의 <b>불러오기</b>에서 이어서 할 수 있어요.');}
-function gameMenu(){const o=pop('게임 메뉴','<div class="gm-acts">'+[['save','저장하기','지금 이 순간을 이 기기에 저장한다'],['pin',pinLabel(),'이 판을 불러오거나 지울 때 물어볼 숫자 4자리'],['exit','저장하고 나가기','저장한 뒤 메인 화면으로 나간다'],['quit','하야하기','스스로 물러나 커리어를 끝낸다']]
+function gameMenu(){const o=pop('게임 메뉴','<div class="gm-acts">'+[['save','저장하기','지금 이 순간을 이 기기에 저장한다'],['pin',pinLabel(),'이 판을 불러오거나 지울 때 물어볼 숫자 4자리'],['bag','보관함'+bagBadge(),'쿠폰으로 받은 스텟 펌핑을 지금 쓴다'],['exit','저장하고 나가기','저장한 뒤 메인 화면으로 나간다'],['quit','하야하기','스스로 물러나 커리어를 끝낸다']]
     .map(x=>'<button data-k="'+x[0]+'"><b>'+x[1]+'</b><small>'+x[2]+'</small></button>').join('')+'</div>');
   o.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{o.close();svAct(b.dataset.k);});o.querySelector('[data-k]').focus();}
 function quitAsk(){const o=pop('하야','<div class="svp-pin"><p>정말 하야하시겠습니까?<br>커리어가 지금 끝나고, 결말은 <b>스스로 하야했다</b>가 된다.</p><div class="svp-b"><button id="qNo">계속 다스린다</button><button id="qYes" class="gs-quit-b">하야한다</button></div></div>');
@@ -154,7 +155,7 @@ function lbDet(r,rk){const d=r.det,dv=v=>v==null||v===''?'–':Number(v).toLocal
     L('대성공 · 성공',dv(D[0])+' · '+dv(D[1]))+L('실패 · 대실패',dv(D[2])+' · '+dv(D[3]))+L('권력 집중 선택',dv(R[0]))+L('견제·분산 선택',dv(R[1]))+L('업적 · 불명예',dv(T[0])+' · '+dv(T[1]))+L('내린 결정',dv(d.n)+'번')+'</dl>'+
     (d.camp||d.scen?'<p class="lbd-p"><b>겪은 위기</b>'+lbEsc([d.camp,d.scen].filter(Boolean).join(' · '))+'</p>':'')+(d.titles?'<p class="lbd-p"><b>임기 평가</b>'+lbEsc(d.titles)+'</p>':'')+'</div>';}function svLoad(id){const d=svList().find(x=>x.id===id);
   if(!d||d.v!==1||!CAMPS[d.camp]){svDrop(id);return home();}
-  try{camp=d.camp;bg=d.bg;mode=d.mode;dif=d.dif;NICK=d.nick||NICK;godSync();if(d.pf)PF=Object.assign({school:'',name:'',phone:'',agree:false},d.pf);PINH=d.pin||'';
+  try{camp=d.camp;bg=d.bg;mode=d.mode;dif=d.dv>=2?d.dif:Math.max(0,d.dif-1);NICK=d.nick||NICK;godSync();if(d.pf)PF=Object.assign({school:'',name:'',phone:'',agree:false},d.pf);PINH=d.pin||'';
     cineClose();cfgApply();
     ({S,pool,cur,last,tally,chron,queue,base,deaths,yd,MOD,tok,streak,lastT,lastO,peakI,hist,adv,CAR,TH,SEEN,YS,yTally,cDeaths,covD,SEENT,SEENN,banner,pendingNews,LOG,RUN}=svDec(d.g));
     prev=null;snap=null;T0=Date.now()-(d.el||0);SHOWN=0;tfLast=null;alLast=null;lastFit={q:0,why:[]};lastS=1;

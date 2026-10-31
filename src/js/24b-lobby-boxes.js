@@ -16,3 +16,31 @@ function boxBind(pre,snd){const s=document.getElementById(pre+'Sug'),c=document.
 // 쿠폰으로 받아 둔 운명 개입: 다음 새 게임을 시작할 때 한 번에 꺼내 쓴다. 조성민(데우스 엑스 마키나) 판에는 쓰지 않고 남겨 둔다.
 // 공정한 비교를 위해 몇 개를 받았는지 연구 기록(RUN.cpTok → 요약 시트 '쿠폰 운명 개입')에 남긴다
 function cpTokUse(){const n=Math.max(0,Math.min(9,Math.floor(+MEM.cpTok||0)));if(!n||godRun()||DC)return 0;delete MEM.cpTok;msave();if(RUN)RUN.cpTok=n;return n;}
+
+// ---------- 보관함: 쿠폰으로 받은 스텟 펌핑 ----------
+// 쿠폰이 스텟 이름을 정해 준다(pump:a 지지율 · e 경제 · h 방역 칸 · m 군사 · p 권력 · x 혼란). MEM.bag = {a:개수,…}에 쌓아 두고,
+// 한 판 안에서 게임 메뉴(≡ 또는 왼쪽 아래)의 「보관함」으로 아무 때나 하나씩 쓴다. 화면 지표 하나를 BAG_AMT만큼 좋은 쪽으로 올린다
+// (혼란은 낮춘다). 엔진 지표 여러 개가 한 화면 지표를 이루므로 그 가중치대로 나눠 올린다. 오늘의 도전 · 조성민 판에서는 쓸 수 없다.
+// 공정한 비교를 위해 쓴 횟수를 연구 기록(RUN.cpPump → couponPump)에 남긴다.
+const BAG_AMT=10,BAG_V={a:'A',e:'E',h:'H',m:'M',p:'P',x:'X'},BAG_MAX=9;
+const bagN=()=>{const b=MEM.bag||{};return Object.keys(BAG_V).reduce((s,k)=>s+Math.max(0,+b[k]||0),0);};
+const bagBadge=()=>bagN()?' <small class="bg-n">'+bagN()+'</small>':'';
+const bagName=k=>{const V=BAG_V[k];return V==='X'?vName(V)+' 낮추기':vName(V)+' 올리기';};
+function bagAdd(k,n){if(!BAG_V[k])return 0;MEM.bag=MEM.bag||{};MEM.bag[k]=Math.min(BAG_MAX,(+MEM.bag[k]||0)+(n||1));msave();return MEM.bag[k];}
+function bagUse(k){const V=BAG_V[k],n=+(MEM.bag&&MEM.bag[k])||0;if(!V||n<1||!S)return false;
+  const d=V6[V],sg=d.pol<0?-1:1,ws=Object.keys(d.w),den=ws.reduce((a,x)=>a+d.w[x]*d.w[x],0);
+  const ap=T=>{if(T)ws.forEach(x=>{T[x]=cl((+T[x]||0)+sg*BAG_AMT*d.w[x]/den);});};
+  ap(S);if(snap&&snap.S)ap(snap.S);                       // 운명 개입으로 되돌려도 펌핑은 남도록 직전 상태에도 넣는다
+  MEM.bag[k]=n-1;if(!MEM.bag[k])delete MEM.bag[k];msave();if(RUN)RUN.cpPump=(RUN.cpPump||0)+1;
+  document.querySelectorAll('.sg6').forEach(el=>{el.outerHTML=statsHTML();});
+  return true;}
+function bagOpen(){
+  if(!S||!CAR)return eggToast('보관함은 게임 중에만 열 수 있어요.');
+  if(DC)return eggToast('오늘의 도전에서는 보관함을 쓸 수 없어요.');
+  if(godRun())return eggToast('이 판에서는 보관함을 쓸 수 없어요.');
+  const o=pop('보관함','<div class="bg-list"></div><p class="bg-note">쿠폰으로 받은 스텟 펌핑이에요. 한 판 안에서 아무 때나 쓸 수 있고, 하나에 지표 <b>+'+BAG_AMT+'</b>이에요. 쓴 만큼 사라져요.</p>');
+  const draw=()=>{const b=MEM.bag||{},ks=Object.keys(BAG_V).filter(k=>+b[k]>0);
+    o.querySelector('.bg-list').innerHTML=ks.length?ks.map(k=>'<div class="bg-r"><span><b>'+bagName(k)+'</b><small>'+vName(BAG_V[k])+' 지금 '+Math.round(vVal(BAG_V[k]))+'</small></span><em>×'+b[k]+'</em><button data-k="'+k+'" class="pri">쓰기</button></div>').join('')
+      :'<p class="bg-empty">받아 둔 스텟 펌핑이 없어요.<br>메인 화면의 쿠폰함에서 쿠폰을 넣으면 여기에 쌓여요.</p>';
+    o.querySelectorAll('.bg-r button').forEach(x=>x.onclick=()=>{if(bagUse(x.dataset.k)){SFX.coin();vib([20]);draw();eggToast(bagName(x.dataset.k)+' 완료! '+vName(BAG_V[x.dataset.k])+' <b>'+Math.round(vVal(BAG_V[x.dataset.k]))+'</b>');}});};
+  draw();}

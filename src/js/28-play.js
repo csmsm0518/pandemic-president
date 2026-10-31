@@ -226,7 +226,7 @@ function fitOf(o,opts){const e=o[1],why=[];
   if((e.a||0)<0&&S.a<30){cap-=.2;why.push(['-','지지율이 바닥이라 밀어붙일 힘이 없었다',.2,'지지율이 바닥이라 밀어붙일 힘이 없다']);}
   if((e.i||0)<=-9&&S.m<30){cap-=.15;why.push(['-','의료 현장이 버티지 못했다',.15,'의료 현장이 버티지 못할 수 있다']);}
   if(streak>=3){cap+=.1;why.push(['+','연속 성공의 흐름을 탔다',.1,'연속 성공의 흐름을 타고 있다']);}
-  const q=Math.max(-1,Math.min(1,.65*qn+.35*gov+cap-.06*dif-.04*(CAR.term-1)));
+  const q=Math.max(-1,Math.min(1,.65*qn+.35*gov+cap-.06*(dif+1)-.04*(CAR.term-1)));
   why.sort((a,b)=>b[2]-a[2]);
   return {q:Math.round(q*100)/100,why:why.slice(0,3),all:why};}
 let lastFit={q:0,why:[]},lastS=1;

@@ -74,6 +74,7 @@ const cpnDay=(d,y)=>{const p=String(d||'').split('-');return p.length<3?'':(y?(+
 // 비밀 인물: 대한민국 · 조선 · 미국 명단에서 sec가 있는 인물(좀비 무대의 인물은 고를 수 없어서 뺀다)
 const cpnFig=()=>{const o={};['kr','joseon','usa'].forEach(c=>((CAMPS[c]&&CAMPS[c].bg)||[]).forEach(q=>{if(q.sec&&!q.god)o[q.sec]=q;}));return o;};
 // 보상 종류(tools/coupon.py의 REWARDS와 이름을 맞춘다). 대상에 all을 쓰면 그 종류를 모두 준다. 모르는 종류 · 대상은 건너뛴다
+const BAG_NM={a:'지지율 +'+BAG_AMT,e:'경제 +'+BAG_AMT,h:'방역(위기 대응) +'+BAG_AMT,m:'군사 +'+BAG_AMT,p:'권력 +'+BAG_AMT,x:'혼란 −'+BAG_AMT};
 const CPN_R={
   mini:{ids:()=>MINI.map(x=>x.id),n:id=>'미니게임 「'+MINI.find(x=>x.id===id).n+'」',v:'열림',w:'미니게임은 새 게임 → 미니게임 탭에서 할 수 있어요.',has:id=>eggOn(id),
     give:id=>{eggSet(id);if(id==='sail'&&MEM.sailHint){delete MEM.sailHint;msave();}}},
@@ -83,6 +84,7 @@ const CPN_R={
     give:id=>{MEM.sec=MEM.sec||{};MEM.sec[id]=1;if(MEM.secUsed)delete MEM.secUsed[id];msave();}},
   dex:{ids:()=>LEADK.slice(),n:id=>'지도자 「'+LEAD[id].n+'」',v:'도감에 오름',w:'도감은 메인 화면의 도감에서 볼 수 있어요.',has:id=>!!(MEM.leaders&&MEM.leaders[id]),
     give:id=>{MEM.leaders=MEM.leaders||{};if(!MEM.leaders[id])MEM.leaders[id]=1;msave();}},
+  pump:{ids:()=>Object.keys(BAG_V),n:id=>'스텟 펌핑 「'+BAG_NM[id]+'」',v:'보관함에 담김',w:'스텟 펌핑은 게임 중 메뉴의 보관함에서 아무 때나 쓸 수 있어요.',has:()=>false,give:id=>{bagAdd(id,1);}},
   tok:{n:k=>'운명 개입 '+k+'번',v:'받음',w:'운명 개입은 다음 새 게임을 시작할 때 한꺼번에 들어가요.',give:k=>{MEM.cpTok=Math.min(9,(+MEM.cpTok||0)+k);msave();}}};
 function cpnGive(r){const G=[];String(r||'').split('+').forEach(p=>{const i=p.indexOf(':'),t=p.slice(0,i).trim(),a=p.slice(i+1).trim(),X=CPN_R[t];if(i<0||!X)return;
     if(t==='tok'){const k=Math.floor(+a);if(k>=1&&k<=5){X.give(k);G.push({s:X.n(k),v:X.v,w:X.w});}return;}
@@ -95,6 +97,7 @@ function cpnForm(b){const M=MEM.cpn||{},L=Object.keys(M).map(h=>M[h]).sort((x,y)
   b.innerHTML='<p class="bx-p">이벤트나 공지에서 받은 쿠폰 번호를 넣어 주세요. 쿠폰마다 이 기기에서 한 번 받을 수 있어요.</p>'+
     '<form class="bx-cf" autocomplete="off"><input id="cpnIn" class="bx-code" maxlength="40" placeholder="쿠폰 번호" aria-label="쿠폰 번호" autocapitalize="characters" autocorrect="off" spellcheck="false"><button type="submit" class="pri" id="cpnGo">받기</button></form>'+
     '<div class="bx-err" id="cpnErr" role="alert"></div>'+
+    (bagN()?'<p class="bx-tok">보관함 <b>스텟 펌핑 '+bagN()+'개</b> · '+Object.keys(BAG_V).filter(k=>+MEM.bag[k]>0).map(k=>BAG_NM[k]+' ×'+MEM.bag[k]).join(' · ')+' · 게임 중 메뉴에서 써요.</p>':'')+
     (+MEM.cpTok>0?'<p class="bx-tok">받아 둔 운명 개입 <b>+'+MEM.cpTok+'</b> · 다음 새 게임을 시작할 때 들어가요.</p>':'')+
     (L.length?lab('받은 쿠폰 · '+L.length+'장')+'<ul class="bx-got">'+L.map(c=>'<li><b>'+gEsc(c.l||'쿠폰')+'</b><span>'+gEsc(c.g||'')+'</span><time>'+cpnDay(c.d)+'</time></li>').join('')+'</ul>':'');
   const inp=b.querySelector('#cpnIn');

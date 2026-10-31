@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"bd9735212d","h":"f87737383d4b62a2"},"boxes":{"v":"ae544c3fad","h":"90cc2bc64ec1e74e"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"daily":{"v":"3df0acdc03","h":"d53cbeb46a96c3a9"},"dex":{"v":"2a6897149d","h":"10d66cd2c1d2e3d2"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"900873e729","h":"baa4ae536c174a73"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"sail":{"v":"52843663ea","h":"8feef78866c4c88b"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"05c38e8117","h":"cbc2e48319ab51e8"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
+const LZ_M={"board":{"v":"c00012fc7d","h":"36258d130deedbab"},"boxes":{"v":"09b35e2a73","h":"53ed3fa93c762d78"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"daily":{"v":"3df0acdc03","h":"d53cbeb46a96c3a9"},"dex":{"v":"2a6897149d","h":"10d66cd2c1d2e3d2"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"e6c3091727","h":"d51b1bc3363ada34"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"sail":{"v":"52843663ea","h":"8feef78866c4c88b"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"05c38e8117","h":"cbc2e48319ab51e8"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
 function sugOpen(){return lzCall('boxes','sugOpen',arguments);}
 function cpnOpen(){return lzCall('boxes','cpnOpen',arguments);}
@@ -38,8 +38,8 @@ function simSkate(){return lzCall('wskate','simSkate',arguments);}
 const R=document.getElementById('root'),cl=v=>Math.max(0,Math.min(100,v)),DPR=window.devicePixelRatio||1;
 const BAD={i:1,c:1,u:1};let YRS=5,MAXT=5,PY=6,EVS=.78,TPT=2;
 const INIT={i:12,m:62,a:58,e:64,p:32,c:10,u:22,chk:76,trn:68,saf:52,mil:50};
-// 예전의 보통·어려움·지옥이 지금의 쉬움·보통·어려움이고, 지옥은 그보다 한 단계 더 가혹하다. 처음에는 보통(dif=1)에서 시작한다.
-const DIFF=[{n:'쉬움',r:0,dd:1,ad:0,fl:3},{n:'보통',r:.028,dd:1.25,ad:.12,fl:4},{n:'어려움',r:.058,dd:1.6,ad:.26,fl:6},{n:'지옥',r:.09,dd:2,ad:.4,fl:9}];
+// v4.7: 지옥을 없애고 한 단계씩 올렸다. 지금의 쉬움은 v4.6의 보통, 보통은 v4.6의 어려움, 어려움은 v4.6의 지옥이다. 처음에는 보통(dif=1)에서 시작한다.
+const DIFF=[{n:'쉬움',r:.028,dd:1.25,ad:.12,fl:4},{n:'보통',r:.058,dd:1.6,ad:.26,fl:6},{n:'어려움',r:.09,dd:2,ad:.4,fl:9}];
 const ICO={vol:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>',
  mute:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 5 6M21 9l-5 6"/></svg>'};
 
@@ -5663,6 +5663,34 @@ function boxBind(pre,snd){const s=document.getElementById(pre+'Sug'),c=document.
 // 쿠폰으로 받아 둔 운명 개입: 다음 새 게임을 시작할 때 한 번에 꺼내 쓴다. 조성민(데우스 엑스 마키나) 판에는 쓰지 않고 남겨 둔다.
 // 공정한 비교를 위해 몇 개를 받았는지 연구 기록(RUN.cpTok → 요약 시트 '쿠폰 운명 개입')에 남긴다
 function cpTokUse(){const n=Math.max(0,Math.min(9,Math.floor(+MEM.cpTok||0)));if(!n||godRun()||DC)return 0;delete MEM.cpTok;msave();if(RUN)RUN.cpTok=n;return n;}
+
+// ---------- 보관함: 쿠폰으로 받은 스텟 펌핑 ----------
+// 쿠폰이 스텟 이름을 정해 준다(pump:a 지지율 · e 경제 · h 방역 칸 · m 군사 · p 권력 · x 혼란). MEM.bag = {a:개수,…}에 쌓아 두고,
+// 한 판 안에서 게임 메뉴(≡ 또는 왼쪽 아래)의 「보관함」으로 아무 때나 하나씩 쓴다. 화면 지표 하나를 BAG_AMT만큼 좋은 쪽으로 올린다
+// (혼란은 낮춘다). 엔진 지표 여러 개가 한 화면 지표를 이루므로 그 가중치대로 나눠 올린다. 오늘의 도전 · 조성민 판에서는 쓸 수 없다.
+// 공정한 비교를 위해 쓴 횟수를 연구 기록(RUN.cpPump → couponPump)에 남긴다.
+const BAG_AMT=10,BAG_V={a:'A',e:'E',h:'H',m:'M',p:'P',x:'X'},BAG_MAX=9;
+const bagN=()=>{const b=MEM.bag||{};return Object.keys(BAG_V).reduce((s,k)=>s+Math.max(0,+b[k]||0),0);};
+const bagBadge=()=>bagN()?' <small class="bg-n">'+bagN()+'</small>':'';
+const bagName=k=>{const V=BAG_V[k];return V==='X'?vName(V)+' 낮추기':vName(V)+' 올리기';};
+function bagAdd(k,n){if(!BAG_V[k])return 0;MEM.bag=MEM.bag||{};MEM.bag[k]=Math.min(BAG_MAX,(+MEM.bag[k]||0)+(n||1));msave();return MEM.bag[k];}
+function bagUse(k){const V=BAG_V[k],n=+(MEM.bag&&MEM.bag[k])||0;if(!V||n<1||!S)return false;
+  const d=V6[V],sg=d.pol<0?-1:1,ws=Object.keys(d.w),den=ws.reduce((a,x)=>a+d.w[x]*d.w[x],0);
+  const ap=T=>{if(T)ws.forEach(x=>{T[x]=cl((+T[x]||0)+sg*BAG_AMT*d.w[x]/den);});};
+  ap(S);if(snap&&snap.S)ap(snap.S);                       // 운명 개입으로 되돌려도 펌핑은 남도록 직전 상태에도 넣는다
+  MEM.bag[k]=n-1;if(!MEM.bag[k])delete MEM.bag[k];msave();if(RUN)RUN.cpPump=(RUN.cpPump||0)+1;
+  document.querySelectorAll('.sg6').forEach(el=>{el.outerHTML=statsHTML();});
+  return true;}
+function bagOpen(){
+  if(!S||!CAR)return eggToast('보관함은 게임 중에만 열 수 있어요.');
+  if(DC)return eggToast('오늘의 도전에서는 보관함을 쓸 수 없어요.');
+  if(godRun())return eggToast('이 판에서는 보관함을 쓸 수 없어요.');
+  const o=pop('보관함','<div class="bg-list"></div><p class="bg-note">쿠폰으로 받은 스텟 펌핑이에요. 한 판 안에서 아무 때나 쓸 수 있고, 하나에 지표 <b>+'+BAG_AMT+'</b>이에요. 쓴 만큼 사라져요.</p>');
+  const draw=()=>{const b=MEM.bag||{},ks=Object.keys(BAG_V).filter(k=>+b[k]>0);
+    o.querySelector('.bg-list').innerHTML=ks.length?ks.map(k=>'<div class="bg-r"><span><b>'+bagName(k)+'</b><small>'+vName(BAG_V[k])+' 지금 '+Math.round(vVal(BAG_V[k]))+'</small></span><em>×'+b[k]+'</em><button data-k="'+k+'" class="pri">쓰기</button></div>').join('')
+      :'<p class="bg-empty">받아 둔 스텟 펌핑이 없어요.<br>메인 화면의 쿠폰함에서 쿠폰을 넣으면 여기에 쌓여요.</p>';
+    o.querySelectorAll('.bg-r button').forEach(x=>x.onclick=()=>{if(bagUse(x.dataset.k)){SFX.coin();vib([20]);draw();eggToast(bagName(x.dataset.k)+' 완료! '+vName(BAG_V[x.dataset.k])+' <b>'+Math.round(vVal(BAG_V[x.dataset.k]))+'</b>');}});};
+  draw();}
 /* ---------- 오늘의 도전: 하루 한 판, 모두가 같은 조건 ----------
    날짜(한국 시간)로 그날의 판을 정한다: 무대는 대한민국 · 조선 · 미국을 날마다 돌아가며, 출발 인물은 그 무대의 기본 인물 가운데 하나,
    난이도 보통 · 속전속결 · 한 임기. 순위에는 그날 처음 시작한 판만 올라가고(첫 판), 그 판을 마친 뒤에는 같은 판을 연습할 수 있다.
@@ -6071,7 +6099,7 @@ function stepLeader(){if(camp==='zombie')return zgOpen();const C=CAMPS[camp],BGS
   draw(k);}
 // 3단계: 결정 빈도 · 난이도 · 튜토리얼을 ◀ ▶로 고르고 취임한다
 function stepSetup(){const C=CAMPS[camp],B=C.bg[bg];if(!B||bgLock(B))return stepLeader();
-  const DD=['위기가 느리게 자란다','기본 난이도','위기가 한층 가혹하다','숨 돌릴 틈이 없다'];
+  const DD=['위기가 느리게 자란다','기본 난이도','숨 돌릴 틈이 없다'];
   const ROWS=[{l:'결정 빈도',n:MODE.length,get:()=>mode,set:v=>{mode=v;},val:v=>MODE[v].n,d:v=>MODE[v].d},
     {l:'난이도',n:DIFF.length,get:()=>dif,set:v=>{dif=v;},val:v=>DIFF[v].n,d:v=>DD[v],pips:1},
     {l:'튜토리얼',n:2,get:()=>tutOn()?0:1,set:v=>{MEM.tut=v===0;msave();},val:v=>v?'끄기':'켜기',d:v=>v?'설명 없이 바로 시작한다':'처음이라면 추천'}];
@@ -6132,7 +6160,7 @@ function svPut(a){for(let k=0;k<3;k++){try{localStorage.setItem(SAVES_KEY,JSON.s
 function svSave(at){if(!CAR||CAR.done||!S||!RUN)return false;try{const bad=[];
   const G={S:S,pool:pool,cur:cur,last:last,tally:tally,chron:chron,queue:queue,base:base,deaths:deaths,yd:yd,MOD:MOD,tok:tok,streak:streak,lastT:lastT,lastO:lastO,
     peakI:peakI,hist:hist,adv:adv,CAR:CAR,TH:TH,SEEN:SEEN,YS:YS,yTally:yTally,cDeaths:cDeaths,covD:covD,SEENT:SEENT,SEENN:SEENN,banner:banner,pendingNews:pendingNews,LOG:LOG,RUN:RUN};
-  const d={v:1,id:RUN.id,at:at,t:Date.now(),camp:camp,bg:bg,mode:mode,dif:dif,nick:NICK,pf:PF,pin:PINH,el:Date.now()-T0,bn:!!cur&&bnSeen===cur,dt:MAP.dtgt,
+  const d={v:1,dv:2,id:RUN.id,at:at,t:Date.now(),camp:camp,bg:bg,mode:mode,dif:dif,nick:NICK,pf:PF,pin:PINH,el:Date.now()-T0,bn:!!cur&&bnSeen===cur,dt:MAP.dtgt,
     meta:{n:CP.n,who:CAR.bgn,term:CAR.term,year:Math.min(YRS,Math.floor(S.turn/PY)+1),jo:CP.id==='joseon',dif:DIFF[dif].n},g:svEnc(G,bad,'')};
   if(bad.length)console.warn('[저장] 저장할 수 없는 값',bad.slice(0,8));
   return svPut([d].concat(svList().filter(x=>x.id!==d.id)).slice(0,SV_MAX));}catch(e){return false;}}
@@ -6179,18 +6207,19 @@ let SVAT=null;
 const ICO_MENU='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
 const moreBtn=()=>'<button class="g-more" aria-label="게임 메뉴">'+ICO_MENU+'</button>';
 const svActs=()=>'<div class="gs-act"><button data-sv="save">저장하기</button><button data-sv="exit">저장하고 나가기</button><button data-sv="quit" class="gs-quit">하야하기</button>'+
+  '<button data-sv="bag" class="gs-bag">보관함'+bagBadge()+'</button>'+
   '<button data-sv="pin" class="gs-pin">'+ICO2.lock+'<span>'+pinLabel()+'</span></button></div>';
 // 작은 창(소리 설정과 같은 모양). 바깥을 누르거나 Esc·✕로 닫는다.
 function pop(title,body){let o=document.querySelector('.svp-bg');if(o)o.remove();o=document.createElement('div');o.className='sndp-bg svp-bg';
   o.innerHTML='<div class="sndp svp" role="dialog" aria-label="'+title+'"><div class="sndp-h"><span>'+title+'</span><button class="sndp-x" aria-label="닫기">✕</button></div>'+body+'</div>';
   document.body.appendChild(o);const close=()=>o.remove();o.onclick=e=>{if(e.target===o)close();};o.querySelector('.sndp-x').onclick=close;
   o.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape')close();});o.close=close;return o;}
-function svAct(k){if(k==='pin')return pinSet();if(DC){eggToast('오늘의 도전은 저장할 수 없어요. 한 번에 끝까지 해 주세요.');return;}if(!SVAT){eggToast('지금은 할 수 없어요. 결정 화면이나 결과 화면에서 다시 눌러 주세요.');return;}
+function svAct(k){if(k==='pin')return pinSet();if(k==='bag')return bagOpen();if(DC){eggToast('오늘의 도전은 저장할 수 없어요. 한 번에 끝까지 해 주세요.');return;}if(!SVAT){eggToast('지금은 할 수 없어요. 결정 화면이나 결과 화면에서 다시 눌러 주세요.');return;}
   if(k==='quit')return quitAsk();
   if(!svSave(SVAT)){eggToast('저장하지 못했어요. 브라우저 저장 공간을 확인해 주세요.');return;}
   if(k==='exit'){SFX.back();return home();}
   SFX.coin();eggToast('저장했어요. 메인 화면의 <b>불러오기</b>에서 이어서 할 수 있어요.');}
-function gameMenu(){const o=pop('게임 메뉴','<div class="gm-acts">'+[['save','저장하기','지금 이 순간을 이 기기에 저장한다'],['pin',pinLabel(),'이 판을 불러오거나 지울 때 물어볼 숫자 4자리'],['exit','저장하고 나가기','저장한 뒤 메인 화면으로 나간다'],['quit','하야하기','스스로 물러나 커리어를 끝낸다']]
+function gameMenu(){const o=pop('게임 메뉴','<div class="gm-acts">'+[['save','저장하기','지금 이 순간을 이 기기에 저장한다'],['pin',pinLabel(),'이 판을 불러오거나 지울 때 물어볼 숫자 4자리'],['bag','보관함'+bagBadge(),'쿠폰으로 받은 스텟 펌핑을 지금 쓴다'],['exit','저장하고 나가기','저장한 뒤 메인 화면으로 나간다'],['quit','하야하기','스스로 물러나 커리어를 끝낸다']]
     .map(x=>'<button data-k="'+x[0]+'"><b>'+x[1]+'</b><small>'+x[2]+'</small></button>').join('')+'</div>');
   o.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{o.close();svAct(b.dataset.k);});o.querySelector('[data-k]').focus();}
 function quitAsk(){const o=pop('하야','<div class="svp-pin"><p>정말 하야하시겠습니까?<br>커리어가 지금 끝나고, 결말은 <b>스스로 하야했다</b>가 된다.</p><div class="svp-b"><button id="qNo">계속 다스린다</button><button id="qYes" class="gs-quit-b">하야한다</button></div></div>');
@@ -6256,7 +6285,7 @@ function lbDet(r,rk){const d=r.det,dv=v=>v==null||v===''?'–':Number(v).toLocal
     L('대성공 · 성공',dv(D[0])+' · '+dv(D[1]))+L('실패 · 대실패',dv(D[2])+' · '+dv(D[3]))+L('권력 집중 선택',dv(R[0]))+L('견제·분산 선택',dv(R[1]))+L('업적 · 불명예',dv(T[0])+' · '+dv(T[1]))+L('내린 결정',dv(d.n)+'번')+'</dl>'+
     (d.camp||d.scen?'<p class="lbd-p"><b>겪은 위기</b>'+lbEsc([d.camp,d.scen].filter(Boolean).join(' · '))+'</p>':'')+(d.titles?'<p class="lbd-p"><b>임기 평가</b>'+lbEsc(d.titles)+'</p>':'')+'</div>';}function svLoad(id){const d=svList().find(x=>x.id===id);
   if(!d||d.v!==1||!CAMPS[d.camp]){svDrop(id);return home();}
-  try{camp=d.camp;bg=d.bg;mode=d.mode;dif=d.dif;NICK=d.nick||NICK;godSync();if(d.pf)PF=Object.assign({school:'',name:'',phone:'',agree:false},d.pf);PINH=d.pin||'';
+  try{camp=d.camp;bg=d.bg;mode=d.mode;dif=d.dv>=2?d.dif:Math.max(0,d.dif-1);NICK=d.nick||NICK;godSync();if(d.pf)PF=Object.assign({school:'',name:'',phone:'',agree:false},d.pf);PINH=d.pin||'';
     cineClose();cfgApply();
     ({S,pool,cur,last,tally,chron,queue,base,deaths,yd,MOD,tok,streak,lastT,lastO,peakI,hist,adv,CAR,TH,SEEN,YS,yTally,cDeaths,covD,SEENT,SEENN,banner,pendingNews,LOG,RUN}=svDec(d.g));
     prev=null;snap=null;T0=Date.now()-(d.el||0);SHOWN=0;tfLast=null;alLast=null;lastFit={q:0,why:[]};lastS=1;
@@ -6580,7 +6609,7 @@ function fitOf(o,opts){const e=o[1],why=[];
   if((e.a||0)<0&&S.a<30){cap-=.2;why.push(['-','지지율이 바닥이라 밀어붙일 힘이 없었다',.2,'지지율이 바닥이라 밀어붙일 힘이 없다']);}
   if((e.i||0)<=-9&&S.m<30){cap-=.15;why.push(['-','의료 현장이 버티지 못했다',.15,'의료 현장이 버티지 못할 수 있다']);}
   if(streak>=3){cap+=.1;why.push(['+','연속 성공의 흐름을 탔다',.1,'연속 성공의 흐름을 타고 있다']);}
-  const q=Math.max(-1,Math.min(1,.65*qn+.35*gov+cap-.06*dif-.04*(CAR.term-1)));
+  const q=Math.max(-1,Math.min(1,.65*qn+.35*gov+cap-.06*(dif+1)-.04*(CAR.term-1)));
   why.sort((a,b)=>b[2]-a[2]);
   return {q:Math.round(q*100)/100,why:why.slice(0,3),all:why};}
 let lastFit={q:0,why:[]},lastS=1;
@@ -8191,7 +8220,7 @@ function acEnter(id,p){PF={school:p.school,name:p.name,phone:p.phone||'',agree:t
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v4.6';
+const GAME_VER='v4.7';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -8267,7 +8296,7 @@ function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.len
     ins:Math.round(lt.ins),peakP:Math.round(RUN.pkP),peakC:Math.round(RUN.pkC),auth:lt.auth?'예':'아니오',
     nChoices:N.length,nConc:cnt('권력 집중'),nDisp:cnt('견제·분산'),nNeut:cnt('중립'),avgDir:avg(N.map(z=>z.dirScore)),
     dirY1:yr(1),dirY2:yr(2),dirY3:yr(3),dirY4:yr(4),firstConcTurn:fc?fc.cturn:'',crisis:RUN.crisis.join(' / '),
-    dice0:tally[0],dice1:tally[1],dice2:tally[2],dice3:tally[3],rerolls:RUN.rr,tokensLeft:tok,couponTok:RUN.cpTok||0,dcDate:DC?DC.date:'',dcRanked:DC&&DC.ranked?'예':'',mid:PF.mid||'',mtok:acTok(),
+    dice0:tally[0],dice1:tally[1],dice2:tally[2],dice3:tally[3],rerolls:RUN.rr,tokensLeft:tok,couponTok:RUN.cpTok||0,couponPump:RUN.cpPump||0,dcDate:DC?DC.date:'',dcRanked:DC&&DC.ranked?'예':'',mid:PF.mid||'',mtok:acTok(),
     mode:MODE[mode].n,terms:CAR.term,careerYears:years,exitType:exitLabel,scenarios:terms.map(t=>t.scenario).join(' → '),elections:CAR.elections.join(' / '),pathEvents:(CAR.pathLog||[]).join(' / '),tutorial:tutOn()?'켬':'끔',avgFit:avg(N.map(z=>typeof z.fit==='number'?z.fit:0)),amendCount:CAR.amend,retireEligible:CAR.retireElig?'예':'아니오',
     leaderId:x.lid,leader:LEAD[x.lid].n,careerScore:x.csc===undefined?'':x.csc,scorePerf:x.SC?x.SC.perf:'',scoreCont:x.SC?x.SC.cont:'',scoreHonor:x.SC?x.SC.honor:'',trophiesGood:good,trophiesBad:CAR.tro.length-good,
     trophyList:CAR.tro.map(t=>(t.g?'+':'-')+t.n+'('+t.term+'-'+t.year+')').join(', '),

@@ -360,7 +360,7 @@ function stepLeader(){if(camp==='zombie')return zgOpen();const C=CAMPS[camp],BGS
   draw(k);}
 // 3단계: 결정 빈도 · 난이도 · 튜토리얼을 ◀ ▶로 고르고 취임한다
 function stepSetup(){const C=CAMPS[camp],B=C.bg[bg];if(!B||bgLock(B))return stepLeader();
-  const DD=['위기가 느리게 자란다','기본 난이도','위기가 한층 가혹하다','숨 돌릴 틈이 없다'];
+  const DD=['위기가 느리게 자란다','기본 난이도','숨 돌릴 틈이 없다'];
   const ROWS=[{l:'결정 빈도',n:MODE.length,get:()=>mode,set:v=>{mode=v;},val:v=>MODE[v].n,d:v=>MODE[v].d},
     {l:'난이도',n:DIFF.length,get:()=>dif,set:v=>{dif=v;},val:v=>DIFF[v].n,d:v=>DD[v],pips:1},
     {l:'튜토리얼',n:2,get:()=>tutOn()?0:1,set:v=>{MEM.tut=v===0;msave();},val:v=>v?'끄기':'켜기',d:v=>v?'설명 없이 바로 시작한다':'처음이라면 추천'}];

@@ -1,8 +1,8 @@
 const R=document.getElementById('root'),cl=v=>Math.max(0,Math.min(100,v)),DPR=window.devicePixelRatio||1;
 const BAD={i:1,c:1,u:1};let YRS=5,MAXT=5,PY=6,EVS=.78,TPT=2;
 const INIT={i:12,m:62,a:58,e:64,p:32,c:10,u:22,chk:76,trn:68,saf:52,mil:50};
-// 예전의 보통·어려움·지옥이 지금의 쉬움·보통·어려움이고, 지옥은 그보다 한 단계 더 가혹하다. 처음에는 보통(dif=1)에서 시작한다.
-const DIFF=[{n:'쉬움',r:0,dd:1,ad:0,fl:3},{n:'보통',r:.028,dd:1.25,ad:.12,fl:4},{n:'어려움',r:.058,dd:1.6,ad:.26,fl:6},{n:'지옥',r:.09,dd:2,ad:.4,fl:9}];
+// v4.7: 지옥을 없애고 한 단계씩 올렸다. 지금의 쉬움은 v4.6의 보통, 보통은 v4.6의 어려움, 어려움은 v4.6의 지옥이다. 처음에는 보통(dif=1)에서 시작한다.
+const DIFF=[{n:'쉬움',r:.028,dd:1.25,ad:.12,fl:4},{n:'보통',r:.058,dd:1.6,ad:.26,fl:6},{n:'어려움',r:.09,dd:2,ad:.4,fl:9}];
 const ICO={vol:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>',
  mute:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 5 6M21 9l-5 6"/></svg>'};
 
