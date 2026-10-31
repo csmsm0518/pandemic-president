@@ -145,10 +145,10 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   // 홈 메뉴는 네 묶음: 게임(새 게임 · 불러오기) · 오늘의 도전 · 기록(명예의 전당 · 도감) · 기타(가이드북 · 건의사항 · 쿠폰함 · 화면 설정 · 인적사항). 묶음을 누르면 그 아래가 펼쳐진다(하나만 열림).
   const sv=svMenuTxt(),item=(id,t,s,ic)=>[id,t,s,ic],
     G=[{id:'game',t:'게임',s:'새 게임 · 불러오기 · 미니게임',ic:'new',it:[item('mmNew','새 게임','한 번의 인생을 시작한다','new'),item('mmLoad','불러오기',sv||'저장된 게임이 없다','ld'),item('mmMini','미니게임',miniSub(),'new')]},
-       {id:'daily',t:'오늘의 도전',s:dcSub(),ic:'daily',one:'mmDaily'},
+       {id:'daily',t:'오늘의 도전',s:dcSub(),ic:'daily',one:'mmDaily',x:dcFillHTML()},
        {id:'rec',t:'기록',s:'명예의 전당 · 도감',ic:'board',it:[item('mmBoard','명예의 전당','모두의 최고 기록','board'),item('mmDex','도감','만난 지도자와 임기 평가','dex')]},
        {id:'etc',t:'기타',s:'가이드북 · 건의사항 · 쿠폰함 · 설정 · 로그인',ic:'guide',it:[item('mmGuide','가이드북','처음이라면 여기부터','guide'),item('mmNews','업데이트 소식',GAME_VER+' 바뀐 내용','news')].concat(BOX_M().map(m=>item('mm'+m[0],m[1],m[2],m[3])),[item('mmView','화면 설정','세로/가로 · 라이트','view'),item('mmEdit','인적사항 바꾸기','학교 · 이름 · 닉네임','user'),item('mmLogin','로그인 화면으로','회원 로그인 · 계정 바꾸기','user')])}];
-  const MROW=(g,i)=>'<button class="gx-mi gx-g'+(g.one?' gx-nx':'')+(g.open?' open':'')+'" id="'+(g.one||'mmG_'+g.id)+'" style="--i:'+i+'"'+(g.one?'':' aria-expanded="'+(g.open?'true':'false')+'" data-g="'+g.id+'"')+'><span class="gx-ic" aria-hidden="true">'+GX_IC[g.ic]+'</span><span class="gx-mt"><b>'+g.t+'</b><small>'+g.s+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>'+
+  const MROW=(g,i)=>'<button class="gx-mi gx-g'+(g.one?' gx-nx':'')+(g.open?' open':'')+'" id="'+(g.one||'mmG_'+g.id)+'" style="--i:'+i+'"'+(g.one?'':' aria-expanded="'+(g.open?'true':'false')+'" data-g="'+g.id+'"')+'><span class="gx-ic" aria-hidden="true">'+GX_IC[g.ic]+'</span><span class="gx-mt"><b>'+g.t+'</b><small>'+g.s+'</small>'+(g.x?g.x.txt:'')+'</span><span class="gx-ar2" aria-hidden="true">›</span>'+(g.x?g.x.pic:'')+'</button>'+
     (g.it?'<div class="gx-sl'+(g.open?' open':'')+'" data-g="'+g.id+'">'+g.it.map(m=>'<button class="gx-mi gx-s" id="'+m[0]+'"><span class="gx-ic" aria-hidden="true">'+(GX_IC[m[3]]||(typeof BOX_IC!=='undefined'&&BOX_IC[m[3]])||'')+'</span><span class="gx-mt"><b>'+m[1]+'</b><small>'+m[2]+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>').join('')+'</div>':'');
   // 기록 카드: 닉네임, 최고 기록, 도감 진행도
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
@@ -184,6 +184,7 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   $('snd').onclick=toggleSound;
   $('mmNew').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');stepCamp();};
   $('mmDaily').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');dcOpen($('mmDaily'));};
+  dcFit($('mmDaily'));   // 메뉴 판에 남는 높이만큼 오늘의 도전 칸을 채운다
   $('mmMini').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');stepMini();};
   $('mmLoad').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');ldPanel();};
   $('mmBoard').onclick=()=>{gxSfx('click');cineClose();openBoard({back:home});};

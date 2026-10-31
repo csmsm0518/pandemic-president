@@ -217,6 +217,24 @@ html:has(.npl.on) #app{padding-top:max(34px,calc(env(safe-area-inset-top) + 30px
 @media (orientation:landscape) and (max-height:540px){.gx-sl .gx-mi.gx-s{padding:3px 12px 3px 40px}.gx-mi.gx-s .gx-mt b{font-size:13.5px;line-height:1.25}}
 /* 오늘의 도전은 펼쳐지지 않으니 화살표가 없다 · 펼친 칸에도 작은 마크 */
 .gx-mi.gx-nx{grid-template-columns:34px minmax(0,1fr)}.gx-mi.gx-nx .gx-ar2{display:none}
+/* 오늘의 도전 칸 채우기(dcFillHTML · dcFit): 메뉴 판에서 다른 칸이 쓰고 남은 높이는 이 칸이 가져간다.
+   남는 높이가 있으면(.gx-dcf) 오른쪽에 오늘의 출발 인물 초상이 칸 높이만큼 들어오고, 들어가는 줄(.gx-dcl.on)만 한 줄씩 보인다 */
+.gx-menu>.gx-mi.gx-nx{flex:1 0 auto}
+.gx-dcv{position:absolute;right:0;bottom:0;height:100%;aspect-ratio:1;max-width:46%;pointer-events:none;opacity:0;transform:translateX(10px);transition:opacity .45s,transform .45s;
+  background:radial-gradient(closest-side at 55% 62%,rgba(201,162,74,.22),transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 45%);mask-image:linear-gradient(90deg,transparent,#000 45%)}
+.gx-dcv svg{display:block;width:100%;height:100%}
+.gx-mi.gx-dcf .gx-dcv{opacity:.5;transform:none}
+.gx-mi.gx-dcf.on .gx-dcv{opacity:.92}
+.gx-dcx{display:flex;flex-direction:column;min-width:0;margin-top:-2px}
+/* 글 줄은 초상의 얼굴 앞(초상 너비의 왼쪽 1/4쯤)에서 멈춘다 */
+.gx-mi.gx-dcf .gx-dcx{padding-right:max(0px,calc(var(--dcw,0px) * .76 - 18px))}
+.gx-dcl{display:block;max-height:0;margin-top:0;overflow:hidden;opacity:0;font:500 11.5px/1.5 var(--font-ui);color:#8f836b;transition:opacity .35s,color .18s}
+.gx-dcl.on{max-height:none;margin-top:4px;opacity:1}
+.gx-mi.on .gx-dcl{color:#b5a684}
+.gx-dct i{display:inline-block;margin:1px 4px 1px 0;padding:0 7px;border:1px solid rgba(201,162,74,.3);border-radius:999px;font:600 10.5px/1.6 var(--font-ui);font-style:normal;color:#c9b88f}
+.gx-mt .gx-dck b{margin-right:5px;font:800 15px/1.3 var(--font-voice);letter-spacing:.02em;color:#e6cf93}
+.gx-dcb{font-size:12px;line-height:1.6;color:#8a7e68}
+.gx-mi.on .gx-dcb{color:#a89a7c}
 .gx-mi.gx-s{grid-template-columns:26px minmax(0,1fr) 14px;gap:12px;padding-left:34px}
 .gx-mi.gx-s .gx-ic{width:26px;height:26px;border-color:rgba(201,162,74,.28)}.gx-mi.gx-s .gx-ic svg{width:14px;height:14px}
 .gx-mi.gx-s.on .gx-ic{background:#c9a24a;border-color:#c9a24a;color:#15120e}

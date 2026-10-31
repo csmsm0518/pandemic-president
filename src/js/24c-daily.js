@@ -36,6 +36,33 @@ function dcDone(score){if(!DC)return;if(DC.ranked){const r=MEM.dc&&MEM.dc[DC.dat
 const dcLabel=d=>{const p=String(d).split('-');return +p[1]+'월 '+(+p[2])+'일';};
 // 메인 메뉴 칸의 작은 글: 오늘의 무대 · 인물, 마쳤으면 내 점수
 function dcSub(){const C=dcConf(),r=dcRec();return r&&r.done?'오늘 '+Number(r.score).toLocaleString('ko-KR')+'점 · 순위 보기':r&&r.ranked?'오늘 도전함 · 순위 보기':CAMPS[C.camp].n+' · '+C.B.n+' · 속전속결';}
+/* 메인 메뉴(가로 화면)의 오늘의 도전 칸 채우기. 메뉴 판은 옆의 기록 카드 높이에 맞춰 늘어나고, 다른 칸이 쓰고 남은 높이는 이 칸이 다 가져간다(CSS flex).
+   남는 높이가 생기면 오른쪽에 오늘의 출발 인물 초상이 칸 높이만큼 커지며 들어오고, 그 아래로 조건 · 인물 소개 · 내 상태 · 인물 이야기를
+   들어가는 만큼만 한 줄씩 더 보여 준다(dcFit). 줄은 칸 높이를 늘리지 않을 때만 보이므로 다른 칸이 밀리지 않는다.
+   묶음을 펼쳐 남는 높이가 없어지면 다시 보통 칸으로 돌아간다. */
+function dcFillHTML(){const C=dcConf(),r=dcRec(),B=C.B,jo=C.camp==='joseon';
+  const st=r&&r.done?'순위 판을 마쳤어요 · 이제 연습할 수 있어요':r&&r.ranked?'순위 판을 시작했어요 · 끝까지 마쳐야 올라가요':'오늘 처음 시작한 판만 순위에 올라가요';
+  const ln=(c,h)=>'<span class="gx-dcl'+(c?' '+c:'')+'">'+h+'</span>';
+  // pic: 칸 오른쪽의 초상(칸 안 맨 끝) · txt: 글 칸(.gx-mt) 안, 작은 글 밑에 붙는 줄들
+  return {pic:'<span class="gx-dcv" aria-hidden="true">'+portrait(B.n,'100%',0,1)+'</span>',
+    txt:'<span class="gx-dcx" aria-hidden="true">'+
+      ln('gx-dct','<i>보통</i><i>속전속결</i><i>한 '+(jo?'치세':'임기')+' · '+CAMPS[C.camp].yrs+'년</i>')+
+      (B.k?ln('gx-dck','<b>'+gEsc(B.n)+'</b> '+gEsc(B.k)):'')+
+      ln('gx-dcs',dcLabel(C.date)+' · '+st)+
+      (B.s?ln('gx-dcb',gEsc(B.s)):'')+'</span>'};}
+function dcFit(btn){if(!btn||!btn.querySelector('.gx-dcx'))return;
+  const mt=btn.querySelector('.gx-mt'),base=[...mt.children].filter(e=>!e.classList.contains('gx-dcx')),L=[...btn.querySelectorAll('.gx-dcl')],GAP=5;
+  const fit=()=>{if(!btn.isConnected){if(ro)ro.disconnect();return;}
+    // 남는 높이 = 칸 안쪽 높이 - 제목 · 작은 글. 조금이라도 있으면 초상이 들어온다(.gx-dcf)
+    const cs=getComputedStyle(btn),room=btn.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom)-base.reduce((s,e)=>s+e.offsetHeight,0)-2*(base.length-1);
+    // 초상 너비(칸 높이, 칸 너비의 46%까지)와 .gx-dcf를 먼저 정해 글 줄의 너비를 확정한 뒤에 줄 높이를 잰다
+    btn.style.setProperty('--dcw',Math.round(Math.min(btn.clientHeight,btn.clientWidth*.46))+'px');
+    btn.classList.toggle('gx-dcf',room>=10);
+    let h=0,n=0;for(const l of L){h+=l.scrollHeight+GAP;if(h>room)break;n++;}
+    L.forEach((l,i)=>l.classList.toggle('on',i<n));};
+  const ro=typeof ResizeObserver!=='undefined'?new ResizeObserver(fit):null;
+  if(ro)ro.observe(btn);else fit();
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(btn.isConnected)fit();});}
 // 소리 · 배경음악 · 감염 지도 · 명언 고르기는 화면 꾸밈이다. 도전 중에도 이것들은 원래 난수를 쓰게 감싼다.
 // 감싸지 않으면 소리를 켰는지, 앞 판에서 음악이 이미 골라졌는지에 따라 난수 줄이 밀려 같은 선택에도 시대 조건 · 결과가 달라졌다
 const dcIso=f=>function(){if(!DC)return f.apply(this,arguments);const m=Math.random;Math.random=DC_RAND0;try{return f.apply(this,arguments);}finally{Math.random=m;}};
