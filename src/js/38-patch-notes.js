@@ -30,10 +30,9 @@ const PATCHES=[
  {v:'v1',t:'첫 버전',d:'2026-10-22',l:[['시작','대한민국 5년 단임 대통령으로 팬데믹에 대응해요. 지표와 판정, 연임 개헌, 닮은 지도자, 명예의 전당이 있었어요.']]}];
 const vnum=s=>{const m=/(\d+)\.(\d+)/.exec(s||'');return m?+m[1]*100+ +m[2]:0;};
 function newsHTML(all,from){
-  const L=PATCHES.filter(n=>all||vnum(n.v)>from),cur=L.filter(n=>n.big),rest=L.filter(n=>cur.indexOf(n)<0);
-  const blk=n=>'<section class="pn-s"><div class="pn-h"><b>'+n.v+'</b><span>'+gEsc(n.t)+'</span><time>'+n.d+'</time></div><ul>'+n.l.map(x=>'<li><b>'+gEsc(x[0])+'</b><span>'+gEsc(x[1])+'</span></li>').join('')+'</ul></section>';
-  return '<div class="pn">'+cur.map(blk).join('')+(rest.length?'<details class="pn-old"><summary>이전 업데이트 v1 ~ v4.6 · '+rest.length+'개</summary>'+rest.map(blk).join('')+'</details>':'')+
-    '<div class="svp-b pn-b"><button type="button" class="pri" id="pnOk">확인</button></div></div>';}
+  const blk=(n,i)=>(i>0&&PATCHES[i-1].big&&!n.big?'<div class="pn-div">이전 업데이트</div>':'')+'<section class="pn-s'+(!all&&vnum(n.v)>from?' pn-new':'')+'"><div class="pn-h"><b>'+n.v+'</b><span>'+gEsc(n.t)+'</span><time>'+n.d+'</time></div><ul>'+n.l.map(x=>'<li><b>'+gEsc(x[0])+'</b><span>'+gEsc(x[1])+'</span></li>').join('')+'</ul></section>';
+  // 맨 위가 이번 업데이트, 아래로 내리면 v1까지 지난 업데이트가 이어진다
+  return '<div class="pn">'+PATCHES.map(blk).join('')+'</div><div class="svp-b pn-b"><button type="button" class="pri" id="pnOk">확인</button></div>';}
 function newsOpen(all){const o=pop('업데이트 소식 · '+GAME_VER,newsHTML(true,0));const b=o.querySelector('#pnOk');b.onclick=()=>{try{SFX.click();}catch(e){}o.close();};b.focus();return o;}
 // 홈 화면이 뜬 뒤 한 번: 이번 버전을 아직 안 봤으면 보여 주고 읽은 것으로 적는다
 function newsCheck(){if(MEM.seenVer===GAME_VER)return;

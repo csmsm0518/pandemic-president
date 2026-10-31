@@ -804,6 +804,16 @@ html:has(.npl.on) #app{padding-top:max(34px,calc(env(safe-area-inset-top) + 30px
 .gx-mi.gx-s .gx-ic{width:26px;height:26px;border-color:rgba(201,162,74,.28)}.gx-mi.gx-s .gx-ic svg{width:14px;height:14px}
 .gx-mi.gx-s.on .gx-ic{background:#c9a24a;border-color:#c9a24a;color:#15120e}
 @media (orientation:landscape) and (max-height:540px){.gx-sl .gx-mi.gx-s{padding-left:22px;gap:8px}.gx-mi.gx-s .gx-ic{width:20px;height:20px}.gx-mi.gx-s .gx-ic svg{width:11px;height:11px}}
+.pn-div{margin:18px 0 12px;padding-top:12px;border-top:2px solid var(--gold-line,#c9a24a);font-size:12px;font-weight:800;letter-spacing:.1em;color:var(--text-muted)}
+.pn-new .pn-h b::after{content:"NEW";margin-left:6px;padding:1px 6px;border-radius:999px;background:#c49a3e;color:#fff;font:800 10px var(--font-ui);vertical-align:2px}
+.pn-b{position:static;padding:12px 0 0;background:none}
+/* 어떤 화면 비율에서도 홈 메뉴가 잘리지 않게: 넘치면 스크롤하고, 가로 화면의 기타 묶음은 두 줄로 나눠 낮춘다 */
+.gx-tl{overflow-y:auto;justify-content:flex-start;scrollbar-width:thin;scrollbar-color:rgba(201,162,74,.4) transparent;overscroll-behavior:contain}
+.gx-tl>:first-child{margin-top:auto}.gx-tl>:last-child{margin-bottom:auto}
+html:not([data-ori="p"]) .gx-sl[data-g="etc"].open{display:grid;grid-template-columns:1fr 1fr}
+html:not([data-ori="p"]) .gx-sl[data-g="etc"] .gx-mi.gx-s{padding-left:12px;padding-right:8px;gap:8px;grid-template-columns:26px minmax(0,1fr);border-right:1px solid rgba(201,162,74,.08)}
+html:not([data-ori="p"]) .gx-sl[data-g="etc"] .gx-ar2,html:not([data-ori="p"]) .gx-sl[data-g="etc"] .gx-mt small{display:none}
+html:not([data-ori="p"]) .gx-sl[data-g="etc"] .gx-mt b{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* ---------- 전체 화면 연출(시네마) ---------- */
 .cine{position:fixed;inset:0;z-index:75;overflow:hidden;color:var(--dk-text);background:radial-gradient(ellipse at 50% 38%,#3a2e1c 0%,#1b1610 55%,#0b0907 100%);animation:dkFade .45s both}
 .cine.out{opacity:0;transition:opacity .45s ease;pointer-events:none}

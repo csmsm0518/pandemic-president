@@ -8160,11 +8160,11 @@ function acBind($){const tg=$('pfTabG'),tm=$('pfTabM'),box=$('pfAcc');if(!tg||!b
     box.hidden=!m;guest.forEach(e=>{if(e)e.hidden=m;});
     // 비회원 쪽 '지난번 정보' 안내는 회원 쪽에서 숨겼다가, 돌아오면 원래대로
     if(mem){if(m){mem.dataset.d=mem.style.display;mem.style.display='none';}else if(mem.dataset.d!==undefined)mem.style.display=mem.dataset.d;}
-    if(m){AC_MODE='in';acDraw($);}};
+    if(m){AC_MODE=(acGet()||acLastId())?'in':'up';acDraw($);}};   // 처음 온 사람은 회원가입 화면부터, 예전에 로그인한 적이 있으면 로그인
   tg.onclick=()=>{try{SFX.click();}catch(e){}show(false);};
   tm.onclick=()=>{try{SFX.click();}catch(e){}show(true);};
-  // 이 기기에서 로그인해 둔 회원이면 회원 쪽을 먼저 보여 준다
-  if(acGet())show(true);}
+  // 회원 쪽(왼쪽 탭)이 기본 화면이다. 이 기기에서 로그인해 둔 회원이면 '이 계정으로 시작'이 먼저 보인다
+  show(true);}
 function acDraw($){const box=$('pfAcc'),me=acGet(),M=AC_MODE;
   const row=(id,lb,attr,hint,val)=>'<div class="pf-row"><label for="'+id+'">'+lb+(hint?' <span>'+hint+'</span>':'')+'</label><input id="'+id+'" '+attr+' autocomplete="off"'+(val?' value="'+acEsc(val)+'"':'')+'></div>';
   const prof=(p)=>row('acSchool','학교 <b>*</b>','maxlength="30" placeholder="예: 용인외대부고"','',p&&p.school)+row('acName','이름 <b>*</b>','maxlength="20" placeholder="실명"','',p&&p.name)
@@ -8178,7 +8178,7 @@ function acDraw($){const box=$('pfAcc'),me=acGet(),M=AC_MODE;
     +row('acPw','비밀번호 확인 <b>*</b>','type="password" maxlength="64"')+err+'</div><button id="acGo" class="pri" type="button">탈퇴하기</button><div class="pf-acc-sw"><button id="acBack" type="button" class="pf-rs">돌아가기</button></div>';
   else if(me)h='<div class="pf-acc-me"><b>'+acEsc(me.prof.name)+'</b>님('+acEsc(me.id)+') · '+acEsc(me.prof.school)+(me.prof.nick?'<br>명예의 전당에는 <b>'+acEsc(me.prof.nick)+'</b>(으)로 올라가요.':'')+'</div>'+err
     +'<button id="acGo" class="pri" type="button">이 계정으로 시작</button><div class="pf-acc-sw"><button id="acEdit" type="button" class="pf-rs">정보 고치기</button> · <button id="acOut" type="button" class="pf-rs">로그아웃</button> · <button id="acLeave" type="button" class="pf-rs">회원 탈퇴</button></div>';
-  else{h='<div class="pf-seg"><button type="button" data-m="in"'+(M==='in'?' class="on"':'')+'>로그인</button><button type="button" data-m="up"'+(M==='up'?' class="on"':'')+'>회원가입</button></div><div class="pf">'
+  else{h='<div class="pf-seg"><button type="button" data-m="up"'+(M==='up'?' class="on"':'')+'>회원가입</button><button type="button" data-m="in"'+(M==='in'?' class="on"':'')+'>로그인</button></div><div class="pf">'
     +row('acId','아이디 <b>*</b>','maxlength="16" placeholder="영문 소문자로 시작 · 4~16자" autocapitalize="off" spellcheck="false"','',M==='in'?(acLastId()||''):'')
     +row('acPw','비밀번호 <b>*</b>','type="password" maxlength="64" placeholder="6자 이상"');
     if(M==='up')h+=row('acPw2','비밀번호 확인 <b>*</b>','type="password" maxlength="64"')+prof(null)
@@ -8436,10 +8436,9 @@ const PATCHES=[
  {v:'v1',t:'첫 버전',d:'2026-10-22',l:[['시작','대한민국 5년 단임 대통령으로 팬데믹에 대응해요. 지표와 판정, 연임 개헌, 닮은 지도자, 명예의 전당이 있었어요.']]}];
 const vnum=s=>{const m=/(\d+)\.(\d+)/.exec(s||'');return m?+m[1]*100+ +m[2]:0;};
 function newsHTML(all,from){
-  const L=PATCHES.filter(n=>all||vnum(n.v)>from),cur=L.filter(n=>n.big),rest=L.filter(n=>cur.indexOf(n)<0);
-  const blk=n=>'<section class="pn-s"><div class="pn-h"><b>'+n.v+'</b><span>'+gEsc(n.t)+'</span><time>'+n.d+'</time></div><ul>'+n.l.map(x=>'<li><b>'+gEsc(x[0])+'</b><span>'+gEsc(x[1])+'</span></li>').join('')+'</ul></section>';
-  return '<div class="pn">'+cur.map(blk).join('')+(rest.length?'<details class="pn-old"><summary>이전 업데이트 v1 ~ v4.6 · '+rest.length+'개</summary>'+rest.map(blk).join('')+'</details>':'')+
-    '<div class="svp-b pn-b"><button type="button" class="pri" id="pnOk">확인</button></div></div>';}
+  const blk=(n,i)=>(i>0&&PATCHES[i-1].big&&!n.big?'<div class="pn-div">이전 업데이트</div>':'')+'<section class="pn-s'+(!all&&vnum(n.v)>from?' pn-new':'')+'"><div class="pn-h"><b>'+n.v+'</b><span>'+gEsc(n.t)+'</span><time>'+n.d+'</time></div><ul>'+n.l.map(x=>'<li><b>'+gEsc(x[0])+'</b><span>'+gEsc(x[1])+'</span></li>').join('')+'</ul></section>';
+  // 맨 위가 이번 업데이트, 아래로 내리면 v1까지 지난 업데이트가 이어진다
+  return '<div class="pn">'+PATCHES.map(blk).join('')+'</div><div class="svp-b pn-b"><button type="button" class="pri" id="pnOk">확인</button></div>';}
 function newsOpen(all){const o=pop('업데이트 소식 · '+GAME_VER,newsHTML(true,0));const b=o.querySelector('#pnOk');b.onclick=()=>{try{SFX.click();}catch(e){}o.close();};b.focus();return o;}
 // 홈 화면이 뜬 뒤 한 번: 이번 버전을 아직 안 봤으면 보여 주고 읽은 것으로 적는다
 function newsCheck(){if(MEM.seenVer===GAME_VER)return;
