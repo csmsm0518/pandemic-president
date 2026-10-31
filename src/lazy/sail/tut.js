@@ -48,7 +48,7 @@ function sailTut(el){if(document.getElementById('stut')||eggOn('sail')||(el&&!el
     C.style.left=x.toFixed(1)+'px';C.style.top=y.toFixed(1)+'px';};
   const win=()=>{if(o.classList.contains('ok'))return;o.classList.add('ok');o.classList.remove('busy');step(3);cnt.textContent=N+' / '+N;delete MEM.sailHint;msave();sub();
     o.querySelector('.stut-hd').innerHTML='<div class="stut-k"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.6a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM8 4.6v9.8M5.2 7h5.6M2.6 9.6c.4 2.6 2.7 4.6 5.4 4.6s5-2 5.4-4.6" fill="none" stroke="#f1d589" stroke-width="1.5" stroke-linecap="round"/></svg><span>잠금 해제 · 수영 금메달 선물</span></div>'+
-      '<h2 class="stut-h" id="stutH">「대항해」가 열렸어요</h2><p class="stut-p">백신을 싣고 폭풍 해협을 달리는 항해 레이스예요. 앞으로는 <b>새 게임 → 미니게임 탭</b>에서 언제든 할 수 있어요.</p>';
+      '<h2 class="stut-h" id="stutH">「대항해」가 열렸어요</h2><p class="stut-p">백신을 싣고 폭풍 해협을 달리는 항해 레이스예요. 앞으로는 <b>게임 → 미니게임</b>에서 언제든 할 수 있어요.</p>';
     o.querySelector('.stut-bt').innerHTML='<button type="button" class="gx-ok stut-go">지금 출항하기</button><button type="button" class="stut-no">메뉴로</button>';
     o.querySelector('.stut-go').onclick=()=>{gxSfx('click');close();try{aInit();}catch(e){}sailOpen(home);};
     o.querySelector('.stut-no').onclick=()=>{gxSfx('back');close();};

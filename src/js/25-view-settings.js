@@ -113,7 +113,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   // 이스터에그: 제목을 3초 안에 7번 누르면 좀비 무대가 열린다
   $('ttl').onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];
     if(eggOn('zombie')){eggToast('🧟 좀비 무대는 이미 열려 있어요.');return;}
-    eggSet('zombie');try{SFX.zombie();}catch(e){}vib([60,40,60,40,200]);eggToast('🧟 <b>어디선가 신음 소리가 들린다…</b><br>미니게임 「방역선」이 열렸어요. 새 게임의 미니게임 탭에서 할 수 있어요.');homeLite();};
+    eggSet('zombie');try{SFX.zombie();}catch(e){}vib([60,40,60,40,200]);eggToast('🧟 <b>어디선가 신음 소리가 들린다…</b><br>미니게임 「방역선」이 열렸어요. 홈의 게임 → 미니게임에서 할 수 있어요.');homeLite();};
   newsCheck();
   if(SEC_NEW.length){const nm=SEC_NEW.map(id=>{for(const c in CAMPS){const q=CAMPS[c].bg.find(b=>b.sec===id);if(q)return q.n;}return id;});SEC_NEW=[];SFX.unlock();eggToast('🔓 비밀 인물 해금: <b>'+nm.join(', ')+'</b>');}
   // 수영 금메달 선물: 라이트 화면에는 로고 나침반이 없어서 튜토리얼 창 안에 나침반을 띄운다(sailTut(null))
@@ -144,7 +144,7 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   const msg=HUB_MSG;HUB_MSG='';
   // 홈 메뉴는 네 묶음: 게임(새 게임 · 불러오기) · 오늘의 도전 · 기록(명예의 전당 · 도감) · 기타(가이드북 · 건의사항 · 쿠폰함 · 화면 설정 · 인적사항). 묶음을 누르면 그 아래가 펼쳐진다(하나만 열림).
   const sv=svMenuTxt(),item=(id,t,s,ic)=>[id,t,s,ic],
-    G=[{id:'game',t:'게임',s:'새 게임 · 불러오기',ic:'new',it:[item('mmNew','새 게임','한 번의 인생을 시작한다','new'),item('mmLoad','불러오기',sv||'저장된 게임이 없다','ld')]},
+    G=[{id:'game',t:'게임',s:'새 게임 · 불러오기 · 미니게임',ic:'new',it:[item('mmNew','새 게임','한 번의 인생을 시작한다','new'),item('mmLoad','불러오기',sv||'저장된 게임이 없다','ld'),item('mmMini','미니게임',miniSub(),'new')]},
        {id:'daily',t:'오늘의 도전',s:dcSub(),ic:'daily',one:'mmDaily'},
        {id:'rec',t:'기록',s:'명예의 전당 · 도감',ic:'board',it:[item('mmBoard','명예의 전당','모두의 최고 기록','board'),item('mmDex','도감','만난 지도자와 임기 평가','dex')]},
        {id:'etc',t:'기타',s:'가이드북 · 건의사항 · 쿠폰함 · 설정 · 로그인',ic:'guide',it:[item('mmGuide','가이드북','처음이라면 여기부터','guide'),item('mmNews','업데이트 소식',GAME_VER+' 바뀐 내용','news')].concat(BOX_M().map(m=>item('mm'+m[0],m[1],m[2],m[3])),[item('mmView','화면 설정','세로/가로 · 라이트','view'),item('mmEdit','인적사항 바꾸기','학교 · 이름 · 닉네임','user'),item('mmLogin','로그인 화면으로','회원 로그인 · 계정 바꾸기','user')])}];
@@ -184,6 +184,7 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   $('snd').onclick=toggleSound;
   $('mmNew').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');stepCamp();};
   $('mmDaily').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');dcOpen($('mmDaily'));};
+  $('mmMini').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');stepMini();};
   $('mmLoad').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');ldPanel();};
   $('mmBoard').onclick=()=>{gxSfx('click');cineClose();openBoard({back:home});};
   $('mmDex').onclick=()=>{gxSfx('click');dexScene();};
@@ -195,10 +196,10 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   boxBind('mm',()=>gxSfx('click'));
   // 이스터에그: 로고의 나침반을 다섯 바퀴 돌리면 비밀 모드 「대항해」가 새 게임의 무대 고르기에 생긴다
   compassSpin(document.querySelector('.cine .gx-logo svg'),()=>{
-    if(eggOn('sail')){eggToast('⚓ 대항해는 이미 열려 있어요. 새 게임의 미니게임 탭에서 고르세요.');return;}
+    if(eggOn('sail')){eggToast('⚓ 대항해는 이미 열려 있어요. 홈의 게임 → 미니게임에서 고르세요.');return;}
     eggSet('sail');delete MEM.sailHint;msave();try{SFX.unlock();}catch(e){}vib([40,30,40,30,160]);
     // 잠금 해제 튜토리얼 중이면 튜토리얼 창이 축하를 맡는다
-    if(!document.querySelector('#stut:not(.out)'))eggToast('⚓ <b>나침반 바늘이 바다를 가리킨다…</b><br>미니게임 「대항해」가 열렸어요. 새 게임의 미니게임 탭에서 할 수 있어요.');});
+    if(!document.querySelector('#stut:not(.out)'))eggToast('⚓ <b>나침반 바늘이 바다를 가리킨다…</b><br>미니게임 「대항해」가 열렸어요. 홈의 게임 → 미니게임에서 할 수 있어요.');});
   // 수영 금메달 선물: 대항해를 아직 못 열었으면 로고가 다 그려지고 메뉴가 들어온 뒤에 나침반 돌리는 법을 차근차근 보여 준다
   if(MEM.sailHint===1&&!eggOn('sail'))setTimeout(()=>{const s=document.querySelector('.cine .gx-logo svg');if(s&&s.isConnected&&MEM.sailHint===1&&!eggOn('sail'))sailTut(s);},2400);
   // 이스터에그: 뒤의 큰 나침반을 돌려 하얀 바늘 끝이 원 밖의 별을 3초 동안 가리키면 「별똥별을 피해라」가 열리고 바로 시작한다
@@ -208,7 +209,7 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   const tt=document.querySelector('.cine .emb-t');tt.id='ttl';tt.style.cursor='default';tt.style.userSelect='none';
   tt.onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];
     if(eggOn('zombie')){eggToast('🧟 좀비 무대는 이미 열려 있어요.');return;}
-    eggSet('zombie');try{SFX.zombie();}catch(e){}vib([60,40,60,40,200]);eggToast('🧟 <b>어디선가 신음 소리가 들린다…</b><br>미니게임 「방역선」이 열렸어요. 새 게임의 미니게임 탭에서 할 수 있어요.');};
+    eggSet('zombie');try{SFX.zombie();}catch(e){}vib([60,40,60,40,200]);eggToast('🧟 <b>어디선가 신음 소리가 들린다…</b><br>미니게임 「방역선」이 열렸어요. 홈의 게임 → 미니게임에서 할 수 있어요.');};
   newsCheck();
   if(SEC_NEW.length){const nm=SEC_NEW.map(id=>{for(const c in CAMPS){const q=CAMPS[c].bg.find(b=>b.sec===id);if(q)return q.n;}return id;});SEC_NEW=[];SFX.unlock();eggToast('🔓 비밀 인물 해금: <b>'+nm.join(', ')+'</b>');}
 }
@@ -265,9 +266,7 @@ const CP_ART=(()=>{const sv=(id,b,w)=>'<svg viewBox="0 0 '+(w||300)+' 600" prese
 // 비밀 모드 「대항해」: 나라가 아니라 따로 노는 레이스라 CAMPS에 넣지 않고, 열렸으면 무대 고르기 맨 끝에 판 하나로 붙인다
 const SAIL_CP={tag:'비밀 모드',n:'대항해',sub:'폭풍을 뚫고 섬마을로 · 시간과의 레이스',intro:'백신이 상하기 전에 폭풍 해협을 뚫고 섬마을 세 곳을 지나 달려라. 암초를 스치면 시간이 붙고, 부딪히면 배가 상한다.'};
 // 새 게임 화면 위쪽의 탭 둘: 나라 고르기(무대) · 미니게임. 미니게임은 메인 메뉴가 아니라 여기서 연다
-const gxTabs=mini=>{const n=MINI.filter(x=>eggOn(x.id)).length;
-  return '<div class="gx-tabs" role="tablist" aria-label="새 게임"><button type="button" role="tab" class="gx-tb'+(mini?'':' on')+'" id="gxTbCamp" aria-selected="'+!mini+'">나라 고르기</button>'+
-    '<button type="button" role="tab" class="gx-tb'+(mini?' on':'')+'" id="gxTbMini" aria-selected="'+mini+'">미니게임<small>'+n+'/'+MINI.length+'</small></button></div>';};
+const gxTabs=()=>'';   // 미니게임은 홈의 「게임 → 미니게임」에서 연다(예전에는 새 게임 위쪽 탭)
 function gxTabsBind(){const a=document.getElementById('gxTbCamp'),b=document.getElementById('gxTbMini');
   if(a)a.onclick=()=>{if(a.classList.contains('on'))return;gxSfx('tick',0);stepCamp();};
   if(b)b.onclick=()=>{if(b.classList.contains('on'))return;try{aInit();}catch(e){}gxSfx('tick',1);stepMini();};}

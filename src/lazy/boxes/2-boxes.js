@@ -76,7 +76,7 @@ const cpnFig=()=>{const o={};['kr','joseon','usa'].forEach(c=>((CAMPS[c]&&CAMPS[
 // 보상 종류(tools/coupon.py의 REWARDS와 이름을 맞춘다). 대상에 all을 쓰면 그 종류를 모두 준다. 모르는 종류 · 대상은 건너뛴다
 const BAG_NM={a:'지지율 +'+BAG_AMT,e:'경제 +'+BAG_AMT,h:'방역(위기 대응) +'+BAG_AMT,m:'군사 +'+BAG_AMT,p:'권력 +'+BAG_AMT,x:'혼란 −'+BAG_AMT};
 const CPN_R={
-  mini:{ids:()=>MINI.map(x=>x.id),n:id=>'미니게임 「'+MINI.find(x=>x.id===id).n+'」',v:'열림',w:'미니게임은 새 게임 → 미니게임 탭에서 할 수 있어요.',has:id=>eggOn(id),
+  mini:{ids:()=>MINI.map(x=>x.id),n:id=>'미니게임 「'+MINI.find(x=>x.id===id).n+'」',v:'열림',w:'미니게임은 게임 → 미니게임에서 할 수 있어요.',has:id=>eggOn(id),
     give:id=>{eggSet(id);if(id==='sail'&&MEM.sailHint){delete MEM.sailHint;msave();}}},
   stage:{ids:()=>['reich','bonn'],n:id=>'비밀 무대 「'+CAMPS[id].n+'」',v:'열림',w:'비밀 무대는 새 게임의 무대 고르기에 나타나요.',has:id=>campOn(id),
     give:id=>{if(id==='reich')eggSet('reich');else{MEM.bonn=1;msave();}}},
