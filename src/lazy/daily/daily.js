@@ -1,29 +1,28 @@
 /* ---------- 오늘의 도전 창 ----------
    메인 메뉴 '오늘의 도전'과 도전 판의 결산 화면 '오늘의 순위'가 연다(dcOpen). 오늘의 조건(무대 · 출발 인물 · 규칙)과 시작 단추,
    그리고 명예의 전당 서버가 함께 보내는 오늘 · 어제의 도전 순위와 학교 순위(daily · dailyY)를 보여 준다.
-   순위 판을 시작하기 전에는 연습을 막는다(같은 판이 그대로 나오므로, 연습으로 미리 보고 순위 판을 하면 공정하지 않다). */
+   v4.9부터 그날 안에는 몇 번이든 다시 도전할 수 있고(연습 판은 없다), 순위에는 그날 마친 판 중 가장 높은 점수가 올라간다. */
 let DC_TAB='today',DC_DATA=null,DC_FROM=null;
 function dcClose(){const o=document.querySelector('.dc-bg');if(o)o.remove();const f=DC_FROM;DC_FROM=null;if(f&&f.isConnected)try{f.focus({preventScroll:true});}catch(e){}}
 // opts.score: 방금 끝낸 도전 판의 점수(순위가 아직 서버에 안 올라갔으면 예상 순위를 보여 준다)
 function dcOpen(from,opts){opts=opts||{};const old=document.querySelector('.dc-bg');if(old)old.remove();DC_FROM=from||null;DC_TAB='today';
   const C=dcConf(),r=dcRec(),esc=v=>String(v==null?'':v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
-  const st=!r?'':r.done?'오늘의 순위 판: <b>'+Number(r.score).toLocaleString('ko-KR')+'점</b>':'오늘의 순위 판을 시작했어요(끝까지 마치지 못하면 순위에 오르지 않아요).';
+  const n=r?(+r.n||(r.ranked?1:0)):0;
+  const st=!r?'':r.done?'오늘 내 최고 점수: <b>'+Number(r.score).toLocaleString('ko-KR')+'점</b>'+(n?' · '+n+'번 도전':''):'오늘 '+(n||1)+'번 시작했지만 아직 끝까지 마친 판이 없어요. 다시 도전해 보세요!';
   const o=document.createElement('div');o.className='sndp-bg dc-bg';
   o.innerHTML='<div class="sndp dc" role="dialog" aria-modal="true" aria-labelledby="dcT"><div class="sndp-h"><span id="dcT">오늘의 도전</span><button type="button" class="sndp-x" aria-label="닫기">✕</button></div>'+
     '<p class="dc-date">'+dcLabel(C.date)+' · 한국 시간 자정에 바뀌어요</p>'+
     '<div class="dc-cond"><div class="dc-face">'+portrait(C.B.n,76)+'</div><div class="dc-ci"><span class="dc-k">오늘의 무대</span><b>'+esc(CAMPS[C.camp].n)+' · '+esc(C.B.n)+'</b>'+
       '<span class="dc-tags"><i>보통</i><i>속전속결</i><i>한 '+(C.camp==='joseon'?'치세':'임기')+' · '+CAMPS[C.camp].yrs+'년</i></span></div></div>'+
-    '<ul class="dc-rules"><li>모두가 <b>같은 조건</b>에서 시작하고, 같은 선택을 하면 같은 결과가 나와요.</li><li>순위에는 <b>오늘 처음 시작한 판</b>만 올라가요. 중간에 나가도 그 판이 첫 판이에요.</li><li>순위 판을 마친 뒤에는 같은 판을 연습할 수 있어요. 도전 판은 저장할 수 없어요.</li></ul>'+
+    '<ul class="dc-rules"><li>모두가 <b>같은 조건</b>에서 시작하고, 같은 선택을 하면 같은 결과가 나와요.</li><li>오늘 안에는 <b>몇 번이든 다시 도전</b>할 수 있어요. 순위에는 <b>오늘 가장 높은 점수</b>가 올라가요.</li><li>끝까지 마친 판만 순위에 올라가요. 도전 판은 저장할 수 없어요.</li></ul>'+
     (st?'<p class="dc-st">'+st+'</p>':'')+
-    '<div class="dc-go">'+(!r?'<button type="button" class="pri" id="dcGo">도전 시작 · 오늘의 첫 판</button>':'<button type="button" id="dcPr"'+(r.done?'':' disabled')+'>연습하기'+(r.done?'':' (순위 판을 마친 뒤)')+'</button>')+'</div>'+
+    '<div class="dc-go"><button type="button" class="pri" id="dcGo">'+(r?'다시 도전하기':'도전 시작')+'</button></div>'+
     '<div class="dc-tabs" role="tablist"><button type="button" role="tab" data-t="today">오늘</button><button type="button" role="tab" data-t="yest">어제</button><button type="button" role="tab" data-t="sch">학교</button></div>'+
     '<div class="dc-list" id="dcList"><p class="dc-wait">순위를 불러오는 중…</p></div></div>';
   document.body.appendChild(o);const $=s=>o.querySelector(s),x=()=>{try{SFX.back();}catch(e){}dcClose();};let dn=null;
   o.onpointerdown=e=>{dn=e.target;};o.onclick=e=>{if(e.target===o&&dn===o)x();};$('.sndp-x').onclick=x;
   o.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape'){e.preventDefault();x();}});
-  const go=ranked=>{try{SFX.start();}catch(e){}dcClose();cineClose();dcStart(ranked);};
-  if($('#dcGo'))$('#dcGo').onclick=()=>go(true);
-  if($('#dcPr'))$('#dcPr').onclick=()=>go(false);
+  $('#dcGo').onclick=()=>{try{SFX.start();}catch(e){}dcClose();cineClose();dcStart();};
   o.querySelectorAll('.dc-tabs button').forEach(b=>b.onclick=()=>{try{SFX.click();}catch(e){}DC_TAB=b.dataset.t;dcList(o,opts);});
   dcList(o,opts);
   if(IN_ART||!SHEET_URL){$('#dcList').innerHTML='<p class="dc-wait">이 화면에서는 순위를 볼 수 없어요.</p>';return;}

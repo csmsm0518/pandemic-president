@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"c00012fc7d","h":"36258d130deedbab"},"boxes":{"v":"462eaba10f","h":"f3f86c84521aaca7"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"daily":{"v":"3df0acdc03","h":"d53cbeb46a96c3a9"},"dex":{"v":"5570d613cb","h":"6e779b2e6670732f"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"e6c3091727","h":"d51b1bc3363ada34"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"sail":{"v":"f33f245bee","h":"5e31bd0bd96d66a3"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
+const LZ_M={"board":{"v":"c00012fc7d","h":"36258d130deedbab"},"boxes":{"v":"462eaba10f","h":"f3f86c84521aaca7"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"daily":{"v":"5b8bb27278","h":"733b620d09b11435"},"dex":{"v":"5570d613cb","h":"6e779b2e6670732f"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"e6c3091727","h":"d51b1bc3363ada34"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"sail":{"v":"f33f245bee","h":"5e31bd0bd96d66a3"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
 function sugOpen(){return lzCall('boxes','sugOpen',arguments);}
 function cpnOpen(){return lzCall('boxes','cpnOpen',arguments);}
@@ -5695,15 +5695,18 @@ function bagOpen(){
       :'<p class="bg-empty">받아 둔 스텟 펌핑이 없어요.<br>메인 화면의 쿠폰함에서 쿠폰을 넣으면 여기에 쌓여요.</p>';
     o.querySelectorAll('.bg-r button').forEach(x=>x.onclick=()=>{if(bagUse(x.dataset.k)){SFX.coin();vib([20]);draw();eggToast(bagName(x.dataset.k)+' 완료! '+vName(BAG_V[x.dataset.k])+' <b>'+Math.round(vVal(BAG_V[x.dataset.k]))+'</b>');}});};
   draw();}
-/* ---------- 오늘의 도전: 하루 한 판, 모두가 같은 조건 ----------
+/* ---------- 오늘의 도전: 하루에 같은 판, 모두가 같은 조건 ----------
    날짜(한국 시간)로 그날의 판을 정한다: 무대는 대한민국 · 조선 · 미국을 날마다 돌아가며, 출발 인물은 그 무대의 기본 인물 가운데 하나,
-   난이도 보통 · 속전속결 · 한 임기. 순위에는 그날 처음 시작한 판만 올라가고(첫 판), 그 판을 마친 뒤에는 같은 판을 연습할 수 있다.
+   난이도 보통 · 속전속결 · 한 임기. 그날 안에는 몇 번이든 다시 도전할 수 있고, 순위에는 사람마다 그날 끝까지 마친 판 중 가장 높은 점수가 올라간다(v4.9).
+   (v4.5~v4.8은 그날 처음 시작한 판만 순위에 올렸는데, 첫 판을 중간에 나가면 그날은 순위 판도 연습도 할 수 없게 막혔다)
    같은 선택을 하면 같은 사건 · 같은 주사위가 나와야 비교가 공정하다. 그래서 도전 중에는 Math.random을 씨앗 있는 난수로 바꾸고,
    무작위로 결과를 정하는 자리마다(사건 고르기 · 판정 주사위 · 연말 · 선거 · 국난 …) '날짜 + 지금 위치(임기 · 차례 · 선택 수 · 운명 개입 수)'로
    씨앗을 다시 맞춘다(dcSeed). 화면 효과도 Math.random을 쓰지만, 결과를 정하기 직전에 씨앗을 다시 맞추므로 결과에는 끼어들지 못한다.
    창(오늘의 조건 · 순위)은 나중에 받는 조각 lazy/daily(dcOpen)가 그린다. */
 const DC_CAMPS=['kr','joseon','usa'],DC_DAY0=Date.UTC(2026,0,1);
-let DC=null;   // 도전 중이면 {date, base, ranked}
+let DC=null;   // 도전 중이면 {date, base, ranked}. v4.9부터 도전 판은 모두 순위 판(ranked 늘 true)
+// 무대 · 인물을 정해 둔 날: 돌림 대신 이 인물로 한다(그날 모두에게 같다)
+const DC_PIN={'2026-11-01':{camp:'kr',id:'kimgu'}};
 const DC_RAND0=Math.random;
 const dcToday=()=>new Date(Date.now()+9*36e5).toISOString().slice(0,10);   // 한국 시간 날짜
 const dcHash=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h>>>0;};
@@ -5712,27 +5715,32 @@ let DC_S=0;
 function dcRand(){DC_S=(DC_S+0x6D2B79F5)>>>0;let t=DC_S;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296;}
 function dcSeed(tag){if(!DC)return;DC_S=dcHash(DC.base+'|'+tag+'|'+(CAR?CAR.term:0)+'|'+(S?S.turn:0)+'|'+(LOG?LOG.length:0)+'|'+(RUN?RUN.rr:0));}
 // 그날의 조건. 출발 인물은 비밀 · 한 번뿐 · 조건부 인물을 뺀 기본 인물에서(기기마다 풀린 인물이 달라도 같게)
-function dcConf(date){date=date||dcToday();const day=Math.floor((Date.parse(date+'T00:00:00Z')-DC_DAY0)/864e5),camp=DC_CAMPS[((day%3)+3)%3];
+function dcConf(date){date=date||dcToday();
+  const P=DC_PIN[date],PB=P&&CAMPS[P.camp]?CAMPS[P.camp].bg.findIndex(b=>b.id===P.id):-1;
+  if(PB>=0)return {date:date,camp:P.camp,bg:PB,B:CAMPS[P.camp].bg[PB],dif:1,mode:1};
+  const day=Math.floor((Date.parse(date+'T00:00:00Z')-DC_DAY0)/864e5),camp=DC_CAMPS[((day%3)+3)%3];
   const L=CAMPS[camp].bg.map((b,i)=>[b,i]).filter(x=>!x[0].sec&&!x[0].once&&!x[0].al&&!x[0].god);
   const pick=L[dcHash('pp-daily-bg|'+date)%L.length];
   return {date:date,camp:camp,bg:pick[1],B:pick[0],dif:1,mode:1};}
-const dcRec=d=>(MEM.dc&&MEM.dc[d||dcToday()])||null;   // 이 기기의 그날 기록 {ranked:시작함, score, done}
+const dcRec=d=>(MEM.dc&&MEM.dc[d||dcToday()])||null;   // 이 기기의 그날 기록 {ranked:시작함, n:시작한 횟수, score:마친 판 중 최고 점수, done:한 판이라도 마침}
 const dcMode=()=>MODE.findIndex(m=>m.n==='속전속결');
-// 도전 시작: ranked면 오늘의 첫 판(순위), 아니면 연습. 순위 판은 시작하는 순간 '오늘 첫 판'으로 적는다(중간에 나가도 다시 순위 판을 하지 못한다)
-function dcStart(ranked,date){const C=dcConf(date),r=dcRec(C.date);if(ranked&&r&&r.ranked)ranked=false;
+// 도전 시작: 몇 번째 도전이든 순위 판이다(순위는 그날 최고 점수). 시작한 횟수만 이 기기에 적는다
+function dcStart(date){const C=dcConf(date);
   camp=C.camp;bg=C.bg;dif=C.dif;mode=Math.max(0,dcMode());
-  DC={date:C.date,base:'pp-daily|'+C.date,ranked:!!ranked};Math.random=dcRand;
-  if(ranked){MEM.dc=MEM.dc||{};const keep={};Object.keys(MEM.dc).sort().slice(-13).forEach(k=>{keep[k]=MEM.dc[k];});MEM.dc=keep;MEM.dc[C.date]={ranked:1};msave();}
+  DC={date:C.date,base:'pp-daily|'+C.date,ranked:true};Math.random=dcRand;
+  MEM.dc=MEM.dc||{};const keep={};Object.keys(MEM.dc).sort().slice(-13).forEach(k=>{keep[k]=MEM.dc[k];});MEM.dc=keep;
+  const r=MEM.dc[C.date]=MEM.dc[C.date]||{};r.n=(+r.n||(r.ranked?1:0))+1;r.ranked=1;msave();   // v4.8 전 기록({ranked:1})은 한 번 시작한 것으로 친다
   // 나중에 받는 조각(미니게임 · 특별 과제 등)을 모두 받은 뒤에 시작한다. 처음 쓰는 순간에 받으면 그 조각의 무작위가 한 박자 늦게 돌아
   // 같은 선택에도 판이 달라졌다(같은 기기의 두 번째 판과 첫 판이 달랐다)
   const N=Object.keys(LZ_M);let i=0;const nx=()=>{if(i<N.length)return lzThen(N[i++],nx);start();};nx();}
 // 도전이 끝나면(결산 · 메인 화면으로) 원래 난수로 되돌린다
 function dcEnd(){if(Math.random!==DC_RAND0)Math.random=DC_RAND0;DC=null;}
-// 결산: 순위 판의 점수를 이 기기에 남긴다(메인 화면 칸 · 도전 창에 보인다)
-function dcDone(score){if(!DC)return;if(DC.ranked){const r=MEM.dc&&MEM.dc[DC.date];if(r){r.score=score;r.done=1;msave();}}}
+// 결산: 그날 마친 판 중 가장 높은 점수를 이 기기에 남긴다(메인 화면 칸 · 도전 창에 보인다)
+function dcDone(score){if(!DC)return;const r=MEM.dc&&MEM.dc[DC.date];if(!r)return;
+  r.last=score;if(!r.done||score>+r.score)r.score=score;r.done=1;msave();}
 const dcLabel=d=>{const p=String(d).split('-');return +p[1]+'월 '+(+p[2])+'일';};
-// 메인 메뉴 칸의 작은 글: 오늘의 무대 · 인물, 마쳤으면 내 점수
-function dcSub(){const C=dcConf(),r=dcRec();return r&&r.done?'오늘 '+Number(r.score).toLocaleString('ko-KR')+'점 · 순위 보기':r&&r.ranked?'오늘 도전함 · 순위 보기':CAMPS[C.camp].n+' · '+C.B.n+' · 속전속결';}
+// 메인 메뉴 칸의 작은 글: 오늘의 무대 · 인물, 마쳤으면 내 최고 점수
+function dcSub(){const C=dcConf(),r=dcRec();return r&&r.done?'오늘 최고 '+Number(r.score).toLocaleString('ko-KR')+'점 · 다시 도전':CAMPS[C.camp].n+' · '+C.B.n+' · 속전속결';}
 // 소리 · 배경음악 · 감염 지도 · 명언 고르기는 화면 꾸밈이다. 도전 중에도 이것들은 원래 난수를 쓰게 감싼다.
 // 감싸지 않으면 소리를 켰는지, 앞 판에서 음악이 이미 골라졌는지에 따라 난수 줄이 밀려 같은 선택에도 시대 조건 · 결과가 달라졌다
 const dcIso=f=>function(){if(!DC)return f.apply(this,arguments);const m=Math.random;Math.random=DC_RAND0;try{return f.apply(this,arguments);}finally{Math.random=m;}};
@@ -7295,7 +7303,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   const medalH=(bt?'<div class="chr-md" aria-hidden="true"><svg viewBox="0 0 70 34" width="70" height="34"><path d="M18 0H33L38 34H23Z" fill="#a8321f"/><path d="M52 0H37L32 34H47Z" fill="#2f4a6b"/></svg><div class="disc"><b>'+bt.g+'</b><span>최고 임기</span></div></div>':'');
   const show=first=>{window.scrollTo(0,0);
   R.innerHTML='<div style="animation:fdIn .45s ease-out">'+
-   (dcI?'<div class="dc-res"><div><b>오늘의 도전 · '+dcLabel(dcI.date)+'</b><span>'+(dcI.ranked?'순위 판 · 오늘의 순위에 올라가요':'연습 판 · 순위에는 오르지 않아요')+'</span></div><button id="dcRank" type="button">오늘의 순위</button></div>':'')+
+   (dcI?'<div class="dc-res"><div><b>오늘의 도전 · '+dcLabel(dcI.date)+'</b><span>'+(dcI.ranked?'오늘 가장 높은 점수가 순위에 올라가요 · 다시 도전할 수 있어요':'연습 판 · 순위에는 오르지 않아요')+'</span></div><button id="dcRank" type="button">오늘의 순위</button></div>':'')+
    lab(NICK+' 대통령의 인생 · '+(CAR.bgx||CAR.bg+' 출신'))+
    '<div style="font-size:27px;font-family:var(--font-voice);font-weight:800;line-height:1.25;margin-bottom:6px">'+(EXH[kind]||kind)+'</div>'+
    '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">'+CAR.term+'선 · '+years+'년 재임 · '+CAR.age0+'세에 취임해 '+age1+'세에 물러남<div style="margin-top:4px;color:var(--text-muted)">겪은 위기 · '+CAR.terms.map(t=>t.scenario).join(' → ')+'</div></div>'+
@@ -8241,7 +8249,7 @@ function acEnter(id,p){PF={school:p.school,name:p.name,phone:p.phone||'',agree:t
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v4.8';
+const GAME_VER='v4.9';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -8412,8 +8420,9 @@ setTimeout(()=>{try{const me=!IN_ART&&acGet();if(!me||!me.prof||!me.prof.name)re
 /* ---------- 업데이트 소식 ----------
    새 버전을 올릴 때 PATCHES 맨 위에 항목을 더한다(GAME_VER와 같은 이름). 업데이트 뒤 처음 홈 화면에 오면 한 번 자동으로 뜨고,
    홈 메뉴 「기타 → 업데이트 소식」에서 언제든 다시 볼 수 있다. 처음 온 사람(기록이 전혀 없음)에게는 띄우지 않고 읽은 것으로 쳐 둔다.
-   v1부터 v4.8까지 모든 업데이트를 넣었다(v4.7은 크게, 나머지는 접어서 짧게). */
+   v1부터 v4.9까지 모든 업데이트를 넣었다(v4.7은 크게, 나머지는 접어서 짧게). */
 const PATCHES=[
+ {v:'v4.9',t:'오늘의 도전 · 여러 번 도전',d:'2026-11-01',l:[['몇 번이든 다시','오늘의 도전을 하루에 몇 번이든 다시 할 수 있어요. 순위에는 그날 끝까지 마친 판 중 가장 높은 점수가 올라가요. 첫 판을 중간에 나가면 그날 다시 못 하던 문제를 고쳤어요.'],['오늘은 김구','11월 1일 오늘의 도전은 대한민국 · 김구예요.']]},
  {v:'v4.8',t:'자동 로그인',d:'2026-11-01',l:[['바로 로비로','이미 회원으로 로그인한 기기는 첫 화면(인적사항)을 건너뛰고 바로 로비에서 시작해요. 로그인이 끝났으면 첫 화면으로 돌아와요.'],['로그인 화면으로','기타 메뉴에 로그인 화면으로 돌아가는 버튼이 생겼어요.'],['미니게임 위치','미니게임이 새 게임 위쪽 탭에서 홈의 「게임」 묶음 안으로 옮겨졌어요.']]},
  {v:'v4.7',t:'핫패치 · 난이도 · 보관함 · 홈 화면',d:'2026-10-31',big:1,l:[
   ['난이도 재조정','지옥이 없어졌어요. 쉬움 · 보통 · 어려움 세 단계이고, 예전 보통은 쉬움으로, 예전 어려움은 보통으로, 예전 지옥은 어려움으로 한 단계씩 올라갔어요. 저장해 둔 게임은 같은 수치로 이어져요.'],

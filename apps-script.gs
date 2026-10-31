@@ -22,7 +22,7 @@
 //
 // 열은 항상 예전 버전 뒤에 이어 붙이므로, 이미 쌓인 기록과 줄이 어긋나지 않는다. 머리글(1행)은 자동으로 새 버전으로 바뀐다.
 
-const SCRIPT_VER = 'v21';
+const SCRIPT_VER = 'v22';
 // [비밀 게임 기록] v13: 좀비 서바이벌 「방역선」과 비밀 모드 「대항해」의 점수가 "비밀 게임 기록" 탭에 쌓이고, 명예의 전당 오른쪽 두 칸에 순위가 나온다.
 const ARCADE = [['판ID', 'id'], ['게임', 'game'], ['닉네임', 'nickname'], ['학교', 'school'], ['점수', 'score'], ['시간(초)', 'sec'], ['성공', 'win'], ['세부', 'detail'], ['게임 버전', 'gv'],
   // ----- v15: 숨김(관리자가 아무 글자나 적으면 그 줄은 순위에서 빠진다. 서버가 말이 안 되는 기록을 받으면 스스로 사유를 적는다) -----
@@ -283,7 +283,7 @@ const SUMMARY = [
   ['쿠폰 운명 개입', 'couponTok'],
   // ----- v19: 회원으로 한 판이면 회원 키(아이디의 지문). 같은 회원의 여러 기기 판을 한 사람으로 묶는다 -----
   ['회원 키', 'mkey'],
-  // ----- v21: 오늘의 도전(한국 시간 날짜). 순위 판이면 '예'(그날 처음 시작한 판), 연습 판은 빈칸 -----
+  // ----- v21: 오늘의 도전(한국 시간 날짜). 순위 판이면 '예'(v4.9부터 모든 도전 판), 연습 판(v4.8 전)은 빈칸 -----
   ['도전 날짜', 'dcDate'], ['도전 순위 판', 'dcRanked']
 ];
 // 상품 연락용 참가자 정보. 분석 시트와 따로 둔다.
@@ -1013,7 +1013,7 @@ function buildBoard_() {
     const r = v[i], sc = num(g(r, '커리어 점수')), id = String(g(r, '판ID'));
     // 학교: 관리자가 '참가자(비공개)' 탭에서 고친 학교가 있으면 그것을 쓴다(요약 탭의 학교는 처음 받은 그대로)
     const sch = Object.prototype.hasOwnProperty.call(PS, id) ? PS[id] : g(r, '학교');
-    // 오늘의 도전: 중도 이탈 줄(점수 없음)도 '그 사람의 첫 판'을 정하는 데 쓰므로 점수 거르기 전에 모은다
+    // 오늘의 도전: 중도 이탈 줄(점수 없음)도 '도전한 사람 수'에 넣으므로 점수 거르기 전에 모은다
     const dd = String(g(r, '도전 날짜') || '');
     if ((dd === dToday || dd === dYest) && String(g(r, '도전 순위 판')) === '예' && id !== 'test') {
       const mk = String(g(r, '회원 키') || '').trim(), pid = String(g(r, '플레이어ID') || '').trim(), t0 = g(r, '기록 시각');
@@ -1070,15 +1070,20 @@ function buildBoard_() {
   return out;
 }
 
-// 오늘의 도전 순위: 사람마다(회원 키 · 플레이어ID) 그날 처음 시작한 순위 판 하나만. 그 판이 중도 이탈이면 그 사람은 순위에 없다
+// 오늘의 도전 순위: 사람마다(회원 키 · 플레이어ID) 그날 끝까지 마친 순위 판 중 가장 높은 점수 하나(v22). 점수가 같으면 먼저 낸 판.
+// v21까지는 그날 처음 시작한 판만 셌다(게임 v4.9부터 하루에 여러 번 도전할 수 있다). tried = 그날 도전을 시작한 사람 수
 const kstDate_ = d => Utilities.formatDate(d, 'Asia/Seoul', 'yyyy-MM-dd');
 function dailyOf_(L, d) {
-  const first = {};
-  L.filter(r => r.d === d).sort((a, b) => a.t - b.t).forEach(r => { if (!first[r.key]) first[r.key] = r; });
-  const ok = Object.keys(first).map(k => first[k]).filter(r => r.sc !== null && !r.bad).sort((a, b) => b.sc - a.sc);
+  const best = {}, who = {};
+  L.filter(r => r.d === d).sort((a, b) => a.t - b.t).forEach(r => {
+    who[r.key] = 1;
+    if (r.sc === null || r.bad) return;
+    if (!best[r.key] || r.sc > best[r.key].sc) best[r.key] = r;
+  });
+  const ok = Object.keys(best).map(k => best[k]).sort((a, b) => b.sc - a.sc || a.t - b.t);
   const sch = {};
   ok.forEach(r => { if (!r.school) return; const s = sch[r.school] = sch[r.school] || {s: r.school, n: 0, sum: 0, best: -1e9}; s.n++; s.sum += r.sc; s.best = Math.max(s.best, r.sc); });
-  return {date: d, n: ok.length, tried: Object.keys(first).length,
+  return {date: d, n: ok.length, tried: Object.keys(who).length,
     top: ok.slice(0, 50).map((r, i) => ({r: i + 1, nick: r.nick, school: r.school, score: r.sc, leader: r.leader, exit: r.exit})),
     schools: Object.keys(sch).map(k => sch[k]).map(s => ({s: s.s, n: s.n, avg: Math.round(s.sum / s.n), best: s.best})).sort((a, b) => b.avg - a.avg).slice(0, 15),
     scores: ok.map(r => r.sc)};   // 점수만(내 순위 셈 · 분포용)

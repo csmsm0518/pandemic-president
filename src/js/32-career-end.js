@@ -174,7 +174,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   const medalH=(bt?'<div class="chr-md" aria-hidden="true"><svg viewBox="0 0 70 34" width="70" height="34"><path d="M18 0H33L38 34H23Z" fill="#a8321f"/><path d="M52 0H37L32 34H47Z" fill="#2f4a6b"/></svg><div class="disc"><b>'+bt.g+'</b><span>최고 임기</span></div></div>':'');
   const show=first=>{window.scrollTo(0,0);
   R.innerHTML='<div style="animation:fdIn .45s ease-out">'+
-   (dcI?'<div class="dc-res"><div><b>오늘의 도전 · '+dcLabel(dcI.date)+'</b><span>'+(dcI.ranked?'순위 판 · 오늘의 순위에 올라가요':'연습 판 · 순위에는 오르지 않아요')+'</span></div><button id="dcRank" type="button">오늘의 순위</button></div>':'')+
+   (dcI?'<div class="dc-res"><div><b>오늘의 도전 · '+dcLabel(dcI.date)+'</b><span>'+(dcI.ranked?'오늘 가장 높은 점수가 순위에 올라가요 · 다시 도전할 수 있어요':'연습 판 · 순위에는 오르지 않아요')+'</span></div><button id="dcRank" type="button">오늘의 순위</button></div>':'')+
    lab(NICK+' 대통령의 인생 · '+(CAR.bgx||CAR.bg+' 출신'))+
    '<div style="font-size:27px;font-family:var(--font-voice);font-weight:800;line-height:1.25;margin-bottom:6px">'+(EXH[kind]||kind)+'</div>'+
    '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">'+CAR.term+'선 · '+years+'년 재임 · '+CAR.age0+'세에 취임해 '+age1+'세에 물러남<div style="margin-top:4px;color:var(--text-muted)">겪은 위기 · '+CAR.terms.map(t=>t.scenario).join(' → ')+'</div></div>'+
