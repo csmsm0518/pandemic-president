@@ -195,3 +195,6 @@ html[data-ori="p"] .gcn .cn-cand>.cn>.pf{width:48px;height:48px}
 html[data-ori="p"] .gcn .cn-cand>.cn-s{flex:1 0 100%}
 html[data-ori="p"] .gcn .cn-cand .cn-q{font-size:12.5px;margin-top:4px}
 html[data-ori="p"] .gcn .cn-cand .cn-sp{font-size:12px;padding:6px 9px}
+/* 음악 띠(28px · 터치 화면 32px)에 단계 표시(1 무대 · 2 지도자 · 3 준비)가 가리지 않게 윗줄을 조금 높인다 */
+html[data-ori="p"] .gx-ld .gx-top,html[data-ori="p"] .gx-su .gx-top{height:60px}
+@media (pointer:coarse){html[data-ori="p"] .gx-ld .gx-top,html[data-ori="p"] .gx-su .gx-top{height:64px}}

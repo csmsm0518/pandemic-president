@@ -773,6 +773,31 @@ html:has(.npl.on) #app{padding-top:max(34px,calc(env(safe-area-inset-top) + 30px
 .bg-r em{font-style:normal;font-weight:800;font-size:15px;color:var(--gold-lo,#8f6a12)}.bg-r button{padding:8px 16px;font-size:14px}
 .bg-empty{margin:8px 0;text-align:center;font-size:13.5px;line-height:1.6;color:var(--text-muted)}
 .bg-note{margin:12px 0 0;font-size:12px;line-height:1.6;color:var(--text-muted)}
+/* 홈 메뉴 묶음: 게임 · 오늘의 도전 · 기록 · 기타. 묶음을 누르면 아래 칸이 펼쳐진다(하나만) */
+.gx-g .gx-ar2{opacity:.75}.gx-mi.gx-g.open .gx-ar2{transform:rotate(90deg);opacity:1}
+.gx-g.open{color:#fff4d6}.gx-g.open .gx-ic{border-color:#c9a24a}
+.gx-sl{display:none;background:rgba(0,0,0,.3);box-shadow:inset 0 10px 14px -12px rgba(0,0,0,.9);border-bottom:1px solid rgba(201,162,74,.14)}
+.gx-sl.open{display:block;animation:gxUp .25s both}
+.gx-mi.gx-s{grid-template-columns:minmax(0,1fr) 14px;gap:8px;padding:clamp(7px,1.2vh,11px) 18px clamp(7px,1.2vh,11px) 62px}
+.gx-mi.gx-s .gx-mt b{font-size:clamp(14px,2vh,16px);letter-spacing:0}.gx-mi.gx-s .gx-mt small{font-size:11.5px}
+.gx-mi.gx-s::before{left:-3px}
+.gx-mi.gx-s:last-child{border-bottom:0}
+@media (orientation:landscape) and (max-height:540px){.gx-mi.gx-s{padding:4px 12px 4px 46px}.gx-mi.gx-s .gx-mt small{display:none}}
+@media (orientation:landscape) and (max-height:420px){html:not([data-ori="p"]) .gx-sl{grid-column:1/-1}}
+.gx-mi.gx-s{animation:none;border-bottom:1px solid rgba(201,162,74,.08)}
+.gx-mi.gx-s .gx-mt b{line-height:1.3}.gx-mi.gx-s .gx-mt small{line-height:1.35}
+.gx-sl .gx-mi.gx-s{width:100%;box-sizing:border-box;padding-top:clamp(6px,1vh,9px);padding-bottom:clamp(6px,1vh,9px)}
+/* 업데이트 소식 창 */
+.pn{max-height:min(70vh,560px);overflow-y:auto;padding-top:6px;-webkit-overflow-scrolling:touch}
+.pn-s{margin-bottom:14px}
+.pn-h{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.pn-h b{font:800 17px var(--font-voice);color:var(--gold-lo,#8f6a12)}.pn-h span{font-weight:700;font-size:14px}.pn-h time{margin-left:auto;font-size:11.5px;color:var(--text-muted)}
+.pn ul{list-style:none;margin:8px 0 0;padding:0}.pn li{display:flex;flex-direction:column;gap:2px;margin-bottom:9px}
+.pn li b{font-size:13.5px}.pn li span{font-size:12.5px;line-height:1.6;color:var(--text-secondary)}
+.pn-old{margin:4px 0 12px}.pn-old summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--text-muted);padding:6px 0}
+.pn-b{position:sticky;bottom:0;padding:10px 0 2px;background:linear-gradient(0deg,var(--surface-0,#f5f0e1) 70%,transparent)}
+.pn-b button{width:100%;padding:12px;font-size:15px}
+@media (orientation:landscape) and (max-height:540px){.gx-sl .gx-mi.gx-s{padding:3px 12px 3px 40px}.gx-mi.gx-s .gx-mt b{font-size:13.5px;line-height:1.25}}
 /* ---------- 전체 화면 연출(시네마) ---------- */
 .cine{position:fixed;inset:0;z-index:75;overflow:hidden;color:var(--dk-text);background:radial-gradient(ellipse at 50% 38%,#3a2e1c 0%,#1b1610 55%,#0b0907 100%);animation:dkFade .45s both}
 .cine.out{opacity:0;transition:opacity .45s ease;pointer-events:none}
@@ -1618,6 +1643,9 @@ html[data-ori="p"] .gcn .cn-cand>.cn>.pf{width:48px;height:48px}
 html[data-ori="p"] .gcn .cn-cand>.cn-s{flex:1 0 100%}
 html[data-ori="p"] .gcn .cn-cand .cn-q{font-size:12.5px;margin-top:4px}
 html[data-ori="p"] .gcn .cn-cand .cn-sp{font-size:12px;padding:6px 9px}
+/* 음악 띠(28px · 터치 화면 32px)에 단계 표시(1 무대 · 2 지도자 · 3 준비)가 가리지 않게 윗줄을 조금 높인다 */
+html[data-ori="p"] .gx-ld .gx-top,html[data-ori="p"] .gx-su .gx-top{height:60px}
+@media (pointer:coarse){html[data-ori="p"] .gx-ld .gx-top,html[data-ori="p"] .gx-su .gx-top{height:64px}}
 /* ---------- 메인 화면의 건의사항함 · 쿠폰함: 메뉴 한 칸 자리를 가로로 반씩 나눈 두 칸(주인 요청) ---------- */
 /* 영화식 메뉴: 반쪽도 .gx-mi라 고르기 · 빛 · 왼쪽 막대가 다른 칸과 같다. 글자는 줄여도 줄 높이는 보통 칸과 같게 두어 칸 높이가 똑같다 */
 .gx-mi2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-bottom:1px solid rgba(201,162,74,.1)}

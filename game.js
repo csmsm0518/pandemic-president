@@ -5829,7 +5829,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   lab('지도자 도감 '+lg+' / '+LEADK.length)+'<div style="margin-bottom:22px">'+ldex+'</div>'+
   lab('임기 평가 도감 '+got+' / '+ENDC.length)+'<div style="margin-bottom:22px">'+dex+'</div>'+
   '<button id="edBtn" style="width:100%;font-size:13px;margin-bottom:8px">인적사항 바꾸기</button>'+
-  '<div style="text-align:center;font-size:11px;color:var(--text-muted);margin:6px 0 10px">팬데믹 대통령 '+GAME_VER+' · 라이트</div></div>';
+  '<div style="text-align:center;font-size:11px;color:var(--text-muted);margin:6px 0 10px">팬데믹 대통령 '+GAME_VER+' · 라이트 · <a href="#" id="newsBtn" style="color:inherit;text-decoration:underline">업데이트 소식</a></div></div>';
   const $=id=>document.getElementById(id);
   $('bgSel').onchange=e=>{SFX.click();const v=e.target.value;
     // 랜덤: 지금 고를 수 있는(잠기지 않은) 인물 가운데 한 명
@@ -5847,11 +5847,13 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   $('gbBtn').onclick=()=>{SFX.click();guide(home);};
   boxBind('hl',()=>SFX.click());
   $('edBtn').onclick=()=>{SFX.click();intro();};
+  $('newsBtn').onclick=e=>{e.preventDefault();SFX.click();newsOpen(true);};
   vwBind(R,k=>{if(k==='lite')home();});
   // 이스터에그: 제목을 3초 안에 7번 누르면 좀비 무대가 열린다
   $('ttl').onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];
     if(eggOn('zombie')){eggToast('🧟 좀비 무대는 이미 열려 있어요.');return;}
     eggSet('zombie');try{SFX.zombie();}catch(e){}vib([60,40,60,40,200]);eggToast('🧟 <b>어디선가 신음 소리가 들린다…</b><br>미니게임 「방역선」이 열렸어요. 새 게임의 미니게임 탭에서 할 수 있어요.');homeLite();};
+  newsCheck();
   if(SEC_NEW.length){const nm=SEC_NEW.map(id=>{for(const c in CAMPS){const q=CAMPS[c].bg.find(b=>b.sec===id);if(q)return q.n;}return id;});SEC_NEW=[];SFX.unlock();eggToast('🔓 비밀 인물 해금: <b>'+nm.join(', ')+'</b>');}
   // 수영 금메달 선물: 라이트 화면에는 로고 나침반이 없어서 튜토리얼 창 안에 나침반을 띄운다(sailTut(null))
   if(MEM.sailHint===1&&!eggOn('sail'))setTimeout(()=>{if(MEM.sailHint===1&&!eggOn('sail')&&viewGet().lite&&!CINE&&R.querySelector('.hl'))sailTut(null);},700);
@@ -5879,7 +5881,14 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp)||camp==='zombie')camp='kr';document.documentElement.dataset.camp='kr';
   R.innerHTML='<div style="min-height:70vh"></div>';
   const msg=HUB_MSG;HUB_MSG='';
-  const sv=svMenuTxt(),M=[].concat([['mmNew','새 게임','한 번의 인생을 시작한다','new'],['mmDaily','오늘의 도전',dcSub(),'daily'],['mmLoad','불러오기',sv||'저장된 게임이 없다','guide']],[['mmBoard','명예의 전당','모두의 최고 기록','board'],['mmDex','도감','만난 지도자와 임기 평가','dex'],['mmGuide','가이드북','처음이라면 여기부터','guide']]);
+  // 홈 메뉴는 네 묶음: 게임(새 게임 · 불러오기) · 오늘의 도전 · 기록(명예의 전당 · 도감) · 기타(가이드북 · 건의사항 · 쿠폰함 · 화면 설정 · 인적사항). 묶음을 누르면 그 아래가 펼쳐진다(하나만 열림).
+  const sv=svMenuTxt(),item=(id,t,s,ic)=>[id,t,s,ic],
+    G=[{id:'game',t:'게임',s:'새 게임 · 불러오기',ic:'new',open:1,it:[item('mmNew','새 게임','한 번의 인생을 시작한다'),item('mmLoad','불러오기',sv||'저장된 게임이 없다')]},
+       {id:'daily',t:'오늘의 도전',s:dcSub(),ic:'daily',one:'mmDaily'},
+       {id:'rec',t:'기록',s:'명예의 전당 · 도감',ic:'board',it:[item('mmBoard','명예의 전당','모두의 최고 기록'),item('mmDex','도감','만난 지도자와 임기 평가')]},
+       {id:'etc',t:'기타',s:'가이드북 · 건의사항 · 쿠폰함 · 설정',ic:'guide',it:[item('mmGuide','가이드북','처음이라면 여기부터'),item('mmNews','업데이트 소식',GAME_VER+' 바뀐 내용')].concat(BOX_M().map(m=>item('mm'+m[0],m[1],m[2])),[item('mmView','화면 설정','세로/가로 · 라이트'),item('mmEdit','인적사항 바꾸기','학교 · 이름 · 닉네임')])}];
+  const MROW=(g,i)=>'<button class="gx-mi gx-g'+(g.open?' open':'')+'" id="'+(g.one||'mmG_'+g.id)+'" style="--i:'+i+'"'+(g.one?'':' aria-expanded="'+(g.open?'true':'false')+'" data-g="'+g.id+'"')+'><span class="gx-ic" aria-hidden="true">'+GX_IC[g.ic]+'</span><span class="gx-mt"><b>'+g.t+'</b><small>'+g.s+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>'+
+    (g.it?'<div class="gx-sl'+(g.open?' open':'')+'" data-g="'+g.id+'">'+g.it.map(m=>'<button class="gx-mi gx-s" id="'+m[0]+'"><span class="gx-mt"><b>'+m[1]+'</b><small>'+m[2]+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>').join('')+'</div>':'');
   // 기록 카드: 닉네임, 최고 기록, 도감 진행도
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
   const st=(l,v,u)=>'<div><span>'+l+'</span><b>'+v+'</b>'+(u&&v!=='—'?'<small>'+u+'</small>':'')+'</div>';
@@ -5895,18 +5904,21 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
     '<span class="gx-sstar" hidden><svg viewBox="-12 -12 24 24"><path d="M0-10.5L2.7-3.4 10-3.2 4.3 1.3 6.3 8.5 0 4.3-6.3 8.5-4.3 1.3-10-3.2-2.7-3.4Z"/></svg></span></div>'+
     '<div class="gx-tl"><div class="emb go gx-logo">'+emblemSvg()+'<div><h1 class="emb-t"><span>팬데믹</span> <span>대통령</span></h1><p class="emb-s">한 번의 인생, 한 나라의 운명</p></div></div>'+
     (msg?'<div class="gx-msg">'+msg+'</div>':'')+
-    '<div class="gx-row2"><nav class="gx-menu" aria-label="메인 메뉴">'+M.map((m,i)=>'<button class="gx-mi" id="'+m[0]+'" style="--i:'+i+'"><span class="gx-ic" aria-hidden="true">'+GX_IC[m[3]]+'</span><span class="gx-mt"><b>'+m[1]+'</b><small>'+m[2]+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>').join('')+
-    boxTileGx(M.length)+'<button class="gx-mi sub" id="mmView" style="--i:'+M.length+'">화면 설정 · 세로/가로 · 라이트</button><button class="gx-mi sub" id="mmEdit" style="--i:'+(M.length+1)+'">인적사항 바꾸기</button></nav>'+pc+'</div></div>'+
+    '<div class="gx-row2"><nav class="gx-menu" aria-label="메인 메뉴">'+G.map(MROW).join('')+'</nav>'+pc+'</div></div>'+
     '<div class="gx-foot"><span class="gx-keys"><kbd>↑</kbd><kbd>↓</kbd> 고르기 &nbsp;<kbd>Enter</kbd> 결정</span><span>'+GAME_VER+'</span></div></div>'}],
     {nav:false,cls:'gm',top:'<button id="snd" class="cine-x cine-snd" aria-label="소리 설정">'+sndIco()+'</button>',
      key:e=>{if(document.querySelector('.bx-bg'))return false;   // 건의사항 · 쿠폰 창이 떠 있으면 뒤의 메뉴는 키를 받지 않는다
        const n=MI.length;if(e.key==='ArrowDown'){mark((sel+1)%n,1);return true;}if(e.key==='ArrowUp'){mark((sel-1+n)%n,1);return true;}
-       // 건의사항 | 쿠폰함 반쪽 칸에서는 ← → 로 옆 칸
-       if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&MI[sel].classList.contains('gx-half')){const h=[...MI[sel].parentNode.children];mark(MI.indexOf(h[e.key==='ArrowRight'?1:0]),1);return true;}
        if(gxEnter(e)){MI[sel].click();return true;}}});
-  const $=id=>document.getElementById(id),MI=[...document.querySelectorAll('.gx-mi')];
-  const mark=(i,snd)=>{if(snd&&i!==sel)gxSfx('tick',i);sel=i;MI.forEach((b,j)=>b.classList.toggle('on',j===i));};
-  MI.forEach((b,i)=>{b.onmouseenter=()=>mark(i,1);b.onfocus=()=>mark(i);});mark(0);
+  // 닫힌 묶음 안의 칸은 키로 고르지 않는다
+  const $=id=>document.getElementById(id),vis=()=>[...document.querySelectorAll('.gx-mi')].filter(b=>!b.closest('.gx-sl:not(.open)'));let MI=vis();
+  const grp=b=>{const id=b.dataset.g,was=b.classList.contains('open');
+    document.querySelectorAll('.gx-g[data-g]').forEach(x=>{x.classList.remove('open');x.setAttribute('aria-expanded','false');});document.querySelectorAll('.gx-sl.open').forEach(x=>x.classList.remove('open'));
+    if(!was){b.classList.add('open');b.setAttribute('aria-expanded','true');const l=document.querySelector('.gx-sl[data-g="'+id+'"]');if(l)l.classList.add('open');}
+    MI=vis();mark(MI.indexOf(b));};
+  document.querySelectorAll('.gx-g[data-g]').forEach(b=>b.onclick=()=>{gxSfx('click');grp(b);});
+  const mark=(i,snd)=>{if(snd&&i!==sel)gxSfx('tick',i);sel=i;document.querySelectorAll('.gx-mi.on').forEach(b=>b.classList.remove('on'));if(MI[i])MI[i].classList.add('on');};
+  document.querySelectorAll('.gx-mi').forEach(b=>{b.onmouseenter=()=>{const i=MI.indexOf(b);if(i>=0)mark(i,1);};b.onfocus=()=>{const i=MI.indexOf(b);if(i>=0)mark(i);};});mark(0);
   gxLattice(document.querySelector('.gx-bg'));
   $('snd').onclick=toggleSound;
   $('mmNew').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');stepCamp();};
@@ -5915,6 +5927,7 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   $('mmBoard').onclick=()=>{gxSfx('click');cineClose();openBoard({back:home});};
   $('mmDex').onclick=()=>{gxSfx('click');dexScene();};
   $('mmGuide').onclick=()=>{gxSfx('click');cineClose();guide(home);};
+  $('mmNews').onclick=()=>{gxSfx('click');newsOpen(true);};
   $('mmEdit').onclick=()=>{gxSfx('click');cineClose();intro();};
   $('mmView').onclick=()=>{gxSfx('click');viewPage(home);};
   boxBind('mm',()=>gxSfx('click'));
@@ -5934,6 +5947,7 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   tt.onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];
     if(eggOn('zombie')){eggToast('🧟 좀비 무대는 이미 열려 있어요.');return;}
     eggSet('zombie');try{SFX.zombie();}catch(e){}vib([60,40,60,40,200]);eggToast('🧟 <b>어디선가 신음 소리가 들린다…</b><br>미니게임 「방역선」이 열렸어요. 새 게임의 미니게임 탭에서 할 수 있어요.');};
+  newsCheck();
   if(SEC_NEW.length){const nm=SEC_NEW.map(id=>{for(const c in CAMPS){const q=CAMPS[c].bg.find(b=>b.sec===id);if(q)return q.n;}return id;});SEC_NEW=[];SFX.unlock();eggToast('🔓 비밀 인물 해금: <b>'+nm.join(', ')+'</b>');}
 }
 // 1단계: 무대. 비스듬한 깃발 판 중 하나를 고르면 그 판이 넓게 펼쳐진다. 고른 판을 한 번 더 누르면(또는 Enter) 지도자 고르기로.
@@ -8383,4 +8397,35 @@ function hub(){window.scrollTo(0,0);document.documentElement.dataset.camp='kr';g
   home();}
 function intro(){bgmIntro(true);window.scrollTo(0,0);document.documentElement.dataset.camp="kr";R.innerHTML=INTRO;bindIntro();}
 bgmIntro(true);bindIntro();
+/* ---------- 업데이트 소식 ----------
+   새 버전을 올릴 때 PATCHES 맨 위에 항목을 더한다(GAME_VER와 같은 이름). 업데이트 뒤 처음 홈 화면에 오면 한 번 자동으로 뜨고,
+   홈 메뉴 「기타 → 업데이트 소식」에서 언제든 다시 볼 수 있다. 처음 온 사람(기록이 전혀 없음)에게는 띄우지 않고 읽은 것으로 쳐 둔다.
+   v4.7: 지금까지의 4.x 소식을 모두 넣었다(v4.7은 크게, 나머지는 한 줄씩). */
+const PATCHES=[
+ {v:'v4.7',t:'핫패치 · 난이도 · 보관함 · 홈 화면',d:'2026-10-31',big:1,l:[
+  ['난이도 재조정','지옥이 없어졌어요. 쉬움 · 보통 · 어려움 세 단계이고, 예전 보통은 쉬움으로, 예전 어려움은 보통으로, 예전 지옥은 어려움으로 한 단계씩 올라갔어요. 저장해 둔 게임은 같은 수치로 이어져요.'],
+  ['보관함 (스텟 펌핑 쿠폰)','쿠폰으로 지지율 · 경제 · 방역 · 군사 · 권력 · 혼란 중 하나를 올릴 기회를 받아요. 게임 중 메뉴(≡)의 보관함에서 한 판 안에 아무 때나 쓸 수 있어요.'],
+  ['홈 화면 정리','게임(새 게임 · 불러오기) · 오늘의 도전 · 기록(명예의 전당 · 도감) · 기타(가이드북 · 건의사항 · 쿠폰함 · 설정) 네 묶음으로 간단하게 바꿨어요.'],
+  ['세로 화면','세로 모드에서 홈 화면이 잘려 아래가 안 보이던 문제를 고쳤어요.']]},
+ {v:'v4.6',t:'조선 국난',d:'2026-10-31',l:[['더 무섭고 직접 지휘','국난 화면을 새로 그리고, 난이도를 올리고, 해전 · 성벽 수비 등 직접 지휘 미니게임 다섯 가지를 더했어요.']]},
+ {v:'v4.5',t:'오늘의 도전',d:'2026-10-31',l:[['하루 한 판','날마다 무대와 인물이 정해지고 모두가 같은 조건으로 겨뤄요. 순위에는 그날 처음 한 판만 올라가요.']]},
+ {v:'v4.4',t:'기록 카드',d:'2026-10-30',l:[['공유 · 사진 저장','커리어가 끝나면 기록 카드를 사진으로 저장하거나 카카오톡 · 인스타 스토리로 공유할 수 있어요.']]},
+ {v:'v4.3',t:'회원 로그인',d:'2026-10-30',l:[['회원','아이디로 가입하면 다른 기기에서도 한 사람으로 기록돼요(비회원으로도 그대로 할 수 있어요).']]},
+ {v:'v4.2',t:'조선 · 그 임금의 시대의 국난',d:'2026-10-30',l:[['시대별 국난','조선에서 임금마다 그 시대에 실제로 있었던 국난이 닥쳐요.']]},
+ {v:'v4.1',t:'조선 · 국난',d:'2026-10-30',l:[['5년 심판 대신 국난','조선의 5년마다 심판이 위기에 맞서는 「국난」으로 바뀌었어요.']]},
+ {v:'v4.0',t:'건의사항함 · 쿠폰함',d:'2026-10-30',l:[['건의 · 쿠폰','홈 화면에서 건의사항을 보내고 쿠폰을 받을 수 있어요. 조선 점수 밸런스도 맞췄어요.']]}];
+const vnum=s=>{const m=/(\d+)\.(\d+)/.exec(s||'');return m?+m[1]*100+ +m[2]:0;};
+function newsHTML(all,from){
+  const L=PATCHES.filter(n=>all||vnum(n.v)>from),cur=L.filter(n=>n.big),rest=L.filter(n=>cur.indexOf(n)<0);
+  const blk=n=>'<section class="pn-s"><div class="pn-h"><b>'+n.v+'</b><span>'+gEsc(n.t)+'</span><time>'+n.d+'</time></div><ul>'+n.l.map(x=>'<li><b>'+gEsc(x[0])+'</b><span>'+gEsc(x[1])+'</span></li>').join('')+'</ul></section>';
+  return '<div class="pn">'+cur.map(blk).join('')+(rest.length?'<details class="pn-old"><summary>이전 4.x 업데이트 '+rest.length+'개</summary>'+rest.map(blk).join('')+'</details>':'')+
+    '<div class="svp-b pn-b"><button type="button" class="pri" id="pnOk">확인</button></div></div>';}
+function newsOpen(all){const o=pop('업데이트 소식 · '+GAME_VER,newsHTML(true,0));const b=o.querySelector('#pnOk');b.onclick=()=>{try{SFX.click();}catch(e){}o.close();};b.focus();return o;}
+// 홈 화면이 뜬 뒤 한 번: 이번 버전을 아직 안 봤으면 보여 주고 읽은 것으로 적는다
+function newsCheck(){if(MEM.seenVer===GAME_VER)return;
+  const old=!!(MEM.seenVer||MEM.careers||MEM.runs||MEM.best100||Object.keys(MEM.leaders||{}).length);
+  if(!old){MEM.seenVer=GAME_VER;msave();return;}
+  setTimeout(()=>{if(MEM.seenVer===GAME_VER||!document.querySelector('.gx-title,.hl')||document.querySelector('.svp-bg,.bx-bg'))return;
+    const from=MEM.seenVer?vnum(MEM.seenVer):vnum(GAME_VER)-1;MEM.seenVer=GAME_VER;msave();
+    const o=pop('업데이트 소식 · '+GAME_VER,newsHTML(false,from));const b=o.querySelector('#pnOk');b.onclick=()=>{try{SFX.click();}catch(e){}o.close();};try{SFX.unlock();}catch(e){}b.focus();},2800);}
 })();
