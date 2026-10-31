@@ -1,11 +1,12 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"c00012fc7d","h":"36258d130deedbab"},"boxes":{"v":"462eaba10f","h":"f3f86c84521aaca7"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"daily":{"v":"5b8bb27278","h":"733b620d09b11435"},"dex":{"v":"5570d613cb","h":"6e779b2e6670732f"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"e6c3091727","h":"d51b1bc3363ada34"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"sail":{"v":"f33f245bee","h":"5e31bd0bd96d66a3"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
+const LZ_M={"board":{"v":"c00012fc7d","h":"36258d130deedbab"},"boxes":{"v":"462eaba10f","h":"f3f86c84521aaca7"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"daily":{"v":"7ff088f5f5","h":"d45244f0e76d6fc4"},"dckg":{"v":"b927fd266c","h":"a7ed56408281b55e"},"dex":{"v":"5570d613cb","h":"6e779b2e6670732f"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"e6c3091727","h":"d51b1bc3363ada34"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"sail":{"v":"f33f245bee","h":"5e31bd0bd96d66a3"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
 function openBoard(){return lzCall('board','openBoard',arguments);}
 function sugOpen(){return lzCall('boxes','sugOpen',arguments);}
 function cpnOpen(){return lzCall('boxes','cpnOpen',arguments);}
 function cardOpen(){return lzCall('card','cardOpen',arguments);}
 function dcOpen(){return lzCall('daily','dcOpen',arguments);}
+function dckgOpen(){return lzCall('dckg','dckgOpen',arguments);}
 function dexScene(){return lzCall('dex','dexScene',arguments);}
 function mgWar(){return lzCall('games','mgWar',arguments);}
 function simWar(){return lzCall('games','simWar',arguments);}
@@ -5705,8 +5706,9 @@ function bagOpen(){
    창(오늘의 조건 · 순위)은 나중에 받는 조각 lazy/daily(dcOpen)가 그린다. */
 const DC_CAMPS=['kr','joseon','usa'],DC_DAY0=Date.UTC(2026,0,1);
 let DC=null;   // 도전 중이면 {date, base, ranked}. v4.9부터 도전 판은 모두 순위 판(ranked 늘 true)
-// 무대 · 인물을 정해 둔 날: 돌림 대신 이 인물로 한다(그날 모두에게 같다)
-const DC_PIN={'2026-11-01':{camp:'kr',id:'kimgu'}};
+// 무대 · 인물을 정해 둔 날: 돌림 대신 이 인물로 한다(그날 모두에게 같다).
+// story가 있으면 팬데믹 판이 아니라 그 인물이 실제로 마주친 시대를 겪는 별도 이야기 판(lazy/dckg)을 연다(5년 단임 · 아이템 없음 · 오직 선택)
+const DC_PIN={'2026-11-01':{camp:'kr',id:'kimgu',story:'kimgu',t:'김구, 대한민국 독립',yrs:'1940–1945',k:'충칭 임시정부의 5년'}};
 const DC_RAND0=Math.random;
 const dcToday=()=>new Date(Date.now()+9*36e5).toISOString().slice(0,10);   // 한국 시간 날짜
 const dcHash=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h>>>0;};
@@ -5717,7 +5719,7 @@ function dcSeed(tag){if(!DC)return;DC_S=dcHash(DC.base+'|'+tag+'|'+(CAR?CAR.term
 // 그날의 조건. 출발 인물은 비밀 · 한 번뿐 · 조건부 인물을 뺀 기본 인물에서(기기마다 풀린 인물이 달라도 같게)
 function dcConf(date){date=date||dcToday();
   const P=DC_PIN[date],PB=P&&CAMPS[P.camp]?CAMPS[P.camp].bg.findIndex(b=>b.id===P.id):-1;
-  if(PB>=0)return {date:date,camp:P.camp,bg:PB,B:CAMPS[P.camp].bg[PB],dif:1,mode:1};
+  if(PB>=0)return {date:date,camp:P.camp,bg:PB,B:CAMPS[P.camp].bg[PB],dif:1,mode:1,story:P.story||'',pin:P};
   const day=Math.floor((Date.parse(date+'T00:00:00Z')-DC_DAY0)/864e5),camp=DC_CAMPS[((day%3)+3)%3];
   const L=CAMPS[camp].bg.map((b,i)=>[b,i]).filter(x=>!x[0].sec&&!x[0].once&&!x[0].al&&!x[0].god);
   const pick=L[dcHash('pp-daily-bg|'+date)%L.length];
@@ -5725,22 +5727,32 @@ function dcConf(date){date=date||dcToday();
 const dcRec=d=>(MEM.dc&&MEM.dc[d||dcToday()])||null;   // 이 기기의 그날 기록 {ranked:시작함, n:시작한 횟수, score:마친 판 중 최고 점수, done:한 판이라도 마침}
 const dcMode=()=>MODE.findIndex(m=>m.n==='속전속결');
 // 도전 시작: 몇 번째 도전이든 순위 판이다(순위는 그날 최고 점수). 시작한 횟수만 이 기기에 적는다
+function dcTry(date){MEM.dc=MEM.dc||{};const keep={};Object.keys(MEM.dc).sort().slice(-13).forEach(k=>{keep[k]=MEM.dc[k];});MEM.dc=keep;
+  const r=MEM.dc[date]=MEM.dc[date]||{};r.n=(+r.n||(r.ranked?1:0))+1;r.ranked=1;msave();}   // v4.8 전 기록({ranked:1})은 한 번 시작한 것으로 친다
 function dcStart(date){const C=dcConf(date);
+  if(C.story){dcEnd();return dckgOpen(C);}   // 이야기 판: 도전 횟수는 그 판을 실제로 시작할 때(dcTry) 센다
   camp=C.camp;bg=C.bg;dif=C.dif;mode=Math.max(0,dcMode());
   DC={date:C.date,base:'pp-daily|'+C.date,ranked:true};Math.random=dcRand;
-  MEM.dc=MEM.dc||{};const keep={};Object.keys(MEM.dc).sort().slice(-13).forEach(k=>{keep[k]=MEM.dc[k];});MEM.dc=keep;
-  const r=MEM.dc[C.date]=MEM.dc[C.date]||{};r.n=(+r.n||(r.ranked?1:0))+1;r.ranked=1;msave();   // v4.8 전 기록({ranked:1})은 한 번 시작한 것으로 친다
+  dcTry(C.date);
   // 나중에 받는 조각(미니게임 · 특별 과제 등)을 모두 받은 뒤에 시작한다. 처음 쓰는 순간에 받으면 그 조각의 무작위가 한 박자 늦게 돌아
   // 같은 선택에도 판이 달라졌다(같은 기기의 두 번째 판과 첫 판이 달랐다)
   const N=Object.keys(LZ_M);let i=0;const nx=()=>{if(i<N.length)return lzThen(N[i++],nx);start();};nx();}
 // 도전이 끝나면(결산 · 메인 화면으로) 원래 난수로 되돌린다
 function dcEnd(){if(Math.random!==DC_RAND0)Math.random=DC_RAND0;DC=null;}
 // 결산: 그날 마친 판 중 가장 높은 점수를 이 기기에 남긴다(메인 화면 칸 · 도전 창에 보인다)
-function dcDone(score){if(!DC)return;const r=MEM.dc&&MEM.dc[DC.date];if(!r)return;
-  r.last=score;if(!r.done||score>+r.score)r.score=score;r.done=1;msave();}
+function dcSave(date,score){const r=MEM.dc&&MEM.dc[date];if(!r)return;r.last=score;if(!r.done||score>+r.score)r.score=score;r.done=1;msave();}
+function dcDone(score){if(DC)dcSave(DC.date,score);}
+// 이야기 판의 순위 기록: 커리어 기록과 같은 길(요약 탭 한 줄)로 보내되, 기록 버전 · 임기 수를 비워 명예의 전당 · 연구 분석에는 들어가지 않고
+// 오늘의 도전 순위(서버 dailyOf_)에만 오른다. '닮은 지도자' 칸에는 등급 이름, '퇴장 방식'에는 결말을 적는다
+function dcStorySend(C,score,ending,grade,sec,nCh){if(!SHEET_URL||IN_ART)return;
+  const id='dc'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),k=id+':f:0',P=PF||{};
+  const run={id:id,pid:pidGet(),startedAt:new Date(Date.now()-sec*1000).toISOString(),nickname:NICK||'익명',school:P.school||'',realName:P.name||'',phone:P.phone||'',consent:P.agree?'동의':'',
+    difficulty:'오늘의 도전',mode:'이야기 판',perk:C.B.n,campaign:'오늘의 도전 · '+C.pin.t,leader:grade,careerScore:score,exitType:ending,ending:ending,playSeconds:sec,nChoices:nCh,
+    dcDate:C.date,dcRanked:'예',mid:P.mid||'',mtok:acTok(),gv:GAME_VER};
+  obPush([{k:k,id:id,a:0,b:JSON.stringify({k:k,gv:GAME_VER,run:run,choices:[],terms:[],years:[]})}]);obFlush();}
 const dcLabel=d=>{const p=String(d).split('-');return +p[1]+'월 '+(+p[2])+'일';};
 // 메인 메뉴 칸의 작은 글: 오늘의 무대 · 인물, 마쳤으면 내 최고 점수
-function dcSub(){const C=dcConf(),r=dcRec();return r&&r.done?'오늘 최고 '+Number(r.score).toLocaleString('ko-KR')+'점 · 다시 도전':CAMPS[C.camp].n+' · '+C.B.n+' · 속전속결';}
+function dcSub(){const C=dcConf(),r=dcRec();return r&&r.done?'오늘 최고 '+Number(r.score).toLocaleString('ko-KR')+'점 · 다시 도전':C.story?C.pin.t+' · '+C.pin.yrs:CAMPS[C.camp].n+' · '+C.B.n+' · 속전속결';}
 // 소리 · 배경음악 · 감염 지도 · 명언 고르기는 화면 꾸밈이다. 도전 중에도 이것들은 원래 난수를 쓰게 감싼다.
 // 감싸지 않으면 소리를 켰는지, 앞 판에서 음악이 이미 골라졌는지에 따라 난수 줄이 밀려 같은 선택에도 시대 조건 · 결과가 달라졌다
 const dcIso=f=>function(){if(!DC)return f.apply(this,arguments);const m=Math.random;Math.random=DC_RAND0;try{return f.apply(this,arguments);}finally{Math.random=m;}};
@@ -8422,7 +8434,7 @@ setTimeout(()=>{try{const me=!IN_ART&&acGet();if(!me||!me.prof||!me.prof.name)re
    홈 메뉴 「기타 → 업데이트 소식」에서 언제든 다시 볼 수 있다. 처음 온 사람(기록이 전혀 없음)에게는 띄우지 않고 읽은 것으로 쳐 둔다.
    v1부터 v4.9까지 모든 업데이트를 넣었다(v4.7은 크게, 나머지는 접어서 짧게). */
 const PATCHES=[
- {v:'v4.9',t:'오늘의 도전 · 여러 번 도전',d:'2026-11-01',l:[['몇 번이든 다시','오늘의 도전을 하루에 몇 번이든 다시 할 수 있어요. 순위에는 그날 끝까지 마친 판 중 가장 높은 점수가 올라가요. 첫 판을 중간에 나가면 그날 다시 못 하던 문제를 고쳤어요.'],['오늘은 김구','11월 1일 오늘의 도전은 대한민국 · 김구예요.']]},
+ {v:'v4.9',t:'오늘의 도전 · 여러 번 도전',d:'2026-11-01',l:[['몇 번이든 다시','오늘의 도전을 하루에 몇 번이든 다시 할 수 있어요. 순위에는 그날 끝까지 마친 판 중 가장 높은 점수가 올라가요. 첫 판을 중간에 나가면 그날 다시 못 하던 문제를 고쳤어요.'],['오늘은 김구, 대한민국 독립','11월 1일 오늘의 도전은 팬데믹이 아닌 실제 역사 이야기 판이에요. 1940년 충칭 임시정부의 주석 김구가 되어 5년 동안 23번의 결정으로 광복을 향해 가요. 아이템 없이 오직 선택만으로 겨뤄요.']]},
  {v:'v4.8',t:'자동 로그인',d:'2026-11-01',l:[['바로 로비로','이미 회원으로 로그인한 기기는 첫 화면(인적사항)을 건너뛰고 바로 로비에서 시작해요. 로그인이 끝났으면 첫 화면으로 돌아와요.'],['로그인 화면으로','기타 메뉴에 로그인 화면으로 돌아가는 버튼이 생겼어요.'],['미니게임 위치','미니게임이 새 게임 위쪽 탭에서 홈의 「게임」 묶음 안으로 옮겨졌어요.']]},
  {v:'v4.7',t:'핫패치 · 난이도 · 보관함 · 홈 화면',d:'2026-10-31',big:1,l:[
   ['난이도 재조정','지옥이 없어졌어요. 쉬움 · 보통 · 어려움 세 단계이고, 예전 보통은 쉬움으로, 예전 어려움은 보통으로, 예전 지옥은 어려움으로 한 단계씩 올라갔어요. 저장해 둔 게임은 같은 수치로 이어져요.'],

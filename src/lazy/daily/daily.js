@@ -12,8 +12,10 @@ function dcOpen(from,opts){opts=opts||{};const old=document.querySelector('.dc-b
   const o=document.createElement('div');o.className='sndp-bg dc-bg';
   o.innerHTML='<div class="sndp dc" role="dialog" aria-modal="true" aria-labelledby="dcT"><div class="sndp-h"><span id="dcT">오늘의 도전</span><button type="button" class="sndp-x" aria-label="닫기">✕</button></div>'+
     '<p class="dc-date">'+dcLabel(C.date)+' · 한국 시간 자정에 바뀌어요</p>'+
-    '<div class="dc-cond"><div class="dc-face">'+portrait(C.B.n,76)+'</div><div class="dc-ci"><span class="dc-k">오늘의 무대</span><b>'+esc(CAMPS[C.camp].n)+' · '+esc(C.B.n)+'</b>'+
-      '<span class="dc-tags"><i>보통</i><i>속전속결</i><i>한 '+(C.camp==='joseon'?'치세':'임기')+' · '+CAMPS[C.camp].yrs+'년</i></span></div></div>'+
+    '<div class="dc-cond"><div class="dc-face">'+portrait(C.B.n,76)+'</div><div class="dc-ci">'+(C.story?
+      '<span class="dc-k">오늘의 이야기 · 팬데믹이 아닌 실제 역사</span><b>'+esc(C.pin.t)+'</b><span class="dc-tags"><i>'+esc(C.pin.yrs)+'</i><i>5년 단임</i><i>아이템 없음</i><i>오직 선택</i></span>':
+      '<span class="dc-k">오늘의 무대</span><b>'+esc(CAMPS[C.camp].n)+' · '+esc(C.B.n)+'</b>'+
+      '<span class="dc-tags"><i>보통</i><i>속전속결</i><i>한 '+(C.camp==='joseon'?'치세':'임기')+' · '+CAMPS[C.camp].yrs+'년</i></span>')+'</div></div>'+
     '<ul class="dc-rules"><li>모두가 <b>같은 조건</b>에서 시작하고, 같은 선택을 하면 같은 결과가 나와요.</li><li>오늘 안에는 <b>몇 번이든 다시 도전</b>할 수 있어요. 순위에는 <b>오늘 가장 높은 점수</b>가 올라가요.</li><li>끝까지 마친 판만 순위에 올라가요. 도전 판은 저장할 수 없어요.</li></ul>'+
     (st?'<p class="dc-st">'+st+'</p>':'')+
     '<div class="dc-go"><button type="button" class="pri" id="dcGo">'+(r?'다시 도전하기':'도전 시작')+'</button></div>'+
