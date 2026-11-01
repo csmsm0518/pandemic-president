@@ -105,7 +105,7 @@ const DX_MOD={cinc:'쟁기로 돌아간 독재관',wash:'세 번째 왕관을 �
   tr:'곰 인형이 된 사냥꾼',grant:'무조건 항복을 받아 낸 장군',wilson:'열네 개의 원칙을 내건 교수',cromwell:'왕을 베고 왕처럼 다스린 자',alfred:'빵을 태운 왕',truman:'책임이 멈추는 책상의 주인',
   maria:'열여섯 아이를 둔 여제',rhee:'사월에 물러난 노정객',yeltsin:'탱크 위에 올라선 자',edward8:'사랑을 위해 왕관을 내려놓은 자',chamb:'우산을 든 평화의 신사',gorby:'문을 열었다가 나라를 잃은 자'};
 // 비밀 인물: 잠겨 있을 때 보이는 수수께끼(어떻게 여는지 바로 말하지 않는다)
-const DX_SH={dangun:'아무도 받지 못한 평가를 받는 날, 가장 오래된 이름이 눈을 뜬다.',jusigyeong:'끝까지 읽는 사람에게만 말이 닿는다.',jyw:'이름 대신 배움터가 열쇠다.',
+const DX_SH={dangun:'아무도 받지 못한 평가를 받는 날, 가장 오래된 이름이 눈을 뜬다.',jusigyeong:'끝까지 읽는 사람에게만 말이 닿는다.',jyw:'이름 대신 배움터가 열쇠다.',sancho:'설명회의 첫 문장은 늘 학교 이름이다. 쿠폰함이 문이다.',
   hong:'옥좌에서 내려와 본 임금만 그를 만난다.',unclesam:'같은 나라가 두 번 고른 사람에게 손가락이 향한다.',zinf:'가장 긴 밤을 끝까지 버틴 자만이 그 얼굴을 본다.'};
 // 임기 평가의 상징 그림(흰 선 그림, 24칸)
 const DX_IC=(()=>{const s=b=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+b+'</svg>';

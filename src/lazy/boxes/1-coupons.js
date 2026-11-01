@@ -6,5 +6,6 @@
 const CPN=[
 // @coupons-begin (tools/coupon.py가 이 사이를 고친다)
 {"h":"4e6597bb7759f1a627addaa2261295fc","r":"tok:3","l":"Claude 선물: 운명 개입 +3"},
+{"h":"16f68e2ffddd559886b90e29543741cf","r":"fig:sancho","l":"비밀 인물 Sancho"},
 // @coupons-end
 ];
