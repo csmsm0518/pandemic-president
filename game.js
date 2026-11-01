@@ -1,12 +1,13 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"board":{"v":"c00012fc7d","h":"36258d130deedbab"},"boxes":{"v":"9f3a40eb75","h":"cdd3c4c349144d91"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"daily":{"v":"89f149d7c9","h":"8ed72fcf7fa0ad4d"},"dckg":{"v":"a6a104586e","h":"3757a96bd28cf1e2"},"dex":{"v":"a834d42e11","h":"214b42847560de78"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"e6c3091727","h":"d51b1bc3363ada34"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"sail":{"v":"f33f245bee","h":"5e31bd0bd96d66a3"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
+const LZ_M={"battle":{"v":"cca2592e93","h":"5a241e6614541fa6"},"board":{"v":"c00012fc7d","h":"36258d130deedbab"},"boxes":{"v":"9f3a40eb75","h":"cdd3c4c349144d91"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"dex":{"v":"a834d42e11","h":"214b42847560de78"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"e6c3091727","h":"d51b1bc3363ada34"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"sail":{"v":"f33f245bee","h":"5e31bd0bd96d66a3"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
+function btOpen(){return lzCall('battle','btOpen',arguments);}
+function btFinish(){return lzCall('battle','btFinish',arguments);}
+function btResMount(){return lzCall('battle','btResMount',arguments);}
 function openBoard(){return lzCall('board','openBoard',arguments);}
 function sugOpen(){return lzCall('boxes','sugOpen',arguments);}
 function cpnOpen(){return lzCall('boxes','cpnOpen',arguments);}
 function cardOpen(){return lzCall('card','cardOpen',arguments);}
-function dcOpen(){return lzCall('daily','dcOpen',arguments);}
-function dckgOpen(){return lzCall('dckg','dckgOpen',arguments);}
 function dexScene(){return lzCall('dex','dexScene',arguments);}
 function mgWar(){return lzCall('games','mgWar',arguments);}
 function simWar(){return lzCall('games','simWar',arguments);}
@@ -5613,7 +5614,7 @@ const gxSfx=(f,a)=>{try{SFX[f](a);}catch(e){}};
 const gxEnter=e=>e.key==='Enter'&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('.cine-back,.cine-x'));
 const GX_STEP=['무대','지도자','준비'];
 // 메인 메뉴 아이콘: 시작 · 왕관 · 책 · 나침반
-const GX_IC={daily:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="M12 12.2l1.1 2.2 2.4.3-1.7 1.7.4 2.4-2.2-1.1-2.2 1.1.4-2.4-1.7-1.7 2.4-.3z" fill="currentColor" stroke="none"/></svg>',new:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z"/></svg>',
+const GX_IC={battle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2M14.5 6.5L18 3h3v3l-3.5 3.5M5 14l4 4M7 17l-3 3M3 19l2 2"/></svg>',new:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z"/></svg>',
   board:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></svg>',
   dex:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/></svg>',
   guide:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>',
@@ -5682,7 +5683,7 @@ function cpTokUse(){const n=Math.max(0,Math.min(9,Math.floor(+MEM.cpTok||0)));if
 // ---------- 보관함: 쿠폰으로 받은 스텟 펌핑 ----------
 // 쿠폰이 스텟 이름을 정해 준다(pump:a 지지율 · e 경제 · h 방역 칸 · m 군사 · p 권력 · x 혼란). MEM.bag = {a:개수,…}에 쌓아 두고,
 // 한 판 안에서 게임 메뉴(≡ 또는 왼쪽 아래)의 「보관함」으로 아무 때나 하나씩 쓴다. 화면 지표 하나를 BAG_AMT만큼 좋은 쪽으로 올린다
-// (혼란은 낮춘다). 엔진 지표 여러 개가 한 화면 지표를 이루므로 그 가중치대로 나눠 올린다. 오늘의 도전 · 조성민 판에서는 쓸 수 없다.
+// (혼란은 낮춘다). 엔진 지표 여러 개가 한 화면 지표를 이루므로 그 가중치대로 나눠 올린다. 실시간 대결 · 조성민 판에서는 쓸 수 없다.
 // 공정한 비교를 위해 쓴 횟수를 연구 기록(RUN.cpPump → couponPump)에 남긴다.
 const BAG_AMT=10,BAG_V={a:'A',e:'E',h:'H',m:'M',p:'P',x:'X'},BAG_MAX=9;
 const bagN=()=>{const b=MEM.bag||{};return Object.keys(BAG_V).reduce((s,k)=>s+Math.max(0,+b[k]||0),0);};
@@ -5698,7 +5699,7 @@ function bagUse(k){const V=BAG_V[k],n=+(MEM.bag&&MEM.bag[k])||0;if(!V||n<1||!S)r
   return true;}
 function bagOpen(){
   if(!S||!CAR)return eggToast('보관함은 게임 중에만 열 수 있어요.');
-  if(DC)return eggToast('오늘의 도전에서는 보관함을 쓸 수 없어요.');
+  if(DC)return eggToast('실시간 대결에서는 보관함을 쓸 수 없어요.');
   if(godRun())return eggToast('이 판에서는 보관함을 쓸 수 없어요.');
   const o=pop('보관함','<div class="bg-list"></div><p class="bg-note">쿠폰으로 받은 스텟 펌핑이에요. 한 판 안에서 아무 때나 쓸 수 있고, 하나에 지표 <b>+'+BAG_AMT+'</b>이에요. 쓴 만큼 사라져요.</p>');
   const draw=()=>{const b=MEM.bag||{},ks=Object.keys(BAG_V).filter(k=>+b[k]>0);
@@ -5706,64 +5707,25 @@ function bagOpen(){
       :'<p class="bg-empty">받아 둔 스텟 펌핑이 없어요.<br>메인 화면의 쿠폰함에서 쿠폰을 넣으면 여기에 쌓여요.</p>';
     o.querySelectorAll('.bg-r button').forEach(x=>x.onclick=()=>{if(bagUse(x.dataset.k)){SFX.coin();vib([20]);draw();eggToast(bagName(x.dataset.k)+' 완료! '+vName(BAG_V[x.dataset.k])+' <b>'+Math.round(vVal(BAG_V[x.dataset.k]))+'</b>');}});};
   draw();}
-/* ---------- 오늘의 도전: 하루에 같은 판, 모두가 같은 조건 ----------
-   날짜(한국 시간)로 그날의 판을 정한다: 무대는 대한민국 · 조선 · 미국을 날마다 돌아가며, 출발 인물은 그 무대의 기본 인물 가운데 하나,
-   난이도 보통 · 속전속결 · 한 임기. 그날 안에는 몇 번이든 다시 도전할 수 있고, 순위에는 사람마다 그날 끝까지 마친 판 중 가장 높은 점수가 올라간다(v4.9).
-   (v4.5~v4.8은 그날 처음 시작한 판만 순위에 올렸는데, 첫 판을 중간에 나가면 그날은 순위 판도 연습도 할 수 없게 막혔다)
-   같은 선택을 하면 같은 사건 · 같은 주사위가 나와야 비교가 공정하다. 그래서 도전 중에는 Math.random을 씨앗 있는 난수로 바꾸고,
-   무작위로 결과를 정하는 자리마다(사건 고르기 · 판정 주사위 · 연말 · 선거 · 국난 …) '날짜 + 지금 위치(임기 · 차례 · 선택 수 · 운명 개입 수)'로
+/* ---------- 같은 판 장치(씨앗 있는 난수) ----------
+   실시간 대결(lazy/battle)에서 한 방의 모두가 같은 사건 · 같은 주사위를 받게 한다(v5.0 전에는 오늘의 도전이 쓰던 장치).
+   같은 선택을 하면 같은 결과가 나와야 비교가 공정하다. 그래서 대결 중에는 Math.random을 씨앗 있는 난수로 바꾸고,
+   무작위로 결과를 정하는 자리마다(사건 고르기 · 판정 주사위 · 연말 · 선거 · 국난 …) '씨앗 + 지금 위치(임기 · 차례 · 선택 수 · 운명 개입 수)'로
    씨앗을 다시 맞춘다(dcSeed). 화면 효과도 Math.random을 쓰지만, 결과를 정하기 직전에 씨앗을 다시 맞추므로 결과에는 끼어들지 못한다.
-   창(오늘의 조건 · 순위)은 나중에 받는 조각 lazy/daily(dcOpen)가 그린다. */
-const DC_CAMPS=['kr','joseon','usa'],DC_DAY0=Date.UTC(2026,0,1);
-let DC=null;   // 도전 중이면 {date, base, ranked}. v4.9부터 도전 판은 모두 순위 판(ranked 늘 true)
-// 무대 · 인물을 정해 둔 날: 돌림 대신 이 인물로 한다(그날 모두에게 같다).
-// story가 있으면 팬데믹 판이 아니라 그 인물이 실제로 마주친 시대를 겪는 별도 이야기 판(lazy/dckg)을 연다(5년 단임 · 아이템 없음 · 오직 선택)
-const DC_PIN={'2026-11-01':{camp:'kr',id:'kimgu',story:'kimgu',t:'김구, 대한민국 독립',yrs:'1940–1945',k:'충칭 임시정부의 5년'}};
+   DC가 있으면 같은 판 모드다: {base:씨앗 글자, bt:{code:방 코드, rd:몇 번째 판}}. 대결 판은 한 임기로 끝나고(5년 단임) 저장 · 보관함 · 쿠폰 운명 개입을 쓰지 않으며
+   기록 시트로 보내지 않는다. */
+let DC=null;
+// 홈의 「실시간 대결」 칸 작은 글(대결 조각 lazy/battle은 누르면 받는다)
+const btSub=()=>'2~4명이 같은 판을 동시에 · 5년 단임';
 const DC_RAND0=Math.random;
-const dcToday=()=>new Date(Date.now()+9*36e5).toISOString().slice(0,10);   // 한국 시간 날짜
 const dcHash=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h>>>0;};
 let DC_S=0;
 // mulberry32: 씨앗 하나로 0~1 난수를 차례로 낸다
 function dcRand(){DC_S=(DC_S+0x6D2B79F5)>>>0;let t=DC_S;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296;}
 function dcSeed(tag){if(!DC)return;DC_S=dcHash(DC.base+'|'+tag+'|'+(CAR?CAR.term:0)+'|'+(S?S.turn:0)+'|'+(LOG?LOG.length:0)+'|'+(RUN?RUN.rr:0));}
-// 그날의 조건. 출발 인물은 비밀 · 한 번뿐 · 조건부 인물을 뺀 기본 인물에서(기기마다 풀린 인물이 달라도 같게)
-function dcConf(date){date=date||dcToday();
-  const P=DC_PIN[date],PB=P&&CAMPS[P.camp]?CAMPS[P.camp].bg.findIndex(b=>b.id===P.id):-1;
-  if(PB>=0)return {date:date,camp:P.camp,bg:PB,B:CAMPS[P.camp].bg[PB],dif:1,mode:1,story:P.story||'',pin:P};
-  const day=Math.floor((Date.parse(date+'T00:00:00Z')-DC_DAY0)/864e5),camp=DC_CAMPS[((day%3)+3)%3];
-  const L=CAMPS[camp].bg.map((b,i)=>[b,i]).filter(x=>!x[0].sec&&!x[0].once&&!x[0].al&&!x[0].god);
-  const pick=L[dcHash('pp-daily-bg|'+date)%L.length];
-  return {date:date,camp:camp,bg:pick[1],B:pick[0],dif:1,mode:1};}
-const dcRec=d=>(MEM.dc&&MEM.dc[d||dcToday()])||null;   // 이 기기의 그날 기록 {ranked:시작함, n:시작한 횟수, score:마친 판 중 최고 점수, done:한 판이라도 마침}
-const dcMode=()=>MODE.findIndex(m=>m.n==='속전속결');
-// 도전 시작: 몇 번째 도전이든 순위 판이다(순위는 그날 최고 점수). 시작한 횟수만 이 기기에 적는다
-function dcTry(date){MEM.dc=MEM.dc||{};const keep={};Object.keys(MEM.dc).sort().slice(-13).forEach(k=>{keep[k]=MEM.dc[k];});MEM.dc=keep;
-  const r=MEM.dc[date]=MEM.dc[date]||{};r.n=(+r.n||(r.ranked?1:0))+1;r.ranked=1;msave();}   // v4.8 전 기록({ranked:1})은 한 번 시작한 것으로 친다
-function dcStart(date){const C=dcConf(date);
-  if(C.story){dcEnd();return dckgOpen(C);}   // 이야기 판: 도전 횟수는 그 판을 실제로 시작할 때(dcTry) 센다
-  camp=C.camp;bg=C.bg;dif=C.dif;mode=Math.max(0,dcMode());
-  DC={date:C.date,base:'pp-daily|'+C.date,ranked:true};Math.random=dcRand;
-  dcTry(C.date);
-  // 나중에 받는 조각(미니게임 · 특별 과제 등)을 모두 받은 뒤에 시작한다. 처음 쓰는 순간에 받으면 그 조각의 무작위가 한 박자 늦게 돌아
-  // 같은 선택에도 판이 달라졌다(같은 기기의 두 번째 판과 첫 판이 달랐다)
-  const N=Object.keys(LZ_M);let i=0;const nx=()=>{if(i<N.length)return lzThen(N[i++],nx);start();};nx();}
-// 도전이 끝나면(결산 · 메인 화면으로) 원래 난수로 되돌린다
+// 판이 끝나면(결산 · 메인 화면으로) 원래 난수로 되돌린다
 function dcEnd(){if(Math.random!==DC_RAND0)Math.random=DC_RAND0;DC=null;}
-// 결산: 그날 마친 판 중 가장 높은 점수를 이 기기에 남긴다(메인 화면 칸 · 도전 창에 보인다)
-function dcSave(date,score){const r=MEM.dc&&MEM.dc[date];if(!r)return;r.last=score;if(!r.done||score>+r.score)r.score=score;r.done=1;msave();}
-function dcDone(score){if(DC)dcSave(DC.date,score);}
-// 이야기 판의 순위 기록: 커리어 기록과 같은 길(요약 탭 한 줄)로 보내되, 기록 버전 · 임기 수를 비워 명예의 전당 · 연구 분석에는 들어가지 않고
-// 오늘의 도전 순위(서버 dailyOf_)에만 오른다. '닮은 지도자' 칸에는 등급 이름, '퇴장 방식'에는 결말을 적는다
-function dcStorySend(C,score,ending,grade,sec,nCh){if(!SHEET_URL||IN_ART)return;
-  const id='dc'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),k=id+':f:0',P=PF||{};
-  const run={id:id,pid:pidGet(),startedAt:new Date(Date.now()-sec*1000).toISOString(),nickname:NICK||'익명',school:P.school||'',realName:P.name||'',phone:P.phone||'',consent:P.agree?'동의':'',
-    difficulty:'오늘의 도전',mode:'이야기 판',perk:C.B.n,campaign:'오늘의 도전 · '+C.pin.t,leader:grade,careerScore:score,exitType:ending,ending:ending,playSeconds:sec,nChoices:nCh,
-    dcDate:C.date,dcRanked:'예',mid:P.mid||'',mtok:acTok(),gv:GAME_VER};
-  obPush([{k:k,id:id,a:0,b:JSON.stringify({k:k,gv:GAME_VER,run:run,choices:[],terms:[],years:[]})}]);obFlush();}
-const dcLabel=d=>{const p=String(d).split('-');return +p[1]+'월 '+(+p[2])+'일';};
-// 메인 메뉴 칸의 작은 글: 오늘의 무대 · 인물, 마쳤으면 내 최고 점수
-function dcSub(){const C=dcConf(),r=dcRec();return r&&r.done?'오늘 최고 '+Number(r.score).toLocaleString('ko-KR')+'점 · 다시 도전':C.story?C.pin.t+' · '+C.pin.yrs:CAMPS[C.camp].n+' · '+C.B.n+' · 속전속결';}
-// 소리 · 배경음악 · 감염 지도 · 명언 고르기는 화면 꾸밈이다. 도전 중에도 이것들은 원래 난수를 쓰게 감싼다.
+// 소리 · 배경음악 · 감염 지도 · 명언 고르기는 화면 꾸밈이다. 같은 판 모드에서도 이것들은 원래 난수를 쓰게 감싼다.
 // 감싸지 않으면 소리를 켰는지, 앞 판에서 음악이 이미 골라졌는지에 따라 난수 줄이 밀려 같은 선택에도 시대 조건 · 결과가 달라졌다
 const dcIso=f=>function(){if(!DC)return f.apply(this,arguments);const m=Math.random;Math.random=DC_RAND0;try{return f.apply(this,arguments);}finally{Math.random=m;}};
 Object.keys(SFX).forEach(k=>{if(typeof SFX[k]==='function')SFX[k]=dcIso(SFX[k]);});
@@ -5855,7 +5817,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   lab('난이도')+'<div class="hl-dif" style="display:flex;gap:8px;margin-bottom:24px">'+dfb+'</div>'+
   '<div class="hl-go"><button id="st" class="pri"'+(B?'':' disabled')+' style="width:100%;padding:16px;font-size:16.5px;margin-bottom:12px">'+(!B?'인물을 선택하세요':camp==='joseon'?'즉위한다':camp==='zombie'?'지휘를 맡는다':'취임한다')+'</button></div>'+(P?bgHint+introH:'')+
   '<div class="hm-row"><button id="tutBtn" class="tgl" role="switch" aria-checked="'+tutOn()+'"><span class="tgl-k"></span><span>튜토리얼 '+(tutOn()?'켜짐':'꺼짐')+'</span></button></div>'+
-  '<button id="dcBtn" class="hm-card hm-daily"><span class="hm-i">'+GX_IC.daily+'</span><span class="hm-x"><b>오늘의 도전</b><span>'+gEsc(dcSub())+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
+  '<button id="btBtn" class="hm-card hm-battle"><span class="hm-i">'+GX_IC.battle+'</span><span class="hm-x"><b>실시간 대결</b><span>'+gEsc(btSub())+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="ldBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>불러오기</b><span>'+gEsc(svMenuTxt()||'저장된 게임이 없다')+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="lbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>명예의 전당</b><span>모두의 최고 기록</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="gbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>가이드북</b><span>판정 규칙, 지표, 대선, 점수 계산까지 한 번에</span></span><span class="hm-go">'+CHEV+'</span></button>'+boxTileLite()+
@@ -5876,7 +5838,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   $('tutBtn').onclick=()=>{SFX.click();MEM.tut=!tutOn();msave();homeLite();};
   $('lbBtn').onclick=()=>{SFX.click();openBoard({back:home});};
   $('miBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();stepMini();};
-  if($('dcBtn'))$('dcBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();dcOpen($('dcBtn'));};
+  if($('btBtn'))$('btBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();btOpen($('btBtn'));};
   if($('ldBtn'))$('ldBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();svPicker();};   // 라이트 모드 메인 화면은 작은 창으로 연다
   $('gbBtn').onclick=()=>{SFX.click();guide(home);};
   boxBind('hl',()=>SFX.click());
@@ -5915,10 +5877,10 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp)||camp==='zombie')camp='kr';document.documentElement.dataset.camp='kr';
   R.innerHTML='<div style="min-height:70vh"></div>';
   const msg=HUB_MSG;HUB_MSG='';
-  // 홈 메뉴는 네 묶음: 게임(새 게임 · 불러오기) · 오늘의 도전 · 기록(명예의 전당 · 도감) · 기타(가이드북 · 건의사항 · 쿠폰함 · 화면 설정 · 인적사항). 묶음을 누르면 그 아래가 펼쳐진다(하나만 열림).
+  // 홈 메뉴는 네 묶음: 게임(새 게임 · 불러오기) · 실시간 대결 · 기록(명예의 전당 · 도감) · 기타(가이드북 · 건의사항 · 쿠폰함 · 화면 설정 · 인적사항). 묶음을 누르면 그 아래가 펼쳐진다(하나만 열림).
   const sv=svMenuTxt(),item=(id,t,s,ic)=>[id,t,s,ic],
     G=[{id:'game',t:'게임',s:'새 게임 · 불러오기 · 미니게임',ic:'new',it:[item('mmNew','새 게임','한 번의 인생을 시작한다','new'),item('mmLoad','불러오기',sv||'저장된 게임이 없다','ld'),item('mmMini','미니게임',miniSub(),'new')]},
-       {id:'daily',t:'오늘의 도전',s:dcSub(),ic:'daily',one:'mmDaily'},
+       {id:'battle',t:'실시간 대결',s:btSub(),ic:'battle',one:'mmBattle'},
        {id:'rec',t:'기록',s:'명예의 전당 · 도감',ic:'board',it:[item('mmBoard','명예의 전당','모두의 최고 기록','board'),item('mmDex','도감','만난 지도자와 임기 평가','dex')]},
        {id:'etc',t:'기타',s:'가이드북 · 건의사항 · 쿠폰함 · 설정 · 로그인',ic:'guide',it:[item('mmGuide','가이드북','처음이라면 여기부터','guide'),item('mmNews','업데이트 소식',GAME_VER+' 바뀐 내용','news')].concat(BOX_M().map(m=>item('mm'+m[0],m[1],m[2],m[3])),[item('mmView','화면 설정','세로/가로 · 라이트','view'),item('mmEdit','인적사항 바꾸기','학교 · 이름 · 닉네임','user'),item('mmLogin','로그인 화면으로','회원 로그인 · 계정 바꾸기','user')])}];
   const MROW=(g,i)=>'<button class="gx-mi gx-g'+(g.one?' gx-nx':'')+(g.open?' open':'')+'" id="'+(g.one||'mmG_'+g.id)+'" style="--i:'+i+'"'+(g.one?'':' aria-expanded="'+(g.open?'true':'false')+'" data-g="'+g.id+'"')+'><span class="gx-ic" aria-hidden="true">'+GX_IC[g.ic]+'</span><span class="gx-mt"><b>'+g.t+'</b><small>'+g.s+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>'+
@@ -5956,7 +5918,7 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   gxLattice(document.querySelector('.gx-bg'));
   $('snd').onclick=toggleSound;
   $('mmNew').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');stepCamp();};
-  $('mmDaily').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');dcOpen($('mmDaily'));};
+  $('mmBattle').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');btOpen($('mmBattle'));};
   $('mmMini').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');stepMini();};
   $('mmLoad').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');ldPanel();};
   $('mmBoard').onclick=()=>{gxSfx('click');cineClose();openBoard({back:home});};
@@ -6262,7 +6224,7 @@ function pop(title,body){let o=document.querySelector('.svp-bg');if(o)o.remove()
   o.innerHTML='<div class="sndp svp" role="dialog" aria-label="'+title+'"><div class="sndp-h"><span>'+title+'</span><button class="sndp-x" aria-label="닫기">✕</button></div>'+body+'</div>';
   document.body.appendChild(o);const close=()=>o.remove();o.onclick=e=>{if(e.target===o)close();};o.querySelector('.sndp-x').onclick=close;
   o.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape')close();});o.close=close;return o;}
-function svAct(k){if(k==='pin')return pinSet();if(k==='bag')return bagOpen();if(DC){eggToast('오늘의 도전은 저장할 수 없어요. 한 번에 끝까지 해 주세요.');return;}if(!SVAT){eggToast('지금은 할 수 없어요. 결정 화면이나 결과 화면에서 다시 눌러 주세요.');return;}
+function svAct(k){if(k==='pin')return pinSet();if(k==='bag')return bagOpen();if(DC){eggToast('실시간 대결은 저장할 수 없어요. 한 번에 끝까지 해 주세요.');return;}if(!SVAT){eggToast('지금은 할 수 없어요. 결정 화면이나 결과 화면에서 다시 눌러 주세요.');return;}
   if(k==='quit')return quitAsk();
   if(!svSave(SVAT)){eggToast('저장하지 못했어요. 브라우저 저장 공간을 확인해 주세요.');return;}
   if(k==='exit'){SFX.back();return home();}
@@ -6348,13 +6310,13 @@ function cfgApply(){CP=CAMPS[camp];document.documentElement.dataset.camp=CP.id;Y
 
 /* ---------- START / TERM ---------- */function start(){if(camp==='zombie')return zgOpen();
   PINH='';cfgApply();
-  if(DC)MAXT=1;   // 오늘의 도전은 한 임기로 끝난다
+  if(DC)MAXT=1;   // 실시간 대결은 한 임기로 끝난다(5년 단임)
   if(!CP.bg[bg]||bgLock(CP.bg[bg])){bg=-1;return home();}
   const B=CP.bg[bg];if(B.once){MEM.secUsed=MEM.secUsed||{};MEM.secUsed[B.sec]=1;msave();}
   LOG=[];T0=Date.now();SHOWN=0;RUN={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),st:new Date().toISOString(),rr:0,pkP:0,pkC:0,crisis:[],sent:0};
   S=Object.assign({turn:0,quit:0},INIT,CP.init||{});B.f(S);for(const k in INIT)S[k]=cl(S[k]);
   CAR={camp:CP.id,path:{hard:0,soft:0,eco:0},pstage:{},pathLog:[],news:0,term:1,age0:B.age,bg:(CP.id==='kr'?'':CP.n+' · ')+B.n,bgid:B.id,bgn:B.n,bgx:B.x||(B.n+' 출신'),terms:[],tro:[],amend:0,crush:0,exit:'',tEval:0,retireElig:false,cs:[],ts:[],us:[],ss:[],done:0,tt:[0,0,0,0],yrs:[],scen:[],elections:[]};
-  dcSeed('start');   // 오늘의 도전: 새 판의 상태(S · CAR · LOG · RUN)를 다 만든 뒤에 씨앗을 맞춘다(앞 판의 남은 값이 섞이지 않게)
+  dcSeed('start');   // 같은 판 모드: 새 판의 상태(S · CAR · LOG · RUN)를 다 만든 뒤에 씨앗을 맞춘다(앞 판의 남은 값이 섞이지 않게)
   cnStart();
   // 배경음악은 새 커리어를 만든 뒤에 고른다(앞 판의 올림픽 응원가가 이어지지 않게)
   bgmGame();histArm();
@@ -7002,7 +6964,7 @@ function termEnd(){window.scrollTo(0,0);
   if(CP.rule==='reign')return reignEnd(te);
   // 개헌(amendPerm)이나 영구집권(dict)이면 임기 한도가 두 배로 늘어난다
   const av=Math.round(cl(S.a)),pct=winPct(av),amended=!!CAR.amendPerm||CAR.amendOK===CAR.term,limit=CP.rule==='single'?!amended:CP.rule==='two'?(CAR.term>=2&&!amended):false;
-  const capT=DC?1:amended||CAR.dict?MAXT*2:MAXT,   // 오늘의 도전은 개헌 · 계엄이 있어도 한 임기로 끝난다
+  const capT=DC?1:amended||CAR.dict?MAXT*2:MAXT,   // 실시간 대결은 개헌 · 계엄이 있어도 한 임기로 끝난다
     isLast=CAR.term>=capT||limit,can=!CAR.dict&&pct>0&&!isLast,n=CAR.term+1;
   const risk=av>=35?0:av<15?100:Math.round((35-av)*5);
   // 마지막 승부: 헌법이 막고 있어도 임기 말에 한 번, 개헌을 밀어붙일 수 있다(커리어에 한 번, 지지율 35 이상)
@@ -7304,8 +7266,8 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   const SC=careerScore(kind,years),csc=SC.total;
   const newBest=!god&&csc>(MEM.best100||0),newLead=!god&&!(MEM.leaders||{})[lid];
   if(!god){MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=(+MEM.leaders[lid]||0)+1;MEM.leadPct=MEM.leadPct||{};try{MEM.leadPct[lid]=Math.max(+MEM.leadPct[lid]||0,leadPct(lid,LEADF));}catch(e){}msave();}
-  // 오늘의 도전: 기록에 도전 날짜가 붙어 나간 뒤 원래 난수로 되돌린다(결산 화면의 꾸밈은 보통 난수로)
-  const dcI=DC?{date:DC.date,ranked:DC.ranked}:null;dcDone(csc);
+  // 실시간 대결: 방에 점수를 올리고(btFinish) 기록 시트로는 보내지 않는다(sendCareer가 거른다). 그 뒤 원래 난수로 되돌린다(결산 화면의 꾸밈은 보통 난수로)
+  const btI=DC&&DC.bt?DC.bt:null;if(btI)btFinish(btI,{sc:csc,lid:L.n,ex:EXH[kind]||kind,g:CAR.terms.length?CAR.terms[CAR.terms.length-1].g:''});
   sendCareer(EXH[kind]||kind,{lid:lid,csc:csc,years:years,good:good,bad:badN,SC:SC});dcEnd();
 
   const ct=CAR.terms.map((t,j)=>'<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);opacity:0;animation:fdIn .35s ease-out forwards;animation-delay:'+(j*90)+'ms">'+
@@ -7318,14 +7280,14 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   const bt=CAR.terms.reduce((a,t)=>!a||t.sc>a.sc?t:a,null);
   // 기록 카드(lazy/card): 사진 한 장에 들어갈 것만 추린다
   const now=new Date(),jo=CP.id==='joseon';
-  const CARD={who:NICK+' '+CP.role+'의 인생',bg:CAR.bgx||CAR.bg+' 출신',stageTag:dcI?'오늘의 도전 · '+CP.n:CP.id==='kr'?'대한민국':CP.tag+' · '+CP.n,ending:EXH[kind]||kind,
+  const CARD={who:NICK+' '+CP.role+'의 인생',bg:CAR.bgx||CAR.bg+' 출신',stageTag:btI?'실시간 대결 · '+CP.n:CP.id==='kr'?'대한민국':CP.tag+' · '+CP.n,ending:EXH[kind]||kind,
     sub:jo?CAR.term+'번의 치세 · '+years+'년':CAR.term+'선 · '+years+'년 재임',age:CAR.age0+'세 취임 → '+age1+'세',scen:CAR.terms.map(t=>t.scenario).join(' → '),
     grades:CAR.terms.map(t=>[jo?'치세'+t.term:t.term+'기',t.g]),best:(bt||{g:'-'}).g,L:{n:L.n,k:L.k,col:L.col,era:L.era},good:good,bad:badN,score:csc,newBest:newBest,
     date:now.getFullYear()+'.'+String(now.getMonth()+1).padStart(2,'0')+'.'+String(now.getDate()).padStart(2,'0')};
   const medalH=(bt?'<div class="chr-md" aria-hidden="true"><svg viewBox="0 0 70 34" width="70" height="34"><path d="M18 0H33L38 34H23Z" fill="#a8321f"/><path d="M52 0H37L32 34H47Z" fill="#2f4a6b"/></svg><div class="disc"><b>'+bt.g+'</b><span>최고 임기</span></div></div>':'');
   const show=first=>{window.scrollTo(0,0);
   R.innerHTML='<div style="animation:fdIn .45s ease-out">'+
-   (dcI?'<div class="dc-res"><div><b>오늘의 도전 · '+dcLabel(dcI.date)+'</b><span>'+(dcI.ranked?'오늘 가장 높은 점수가 순위에 올라가요 · 다시 도전할 수 있어요':'연습 판 · 순위에는 오르지 않아요')+'</span></div><button id="dcRank" type="button">오늘의 순위</button></div>':'')+
+   (btI?'<div class="bt-res" id="btRes"></div>':'')+
    lab(NICK+' 대통령의 인생 · '+(CAR.bgx||CAR.bg+' 출신'))+
    '<div style="font-size:27px;font-family:var(--font-voice);font-weight:800;line-height:1.25;margin-bottom:6px">'+(EXH[kind]||kind)+'</div>'+
    '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">'+CAR.term+'선 · '+years+'년 재임 · '+CAR.age0+'세에 취임해 '+age1+'세에 물러남<div style="margin-top:4px;color:var(--text-muted)">겪은 위기 · '+CAR.terms.map(t=>t.scenario).join(' → ')+'</div></div>'+
@@ -7366,7 +7328,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   if(document.getElementById('rhine'))document.getElementById('rhine').onclick=()=>{SFX.click();rhineGo();};
   if(!god)document.getElementById('lbMine').onclick=()=>{SFX.click();openBoard({back:()=>show(false),id:RUN.id,nick:NICK});};
   document.getElementById('cp').onclick=function(){copyText(summary,this);};
-  if(document.getElementById('dcRank'))document.getElementById('dcRank').onclick=function(){SFX.click();dcOpen(this,{score:csc,ranked:dcI.ranked});};
+  if(btI)btResMount(btI);
   document.getElementById('cdShareBtn').onclick=function(){SFX.click();cardOpen(CARD,'share');};
   document.getElementById('cdSaveBtn').onclick=function(){SFX.click();cardOpen(CARD,'save');};};
   show(false);
@@ -8271,7 +8233,7 @@ function acEnter(id,p){PF={school:p.school,name:p.name,phone:p.phone||'',agree:t
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v4.9';
+const GAME_VER='v5.0';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -8329,7 +8291,7 @@ addEventListener('online',()=>obFlush());
 setTimeout(obFlush,4000);
 function sendArcade(game,o){if(!SHEET_URL||IN_ART)return;const id=Date.now().toString(36)+Math.random().toString(36).slice(2,7),k='arc:'+id;
   obPush([{k:k,b:JSON.stringify({k:k,kind:'arcade',v:GAME_VER,rec:Object.assign({id:id,game:game,nickname:NICK||'익명',school:(PF&&PF.school)||'',gv:GAME_VER,pid:pidGet()},o)})}]);obFlush();}
-function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.length||godRun())return;   // 조성민(데우스 엑스 마키나) 판은 보내지 않는다
+function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.length||godRun()||(DC&&DC.bt))return;   // 조성민(데우스 엑스 마키나) 판 · 실시간 대결 판은 보내지 않는다
   RUN.sent=1;
   const l=LOG[LOG.length-1];if(l&&!l.after)l.after=stNow();peak();
   x=x||{};const terms=CAR.terms.slice(),yrs=CAR.yrs.slice();
@@ -8347,7 +8309,7 @@ function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.len
     ins:Math.round(lt.ins),peakP:Math.round(RUN.pkP),peakC:Math.round(RUN.pkC),auth:lt.auth?'예':'아니오',
     nChoices:N.length,nConc:cnt('권력 집중'),nDisp:cnt('견제·분산'),nNeut:cnt('중립'),avgDir:avg(N.map(z=>z.dirScore)),
     dirY1:yr(1),dirY2:yr(2),dirY3:yr(3),dirY4:yr(4),firstConcTurn:fc?fc.cturn:'',crisis:RUN.crisis.join(' / '),
-    dice0:tally[0],dice1:tally[1],dice2:tally[2],dice3:tally[3],rerolls:RUN.rr,tokensLeft:tok,couponTok:RUN.cpTok||0,couponPump:RUN.cpPump||0,dcDate:DC?DC.date:'',dcRanked:DC&&DC.ranked?'예':'',mid:PF.mid||'',mtok:acTok(),
+    dice0:tally[0],dice1:tally[1],dice2:tally[2],dice3:tally[3],rerolls:RUN.rr,tokensLeft:tok,couponTok:RUN.cpTok||0,couponPump:RUN.cpPump||0,dcDate:'',dcRanked:'',mid:PF.mid||'',mtok:acTok(),
     mode:MODE[mode].n,terms:CAR.term,careerYears:years,exitType:exitLabel,scenarios:terms.map(t=>t.scenario).join(' → '),elections:CAR.elections.join(' / '),pathEvents:(CAR.pathLog||[]).join(' / '),tutorial:tutOn()?'켬':'끔',avgFit:avg(N.map(z=>typeof z.fit==='number'?z.fit:0)),amendCount:CAR.amend,retireEligible:CAR.retireElig?'예':'아니오',
     leaderId:x.lid,leader:LEAD[x.lid].n,careerScore:x.csc===undefined?'':x.csc,scorePerf:x.SC?x.SC.perf:'',scoreCont:x.SC?x.SC.cont:'',scoreHonor:x.SC?x.SC.honor:'',trophiesGood:good,trophiesBad:CAR.tro.length-good,
     trophyList:CAR.tro.map(t=>(t.g?'+':'-')+t.n+'('+t.term+'-'+t.year+')').join(', '),
@@ -8445,6 +8407,12 @@ setTimeout(()=>{try{const me=!IN_ART&&acGet();if(!me||!me.prof||!me.prof.name)re
    홈 메뉴 「기타 → 업데이트 소식」에서 언제든 다시 볼 수 있다. 처음 온 사람(기록이 전혀 없음)에게는 띄우지 않고 읽은 것으로 쳐 둔다.
    v1부터 v4.9까지 모든 업데이트를 넣었다(v4.7은 크게, 나머지는 접어서 짧게). */
 const PATCHES=[
+ {v:'v5.0',t:'실시간 대결',d:'2026-11-02',big:1,l:[
+  ['실시간 대결 (2~4명)','홈의 「실시간 대결」에서 방을 만들고 친구에게 코드 4자리를 알려 주세요. 모두 준비되면 방장이 시작하고, 3 · 2 · 1 뒤 모두 같은 판을 동시에 시작해요.'],
+  ['같은 판, 다른 선택','대한민국 · 5년 단임 · 난이도 보통. 사건과 주사위가 모두에게 똑같아서 선택이 승부를 가려요. 출발 인물은 각자 고르고, 결정 빈도는 방장이 정해요.'],
+  ['실시간 현황','판을 하는 동안 화면 맨 위에 상대들이 몇 년차인지, 지지율이 얼마인지 보여요. 누르면 접혀요. 끝나면 결산 화면 맨 위에서 순위가 실시간으로 바뀌어요.'],
+  ['한 판 더','결과에서 「대기실로」를 누르면 같은 방에서 다시 겨룰 수 있어요. 대결 판은 저장 · 보관함 · 쿠폰 운명 개입을 쓸 수 없고, 명예의 전당에는 오르지 않아요.'],
+  ['오늘의 도전은 쉬어요','오늘의 도전 자리를 실시간 대결이 이어받았어요.']]},
  {v:'v4.9',t:'오늘의 도전 · 여러 번 도전',d:'2026-11-01',l:[['몇 번이든 다시','오늘의 도전을 하루에 몇 번이든 다시 할 수 있어요. 순위에는 그날 끝까지 마친 판 중 가장 높은 점수가 올라가요. 첫 판을 중간에 나가면 그날 다시 못 하던 문제를 고쳤어요.'],['오늘은 김구, 대한민국 독립','11월 1일 오늘의 도전은 팬데믹이 아닌 실제 역사 이야기 판이에요. 1940년 충칭 임시정부의 주석 김구가 되어 5년 동안 23번의 결정으로 광복을 향해 가요. 아이템 없이 오직 선택만으로 겨뤄요.'],['참모 회의 · 더 쉽게','결정마다 임정 참모들이 저마다 제안을 내놓고, 따르면 어떤 지표가 오르고(▲) 내리는지(▼) 미리 보여 줘요. 광복 준비도와 목표선(55)이 늘 보이고, 지표가 바닥나도 한 번은 동지들이 버텨 줘요.']]},
  {v:'v4.8',t:'자동 로그인',d:'2026-11-01',l:[['바로 로비로','이미 회원으로 로그인한 기기는 첫 화면(인적사항)을 건너뛰고 바로 로비에서 시작해요. 로그인이 끝났으면 첫 화면으로 돌아와요.'],['로그인 화면으로','기타 메뉴에 로그인 화면으로 돌아가는 버튼이 생겼어요.'],['미니게임 위치','미니게임이 새 게임 위쪽 탭에서 홈의 「게임」 묶음 안으로 옮겨졌어요.']]},
  {v:'v4.7',t:'핫패치 · 난이도 · 보관함 · 홈 화면',d:'2026-10-31',big:1,l:[

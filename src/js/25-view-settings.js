@@ -82,7 +82,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   lab('난이도')+'<div class="hl-dif" style="display:flex;gap:8px;margin-bottom:24px">'+dfb+'</div>'+
   '<div class="hl-go"><button id="st" class="pri"'+(B?'':' disabled')+' style="width:100%;padding:16px;font-size:16.5px;margin-bottom:12px">'+(!B?'인물을 선택하세요':camp==='joseon'?'즉위한다':camp==='zombie'?'지휘를 맡는다':'취임한다')+'</button></div>'+(P?bgHint+introH:'')+
   '<div class="hm-row"><button id="tutBtn" class="tgl" role="switch" aria-checked="'+tutOn()+'"><span class="tgl-k"></span><span>튜토리얼 '+(tutOn()?'켜짐':'꺼짐')+'</span></button></div>'+
-  '<button id="dcBtn" class="hm-card hm-daily"><span class="hm-i">'+GX_IC.daily+'</span><span class="hm-x"><b>오늘의 도전</b><span>'+gEsc(dcSub())+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
+  '<button id="btBtn" class="hm-card hm-battle"><span class="hm-i">'+GX_IC.battle+'</span><span class="hm-x"><b>실시간 대결</b><span>'+gEsc(btSub())+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="ldBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>불러오기</b><span>'+gEsc(svMenuTxt()||'저장된 게임이 없다')+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="lbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>명예의 전당</b><span>모두의 최고 기록</span></span><span class="hm-go">'+CHEV+'</span></button>'+
   '<button id="gbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>가이드북</b><span>판정 규칙, 지표, 대선, 점수 계산까지 한 번에</span></span><span class="hm-go">'+CHEV+'</span></button>'+boxTileLite()+
@@ -103,7 +103,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   $('tutBtn').onclick=()=>{SFX.click();MEM.tut=!tutOn();msave();homeLite();};
   $('lbBtn').onclick=()=>{SFX.click();openBoard({back:home});};
   $('miBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();stepMini();};
-  if($('dcBtn'))$('dcBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();dcOpen($('dcBtn'));};
+  if($('btBtn'))$('btBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();btOpen($('btBtn'));};
   if($('ldBtn'))$('ldBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();svPicker();};   // 라이트 모드 메인 화면은 작은 창으로 연다
   $('gbBtn').onclick=()=>{SFX.click();guide(home);};
   boxBind('hl',()=>SFX.click());
@@ -142,10 +142,10 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp)||camp==='zombie')camp='kr';document.documentElement.dataset.camp='kr';
   R.innerHTML='<div style="min-height:70vh"></div>';
   const msg=HUB_MSG;HUB_MSG='';
-  // 홈 메뉴는 네 묶음: 게임(새 게임 · 불러오기) · 오늘의 도전 · 기록(명예의 전당 · 도감) · 기타(가이드북 · 건의사항 · 쿠폰함 · 화면 설정 · 인적사항). 묶음을 누르면 그 아래가 펼쳐진다(하나만 열림).
+  // 홈 메뉴는 네 묶음: 게임(새 게임 · 불러오기) · 실시간 대결 · 기록(명예의 전당 · 도감) · 기타(가이드북 · 건의사항 · 쿠폰함 · 화면 설정 · 인적사항). 묶음을 누르면 그 아래가 펼쳐진다(하나만 열림).
   const sv=svMenuTxt(),item=(id,t,s,ic)=>[id,t,s,ic],
     G=[{id:'game',t:'게임',s:'새 게임 · 불러오기 · 미니게임',ic:'new',it:[item('mmNew','새 게임','한 번의 인생을 시작한다','new'),item('mmLoad','불러오기',sv||'저장된 게임이 없다','ld'),item('mmMini','미니게임',miniSub(),'new')]},
-       {id:'daily',t:'오늘의 도전',s:dcSub(),ic:'daily',one:'mmDaily'},
+       {id:'battle',t:'실시간 대결',s:btSub(),ic:'battle',one:'mmBattle'},
        {id:'rec',t:'기록',s:'명예의 전당 · 도감',ic:'board',it:[item('mmBoard','명예의 전당','모두의 최고 기록','board'),item('mmDex','도감','만난 지도자와 임기 평가','dex')]},
        {id:'etc',t:'기타',s:'가이드북 · 건의사항 · 쿠폰함 · 설정 · 로그인',ic:'guide',it:[item('mmGuide','가이드북','처음이라면 여기부터','guide'),item('mmNews','업데이트 소식',GAME_VER+' 바뀐 내용','news')].concat(BOX_M().map(m=>item('mm'+m[0],m[1],m[2],m[3])),[item('mmView','화면 설정','세로/가로 · 라이트','view'),item('mmEdit','인적사항 바꾸기','학교 · 이름 · 닉네임','user'),item('mmLogin','로그인 화면으로','회원 로그인 · 계정 바꾸기','user')])}];
   const MROW=(g,i)=>'<button class="gx-mi gx-g'+(g.one?' gx-nx':'')+(g.open?' open':'')+'" id="'+(g.one||'mmG_'+g.id)+'" style="--i:'+i+'"'+(g.one?'':' aria-expanded="'+(g.open?'true':'false')+'" data-g="'+g.id+'"')+'><span class="gx-ic" aria-hidden="true">'+GX_IC[g.ic]+'</span><span class="gx-mt"><b>'+g.t+'</b><small>'+g.s+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>'+
@@ -183,7 +183,7 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   gxLattice(document.querySelector('.gx-bg'));
   $('snd').onclick=toggleSound;
   $('mmNew').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');stepCamp();};
-  $('mmDaily').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');dcOpen($('mmDaily'));};
+  $('mmBattle').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');btOpen($('mmBattle'));};
   $('mmMini').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');stepMini();};
   $('mmLoad').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');ldPanel();};
   $('mmBoard').onclick=()=>{gxSfx('click');cineClose();openBoard({back:home});};

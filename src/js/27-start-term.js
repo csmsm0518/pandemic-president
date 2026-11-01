@@ -1,12 +1,12 @@
 /* ---------- START / TERM ---------- */function start(){if(camp==='zombie')return zgOpen();
   PINH='';cfgApply();
-  if(DC)MAXT=1;   // 오늘의 도전은 한 임기로 끝난다
+  if(DC)MAXT=1;   // 실시간 대결은 한 임기로 끝난다(5년 단임)
   if(!CP.bg[bg]||bgLock(CP.bg[bg])){bg=-1;return home();}
   const B=CP.bg[bg];if(B.once){MEM.secUsed=MEM.secUsed||{};MEM.secUsed[B.sec]=1;msave();}
   LOG=[];T0=Date.now();SHOWN=0;RUN={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),st:new Date().toISOString(),rr:0,pkP:0,pkC:0,crisis:[],sent:0};
   S=Object.assign({turn:0,quit:0},INIT,CP.init||{});B.f(S);for(const k in INIT)S[k]=cl(S[k]);
   CAR={camp:CP.id,path:{hard:0,soft:0,eco:0},pstage:{},pathLog:[],news:0,term:1,age0:B.age,bg:(CP.id==='kr'?'':CP.n+' · ')+B.n,bgid:B.id,bgn:B.n,bgx:B.x||(B.n+' 출신'),terms:[],tro:[],amend:0,crush:0,exit:'',tEval:0,retireElig:false,cs:[],ts:[],us:[],ss:[],done:0,tt:[0,0,0,0],yrs:[],scen:[],elections:[]};
-  dcSeed('start');   // 오늘의 도전: 새 판의 상태(S · CAR · LOG · RUN)를 다 만든 뒤에 씨앗을 맞춘다(앞 판의 남은 값이 섞이지 않게)
+  dcSeed('start');   // 같은 판 모드: 새 판의 상태(S · CAR · LOG · RUN)를 다 만든 뒤에 씨앗을 맞춘다(앞 판의 남은 값이 섞이지 않게)
   cnStart();
   // 배경음악은 새 커리어를 만든 뒤에 고른다(앞 판의 올림픽 응원가가 이어지지 않게)
   bgmGame();histArm();

@@ -1,0 +1,96 @@
+/* ---------- 실시간 대결: 소리 · 불러오기 창(.sndp)과 같은 종이 창 ---------- */
+.sndp.bt{width:min(440px,100%);max-height:calc(100vh - 24px);max-height:calc(100svh - 24px);overflow-y:auto;overscroll-behavior:contain}
+.bt-lead{margin:2px 0 10px;font-size:14px;line-height:1.7;color:var(--text-secondary)}
+.bt-lead b{color:var(--text-primary)}
+.bt-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
+.bt-tags i{font-style:normal;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:999px;background:#fbf4e1;box-shadow:inset 0 0 0 1px var(--gold);color:var(--gold-lo,#8f6a12)}
+.bt-mk{width:100%;padding:15px;font-size:16px;font-weight:700}
+.bt-or{display:flex;align-items:center;gap:10px;margin:16px 0 10px;font-size:12px;color:var(--text-muted)}
+.bt-or::before,.bt-or::after{content:"";flex:1;height:1px;background:var(--border)}
+.bt-jf{display:flex;gap:8px}
+.bt-in{flex:1;min-width:0;padding:12px 14px;font:800 20px/1 var(--font-ui);letter-spacing:.32em;text-transform:uppercase;text-align:center;border-radius:10px;border:1px solid var(--border-strong);background:var(--surface-0,#fff);color:var(--text-primary)}
+.bt-in::placeholder{font-size:14px;font-weight:600;letter-spacing:0;color:var(--text-muted)}
+.bt-jf button{flex:none;padding:0 18px;font-size:15px;font-weight:700}
+.bt-err{min-height:18px;margin:8px 0 2px;font-size:13px;font-weight:600;color:#b3261e}
+.bt-note{margin:6px 0 0;font-size:12px;line-height:1.6;color:var(--text-muted)}
+.bt-note b{color:var(--text-secondary)}
+.bt-wait{margin:22px 0;text-align:center;font-size:14px;color:var(--text-muted)}
+.bt-body button:disabled{opacity:.5;cursor:default}
+/* 대기실 */
+.bt-cw{display:flex;align-items:center;gap:12px;padding:12px 14px;margin:4px 0 6px;border-radius:12px;background:#1d1a14;color:#f3e7c7}
+.bt-cw span{font-size:12px;font-weight:700;letter-spacing:.06em;color:#c9a24a}
+.bt-code{flex:1;font:800 30px/1 var(--font-ui);letter-spacing:.3em;font-variant-numeric:tabular-nums}
+.bt-cp{flex:none;padding:8px 12px;font-size:13px;font-weight:700;background:#c9a24a;color:#1d1a14;border-color:#c9a24a}
+.bt-hint{margin:6px 0 10px;font-size:13px;line-height:1.6;color:var(--text-secondary)}
+.bt-pl{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;margin-bottom:14px}
+.bt-pr{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:10px;background:var(--surface-1);box-shadow:inset 0 0 0 1px var(--border)}
+.bt-pr.me{background:#fbf4e1;box-shadow:inset 0 0 0 1px var(--gold)}
+.bt-pr.off{opacity:.55}
+.bt-pr.empty{background:none;box-shadow:inset 0 0 0 1px var(--border);border:0;opacity:.6}
+.bt-pf{flex:none;width:40px;height:40px;line-height:0;border-radius:50%;background:var(--surface-2)}
+.bt-pr.empty .bt-pf{background:none;box-shadow:inset 0 0 0 1.5px var(--border);border-radius:50%}
+.bt-pn{flex:1;min-width:0}
+.bt-pn b{font-size:14.5px}
+.bt-pn em{font-style:normal;font-size:10.5px;font-weight:800;margin-left:5px;padding:1px 6px;border-radius:999px;vertical-align:1px}
+.bt-hb{background:#1d1a14;color:#f1d589}.bt-mb{background:var(--gold);color:#fff}
+.bt-pn small{display:block;font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bt-ps{flex:none;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--surface-2);color:var(--text-muted)}
+.bt-ps.ok{background:#e3f1e8;color:#2e7d55}.bt-ps.h{background:#fbf4e1;color:var(--gold-lo,#8f6a12)}.bt-ps.x{background:#f6e3e1;color:#b3261e}
+.bt-lb{display:block;margin:0 0 6px;font-size:12px;font-weight:700;color:var(--text-secondary)}
+.bt-sel{width:100%;padding:11px 12px;margin-bottom:14px;font-size:14.5px;border-radius:10px;border:1px solid var(--border-strong);background:var(--surface-0,#fff);color:var(--text-primary)}
+.bt-md{margin-bottom:6px}
+.bt-seg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.bt-seg button{padding:9px 6px;font-size:14px;font-weight:700;line-height:1.3}
+.bt-seg button small{display:block;font-size:11px;font-weight:600;color:var(--text-muted)}
+.bt-seg button[aria-pressed="true"]{background:#1d1a14;color:#f3e7c7;border-color:#1d1a14}
+.bt-seg button[aria-pressed="true"] small{color:#c9a24a}
+.bt-mdv{margin:0;font-size:13px;color:var(--text-secondary)}
+.bt-acts{display:grid;grid-template-columns:1fr 1.6fr;gap:8px;margin-top:6px}
+.bt-acts button{padding:14px 8px;font-size:15px;font-weight:700}
+/* 3 · 2 · 1 */
+.bt-cd{text-align:center;padding:12px 0 8px}
+.bt-cd-k{display:block;font-size:12.5px;font-weight:700;letter-spacing:.06em;color:var(--gold-lo,#8f6a12)}
+.bt-cd b{display:block;font:800 92px/1.1 var(--font-voice);margin:8px 0;animation:btPop 1s ease-out infinite}
+.bt-cd p{margin:0 0 6px;font-size:15px;font-weight:700}
+.bt-cd small{font-size:12.5px;color:var(--text-muted)}
+@keyframes btPop{0%{transform:scale(1.35);opacity:0}25%{transform:scale(1);opacity:1}100%{transform:scale(.92);opacity:.85}}
+/* 판 진행 중: 상대 현황 띠(화면 맨 위에 얇게, 내용은 그만큼 아래로 밀려 가리지 않는다. 누르면 접힌다) */
+html.bt-on body{padding-top:calc(44px + env(safe-area-inset-top))}
+html.bt-on.bt-min body{padding-top:calc(26px + env(safe-area-inset-top))}
+.bt-hud{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;gap:6px;height:44px;box-sizing:border-box;
+  padding:env(safe-area-inset-top) max(8px,env(safe-area-inset-right)) 0 max(8px,env(safe-area-inset-left));
+  background:#16130e;color:#f3e7c7;box-shadow:0 4px 14px -8px rgba(0,0,0,.7);border-bottom:1px solid rgba(201,162,74,.35);font-family:var(--font-ui);cursor:pointer;user-select:none;overflow:hidden}
+.bt-hud.min{height:26px}
+.bt-h-k{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.06em;color:#c9a24a;line-height:1.15;text-align:center}
+.bt-h-k small{display:block;font-size:12px;letter-spacing:.12em;color:#f1d589}
+.bt-hud.min .bt-h-k small{display:inline;margin-left:4px;font-size:10.5px}
+.bt-h-ps{flex:1;min-width:0;display:flex;gap:5px}
+.bt-h-p{flex:1 1 0;min-width:0;max-width:170px;display:flex;flex-direction:column;justify-content:center;padding:3px 8px 4px;border-radius:8px;background:rgba(255,255,255,.07)}
+.bt-h-p b{font-size:12px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bt-h-p small{font-size:10.5px;line-height:1.25;color:#d8c9a3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bt-h-p i{display:block;height:3px;border-radius:2px;background:rgba(255,255,255,.14);overflow:hidden;margin-top:2px}
+.bt-h-p i s{display:block;height:100%;background:#c9a24a;transition:width .6s}
+.bt-h-p.fin{background:rgba(76,175,122,.16)}.bt-h-p.fin i s{background:#4caf7a}.bt-h-p.fin small{color:#9fdcb8;font-weight:700}
+.bt-h-p.off{opacity:.5}
+.bt-h-x{flex:1;min-width:0;font-size:11.5px;color:#d8c9a3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bt-hud.min .bt-h-ps,.bt-hud.min .bt-h-x{display:none}
+/* 결산 화면 맨 위: 대결 순위 */
+.bt-res{margin:0 0 14px;padding:14px;border-radius:14px;background:#1d1a14;color:#f3e7c7;box-shadow:0 10px 26px -14px rgba(0,0,0,.6)}
+.bt-rh b{display:block;font:800 15px/1.4 var(--font-voice);color:#f1d589}
+.bt-rh span{display:block;font-size:12.5px;color:#d8c9a3;margin-top:2px}
+.bt-rh span b{display:inline;font:inherit;font-weight:800;color:#fff}
+.bt-rk{list-style:none;margin:10px 0 12px;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:5px}
+.bt-rk li{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.06)}
+.bt-rk li.me{box-shadow:inset 0 0 0 1px #c9a24a;background:rgba(201,162,74,.14)}
+.bt-rk li.run{opacity:.75}
+.bt-rr{flex:none;width:24px;text-align:center;font:800 17px/1 var(--font-voice);color:#a99c80}
+.bt-rk li.t1 .bt-rr{color:#f1d589}.bt-rk li.t2 .bt-rr{color:#d6d6d6}.bt-rk li.t3 .bt-rr{color:#d39a62}
+.bt-rn{flex:1;min-width:0}
+.bt-rn b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bt-rn em{font-style:normal;font-size:10.5px;padding:1px 6px;border-radius:999px;background:#c9a24a;color:#1d1a14;vertical-align:1px}
+.bt-rn small{display:block;font-size:11.5px;color:#bfb293;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bt-rs{flex:none;font-weight:800;font-size:16px;font-variant-numeric:tabular-nums}
+.bt-rs small{font-size:11px;font-weight:600;color:#bfb293;margin-left:1px}
+.bt-rb{display:grid;grid-template-columns:1.4fr 1fr;gap:8px}
+.bt-rb button{padding:12px 8px;font-size:14px;font-weight:700}
+.bt-rb button:only-child{grid-column:1/-1}

@@ -50,7 +50,7 @@ function termEnd(){window.scrollTo(0,0);
   if(CP.rule==='reign')return reignEnd(te);
   // 개헌(amendPerm)이나 영구집권(dict)이면 임기 한도가 두 배로 늘어난다
   const av=Math.round(cl(S.a)),pct=winPct(av),amended=!!CAR.amendPerm||CAR.amendOK===CAR.term,limit=CP.rule==='single'?!amended:CP.rule==='two'?(CAR.term>=2&&!amended):false;
-  const capT=DC?1:amended||CAR.dict?MAXT*2:MAXT,   // 오늘의 도전은 개헌 · 계엄이 있어도 한 임기로 끝난다
+  const capT=DC?1:amended||CAR.dict?MAXT*2:MAXT,   // 실시간 대결은 개헌 · 계엄이 있어도 한 임기로 끝난다
     isLast=CAR.term>=capT||limit,can=!CAR.dict&&pct>0&&!isLast,n=CAR.term+1;
   const risk=av>=35?0:av<15?100:Math.round((35-av)*5);
   // 마지막 승부: 헌법이 막고 있어도 임기 말에 한 번, 개헌을 밀어붙일 수 있다(커리어에 한 번, 지지율 35 이상)

@@ -153,8 +153,8 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   const SC=careerScore(kind,years),csc=SC.total;
   const newBest=!god&&csc>(MEM.best100||0),newLead=!god&&!(MEM.leaders||{})[lid];
   if(!god){MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=(+MEM.leaders[lid]||0)+1;MEM.leadPct=MEM.leadPct||{};try{MEM.leadPct[lid]=Math.max(+MEM.leadPct[lid]||0,leadPct(lid,LEADF));}catch(e){}msave();}
-  // 오늘의 도전: 기록에 도전 날짜가 붙어 나간 뒤 원래 난수로 되돌린다(결산 화면의 꾸밈은 보통 난수로)
-  const dcI=DC?{date:DC.date,ranked:DC.ranked}:null;dcDone(csc);
+  // 실시간 대결: 방에 점수를 올리고(btFinish) 기록 시트로는 보내지 않는다(sendCareer가 거른다). 그 뒤 원래 난수로 되돌린다(결산 화면의 꾸밈은 보통 난수로)
+  const btI=DC&&DC.bt?DC.bt:null;if(btI)btFinish(btI,{sc:csc,lid:L.n,ex:EXH[kind]||kind,g:CAR.terms.length?CAR.terms[CAR.terms.length-1].g:''});
   sendCareer(EXH[kind]||kind,{lid:lid,csc:csc,years:years,good:good,bad:badN,SC:SC});dcEnd();
 
   const ct=CAR.terms.map((t,j)=>'<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);opacity:0;animation:fdIn .35s ease-out forwards;animation-delay:'+(j*90)+'ms">'+
@@ -167,14 +167,14 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   const bt=CAR.terms.reduce((a,t)=>!a||t.sc>a.sc?t:a,null);
   // 기록 카드(lazy/card): 사진 한 장에 들어갈 것만 추린다
   const now=new Date(),jo=CP.id==='joseon';
-  const CARD={who:NICK+' '+CP.role+'의 인생',bg:CAR.bgx||CAR.bg+' 출신',stageTag:dcI?'오늘의 도전 · '+CP.n:CP.id==='kr'?'대한민국':CP.tag+' · '+CP.n,ending:EXH[kind]||kind,
+  const CARD={who:NICK+' '+CP.role+'의 인생',bg:CAR.bgx||CAR.bg+' 출신',stageTag:btI?'실시간 대결 · '+CP.n:CP.id==='kr'?'대한민국':CP.tag+' · '+CP.n,ending:EXH[kind]||kind,
     sub:jo?CAR.term+'번의 치세 · '+years+'년':CAR.term+'선 · '+years+'년 재임',age:CAR.age0+'세 취임 → '+age1+'세',scen:CAR.terms.map(t=>t.scenario).join(' → '),
     grades:CAR.terms.map(t=>[jo?'치세'+t.term:t.term+'기',t.g]),best:(bt||{g:'-'}).g,L:{n:L.n,k:L.k,col:L.col,era:L.era},good:good,bad:badN,score:csc,newBest:newBest,
     date:now.getFullYear()+'.'+String(now.getMonth()+1).padStart(2,'0')+'.'+String(now.getDate()).padStart(2,'0')};
   const medalH=(bt?'<div class="chr-md" aria-hidden="true"><svg viewBox="0 0 70 34" width="70" height="34"><path d="M18 0H33L38 34H23Z" fill="#a8321f"/><path d="M52 0H37L32 34H47Z" fill="#2f4a6b"/></svg><div class="disc"><b>'+bt.g+'</b><span>최고 임기</span></div></div>':'');
   const show=first=>{window.scrollTo(0,0);
   R.innerHTML='<div style="animation:fdIn .45s ease-out">'+
-   (dcI?'<div class="dc-res"><div><b>오늘의 도전 · '+dcLabel(dcI.date)+'</b><span>'+(dcI.ranked?'오늘 가장 높은 점수가 순위에 올라가요 · 다시 도전할 수 있어요':'연습 판 · 순위에는 오르지 않아요')+'</span></div><button id="dcRank" type="button">오늘의 순위</button></div>':'')+
+   (btI?'<div class="bt-res" id="btRes"></div>':'')+
    lab(NICK+' 대통령의 인생 · '+(CAR.bgx||CAR.bg+' 출신'))+
    '<div style="font-size:27px;font-family:var(--font-voice);font-weight:800;line-height:1.25;margin-bottom:6px">'+(EXH[kind]||kind)+'</div>'+
    '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">'+CAR.term+'선 · '+years+'년 재임 · '+CAR.age0+'세에 취임해 '+age1+'세에 물러남<div style="margin-top:4px;color:var(--text-muted)">겪은 위기 · '+CAR.terms.map(t=>t.scenario).join(' → ')+'</div></div>'+
@@ -215,7 +215,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   if(document.getElementById('rhine'))document.getElementById('rhine').onclick=()=>{SFX.click();rhineGo();};
   if(!god)document.getElementById('lbMine').onclick=()=>{SFX.click();openBoard({back:()=>show(false),id:RUN.id,nick:NICK});};
   document.getElementById('cp').onclick=function(){copyText(summary,this);};
-  if(document.getElementById('dcRank'))document.getElementById('dcRank').onclick=function(){SFX.click();dcOpen(this,{score:csc,ranked:dcI.ranked});};
+  if(btI)btResMount(btI);
   document.getElementById('cdShareBtn').onclick=function(){SFX.click();cardOpen(CARD,'share');};
   document.getElementById('cdSaveBtn').onclick=function(){SFX.click();cardOpen(CARD,'save');};};
   show(false);
