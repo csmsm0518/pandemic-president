@@ -82,9 +82,9 @@ function olySteps(open,close,W){W=W||OLY_SUMMER;const P=c=>olyPlan(c,W),ST=[
   ST.close=c=>{P(c);return cl(c);};return ST;}
 {const O=SP.kr.find(s=>s.id==='olym');if(O){const st=O.steps;O.steps=olySteps(st[0],st[st.length-1]);}
  const U=SP.usa.find(s=>s.id==='olym_u');if(U){const st=U.steps;U.steps=olySteps(st[0],st[st.length-1]);}}
-/* ---------- 동계올림픽: 하계올림픽을 치른 해로부터 2년 뒤 ----------
+/* ---------- 동계올림픽: 하계올림픽을 치른 해로부터 2년 뒤부터 고를 수 있다 ----------
    하계올림픽을 시작하면 CAR.wolyAt에 '커리어 몇 번째 해'(careerYear)로 2년 뒤를 적어 둔다. 임기가 바뀌어도 그대로 이어진다.
-   그해 과제 판이 열릴 자리에 동계올림픽이 대신 개막한다(그해에는 다른 과제를 벌이지 않는다). 새 임기 첫해는 과제 판이 없어 그다음 해로 밀린다.
+   그해부터 특별 국정 과제 판에 동계올림픽 칸이 들어온다(하계올림픽 칸 자리, 판에 하계가 없으면 마지막 칸). 고르지 않으면 다음 해에도 남는다(v5.1 전에는 그해 판 대신 저절로 열렸다).
    흐름은 하계와 같다: 개최지 → 개막 전야 → 종목 둘(스케이트·컬링·스키점프·아이스하키 가운데 무작위) → 대회 중 사건 → 폐막. 조선에는 올림픽이 없다. */
 const WOLY_PRE=[
  {only:'kr',e:spEv('남북 단일팀 제안','개막 석 달 전, <em>여자 아이스하키 남북 단일팀</em>을 꾸리자는 제안이 왔다. 손발을 맞출 시간은 석 달뿐이다.',[
@@ -140,19 +140,13 @@ const OLY_WINTER={pre:WOLY_PRE,mid:WOLY_MID,sp:['skate','curl','jump','hockey'],
 const wolySp=()=>(SP[CP.id]||[]).find(s=>WOLY_IDS.indexOf(s.id)>=0);
 // 하계올림픽을 시작하면 2년 뒤를 적어 둔다. 동계를 시작하면 지운다
 function wolyMark(sp,y){if(sp.id==='olym'||sp.id==='olym_u')CAR.wolyAt=careerYear(y)+2;else if(WOLY_IDS.indexOf(sp.id)>=0)CAR.wolyAt=null;}
-const wolyDue=y=>!!(CAR.wolyAt!=null&&wolySp()&&careerYear(y)>=CAR.wolyAt);
-// 개막 안내: 그해 과제 판 대신 뜬다. 단추 하나로 개막한다
-function wolyOpen(go,y){const sp=wolySp(),X=SPX[sp.id]||SPX.g20,key=sp.id+'_'+CAR.term,usa=CP.id==='usa';window.scrollTo(0,0);
-  R.innerHTML='<div class="spw wo" style="animation:fdIn .35s ease-out"><div style="font-size:12px;font-weight:600;color:var(--text-muted)">'+CAR.term+'기 '+(y+1)+'년차를 앞두고</div>'+
-   '<div class="hd" style="font-size:26px;margin:2px 0 4px">'+sp.n+' 개막</div>'+
-   '<div class="wo-card" style="--sb:'+X.bg+';--sa:'+X.ac+'"><svg class="spb-art" viewBox="0 0 120 120" aria-hidden="true">'+SPX_ART[X.art]+'</svg>'+
-   '<div><b>2년 전 하계올림픽에 이어</b><p>'+(usa?'미국':'대한민국')+'이 이번에는 눈과 얼음의 대회를 연다. 올해는 다른 특별 국정 과제를 벌이지 않는다.</p>'+
-   '<span class="wo-sp">쇼트트랙 · 컬링 · 스키점프 · 아이스하키 가운데 두 종목을 직접 치를 수 있다</span></div></div>'+
-   '<button id="woGo" class="pri" style="width:100%;padding:15px;font-size:15px;margin-top:14px">개막한다</button></div>';
-  document.getElementById('woGo').onclick=()=>{SFX.special();CAR.boardLog=CAR.boardLog||[];CAR.boardLog.push(CAR.term+'기 '+(y+1)+'년: '+sp.n+' (하계올림픽 2년 뒤)');startSpecial(sp,key,y);go();};}
+const wolyDue=y=>!!(CAR&&CAR.wolyAt!=null&&wolySp()&&careerYear(y)>=CAR.wolyAt);
+// 과제 판에 동계올림픽 칸을 넣는다: 열 수 있는 해가 됐고 아직 치르지 않았으면 하계올림픽 칸 자리(없으면 마지막 칸)에
+function wolyBoard(L){const w=wolySp();if(!wolyDue(Math.round(S.turn/PY))||!w||L.indexOf(w.id)>=0)return L;
+  const out=L.slice(),i=out.findIndex(id=>id==='olym'||id==='olym_u');out[i>=0?i:out.length-1]=w.id;return out;}
 SP.kr.push({id:'wolym',n:'동계올림픽',k:'good',tro:['동계올림픽 개최국','빙판 위의 적자'],cond:()=>false,
-  bn:{k:'good',h:'동계올림픽 개막',s:'하계 2년 만에 다시 성화… "두 올림픽을 잇달아 치른 나라"',b:'눈과 얼음의 무대다. 잘 치르면 유산이 되고, 망치면 빈 경기장이 남는다.'},
-  steps:olySteps(c=>spEv('동계올림픽 개최지','<em>동계올림픽</em>이 열린다. 2년 전 하계올림픽을 치른 나라라 세계의 눈이 다시 쏠린다. 설상과 빙상의 무대를 어디에 세울까.',[
+  bn:{k:'good',h:'동계올림픽 개막',s:'하계에 이어 다시 성화… "두 올림픽을 잇달아 치른 나라"',b:'눈과 얼음의 무대다. 잘 치르면 유산이 되고, 망치면 빈 경기장이 남는다.'},
+  steps:olySteps(c=>spEv('동계올림픽 개최지','<em>동계올림픽</em>이 열린다. 하계올림픽을 치른 나라라 세계의 눈이 다시 쏠린다. 설상과 빙상의 무대를 어디에 세울까.',[
      ['평창·강릉 — 2018년 경기장을 다시 쓴다',{e:4,a:3,trn:2},'녹슬던 경기장에 다시 불이 켜졌다. "두 번 쓰는 올림픽"이라는 기사가 났다.',null,{ctx:['open','평창']}],
      ['서울·강원 공동 개최 — 빙상은 서울, 설상은 강원',{a:4,e:-2,u:-2},'지하철을 타고 피겨를 보러 가는 올림픽이 됐다. 강원의 산은 조금 쓸쓸했다.',null,{ctx:['open','서울·강원']}],
      ['무주·전북 — 새 경기장을 지어 지역을 살린다',{u:-5,e:-5,a:2,c:3},'산골 마을에 경기장 셋이 섰다. 공사비는 예상의 두 배였다.',null,{ctx:['open','무주']}]]),
@@ -161,8 +155,8 @@ SP.kr.push({id:'wolym',n:'동계올림픽',k:'good',tro:['동계올림픽 개최
      ['경기장을 시민 빙상장으로 연다고 발표한다',{saf:3,u:-2,e:-1},'폐막 다음 날부터 아이들이 줄을 섰다. 관리비는 시가 떠안았다.'],
      ['하계·동계 메달리스트가 함께 무대에 선다',{a:4,u:-2,e:-1},'두 대회의 영웅들이 한 무대에 섰다. "올림픽의 나라"라는 말이 나왔다.']]),OLY_WINTER)});
 SP.usa.push({id:'wolym_u',n:'동계올림픽',k:'good',tro:['동계올림픽의 성공','텅 빈 스키장'],cond:()=>false,
-  bn:{k:'good',h:'동계올림픽 개막',s:'LA 2년 만에 다시 성화… 로키산맥에 오륜기',b:'세계가 다시 미국을 지켜본다.'},
-  steps:olySteps(c=>spEv('동계올림픽 개최지','<em>동계올림픽</em>이 열린다. 2년 전 LA 올림픽을 치른 나라라 세계의 눈이 다시 쏠린다. 어디서 치를까.',[
+  bn:{k:'good',h:'동계올림픽 개막',s:'LA에 이어 다시 성화… 로키산맥에 오륜기',b:'세계가 다시 미국을 지켜본다.'},
+  steps:olySteps(c=>spEv('동계올림픽 개최지','<em>동계올림픽</em>이 열린다. LA 올림픽을 치른 나라라 세계의 눈이 다시 쏠린다. 어디서 치를까.',[
      ['솔트레이크시티 — 2002년 경기장을 되살린다',{e:4,a:2,trn:2},'오래된 경기장에 새 조명이 켜졌다. 흑자 대회가 될 거라는 전망이 나왔다.',null,{ctx:['open','솔트레이크시티']}],
      ['레이크플래시드 — 작은 마을의 세 번째 대회',{a:4,u:-3,e:-2},'인구 3천 명 마을에 세계가 몰려왔다. "빙판 위의 기적"을 다시 보자는 응원이 붙었다.',null,{ctx:['open','레이크플래시드']}],
      ['덴버 — 1976년에 반납했던 대회를 다시 연다',{e:-3,a:3,c:2},'반세기 전에 돌려준 대회를 되찾았다. 주민 투표는 아슬아슬하게 통과했다.',null,{ctx:['open','덴버']}]]),
@@ -177,17 +171,18 @@ const BOARD={kr:['amend','olym','expo','peace','war_k','pand_k'],joseon:['jikgye
 const BOARD_POOL={kr:['olym','expo','peace','war_k','pand_k','g20'],joseon:['envoy','gwageo','compile','war_j','pand_j'],usa:['moon','war_u','pand_u','olym_u','newdeal']};
 function boardIds(){const C=CP.id,base=BOARD[C]||[];let pw=base[0];
   if(C==='kr'&&CAR.amendPerm)pw='coup';   // 연임 개헌을 한 번 이룬 뒤에는 권력 칸이 비상계엄으로 바뀐다
-  if(CAR.term<=1)return [pw].concat(base.slice(1));
+  if(CAR.term<=1)return wolyBoard([pw].concat(base.slice(1)));
   // 대한민국 방역 총력전은 코로나(1기) 과제라 2기부터는 판에 올리지 않는다(그 자리에 G20 정상회의가 들어온다)
   const P=(BOARD_POOL[C]||base.slice(1)).filter(id=>id!=='pand_k'||isCov()),prev=CAR.term-1,did=id=>!!(CAR.spDone&&CAR.spDone[id+'_'+prev]),seed=CAR.term*7+3;
   // 임기 번호로 섞는다(같은 임기에는 같은 판)
   P.sort((a,b)=>((a.charCodeAt(0)*31+a.length*7+seed)%11)-((b.charCodeAt(0)*31+b.length*7+seed)%11));
   const fresh=P.filter(id=>!did(id)),old=P.filter(id=>did(id));
-  return [pw].concat(fresh.concat(old).slice(0,5));}
+  return wolyBoard([pw].concat(fresh.concat(old).slice(0,5)));}
 const NEED={amend:[['P','>=',50]],coup:[['P','>=',70],['M','>=',65],['NODICT']],g20:[['A','>=',50],['E','>=',50],['P','<=',50]],olym:[['E','>=',57],['A','>=',52],['H','>=',55]],expo:[['E','>=',53],['X','<=',30]],peace:[['X','<=',30],['NOWAR']],war_k:[['M','>=',65]],pand_k:[['COV'],['I','>=',20]],
  jikgye:[['P','>=',50]],envoy:[['A','>=',45],['E','>=',47]],gwageo:[['X','<=',30],['P','<=',50]],compile:[['E','>=',55],['X','<=',30]],war_j:[['M','>=',65]],pand_j:[['I','>=',25]],
- amend22:[['T2'],['P','>=',50]],moon:[['E','>=',58],['X','<=',30]],war_u:[['M','>=',65]],pand_u:[['I','>=',25]],olym_u:[['E','>=',55],['A','>=',50]],newdeal:[['E','<=',45]]};
-function needEval(n){if(n[0]==='NOWAR')return {ok:SCX().id!=='war',txt:'전쟁 위기가 아닐 때'};
+ amend22:[['T2'],['P','>=',50]],moon:[['E','>=',58],['X','<=',30]],war_u:[['M','>=',65]],pand_u:[['I','>=',25]],olym_u:[['E','>=',55],['A','>=',50]],newdeal:[['E','<=',45]],wolym:[['WOLY']],wolym_u:[['WOLY']]};
+function needEval(n){if(n[0]==='WOLY')return {ok:true,txt:'하계올림픽 2년 뒤부터'};
+  if(n[0]==='NOWAR')return {ok:SCX().id!=='war',txt:'전쟁 위기가 아닐 때'};
   if(n[0]==='COV')return {ok:isCov(),txt:'코로나 위기 중(1기)'};
   if(n[0]==='NODICT')return {ok:!CAR.dict,txt:'아직 영구집권하지 않았다'};
   if(n[0]==='T2')return {ok:CAR.term>=2,txt:'2기 임기 중'};
@@ -198,7 +193,9 @@ function startSpecial(sp,key,y){dcSeed('sps'+key);CAR.spDone[key]=1;wolyMark(sp,
   CAR.spRun={id:sp.id,n:sp.n,k:sp.k,tro:sp.tro,ok:0,done:0,total:sp.steps.length,ctx:{}};
   sp.steps.forEach((f,i)=>queue.splice(i,0,{sg:[sp.id,i]}));pendingNews=Object.assign({},sp.bn);bgmGame();}
 function spBoard(go){dcSeed('spb');const y=Math.round(S.turn/PY);if(y>=YRS)return go();CAR.spDone=CAR.spDone||{};window.scrollTo(0,0);
-  if(wolyDue(y))return wolyOpen(go,y);   // 하계올림픽 2년 뒤: 그해는 판 대신 동계올림픽
+  // 앞서 벌인 과제가 아직 끝나지 않았으면(속전속결에서 올림픽은 해를 넘긴다) 올해 판은 열지 않는다.
+  // 열면 새 과제의 단계가 앞에 끼어들고, 그 뒤에 남은 앞 과제(올림픽 폐막식 등)가 엉뚱하게 이어졌다
+  if(CAR.spRun&&queue.some(q=>q.sg))return go();
   // 판의 과제는 임기마다 다시 할 수 있다(이 임기에 이미 치른 것만 막힌다)
   const L=boardIds().map(id=>{const sp=(SP[CP.id]||[]).find(s=>s.id===id);if(!sp)return null;const key=sp.id+'_'+CAR.term,nd=(NEED[id]||[]).map(needEval);
     return {sp:sp,key:key,done:!!CAR.spDone[key],nd:nd,ok:nd.every(x=>x.ok)};}).filter(Boolean);
