@@ -187,8 +187,10 @@ const f=document.getElementById('fx'),w=document.getElementById('wrap'),q=lastFi
   // 룰렛을 누르면 바늘이 바로 멈춘다
   const wl=f.querySelector('.whl');if(wl){wl.style.pointerEvents='auto';wl.style.cursor='pointer';wl.onclick=()=>{if(done)return;TK.forEach(clearTimeout);SFX.rtick();g.style.setProperty('transition','transform 140ms ease-out','important');g.style.transform='rotate('+rot+'deg)';setTimeout(fin,170);};}}
 
-function takeSnap(){snap={S:Object.assign({},S),deaths:deaths,yd:yd,cd:cDeaths,cv:covD,q:queue.slice(),cl:chron.length,hl:hist.length,st:streak,pi:peakI,th:TH.length};}
-function useSnap(){S=Object.assign({},snap.S);deaths=snap.deaths;yd=snap.yd;cDeaths=snap.cd;covD=snap.cv;queue=snap.q.slice();chron.length=snap.cl;hist.length=snap.hl;streak=snap.st;peakI=snap.pi;TH.length=snap.th;}
+// 운명 개입(다시 굴리기)이 첫 굴림이 남긴 특별 과제 진행·트로피·갈림길·승부수 기록까지 되돌리도록 함께 담는다
+const SNAP_CAR=['spRun','tro','spEnds','path','pstage','pathLog','boldWin','boldLoss'];
+function takeSnap(){const c={};SNAP_CAR.forEach(k=>{if(CAR[k]!==undefined)c[k]=CAR[k];});snap={car:JSON.stringify(c),S:Object.assign({},S),deaths:deaths,yd:yd,cd:cDeaths,cv:covD,q:queue.slice(),cl:chron.length,hl:hist.length,st:streak,pi:peakI,th:TH.length};}
+function useSnap(){const c=JSON.parse(snap.car);SNAP_CAR.forEach(k=>{if(k in c)CAR[k]=c[k];else delete CAR[k];});S=Object.assign({},snap.S);deaths=snap.deaths;yd=snap.yd;cDeaths=snap.cd;covD=snap.cv;queue=snap.q.slice();chron.length=snap.cl;hist.length=snap.hl;streak=snap.st;peakI=snap.pi;TH.length=snap.th;}
 
 // 적합도 = 급한 문제를 겨냥했는가(같은 사건의 다른 선택지와 비교) + 통치 방식이 지금 여건에 맞는가 + 여력
 // 급한 정도: 지금 눈앞의 문제들만 센다(견제·투명성 같은 제도 지표는 판정이 아니라 시간이 흐르며 결과로 드러난다)
@@ -293,7 +295,7 @@ function bindTips(){document.querySelectorAll('.tip').forEach(el=>{const ok=el.q
   if(ok)ok.onclick=()=>{SFX.click();el.remove();tutRead(el.dataset.tip);};if(off)off.onclick=()=>{SFX.click();MEM.tut=false;msave();document.querySelectorAll('.tip').forEach(x=>x.remove());};});}
 function choose(k){SVAT=null;SFX.pick(cur.o[k][1].X?1:stakeOf(cur.o[k],cur.o));document.querySelectorAll('#wrap button').forEach(b=>b.disabled=true);   /* 룰렛이 뜨기 전에 다른 화면(비상소집 등)으로 넘어가지 않게 이 화면의 단추를 모두 잠근다 */
   takeSnap();lastO=cur.o[k];if(lastO[1].X==='crush')CAR.crush++;lastFit=fitOf(lastO,cur.o);lastS=stakeOf(lastO,cur.o);logChoice(k);
-  const go=()=>{
+  const go=()=>{cnSaveMsg=''; // 앞 판정에서 쓰이지 않고 남은 화타 문구가 다른 결과에 붙지 않게
   // 국민투표·계엄은 판정 주사위 없이 이벤트 확률로만 갈린다: 효과는 '성공' 기준으로 적용
   if(spFixed(lastO)){lastT=1;return resolve(lastO,1);}
   let t=roll(lastFit.q,lastS);
