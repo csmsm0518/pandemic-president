@@ -7,7 +7,7 @@
    기록 시트로 보내지 않는다. */
 let DC=null;
 // 홈의 「실시간 대결」 칸 작은 글(대결 조각 lazy/battle은 누르면 받는다)
-const btSub=()=>'2~4명이 같은 판을 동시에 · 5년 단임';
+const btSub=()=>'2~4명 · 대통령 대결 · 동계올림픽';
 const DC_RAND0=Math.random;
 const dcHash=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h>>>0;};
 let DC_S=0;

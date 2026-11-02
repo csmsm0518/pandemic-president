@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"battle":{"v":"cca2592e93","h":"5a241e6614541fa6"},"board":{"v":"c00012fc7d","h":"36258d130deedbab"},"boxes":{"v":"9f3a40eb75","h":"cdd3c4c349144d91"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"dex":{"v":"a834d42e11","h":"214b42847560de78"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"f2406bd47f","h":"58269006748ccbe1"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"sail":{"v":"f33f245bee","h":"5e31bd0bd96d66a3"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
+const LZ_M={"battle":{"v":"faa8acd6ef","h":"27d9f72d414fa2f7"},"board":{"v":"c00012fc7d","h":"36258d130deedbab"},"boxes":{"v":"9f3a40eb75","h":"cdd3c4c349144d91"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"dex":{"v":"a834d42e11","h":"214b42847560de78"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"f2406bd47f","h":"58269006748ccbe1"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"sail":{"v":"f33f245bee","h":"5e31bd0bd96d66a3"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"9c063d1e79","h":"8be41e26b02aa7ed"},"whockey":{"v":"4a95063de7","h":"79ff537df9c211af"},"wjump":{"v":"8ef76a96e8","h":"68c8ed4472fdd34e"},"wskate":{"v":"0467876b26","h":"61b1d673af868556"}};
 function btOpen(){return lzCall('battle','btOpen',arguments);}
 function btFinish(){return lzCall('battle','btFinish',arguments);}
 function btResMount(){return lzCall('battle','btResMount',arguments);}
@@ -4855,6 +4855,8 @@ function mgRun(kind,box){const G=MG_SPORT[kind];if(G)return G.lz?lzThen(G.lz,()=
   document.getElementById('mgxGo').onclick=()=>{try{aInit();}catch(e){}mini(null,(gr,sc)=>{CAR.slashGrade=gr;RUN.slash=(RUN.slash?RUN.slash+' / ':'')+gr+' '+sc;mgResolve(gr==='S'?0:gr==='A'?1:gr==='B'?2:3);});};}
 // 체육 종목(양궁·수영·승부차기)은 먼저 직접 할지, 시뮬레이션으로 맡길지 고른다.
 // 시뮬레이션은 직접 할 때와 같은 판정 규칙을 '평균적인 실력의 선수'로 돌려 결과만 보여 준다.
+// 경기가 끝날 때 남기는 대결용 숫자 {v 값, hi 1이면 클수록 좋음, lb 보여 줄 글}. 동계 네 종목이 채우고, 실시간 대결(동계올림픽)이 읽는다
+let MG_OUT=null;
 const MG_SPORT={
   arch:{n:'양궁 개인전 결승',how:'바람을 읽고 흔들리는 조준점을 맞춰 여섯 발을 쏜다',run:(b,d)=>mgArch(b,d),sim:()=>simArch()},
   swim:{n:'수영 50m 결승',how:'왼팔·오른팔을 번갈아 빠르게 눌러 헤엄친다',run:(b,d)=>mgSwim(b,d),sim:()=>simSwim()},
@@ -5714,7 +5716,7 @@ function bagOpen(){
    기록 시트로 보내지 않는다. */
 let DC=null;
 // 홈의 「실시간 대결」 칸 작은 글(대결 조각 lazy/battle은 누르면 받는다)
-const btSub=()=>'2~4명이 같은 판을 동시에 · 5년 단임';
+const btSub=()=>'2~4명 · 대통령 대결 · 동계올림픽';
 const DC_RAND0=Math.random;
 const dcHash=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h>>>0;};
 let DC_S=0;
@@ -8231,7 +8233,7 @@ function acEnter(id,p){PF={school:p.school,name:p.name,phone:p.phone||'',agree:t
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v5.2';
+const GAME_VER='v5.3';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -8405,6 +8407,10 @@ setTimeout(()=>{try{const me=!IN_ART&&acGet();if(!me||!me.prof||!me.prof.name)re
    홈 메뉴 「기타 → 업데이트 소식」에서 언제든 다시 볼 수 있다. 처음 온 사람(기록이 전혀 없음)에게는 띄우지 않고 읽은 것으로 쳐 둔다.
    v1부터 v4.9까지 모든 업데이트를 넣었다(v4.7은 크게, 나머지는 접어서 짧게). */
 const PATCHES=[
+ {v:'v5.3',t:'실시간 대결 · 동계올림픽',d:'2026-11-02',big:1,l:[
+  ['동계올림픽 대결','실시간 대결 대기실에서 방장이 「동계올림픽」을 고르면, 쇼트트랙 · 스키점프 · 컬링 · 아이스하키 네 종목을 모두 함께 차례로 치러요.'],
+  ['종목마다 시상식','모두 안내 화면에 모이면 3 · 2 · 1로 함께 시작하고, 모두 끝나면 시상대에 올라요. 금메달이 많은 사람이 우승이에요.'],
+  ['같은 얼음, 같은 바람','상대 선수 · 바람 · 돌풍이 모두에게 똑같아서 실력으로 겨뤄요. 경기 중에는 화면 위에서 친구들의 기록이 실시간으로 보여요.']]},
  {v:'v5.2',t:'난이도 조정 · 대한민국 · 조선 · 미국',d:'2026-11-02',l:[
   ['대한민국 연임이 쉬워졌어요','연임 개헌 과제가 권력 45부터 열리고(전에는 50), 국민투표 통과 가능성이 지지율이 같아도 25%p쯤 높아요. 임기 말 마지막 승부의 성공 가능성도 올랐어요(최대 85%).'],
   ['조선 왕권 지키기가 어려워졌어요','국난에서 왕권을 지킬 기본 가능성이 낮아지고(36 → 30), 국난을 넘길 때마다 다음 국난이 더 어려워지며(−6 → −8%p), 직접 지휘 대승 보너스가 줄고(+15 → +12%p), 국난의 조짐도 조금 더 빨리 차요.'],

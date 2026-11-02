@@ -3,6 +3,7 @@
    진행 중에는 1.5초마다 내 진행(몇 년차 · 지난 결정 · 지지율)을 방에 올리고(바뀌었을 때만), 화면 위 작은 띠(#btHud)에 상대들의 진행을 보여 준다.
    판이 끝나면(careerEnd → btFinish) 점수를 올리고, 결산 화면 맨 위 칸(#btRes, btResMount)에 실시간 순위를 보여 준다. */
 function btBegin(T){const b=BT;if(!b)return;const me=(T.p||{})[b.uid];if(!me){btEntry('방에서 빠졌어요.');return;}
+  if(woIs(T))return woBegin(T);   // 동계올림픽 대결(4-winter.js)
   const L=CAMPS.kr.bg;let i=L.findIndex(q=>q.id===me.bg);if(i<0||bgLock(L[i])||L[i].god||L[i].once)i=L.findIndex(q=>!q.sec&&!q.god&&!q.once);
   b.view='play';b.rd=+T.rd||0;b.last='';
   const o=document.querySelector('.bt-bg');if(o)o.remove();BT_FROM=null;

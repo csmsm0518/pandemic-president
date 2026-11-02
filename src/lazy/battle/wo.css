@@ -1,0 +1,80 @@
+/* ---------- 실시간 대결 · 동계올림픽: 화면 전체를 덮는 밤의 경기장(남색 바탕 · 얼음빛 글씨 · 금메달색 강조) ---------- */
+html.wo-on,html.wo-on body{overflow:hidden}
+.wo-bg{position:fixed;inset:0;z-index:94;overflow-y:auto;overscroll-behavior:contain;background:radial-gradient(120% 70% at 50% 0,#1f3358 0,#0d1628 55%,#080e1b 100%);color:#e6eef8;-webkit-tap-highlight-color:transparent}
+.wo{max-width:800px;margin:0 auto;padding:max(10px,env(safe-area-inset-top)) 12px max(24px,env(safe-area-inset-bottom))}
+.wo-top{display:flex;align-items:center;gap:10px;padding:4px 2px 8px}
+.wo-top>b{flex:1;min-width:0;font:800 15px/1.2 var(--font-ui);letter-spacing:.02em;color:#f3e7c7}
+.wo-top>b small{display:block;margin-top:2px;font-size:11px;font-weight:600;color:#8fa3c0;letter-spacing:0}
+.wo-top>span{flex:none;font-size:12px;font-weight:700;color:#bcd0ea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46%}
+.wo-top button{flex:none;padding:6px 11px;font-size:12px;font-weight:700;border-radius:999px;background:rgba(255,255,255,.06);color:#bcd0ea;border:1px solid rgba(255,255,255,.18)}
+.wo-top button.x{background:#7a2620;border-color:#c4473c;color:#fff}
+/* 선수 띠: 누가 어디까지 했는가 */
+.wo-strip{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.wo-strip::-webkit-scrollbar{display:none}
+.wo-c{flex:1 0 auto;min-width:92px;display:flex;flex-direction:column;gap:1px;padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.wo-c b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+.wo-c small{font-size:11px;font-weight:600;color:#8fa3c0;white-space:nowrap}
+.wo-c.me{box-shadow:inset 0 0 0 1.5px #d9b45a;background:rgba(217,180,90,.1)}
+.wo-c.run small{color:#9fd8ff}.wo-c.run small::before{content:"";display:inline-block;width:6px;height:6px;margin-right:5px;border-radius:50%;background:#5fc4ff;vertical-align:1px;animation:woBl 1s ease-in-out infinite}
+.wo-c.ok small{color:#8fe0b0}
+.wo-c.off{opacity:.45}
+@keyframes woBl{50%{opacity:.25}}
+/* 안내 · 내 기록 · 기다림 */
+.wo-in{display:flex;flex-direction:column;align-items:center;text-align:center;padding:28px 14px 22px;margin-top:6px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);animation:fdIn .35s ease-out}
+.wo-ic{font-size:54px;line-height:1;filter:drop-shadow(0 6px 14px rgba(0,0,0,.4))}
+.wo-k{display:block;margin-top:10px;font-size:12px;font-weight:800;letter-spacing:.08em;color:#d9b45a}
+.wo-in h2{margin:6px 0 10px;font:800 26px/1.25 var(--font-ui);color:#fff}
+.wo-how{margin:0 0 6px;max-width:420px;font-size:14px;line-height:1.65;color:#bcd0ea}
+.wo-rule{margin:0;max-width:420px;font-size:13px;line-height:1.65;color:#8fa3c0}
+.wo-rule b,.wo-how b{color:#f3e7c7}
+.wo-wt{min-height:64px;margin-top:16px;display:flex;align-items:center;justify-content:center;font-size:13.5px;color:#8fa3c0}
+.wo-wt b{color:#e6eef8}
+.wo-wt .wo-cd{font:800 56px/1 var(--font-ui);color:#ffe08a;text-shadow:0 0 24px rgba(255,224,138,.45);animation:woPop .8s ease-out}
+@keyframes woPop{0%{transform:scale(1.6);opacity:0}30%{transform:scale(1);opacity:1}}
+/* 경기: 경기 상자는 원래 디자인을 그대로 쓴다 */
+.wo-g{margin-top:2px}
+.wo-g .mgx{color:var(--text-primary)}
+/* 시상식 */
+.wo-pod,.wo-fin{padding:18px 12px 16px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);animation:fdIn .35s ease-out;text-align:center}
+.wo-pod>.wo-k,.wo-fin>.wo-k{margin-top:0}
+.wo-pds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:6px;max-width:420px;margin:14px auto 12px}
+.wo-pd{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+.wo-pn{font-size:13.5px;font-weight:800;line-height:1.3;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.wo-pd small{font-size:11px;color:#8fa3c0;white-space:nowrap}
+.wo-pd i{display:flex;align-items:flex-start;justify-content:center;width:100%;padding-top:8px;border-radius:8px 8px 0 0;font-style:normal;font-size:26px;background:linear-gradient(180deg,#2c4570,#1a2b4a);box-shadow:inset 0 1px 0 rgba(255,255,255,.15)}
+.wo-pd.p1 i{height:96px;background:linear-gradient(180deg,#8a6a1e,#4d3a0e)}
+.wo-pd.p2 i{height:72px}.wo-pd.p3 i{height:54px}
+.wo-pd.p1{animation:woUp .6s .15s both}.wo-pd.p2{animation:woUp .6s .35s both}.wo-pd.p3{animation:woUp .6s .5s both}
+@keyframes woUp{0%{transform:translateY(16px);opacity:0}}
+.wo-rk{list-style:none;margin:0 auto 14px;padding:0;max-width:420px;text-align:left}
+.wo-rk li{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:9px;font-size:14px}
+.wo-rk li:nth-child(odd){background:rgba(255,255,255,.04)}
+.wo-rk li.me{background:rgba(217,180,90,.14);box-shadow:inset 0 0 0 1px rgba(217,180,90,.5)}
+.wo-rk li span{flex:none;width:30px;text-align:center;font-size:18px}
+.wo-rk li b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wo-rk li em{flex:none;font-style:normal;font-weight:700;color:#bcd0ea;font-variant-numeric:tabular-nums}
+.wo-mt{max-width:420px;margin:0 auto}
+.wo-tb{width:100%;max-width:420px;margin:8px auto 0;border-collapse:collapse;font-size:14px}
+.wo-tb th{font-size:16px;font-weight:400;padding:2px 4px}
+.wo-tb td{padding:7px 4px;border-top:1px solid rgba(255,255,255,.08);font-variant-numeric:tabular-nums}
+.wo-tb td:first-child{width:28px;color:#8fa3c0;font-weight:700}
+.wo-tb td:nth-child(2){text-align:left;font-weight:700;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wo-tb td:nth-child(2) small{font-weight:600;color:#8fa3c0}
+.wo-tb tr.me td{background:rgba(217,180,90,.12)}
+.wo-nx{min-height:18px;margin:12px 0 0;font-size:12.5px;color:#8fa3c0}
+/* 종합 */
+.wo-fin h2{margin:8px 0 12px;font:800 25px/1.3 var(--font-ui);color:#ffe08a;text-shadow:0 0 22px rgba(255,224,138,.3)}
+.wo-all{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:520px;margin:16px auto 4px;text-align:left}
+.wo-all>div{display:flex;flex-direction:column;gap:3px;padding:9px 10px;border-radius:10px;background:rgba(255,255,255,.04);min-width:0}
+.wo-all span{font-size:12px;font-weight:800;color:#d9b45a;margin-bottom:2px}
+.wo-all i{font-style:normal;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wo-all i.me{color:#ffe08a}
+.wo-all i small{color:#8fa3c0}
+.wo-acts{display:flex;flex-direction:column;gap:8px;max-width:420px;margin:16px auto 0}
+.wo-acts button{padding:13px;font-size:15px;font-weight:700}
+.wo-acts button:not(.pri){background:rgba(255,255,255,.06);color:#e6eef8;border-color:rgba(255,255,255,.2)}
+@media (max-width:420px){.wo-all{grid-template-columns:minmax(0,1fr)}.wo-in h2{font-size:23px}}
+/* 대기실 · 게임 고르기 */
+.bt-gm{margin-bottom:12px}
+.bt-wol{margin:8px 0 0;font-size:12.5px;line-height:1.6;color:var(--text-secondary)}
+@media (prefers-reduced-motion:reduce){.wo-in,.wo-pod,.wo-fin,.wo-pd,.wo-wt .wo-cd{animation:none}.wo-c.run small::before{animation:none}}

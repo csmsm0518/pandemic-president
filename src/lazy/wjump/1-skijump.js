@@ -162,6 +162,7 @@ function mgJump(box,done){const $=id=>document.getElementById(id);let RM=false;t
     if(shake>0)shake=Math.max(0,shake-DT*2.5);
     if(res&&T>TL+3.2&&st==='play')finish();};
   const finish=()=>{st='end';pb.disabled=true;const L=[res].concat(riv).sort((a,b)=>b.tot-a.tot),place=L.indexOf(res)+1,t=Math.min(3,place-1);res.t=t;res.place=place;
+    MG_OUT={v:res.tot,hi:1,lb:res.d.toFixed(1)+'m · '+res.tot.toFixed(1)+'점'};
     $('sjHud').style.display='none';$('sjOv').style.minHeight=H+'px';sc.classList.add('res');pb.style.display='none';
     const jd=r=>r.j.map((v,i)=>'<i'+(r.x.includes(i)?' class="x"':'')+'>'+v.toFixed(1)+'</i>').join('');
     $('sjOv').innerHTML='<div class="sj-res"><div class="sj-rh"><span>라지힐 결승 · K125 · HS140</span><b>최종 결과</b></div><div class="sj-rg">'+

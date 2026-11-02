@@ -203,7 +203,7 @@ function mgSkate(box,done){const $=id=>document.getElementById(id),MQ=q=>!!(wind
     if(!me.t){if(skLap(me.d)==='1'&&!lapSaid){lapSaid=1;skS(skSnd.bell);say('<b class="g">마지막 바퀴!</b> 남은 체력을 다 쏟아라',2.4);}
       if(me.E<.06&&me.pu&&msgT<=0)say('체력이 바닥났다 · 잠깐 떼어 숨을 고르자',1.6);
       const toC=skToC(me.d);if(tipC<2&&toC>0&&toC<14&&skGl(me.v,toC)>SK.VC+.25&&msgT<=0){tipC++;say('코너가 다가온다 · <b>손을 떼어</b> 속도를 줄여라',1.8);}}};
-  const finish=()=>{st='done';endAt=el;const t=Math.min(3,place-1);res=t;ptr.clear();keyOn=0;$('skPush').classList.remove('on');
+  const finish=()=>{st='done';endAt=el;const t=Math.min(3,place-1);res=t;MG_OUT={v:fin,hi:0,lb:fin.toFixed(2)+'초'};ptr.clear();keyOn=0;$('skPush').classList.remove('on');
     $('skOv').innerHTML='<div class="sk-fx'+(t===0?' g':'')+'">'+place+'위<small>'+fin.toFixed(2)+'초</small></div>';
     setTimeout(()=>{if(!box.isConnected)return;skS(()=>SFX.medal(t));say('<b class="'+(t<3?'g':'x')+'">'+place+'위 · '+fin.toFixed(2)+'초</b> · '+['금메달!','은메달','동메달','메달을 놓쳤다'][t]+(me.nf?' (넘어짐 '+me.nf+'번)':me.ns?' (코너 밀림 '+me.ns+'번)':''),0);
       $('skPush').style.display='none';const b=$('skGo');b.style.display='';b.textContent='결과 보기';b.onclick=()=>{if(ended)return;ended=true;skS(SFX.click);stop();done(t);};},700);};

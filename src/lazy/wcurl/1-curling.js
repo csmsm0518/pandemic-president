@@ -176,7 +176,9 @@ function mgCurl(box,done){const $=id=>document.getElementById(id),RM=cuRM(),home
     const sc1=cuScore(S);try{if(s.out&&s.why==='hog')thud(90,.15);else if(sc1.n&&sc1.H[0].s===s){if(s.tm==='u'){tone(784,'sine',.16,.08);tone(1047,'sine',.3,.07,.1);}else tone(311,'triangle',.3,.07);}}catch(e){}
     msg((s.tm==='u'?'<b>우리</b> ':'<b>'+opn+'</b> ')+CU_KN[T.c.k]+' · '+txt);ph='wait';tWait=RM?1:1.6;go(idx<7?'다음 투구':'측정',1);slot('');};
   // 마지막: 하우스를 크게 비추고 버튼에서 각 돌까지 재어 보인다
-  const finish=()=>{ph='end';endT=clock;const r=cuScore(S),t=r.tm==='u'?0:1;res={sc:r,t:t};slot('');try{if(hum)hum.g.gain.setTargetAtTime(0,hum.ac.currentTime,.05);}catch(e){}
+  const finish=()=>{ph='end';endT=clock;const r=cuScore(S),t=r.tm==='u'?0:1;res={sc:r,t:t};
+    {const ud=Math.min(5,...S.filter(o=>!o.out&&o.tm==='u').map(o=>Math.hypot(o.x,o.y-CU.TEE)),5),pt=r.tm==='u'?r.n:r.tm==='r'?-r.n:0;   // 실시간 대결: 득점(10점 단위) − 우리 돌이 버튼에서 떨어진 거리
+      MG_OUT={v:Math.round((pt*10-ud)*100)/100,hi:1,lb:r.tm==='u'?r.n+'점 득점':r.tm==='r'?r.n+'점 실점':'무득점 · 버튼까지 '+ud.toFixed(2)+'m'};}slot('');try{if(hum)hum.g.gain.setTargetAtTime(0,hum.ac.currentTime,.05);}catch(e){}
     const big=r.tm==='u'?'우리 '+r.n+'점':r.tm==='r'?opn+' '+r.n+'점 스틸':'득점 없음';
     $('cuOv').innerHTML='<div class="cu-res '+(t?'s':'g')+'"><b>'+big+'</b><span>'+(t?'은메달':'금메달!')+'</span></div>';$('cuOv').className='cu-ov on res'+(HZ?' hz':'');
     const d0=r.H.length?r.H[0].d:0;

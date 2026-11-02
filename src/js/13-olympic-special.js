@@ -224,6 +224,8 @@ function mgRun(kind,box){const G=MG_SPORT[kind];if(G)return G.lz?lzThen(G.lz,()=
   document.getElementById('mgxGo').onclick=()=>{try{aInit();}catch(e){}mini(null,(gr,sc)=>{CAR.slashGrade=gr;RUN.slash=(RUN.slash?RUN.slash+' / ':'')+gr+' '+sc;mgResolve(gr==='S'?0:gr==='A'?1:gr==='B'?2:3);});};}
 // 체육 종목(양궁·수영·승부차기)은 먼저 직접 할지, 시뮬레이션으로 맡길지 고른다.
 // 시뮬레이션은 직접 할 때와 같은 판정 규칙을 '평균적인 실력의 선수'로 돌려 결과만 보여 준다.
+// 경기가 끝날 때 남기는 대결용 숫자 {v 값, hi 1이면 클수록 좋음, lb 보여 줄 글}. 동계 네 종목이 채우고, 실시간 대결(동계올림픽)이 읽는다
+let MG_OUT=null;
 const MG_SPORT={
   arch:{n:'양궁 개인전 결승',how:'바람을 읽고 흔들리는 조준점을 맞춰 여섯 발을 쏜다',run:(b,d)=>mgArch(b,d),sim:()=>simArch()},
   swim:{n:'수영 50m 결승',how:'왼팔·오른팔을 번갈아 빠르게 눌러 헤엄친다',run:(b,d)=>mgSwim(b,d),sim:()=>simSwim()},

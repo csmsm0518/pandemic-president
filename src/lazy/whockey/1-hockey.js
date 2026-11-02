@@ -198,6 +198,7 @@ function mgHockey(box,done){const $=id=>document.getElementById(id),{W,H,M}=IH,n
     if(k===0){try{IH_SFX.horn();SFX.goal();}catch(e){}fx('골!','g');}else{try{IH_SFX.net();SFX.concede();}catch(e){}fx('실점','x');}};
   const perEnd=()=>{try{SFX.whistle();}catch(e){}S.lock=1;const n=ihNext(S);if(n==='end')return fin();ph='break';pt=2.4;fx(n==='ot'?'연장 · 골든골':'2피리어드','n s',2.2);};
   const fin=()=>{ph='end';S.lock=1;const win=ihWin(S),t=win?0:1,a=S.sc[0],b=S.sc[1],ot=S.log.length&&S.log[S.log.length-1].per===3;off();
+    MG_OUT={v:(a-b)*100+a*10+(S.sh[0]-S.sh[1])*.1,hi:1,lb:a+' : '+b};   // 실시간 대결: 골 득실 → 넣은 골 → 슈팅 차
     try{IH_SFX.horn();SFX.medal(t);}catch(e){}
     const how=a===b?' · 유효 슈팅 판정('+S.sh[0]+' : '+S.sh[1]+')':ot?' · 연장 골든골':'';
     hud();$('ihOv').innerHTML='<b class="ih-tt">최종 '+a+' : '+b+'</b><div class="pk-msg">'+(win?'금메달!':'은메달')+how+'</div><p>'+(win?ihJ(nat,'을','를')+' 꺾고 정상에 섰다.':ihJ(nat,'이','가')+' 한 수 위였다. 그래도 값진 은메달이다.')+'</p>'+

@@ -24,7 +24,7 @@ function btPanel(){let o=document.querySelector('.bt-bg');
   return o.querySelector('.bt-body');}
 // 창 닫기: 대기실에서 닫으면 방에서 나간다(닫힌 채 방에 남아 있다가 갑자기 판이 시작되지 않게)
 function btX(){try{SFX.back();}catch(e){}if(BT&&(BT.view==='room'||BT.view==='count'))btLeave();btHide();}
-function btHide(){const o=document.querySelector('.bt-bg');if(o)o.remove();if(BT&&BT.view!=='play'&&BT.view!=='res')BT.view='';
+function btHide(){const o=document.querySelector('.bt-bg');if(o)o.remove();if(BT&&BT.view!=='play'&&BT.view!=='res'&&BT.view!=='wo')BT.view='';
   const f=BT_FROM;BT_FROM=null;if(f&&f.isConnected)try{f.focus({preventScroll:true});}catch(e){}}
 function btOpen(from){BT_FROM=from||null;if(BT&&BT.room&&BT.view!=='play')return btRoom();btEntry('');}
 function btBusy(b){document.querySelectorAll('.bt-body button,.bt-body input,.bt-body select').forEach(x=>{if(b)x.setAttribute('disabled','');else x.removeAttribute('disabled');});}
@@ -32,8 +32,8 @@ function btShowErr(t){const e=document.getElementById('btErr');if(e)e.textConten
 
 /* 첫 화면: 방 만들기 · 코드로 들어가기 */
 function btEntry(msg){if(BT)BT.view='entry';const b=btPanel();let last='';try{last=localStorage.getItem(BT_LAST)||'';}catch(e){}
-  b.innerHTML='<p class="bt-lead">2~4명이 한 방에 모여 <b>같은 판을 동시에</b> 겨뤄요. 사건과 주사위가 모두에게 똑같아서, 선택이 승부를 가려요.</p>'+
-    '<div class="bt-tags"><i>대한민국</i><i>5년 단임</i><i>난이도 보통</i><i>저장 · 보관함 없음</i></div>'+
+  b.innerHTML='<p class="bt-lead">2~4명이 한 방에 모여 <b>같은 판을 동시에</b> 겨뤄요. 방장이 <b>대통령 대결</b>(같은 사건 · 같은 주사위, 선택이 승부)이나 <b>동계올림픽</b>(4종목 메달 경쟁)을 골라요.</p>'+
+    '<div class="bt-tags"><i>🏛️ 대통령 대결 · 대한민국 5년 단임</i><i>⛸️ 동계올림픽 · 4종목</i></div>'+
     '<button type="button" class="pri bt-mk" id="btMk">방 만들기</button>'+
     '<div class="bt-or"><span>또는 친구의 방 코드로</span></div>'+
     '<form class="bt-jf" id="btJf" autocomplete="off"><input id="btCode" class="bt-in" maxlength="4" placeholder="코드 4자리" aria-label="방 코드" autocapitalize="characters" autocorrect="off" spellcheck="false" value="'+gEsc(last)+'"><button type="submit" id="btJn">들어가기</button></form>'+
@@ -76,19 +76,20 @@ function btLeave(){if(!BT)return Promise.resolve();const b=BT;BT=null;btStop(b);
   const all=T&&T.host===b.uid&&(!others.length||T.st!=='play');
   return btReq('DELETE','rooms/'+b.code+(all?'':'/p/'+b.uid)).catch(()=>{});}
 // 탭을 닫으면 대기실에서는 내 칸을 지운다(판이 도는 중이면 남겨 두어 '연결 끊김'으로 보인다)
-addEventListener('pagehide',()=>{try{if(!BT||!BT_AU||BT.view==='play')return;const T=BT.room,host=T&&T.host===BT.uid,alone=btP(T).length<=1;
+addEventListener('pagehide',()=>{try{if(!BT||!BT_AU||BT.view==='play'||BT.view==='wo')return;const T=BT.room,host=T&&T.host===BT.uid,alone=btP(T).length<=1;
   fetch(BT_CFG.db+'/rooms/'+BT.code+(host&&(alone||T.st!=='play')?'':'/p/'+BT.uid)+'.json?auth='+encodeURIComponent(BT_AU.it),{method:'DELETE',keepalive:true});}catch(e){}});
 
 /* 방 소식이 올 때마다 */
 function btOnRoom(T,why){const b=BT;
   if(why==='cancel'||!T||!T.host||!(T.p&&T.p[b.uid])){const gone=!T||!T.host;b.room=T||null;
-    if(b.view==='play'||b.view==='res'){if(gone){if(BT_RES&&BT_RES.code===b.code)BT_RES.closed=1;BT=null;btStop(b);}btHudDraw();btResDraw();return;}
+    if(b.view==='play'||b.view==='res'||b.view==='wo'){if(gone){if(BT_RES&&BT_RES.code===b.code)BT_RES.closed=1;BT=null;btStop(b);}btHudDraw();btResDraw();if(b.view==='wo')woRoom(gone?null:T);return;}
     BT=null;btStop(b);if(document.querySelector('.bt-bg'))btEntry(gone?'방이 닫혔어요.':'방에서 나왔어요.');return;}
   b.room=T;
   if(T.st==='play'&&(+T.rd||0)>b.played&&(b.view==='room'||b.view==='count')){b.played=+T.rd||0;return btCount(T);}
   if(b.view==='room'){if(!document.getElementById('btPl'))btRoom();else btRoomUpd();}
   if(b.view==='play')btHudDraw();
-  if(b.view==='res')btResDraw();}
+  if(b.view==='res')btResDraw();
+  if(b.view==='wo')woRoom(T);}
 
 /* 대기실 */
 function btRoom(){BT.view='room';const b=btPanel(),me=BT.uid,T=BT.room||{};
@@ -96,7 +97,8 @@ function btRoom(){BT.view='room';const b=btPanel(),me=BT.uid,T=BT.room||{};
   b.innerHTML='<div class="bt-cw"><span>방 코드</span><b class="bt-code" id="btCodeV">'+BT.code+'</b><button type="button" class="bt-cp" id="btCp">복사</button></div>'+
     '<p class="bt-hint" id="btHint"></p>'+
     '<div class="bt-pl" id="btPl" aria-live="polite"></div>'+
-    '<label class="bt-lb" for="btBg">내 출발 인물</label><select id="btBg" class="bt-sel">'+L.map(q=>'<option value="'+q.id+'"'+(q.id===my?' selected':'')+'>'+gEsc(q.n)+' — '+gEsc(q.k||'')+'</option>').join('')+'</select>'+
+    '<div class="bt-gm" id="btGm"></div>'+
+    '<div id="btBgW"><label class="bt-lb" for="btBg">내 출발 인물</label><select id="btBg" class="bt-sel">'+L.map(q=>'<option value="'+q.id+'"'+(q.id===my?' selected':'')+'>'+gEsc(q.n)+' — '+gEsc(q.k||'')+'</option>').join('')+'</select></div>'+
     '<div class="bt-md" id="btMd"></div>'+
     '<div class="bt-err" id="btErr" role="alert"></div>'+
     '<div class="bt-acts"><button type="button" id="btLv">나가기</button><button type="button" class="pri" id="btGo"></button></div>';
@@ -117,8 +119,14 @@ function btRoomUpd(){const T=BT.room;if(!T)return;const me=BT.uid,host=T.host===
     Array.from({length:Math.max(0,BT_MAX-P.length)},()=>'<div class="bt-pr empty"><span class="bt-pf"></span><span class="bt-pn"><small>빈자리</small></span></div>').join('');
   const n=P.filter(btLive).length,ok=btCanStart(T);
   document.getElementById('btHint').textContent=host?(n<2?'친구에게 방 코드를 알려 주세요. 2명부터 시작할 수 있어요.':ok?'모두 준비됐어요. 시작하면 3초 뒤 모두 함께 시작해요.':'모두 준비 완료를 누르면 시작할 수 있어요.')
-    :(mine.rdy?'준비 완료! 방장이 시작하기를 기다려요.':'인물을 고르고 준비 완료를 눌러 주세요.');
-  const md=T.md===0?0:1,mdEl=document.getElementById('btMd');
+    :(mine.rdy?'준비 완료! 방장이 시작하기를 기다려요.':woIs(T)?'준비 완료를 눌러 주세요.':'인물을 고르고 준비 완료를 눌러 주세요.');
+  const wo=woIs(T),gm=document.getElementById('btGm'),GM=[['','🏛️ 대통령 대결','대한민국 5년 단임 · 같은 사건과 주사위'],['W','⛸️ 동계올림픽','쇼트트랙 · 스키점프 · 컬링 · 아이스하키']];
+  gm.innerHTML='<span class="bt-lb">게임</span>'+(host?'<div class="bt-seg">'+GM.map(g=>'<button type="button" data-g="'+g[0]+'" aria-pressed="'+(wo===!!g[0])+'">'+g[1]+'<small>'+g[2]+'</small></button>').join('')+'</div>'
+    :'<p class="bt-mdv"><b>'+GM[wo?1:0][1]+'</b> · '+GM[wo?1:0][2]+' · 방장이 정해요</p>')+
+    (wo?'<p class="bt-wol">네 종목을 모두 함께 차례로 치르고, 종목마다 시상대에 올라요. 금메달이 많은 사람이 우승! 상대 · 바람 · 돌풍은 모두에게 똑같아요.</p>':'');
+  gm.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{try{SFX.click();}catch(e){}btReq('PATCH','rooms/'+BT.code,{seed:b.dataset.g}).catch(x=>btShowErr(btErrTx(x)));});
+  document.getElementById('btBgW').style.display=wo?'none':'';
+  const md=T.md===0?0:1,mdEl=document.getElementById('btMd');mdEl.style.display=wo?'none':'';
   mdEl.innerHTML='<span class="bt-lb">결정 빈도</span>'+(host?'<div class="bt-seg">'+[1,0].map(k=>'<button type="button" data-k="'+k+'" aria-pressed="'+(md===k)+'">'+MODE[k].n+'<small>'+MODE[k].d+'</small></button>').join('')+'</div>'
     :'<p class="bt-mdv"><b>'+MODE[md].n+'</b> · '+MODE[md].d+' · 방장이 정해요</p>');
   mdEl.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{try{SFX.click();}catch(e){}btReq('PATCH','rooms/'+BT.code,{md:+b.dataset.k}).catch(x=>btShowErr(btErrTx(x)));});
@@ -130,11 +138,11 @@ function btGoClick(){const T=BT&&BT.room;if(!T)return;const me=BT.uid;
   if(!btCanStart(T))return;try{SFX.start();}catch(e){}
   const a=new Uint32Array(2);try{crypto.getRandomValues(a);}catch(e){a[0]=Date.now();a[1]=Math.floor(DC_RAND0()*1e9);}
   document.getElementById('btGo').disabled=true;
-  btReq('PATCH','rooms/'+BT.code,{st:'play',rd:(+T.rd||0)+1,seed:a[0].toString(36)+a[1].toString(36),t0:BT_TS}).catch(x=>{btShowErr(btErrTx(x));btRoomUpd();});}
+  btReq('PATCH','rooms/'+BT.code,{st:'play',rd:(+T.rd||0)+1,seed:(woIs(T)?'W':'')+a[0].toString(36)+a[1].toString(36),t0:BT_TS}).catch(x=>{btShowErr(btErrTx(x));btRoomUpd();});}
 
 /* 3 · 2 · 1 */
 function btCount(T){BT.view='count';const b=btPanel(),P=btP(T).filter(btLive);
-  b.innerHTML='<div class="bt-cd"><span class="bt-cd-k">'+T.rd+'번째 판 · '+MODE[T.md===0?0:1].n+'</span><b id="btCdN">3</b><p>'+P.map(p=>gEsc(p.n||'익명')).join(' · ')+'</p><small>같은 위기, 같은 주사위. 누가 더 나은 대통령일까요?</small></div>';
+  b.innerHTML='<div class="bt-cd"><span class="bt-cd-k">'+T.rd+'번째 판 · '+(woIs(T)?'⛸️ 동계올림픽 4종목':MODE[T.md===0?0:1].n)+'</span><b id="btCdN">3</b><p>'+P.map(p=>gEsc(p.n||'익명')).join(' · ')+'</p><small>'+(woIs(T)?'같은 얼음, 같은 바람. 금메달은 누구에게?':'같은 위기, 같은 주사위. 누가 더 나은 대통령일까요?')+'</small></div>';
   let n=3;const me=BT;const t=setInterval(()=>{if(BT!==me||me.view!=='count'){clearInterval(t);return;}n--;const el=document.getElementById('btCdN');
     if(n>0){if(el)el.textContent=n;try{SFX.click();}catch(e){}return;}clearInterval(t);btBegin(me.room||T);},1000);
   try{SFX.click();}catch(e){}}
