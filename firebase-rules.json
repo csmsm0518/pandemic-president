@@ -6,7 +6,7 @@
         ".write": "auth != null && !newData.exists() && data.child('host').val() === auth.uid",
         ".validate": "$code.matches(/^[A-Z0-9]{4}$/)",
         "host": {
-          ".write": "auth != null && !data.exists() && newData.val() === auth.uid",
+          ".write": "auth != null && newData.val() === auth.uid && (!data.exists() || (data.parent().child('p').child(auth.uid).exists() && (!data.parent().child('p').child(data.val()).exists() || data.parent().child('p').child(data.val()).child('at').val() < now - 60000)))",
           ".validate": "newData.isString()"
         },
         "st": {
@@ -38,10 +38,10 @@
             ".write": "auth != null && $uid === auth.uid && (data.exists() || !newData.exists() || newData.parent().parent().child('st').val() === 'lobby')",
             ".validate": "newData.hasChildren(['n'])",
             "n": { ".validate": "newData.isString() && newData.val().length <= 20" },
-            "j": { ".validate": "newData.isNumber()" },
+            "j": { ".validate": "newData.isNumber() && newData.val() <= now" },
             "bg": { ".validate": "newData.isString() && newData.val().length <= 30" },
             "rdy": { ".validate": "newData.isBoolean()" },
-            "at": { ".validate": "newData.isNumber()" },
+            "at": { ".validate": "newData.isNumber() && newData.val() <= now && newData.val() > now - 60000" },
             "g": {
               ".validate": "newData.hasChildren(['r'])",
               "r": { ".validate": "newData.isNumber()" },

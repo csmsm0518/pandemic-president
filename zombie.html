@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0b0a08">
+<link rel="icon" href="icons/logo.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <title>방역선 · 새벽까지</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -489,14 +492,14 @@ const SFX = (() => {
       case 'click': tone('triangle', 880, 0, .05, .05); break;
     }
   }
-  // 배경 음악: 같은 폴더의 mp3. 없거나 막혀도 게임은 계속된다.
+  // 배경 음악: audio/ 폴더의 mp3. 없거나 막혀도 게임은 계속된다.
   function music(want) {
     const should = want && settings.music && !settings.muted && !(PSND && PSND.mu <= 0);
     if (!should) { if (bgm) bgm.pause(); return; }
     if (bgmFailed) return;
     if (!bgm) {
       try {
-        bgm = new Audio('zombie_bgm.mp3'); bgm.loop = true; bgm.addEventListener('error', () => { bgmFailed = true; bgm = null; });
+        bgm = new Audio('audio/zombie_bgm.mp3'); bgm.loop = true; bgm.addEventListener('error', () => { bgmFailed = true; bgm = null; });
         // 아이폰·아이패드는 audio.volume을 무시하므로, 사이트에서는 Web Audio 게인으로 크기를 줄인다
         const mv = .3 * (PSND ? PSND.mu : 1); let routed = false;
         if (ac && /^https?:$/.test(location.protocol)) { try { const s = ac.createMediaElementSource(bgm), g = ac.createGain(); g.gain.value = mv; s.connect(g); g.connect(ac.destination); routed = true; } catch (e) { } }

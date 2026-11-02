@@ -63,7 +63,7 @@ const cnHidden=n=>!!CN_HID[n];
 // 그해 연말에 찾아오는 만남 하나(없으면 null). 한 사람당 커리어에 한 번.
 function cnEnc(){const H=CAR.hid=CAR.hid||{},here=n=>CN_HID[n].camps.indexOf(CP.id)>=0&&H[n]!=='done';
   // 황희: 한 사람을 5년 넘게 곁에 둔 뒤
-  if(here('황희')){const s=CAR.cn.findIndex(i=>i!=null&&CN[i].t<4&&(CAR.cnMeta[i]||{}).y>=5);if(s>=0)return {n:'황희',kind:'evolve',s:s};}
+  if(here('황희')){const s=CAR.cn.findIndex(i=>i!=null&&CN[i].t<4&&(CAR.cnMeta[i]||{}).y>=5);if(s>=0)return {n:'황희',kind:'evolve',s:s,i0:CAR.cn[s]};}
   // 제갈량: 이미 찾아가기 시작했다면 그다음 걸음
   if(here('제갈량')&&H['제갈량']>0&&Math.random()<.7)return {n:'제갈량',kind:'visit',step:H['제갈량']};
   const L=Object.keys(CN_HID).filter(n=>here(n)&&!CN_HID[n].evolve&&!(H[n]>0)&&(()=>{try{return CN_HID[n].c();}catch(e){return false;}})()).sort(()=>Math.random()-.5);
@@ -157,7 +157,8 @@ function council(go){dcSeed('council');window.scrollTo(0,0);const RL=roleOf(),no
       '<div class="cn-enc-w"><span class="cn-q-mark">?</span>'+X.who+'</div>'+
       (enc.kind==='visit'&&!last?'<div class="cn-b"><button class="cn-btn pick" data-enc="visit">찾아간다 (지지율 −2)</button><button class="cn-btn" data-enc="skip">돌아선다 (처음부터 다시)</button></div>':
        sl(enc.kind==='visit'?'visitjoin':'join')+'<div class="cn-b"><button class="cn-btn" data-enc="skip">부르지 않는다</button></div>')+'</div>';};
-  const draw=()=>{const slot=s=>{const i=CAR.cn[s];return i==null?'<div class="cn cn-empty"><div class="cn-x"><b>빈 자리</b><div class="cn-s">아래 후보 중에서 '+RL.n+'을 임명하세요.</div></div></div>':
+  const draw=()=>{if(enc&&enc.kind==='evolve'&&CAR.cn[enc.s]!==enc.i0)enc=null; // 천거하던 참모를 해임·교체했으면 그 만남은 접는다
+    const slot=s=>{const i=CAR.cn[s];return i==null?'<div class="cn cn-empty"><div class="cn-x"><b>빈 자리</b><div class="cn-s">아래 후보 중에서 '+RL.n+'을 임명하세요.</div></div></div>':
       cnCard(CN[i],'<div class="cn-b"><button data-fire="'+s+'" class="cn-btn">'+(arm===s?'한 번 더 누르면 해임'+(CN[i].t>=3?' (지지율 −1)':''):'해임')+'</button></div>');};
     // 세로 화면: 지금의 참모는 두 칸으로 나란히, 후보는 옆으로 넘기는 카드, 시작 버튼은 아래 고정(pfit)
     const PO=isP();
@@ -171,6 +172,7 @@ function council(go){dcSeed('council');window.scrollTo(0,0);const RL=roleOf(),no
     R.querySelectorAll('[data-fire]').forEach(b=>b.onclick=()=>{const s=+b.dataset.fire;if(arm!==s){SFX.click();arm=s;return draw();}SFX.fire();
       const c=CN[CAR.cn[s]];if(c.t>=3)S.a=cl(S.a-1);CAR.cnGone.add(c.i);CAR.cnLog.push(CAR.term+'기 '+y+'년 해임: '+c.n);CAR.cn[s]=null;arm=-1;draw();});
     R.querySelectorAll('[data-ap]').forEach(b=>b.onclick=()=>{SFX.coin();const [j,s]=b.dataset.ap.split(',').map(Number),x=cands[j],old=CAR.cn[s];
+      if(CAR.cn.indexOf(x.c.i)>=0){cands.splice(j,1);arm=-1;return draw();} // 비상소집으로 이미 앉힌 사람이면 두 자리에 앉히지 않는다
       if(old!=null){const o=CN[old];if(o.t>=3)S.a=cl(S.a-1);CAR.cnGone.add(o.i);}
       CAR.cn[s]=x.c.i;CAR.cnMeta[x.c.i]={miss:0};CAR.cnLog.push(CAR.term+'기 '+y+'년 임명: '+x.c.n+'(★'+x.c.t+' '+CN_DOM[x.c.d].n+')'+(old!=null?' ← '+CN[old].n:''));
       cands.splice(j,1);arm=-1;draw();});

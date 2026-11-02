@@ -396,14 +396,14 @@ function rateOk_(key, max, sec) {
   } catch (e) { return true; }
 }
 // 같은 조각이 두 번 오면(게임의 다시 보내기) 한 번만 쓴다. 6시간 동안 기억한다
-function seen_(k) {
+// 확인(seenHas_)은 잠금 안에서, 기억(seenMark_)은 시트에 다 쓴 뒤에 한다. 쓰다가 실패한 조각은 기억하지 않아, 게임이 다시 보내면 받는다
+function seenHas_(k) {
   if (!k) return false;
-  try {
-    const c = CacheService.getScriptCache(), key = 'rx_' + String(k).slice(0, 120);
-    if (c.get(key)) return true;
-    c.put(key, '1', 21600);
-  } catch (e) {}
-  return false;
+  try { return !!CacheService.getScriptCache().get('rx_' + String(k).slice(0, 120)); } catch (e) { return false; }
+}
+function seenMark_(k) {
+  if (!k) return;
+  try { CacheService.getScriptCache().put('rx_' + String(k).slice(0, 120), '1', 21600); } catch (e) {}
 }
 const numOk_ = (v, lo, hi) => { const n = Number(v); return v !== '' && v !== null && isFinite(n) && n >= lo && n <= hi; };
 // 욕설: 띄어쓰기·기호·숫자를 끼워 넣어도 걸리게 지운 뒤 본다. 걸리면 공개 화면에는 이름을 감춘다
@@ -474,11 +474,11 @@ function doPost(e) {
     const sp = String((d.rec && d.rec.pid) || '').replace(/[^0-9a-z]/gi, '').slice(0, 24) || 'none';
     if (!rateOk_('s_all', RATE_SUGGEST_ALL, 600) || !rateOk_('s_' + sp, RATE_SUGGEST, 600)) return out_('busy');
   }
-  // 같은 조각을 다시 보낸 것이면(게임의 다시 보내기) 한 번만 쓴다
-  if (d.k && seen_(d.k)) return out_('dup');
   const lock = LockService.getScriptLock();
   lock.waitLock(30000);
   try {
+    // 같은 조각을 다시 보낸 것이면(게임의 다시 보내기) 한 번만 쓴다
+    if (d.k && seenHas_(d.k)) return out_('dup');
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const now = new Date();
     // 비밀 게임 점수: 한 판 = 한 줄. 닉네임·학교·점수만 받는다(이름·전화번호는 오지 않는다)
@@ -495,6 +495,7 @@ function doPost(e) {
         : a.game === 'sail' && (rec.sec < SAIL_MIN_SEC || rec.sec > 1200) ? '자동: 시간 이상'
         : a.game === 'star' && (rec.score < 0 || rec.score > STAR_MAX || rec.sec > 3600) ? '자동: 점수 이상' : '';
       appendRows_(ss, '비밀 게임 기록', ARCADE, [rec], now);
+      seenMark_(d.k);
       return out_('ok');
     }
     // 건의: 한 건 = 한 줄. 분류는 정해진 넷 중 하나, 내용은 비어 있으면 버린다. 수식 막기 · 칸 길이는 safe_가 맡는다. 분석은 돌리지 않는다
@@ -506,9 +507,11 @@ function doPost(e) {
       appendRows_(ss, '건의사항', SUGGEST, [{cat: SUGGEST_CATS[a.cat] ? a.cat : '기타', text: text, nickname: String(a.nickname || '익명').slice(0, 20), school: sr,
         gv: String(a.gv || '').slice(0, 20), view: String(a.view || '').slice(0, 60), ua: String(a.ua || '').slice(0, 200),
         pid: String(a.pid || '').replace(/[^0-9a-z]/gi, '').slice(0, 24), id: String(a.id || '').slice(0, 40), reply: ''}], now, '받은 시각');
+      seenMark_(d.k);
       return out_('ok');
     }
     const run = d.run && typeof d.run === 'object' && !Array.isArray(d.run) ? d.run : {};
+    run.id = String(run.id || '').replace(/[^0-9a-z]/gi, '').slice(0, 24);   // 게임이 만드는 판 번호는 영숫자 20자 안팎. 그 밖의 글자로 순위 응답을 부풀리거나 화면을 깨지 못하게
     run.nickname = String(run.nickname || '익명').slice(0, 20);
     run.pid = String(run.pid || '').replace(/[^0-9a-z]/gi, '').slice(0, 24);
     run.schoolRaw = String(run.school || '').slice(0, 30);
@@ -552,6 +555,7 @@ function doPost(e) {
     lock.releaseLock();
   }
   // 분석은 기록 저장과 따로 돈다. 실패해도 기록은 이미 저장됐다.
+  seenMark_(d.k);
   try { maybeAnalyze_(); } catch (err) { console.error(err); }
   return ContentService.createTextOutput('ok');
 }
