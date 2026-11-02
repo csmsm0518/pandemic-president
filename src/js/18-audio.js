@@ -150,7 +150,7 @@ function toggleSound(){if(document.querySelector('.sndp'))return sndClose();try{
   o.querySelector('input').focus();}
 const sndMuteH=m=>(m?ICO.mute:ICO.vol)+'<span>'+(m?'음소거 해제':'음소거')+'</span>';
 function sndClose(){const o=document.querySelector('.sndp-bg');if(o)o.remove();}
-// 인트로 배경음악(index.html과 같은 폴더의 bgm.mp3): 메인 메뉴부터 나라·인물 고르기까지 반복하고, 게임이 시작되면 그 무대의 곡(BGM_PLAY)으로 넘어가거나 서서히 끈다.
+// 인트로 배경음악(audio/bgm.mp3): 메인 메뉴부터 나라·인물 고르기까지 반복하고, 게임이 시작되면 그 무대의 곡(BGM_PLAY)으로 넘어가거나 서서히 끈다.
 // 브라우저는 한 번 누르기 전에는 소리를 막으므로, 막히면 첫 터치·키 입력 때 다시 튼다. 소리 끄기와 다른 앱으로 넘어가기를 따른다.
 // 틀 때마다(처음 들어올 때·소리를 다시 켤 때·다른 앱에서 돌아올 때) 0에서 시작해 1초 동안 원래 크기로 커진다.
 // 게임 중 음악은 무대마다 따로 둔다. 목록에 없는 무대는 예전처럼 게임이 시작되면 음악이 꺼진다.
@@ -223,7 +223,7 @@ function bgmEl(){if(!BGM.el){try{BGM.el=new Audio();BGM.el.preload='none';
     BGM.el.loop=true;}catch(e){}}return BGM.el;}
 function bgmPause(a){if(!a||a.paused)return;BGM.own=1;try{a.pause();}catch(e){BGM.own=0;}}
 // 곡 파일은 실제로 틀 때 건다(음악을 꺼 둔 사람은 파일을 받지 않는다)
-function bgmLoad(a){if(BGM.cur===BGM.trk)return;BGM.cur=BGM.trk;try{a.src=BGM.trk;a.loop=!BGM.list;a.load();}catch(e){}}
+function bgmLoad(a){if(BGM.cur===BGM.trk)return;BGM.cur=BGM.trk;try{a.src='audio/'+BGM.trk;a.loop=!BGM.list;a.load();}catch(e){}}
 // 사이트(http/https)에서는 Web Audio 게인으로 음량을 다룬다(아이폰·아이패드는 audio.volume을 바꿀 수 없어서 이렇게 해야 페이드가 된다).
 // 파일로 직접 연 경우에는 브라우저가 이 연결의 소리를 막을 수 있어 audio.volume을 쓴다.
 function bgmGain(a){if(BGM.gx)return BGM.g;BGM.gx=true;if(!/^https?:$/.test(location.protocol))return null;
