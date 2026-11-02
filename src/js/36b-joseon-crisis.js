@@ -29,7 +29,7 @@ const KGK={
  foreign:{soft:1,bad:{p:-12,a:-8,e:-6},why:S=>[['군사가 약하다',50-S.mil],['언로가 막혔다',50-S.trn],['국고가 비었다',50-S.e]],
   rate:S=>.7+Math.max(0,50-S.mil)*.06+Math.max(0,50-S.trn)*.07+Math.max(0,50-S.e)*.04,
   odds:S=>[['군사',(S.mil-50)*.45],['국고',(S.e-50)*.25],['언로',(S.trn-50)*.25],['당쟁',-(S.u-40)*.25]]},
- oust:{b:30,why:S=>[['외세에 굴복했다',KG_HUMB()*30],['군사가 무너졌다',35-S.mil],['왕권이 꺾였다',35-S.p]],
+ oust:{b:25,why:S=>[['외세에 굴복했다',KG_HUMB()*30],['군사가 무너졌다',35-S.mil],['왕권이 꺾였다',35-S.p]],
   rate:S=>KG_HUMB()*2.5+Math.max(0,35-S.mil)*.1+Math.max(0,35-S.p)*.1,
   odds:S=>[['군사',(S.mil-50)*.4],['왕권',(S.p-50)*.35],['민심',(S.a-50)*.3]]}};
 const KGE={
@@ -474,12 +474,12 @@ const KG_ERA={taejo:['waegu','pyojeon','wangja1','yeojinNE','wangssi'],taejong:[
  heungseon:['byeongin','sinmi','oppert','choik','imsul'],gojong:['ganghwa','imo','gapsin','donghak','eulsa','hague']};
 // 같은 임금으로 다시 해도 언제 · 무엇이 먼저 오는지는 조짐과 문턱으로 판마다 달라진다
 const kgList=()=>(KG_ERA[CAR&&CAR.bgid]||KG_ERA.seonjo).map(id=>Object.assign({id:id},KGK[KGE[id].k],KGE[id]));
-const KG_TH=[75,135];   // 문턱: 판마다 국난마다 이 사이에서 무작위로 정한다(언제 올지 미리 알 수 없게)
-const KG_B=36;   // 왕권을 지킬 기본 가능성(양위 강요는 30)
+const KG_TH=[68,124];   // (v5.2: 75~135 → 68~124) 문턱: 판마다 국난마다 이 사이에서 무작위로 정한다(언제 올지 미리 알 수 없게)
+const KG_B=30;   // 왕권을 지킬 기본 가능성(양위 강요는 25). v5.2에서 36 → 30
 const KG_P=[5,80];   // 가능성의 바닥과 천장. 직접 지휘를 잘하면 천장을 10 넘을 수 있다
-const KG_TIRE=6;   // 국난을 하나 넘길 때마다 다음 국난은 이만큼 어려워진다(나라가 지쳤다)
+const KG_TIRE=8;   // 국난을 하나 넘길 때마다 다음 국난은 이만큼 어려워진다(나라가 지쳤다)
 // 가끔(국난의 45%) 맞서는 길을 고른 뒤 직접 지휘한다(lazy/kgmini). 지휘 결과(0 대승 ~ 3 참패)만큼 가능성이 오르내린다
-const KG_MGP=.45,KG_MG=[15,5,-8,-20],KG_MGT=['대승','선전','고전','참패'];
+const KG_MGP=.45,KG_MG=[12,4,-8,-20],KG_MGT=['대승','선전','고전','참패'];
 const KG_MGK={sea:'sea',north:'wall',coup:'spy',palace:'spy',oust:'spy',revolt:'riot',foreign:'talk'};
 // 가능성은 숫자 대신 네 단계로만 보여 준다(가장 높은 숫자만 고르면 끝나지 않게)
 const kgBand=p=>p>=65?['유리','g']:p>=48?['반반','m']:p>=30?['불리','o']:['위태','r'];

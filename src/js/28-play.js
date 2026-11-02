@@ -383,10 +383,10 @@ function tick(){const te=MOD.te||1,D=DIFF[dif],yr=Math.floor(S.turn/PY),TD=(CAR.
   S.i=cl(Math.max(D.fl+(TD>0?2+2*TD:0),S.i+S.i*r*(1-S.i/100)));if(S.i>peakI)peakI=S.i;
   S.m=cl(S.m-Math.max(0,S.i-50)/13+S.e/150+.2+(CP.mk||0));
   const dd=(S.i/28)*(1+Math.max(0,50-S.m)/42)*(MOD.dd||1)*D.dd*(1+TD*.2);deaths+=dd;yd+=dd;cDeaths+=dd;if(TD===0)covD+=dd*320*(yr===0?Math.min(1,Math.pow((S.turn+.3)/PY,2)):1);
-  S.e=cl(S.e-S.i/72-S.p/170+S.saf/210+.48+(MOD.ep||0)-S.c/62+(TD>0?SCX().eb||0:0));
+  S.e=cl(S.e-S.i/72-S.p/170+S.saf/210+.48+(MOD.ep||0)+(CP.ek||0)-S.c/62+(TD>0?SCX().eb||0:0));
   S.c=cl(S.c+.22+TD*.07+Math.max(0,S.p-34)/22*(1-(S.trn*te)/150)-(S.trn*te)/320);
-  S.u=cl(S.u+S.i/95+Math.max(0,S.p-45)/47+Math.max(0,45-S.e)/58-S.saf/230-.32+(MOD.up||0));
-  const a0=S.a;S.a=cl(S.a-.32-D.ad-TD*.06-Math.max(0,S.a-55)/65+Math.max(0,S.p-40)/260*(S.i>40?1:0)-S.i/85-Math.max(0,48-S.e)/62-S.u/130-S.c/160+Math.max(0,S.e-55)/95+(MOD.ap||0));
+  S.u=cl(S.u+S.i/95+Math.max(0,S.p-45)/47+Math.max(0,45-S.e)/58-S.saf/230-.32+(MOD.up||0)+(CP.uk||0));
+  const a0=S.a;S.a=cl(S.a-.32-D.ad-TD*.06-Math.max(0,S.a-55)/65+Math.max(0,S.p-40)/260*(S.i>40?1:0)-S.i/85-Math.max(0,48-S.e)/62-S.u/130-S.c/160+Math.max(0,S.e-55)/95+(MOD.ap||0)+(CP.ak||0));
   if(CAR&&CAR.dict&&S.a<a0)S.a=cl(a0-(a0-S.a)*DICT_AK);
   S.p=cl(S.p-S.chk/100*(S.p/115));
   S.chk=cl(S.chk-.12-TD*.03-Math.max(0,S.p-45)/70);S.trn=cl(S.trn-.1-S.c/260);S.saf=cl(S.saf-.08);

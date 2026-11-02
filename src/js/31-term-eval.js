@@ -54,7 +54,7 @@ function termEnd(){window.scrollTo(0,0);
     isLast=CAR.term>=capT||limit,can=!CAR.dict&&pct>0&&!isLast,n=CAR.term+1;
   const risk=av>=35?0:av<15?100:Math.round((35-av)*5);
   // 마지막 승부: 헌법이 막고 있어도 임기 말에 한 번, 개헌을 밀어붙일 수 있다(커리어에 한 번, 지지율 35 이상)
-  const lsOK=limit&&!CAR.lastShot&&CAR.amendFail!==CAR.term&&CAR.term<MAXT&&av>=35,lsP=Math.max(.1,Math.min(.8,.15+(av-35)/90+(vVal('P')-40)/160+.05*cnPow('S')));
+  const lsOK=limit&&!CAR.lastShot&&CAR.amendFail!==CAR.term&&CAR.term<MAXT&&av>=35,lsB=CP.id==='kr'?[.27,.85]:CP.id==='usa'?[.21,.8]:[.15,.8],lsP=Math.max(.1,Math.min(lsB[1],lsB[0]+(av-35)/90+(vVal('P')-40)/160+.05*cnPow('S')));
   te.winP=isLast?'':CAR.dict?100-risk:pct;
   const acol=av>=65?'#2e7d55':av>=35?'#9a6400':'#b3261e';
   const opt=(id,t,sub,col)=>'<button id="'+id+'" style="width:100%;text-align:left;padding:14px 15px;margin-bottom:8px;'+(col?'border-color:'+col+'99;':'')+'"><span style="display:block;font-size:15px;font-weight:600">'+t+'</span><span style="display:block;font-size:12px;color:var(--text-muted);margin-top:3px">'+sub+'</span></button>';

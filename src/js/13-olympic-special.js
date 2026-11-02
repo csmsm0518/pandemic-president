@@ -178,7 +178,7 @@ function boardIds(){const C=CP.id,base=BOARD[C]||[];let pw=base[0];
   P.sort((a,b)=>((a.charCodeAt(0)*31+a.length*7+seed)%11)-((b.charCodeAt(0)*31+b.length*7+seed)%11));
   const fresh=P.filter(id=>!did(id)),old=P.filter(id=>did(id));
   return wolyBoard([pw].concat(fresh.concat(old).slice(0,5)));}
-const NEED={amend:[['P','>=',50]],coup:[['P','>=',70],['M','>=',65],['NODICT']],g20:[['A','>=',50],['E','>=',50],['P','<=',50]],olym:[['E','>=',57],['A','>=',52],['H','>=',55]],expo:[['E','>=',53],['X','<=',30]],peace:[['X','<=',30],['NOWAR']],war_k:[['M','>=',65]],pand_k:[['COV'],['I','>=',20]],
+const NEED={amend:[['P','>=',45]],coup:[['P','>=',70],['M','>=',65],['NODICT']],g20:[['A','>=',50],['E','>=',50],['P','<=',50]],olym:[['E','>=',57],['A','>=',52],['H','>=',55]],expo:[['E','>=',53],['X','<=',30]],peace:[['X','<=',30],['NOWAR']],war_k:[['M','>=',65]],pand_k:[['COV'],['I','>=',20]],
  jikgye:[['P','>=',50]],envoy:[['A','>=',45],['E','>=',47]],gwageo:[['X','<=',30],['P','<=',50]],compile:[['E','>=',55],['X','<=',30]],war_j:[['M','>=',65]],pand_j:[['I','>=',25]],
  amend22:[['T2'],['P','>=',50]],moon:[['E','>=',58],['X','<=',30]],war_u:[['M','>=',65]],pand_u:[['I','>=',25]],olym_u:[['E','>=',55],['A','>=',50]],newdeal:[['E','<=',45]],wolym:[['WOLY']],wolym_u:[['WOLY']]};
 function needEval(n){if(n[0]==='WOLY')return {ok:true,txt:'하계올림픽 2년 뒤부터'};

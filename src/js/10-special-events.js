@@ -26,7 +26,7 @@ function spOlym(cities,closes,flagLine){return [
  c=>spEv('폐막식','폐막식 날이다. <em>'+(c.open||'개막 도시')+'</em>에서 시작한 대회를 어디서 마무리할까.',closes)];}
 const SP={
  kr:[
-  {id:'amend',n:'연임 개헌',k:'power',perTerm:1,cond:y=>CP.rule==='single'&&!CAR.amendPerm&&vVal('P')>=50&&y>=1,
+  {id:'amend',n:'연임 개헌',k:'power',perTerm:1,cond:y=>CP.rule==='single'&&!CAR.amendPerm&&vVal('P')>=45&&y>=1,
    bn:{k:'bad',h:'여당 "대통령 연임 개헌" 공론화',s:'권력 집중 속 개헌론 급부상… 야권 "장기 집권 시도"',b:'5년 단임의 헌법이 처음으로 흔들린다.'},
    steps:[c=>spEv('연임 개헌론','권력이 대통령에게 쏠리자 여당에서 <em>대통령 연임 개헌</em> 이야기가 공공연해졌다. 지금 헌법으로는 5년 뒤 물러나야 한다.',[
      ['대통령 연임 개헌안을 발의한다',{p:6,chk:-8,u:7,a:-2},'개헌안이 국회에 올라갔다. 광장에서 "장기 집권 반대" 구호가 나왔다.',null,{go:'vote'}],
@@ -179,7 +179,7 @@ const SP_NEXT={
  martial:c=>{const p=c.coupP=coupP();return spEv('계엄의 밤','계엄군이 <em>국회를 둘러쌌다</em>. 의원들이 담을 넘어 본회의장으로 모여든다. 해제 요구안이 가결되기 전에 끝내야 한다. 거사 성공 가능성은 '+p+'%다.',[
    ['국회를 해산하고 비상통치기구를 세운다',{p:4,chk:-6,u:6,a:-3},'계엄군이 본회의장 문을 밀고 들어갔다.',null,{coup:1}],
    ['해제 요구를 받아들이고 계엄을 거둔다',{chk:6,p:-8,a:-6,u:-2,trn:-4},'새벽 네 시, 계엄 해제가 발표됐다. 그날 밤은 오래 기억될 것이다.',null,{end:'lift'}]]);},
- vote:c=>{const p=Math.round(Math.max(5,Math.min(95,(S.a-30)*2.6)));c.passP=p;
+ vote:c=>{const p=Math.round(Math.max(5,Math.min(95,(S.a-20)*2.6)));c.passP=p;
   return spEv('개헌 국민투표','개헌안이 국회를 통과했다. 이제 <em>국민투표</em>만 남았다. 지금 지지율이면 통과 가능성은 '+p+'%다.',[
    ['정면 승부로 국민투표에 부친다',{u:3},'투표함이 열렸다.',null,{vote:1}],
    ['국회 의결만으로 처리하는 편법을 쓴다',{p:9,chk:-14,u:10,a:-6,c:4,trn:-6},'헌법학자 이백 명이 반대 성명을 냈다. 개헌은 관보에 실렸다.',null,{force:'국회 편법'}],
@@ -187,7 +187,7 @@ const SP_NEXT={
  fail:c=>spEv('국민투표 부결','개헌안이 <em>국민투표에서 부결</em>됐다. 찬성은 '+c.share+'%였다.',[
    ['결과를 받아들인다',{a:4,chk:6,p:-5,trn:3},'"국민의 뜻입니다." 승복 연설이 당신 임기의 가장 유명한 장면이 됐다.',null,{end:'accept'}],
    ['부정투표를 주장하며 재투표를 강행한다',{p:10,chk:-16,u:14,a:-8,trn:-8},'두 번째 국민투표는 야당이 거부한 채 치러졌다. 찬성 61%. 광장이 불탔다.',null,{force:'재투표 강행'}]]),
- ratify:c=>{const p=Math.round(Math.max(5,Math.min(95,(S.a-32)*2.5)));c.passP=p;
+ ratify:c=>{const p=Math.round(Math.max(5,Math.min(95,(S.a-27)*2.5)));c.passP=p;
   return spEv('주 의회 비준','폐지안이 의회를 통과했다. <em>50개 주 가운데 38개 주</em>가 비준해야 한다. 지금 지지율이면 가능성은 '+p+'%다.',[
    ['주지사들을 직접 설득한다',{u:3,p:2},'비준 투표가 주마다 이어졌다.',null,{vote:1}],
    ['연방 보조금을 걸고 압박한다',{p:9,chk:-12,u:10,c:6,a:-5},'버티던 주 의회들이 하나씩 돌아섰다. 연방 보조금 지도가 비준 지도와 똑같았다.',null,{force:'보조금 압박'}],

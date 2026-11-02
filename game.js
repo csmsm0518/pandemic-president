@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"battle":{"v":"cca2592e93","h":"5a241e6614541fa6"},"board":{"v":"c00012fc7d","h":"36258d130deedbab"},"boxes":{"v":"9f3a40eb75","h":"cdd3c4c349144d91"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"dex":{"v":"a834d42e11","h":"214b42847560de78"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"537b90387c","h":"ecf3460ec0e6cb40"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"sail":{"v":"f33f245bee","h":"5e31bd0bd96d66a3"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
+const LZ_M={"battle":{"v":"cca2592e93","h":"5a241e6614541fa6"},"board":{"v":"c00012fc7d","h":"36258d130deedbab"},"boxes":{"v":"9f3a40eb75","h":"cdd3c4c349144d91"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"dex":{"v":"a834d42e11","h":"214b42847560de78"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"f2406bd47f","h":"58269006748ccbe1"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"sail":{"v":"f33f245bee","h":"5e31bd0bd96d66a3"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"b107c1ae72","h":"0afbd7ef465f8cb4"},"whockey":{"v":"f9aec8c851","h":"b38d2d3929aac5af"},"wjump":{"v":"2116e2c697","h":"31c2d3756d0e6708"},"wskate":{"v":"ab7cf542b8","h":"9a9bbb43acc26164"}};
 function btOpen(){return lzCall('battle','btOpen',arguments);}
 function btFinish(){return lzCall('battle','btFinish',arguments);}
 function btResMount(){return lzCall('battle','btResMount',arguments);}
@@ -2871,7 +2871,8 @@ const CAMPS={
   lbl:{a:'민심',m:'구휼',e:'국고',p:'왕권',c:'세도',u:'당쟁',chk:'간쟁',trn:'언로',saf:'환곡'},init:{i:14,m:58,a:55,e:54,p:40,c:17,u:33,chk:70,trn:55,saf:50},tdk:.8,mk:.06},
  usa:{id:'usa',n:'미국',tag:'DLC',sub:'4년 중임 대통령 · 불황과 재난, 분열된 의회',role:'대통령',yrs:4,maxT:5,rule:'two',scen0:'recess',post:['storm','war2'],
   intro:'4년 중임제다. 재선까지는 선거로 가능하고, 세 번째 임기는 수정헌법 22조가 막는다. 두 번째 임기에 <b>권력이 크게 커지면</b> 그 조항을 없애려는 움직임이 생긴다.',
-  lbl:{c:'로비 유착',u:'양극화',chk:'의회·법원 견제',saf:'사회 안전망'},init:{i:14,m:60,a:60,e:60,p:34,c:16,u:34,chk:78,trn:66,saf:48}},
+  lbl:{c:'로비 유착',u:'양극화',chk:'의회·법원 견제',saf:'사회 안전망'},init:{i:14,m:60,a:60,e:60,p:34,c:16,u:34,chk:78,trn:66,saf:48},
+  ak:.15,uk:-.08,ek:.06},   // 미국은 달마다 지지율 · 경제가 조금 덜 깎이고 양극화가 덜 자란다(v5.2 쉽게)
  // 전쟁기 독일: 선거 없는 일당 군사 국가. 1기(6년)가 세계대전이고, 1기가 끝날 때 승패가 갈린다(36-dlc-reich-flow.js)
  reich:{id:'reich',n:'전쟁기 독일',tag:'비밀',sub:'추축국 지도자 · 세계대전, 그리고 실제 역사',role:'지도자',yrs:6,maxT:4,rule:'reign',scen0:'ww2',post:['occupy','resist','coldw'],
   intro:'히틀러 · 무솔리니 같은 실제 추축국 지도자로 나라를 이끈다. 선택은 자유지만, 실제 역사가 있었던 사건에서는 <b>그때 실제로 무슨 일이 있었는지</b>가 함께 뜬다. 첫 6년은 <b>세계대전</b>이다. 이기면 제국이 이어지고, 지면 정권이 무너지며 <b>라인강의 기적</b> 에피소드가 열린다.',
@@ -4262,7 +4263,7 @@ function spOlym(cities,closes,flagLine){return [
  c=>spEv('폐막식','폐막식 날이다. <em>'+(c.open||'개막 도시')+'</em>에서 시작한 대회를 어디서 마무리할까.',closes)];}
 const SP={
  kr:[
-  {id:'amend',n:'연임 개헌',k:'power',perTerm:1,cond:y=>CP.rule==='single'&&!CAR.amendPerm&&vVal('P')>=50&&y>=1,
+  {id:'amend',n:'연임 개헌',k:'power',perTerm:1,cond:y=>CP.rule==='single'&&!CAR.amendPerm&&vVal('P')>=45&&y>=1,
    bn:{k:'bad',h:'여당 "대통령 연임 개헌" 공론화',s:'권력 집중 속 개헌론 급부상… 야권 "장기 집권 시도"',b:'5년 단임의 헌법이 처음으로 흔들린다.'},
    steps:[c=>spEv('연임 개헌론','권력이 대통령에게 쏠리자 여당에서 <em>대통령 연임 개헌</em> 이야기가 공공연해졌다. 지금 헌법으로는 5년 뒤 물러나야 한다.',[
      ['대통령 연임 개헌안을 발의한다',{p:6,chk:-8,u:7,a:-2},'개헌안이 국회에 올라갔다. 광장에서 "장기 집권 반대" 구호가 나왔다.',null,{go:'vote'}],
@@ -4415,7 +4416,7 @@ const SP_NEXT={
  martial:c=>{const p=c.coupP=coupP();return spEv('계엄의 밤','계엄군이 <em>국회를 둘러쌌다</em>. 의원들이 담을 넘어 본회의장으로 모여든다. 해제 요구안이 가결되기 전에 끝내야 한다. 거사 성공 가능성은 '+p+'%다.',[
    ['국회를 해산하고 비상통치기구를 세운다',{p:4,chk:-6,u:6,a:-3},'계엄군이 본회의장 문을 밀고 들어갔다.',null,{coup:1}],
    ['해제 요구를 받아들이고 계엄을 거둔다',{chk:6,p:-8,a:-6,u:-2,trn:-4},'새벽 네 시, 계엄 해제가 발표됐다. 그날 밤은 오래 기억될 것이다.',null,{end:'lift'}]]);},
- vote:c=>{const p=Math.round(Math.max(5,Math.min(95,(S.a-30)*2.6)));c.passP=p;
+ vote:c=>{const p=Math.round(Math.max(5,Math.min(95,(S.a-20)*2.6)));c.passP=p;
   return spEv('개헌 국민투표','개헌안이 국회를 통과했다. 이제 <em>국민투표</em>만 남았다. 지금 지지율이면 통과 가능성은 '+p+'%다.',[
    ['정면 승부로 국민투표에 부친다',{u:3},'투표함이 열렸다.',null,{vote:1}],
    ['국회 의결만으로 처리하는 편법을 쓴다',{p:9,chk:-14,u:10,a:-6,c:4,trn:-6},'헌법학자 이백 명이 반대 성명을 냈다. 개헌은 관보에 실렸다.',null,{force:'국회 편법'}],
@@ -4423,7 +4424,7 @@ const SP_NEXT={
  fail:c=>spEv('국민투표 부결','개헌안이 <em>국민투표에서 부결</em>됐다. 찬성은 '+c.share+'%였다.',[
    ['결과를 받아들인다',{a:4,chk:6,p:-5,trn:3},'"국민의 뜻입니다." 승복 연설이 당신 임기의 가장 유명한 장면이 됐다.',null,{end:'accept'}],
    ['부정투표를 주장하며 재투표를 강행한다',{p:10,chk:-16,u:14,a:-8,trn:-8},'두 번째 국민투표는 야당이 거부한 채 치러졌다. 찬성 61%. 광장이 불탔다.',null,{force:'재투표 강행'}]]),
- ratify:c=>{const p=Math.round(Math.max(5,Math.min(95,(S.a-32)*2.5)));c.passP=p;
+ ratify:c=>{const p=Math.round(Math.max(5,Math.min(95,(S.a-27)*2.5)));c.passP=p;
   return spEv('주 의회 비준','폐지안이 의회를 통과했다. <em>50개 주 가운데 38개 주</em>가 비준해야 한다. 지금 지지율이면 가능성은 '+p+'%다.',[
    ['주지사들을 직접 설득한다',{u:3,p:2},'비준 투표가 주마다 이어졌다.',null,{vote:1}],
    ['연방 보조금을 걸고 압박한다',{p:9,chk:-12,u:10,c:6,a:-5},'버티던 주 의회들이 하나씩 돌아섰다. 연방 보조금 지도가 비준 지도와 똑같았다.',null,{force:'보조금 압박'}],
@@ -4808,7 +4809,7 @@ function boardIds(){const C=CP.id,base=BOARD[C]||[];let pw=base[0];
   P.sort((a,b)=>((a.charCodeAt(0)*31+a.length*7+seed)%11)-((b.charCodeAt(0)*31+b.length*7+seed)%11));
   const fresh=P.filter(id=>!did(id)),old=P.filter(id=>did(id));
   return wolyBoard([pw].concat(fresh.concat(old).slice(0,5)));}
-const NEED={amend:[['P','>=',50]],coup:[['P','>=',70],['M','>=',65],['NODICT']],g20:[['A','>=',50],['E','>=',50],['P','<=',50]],olym:[['E','>=',57],['A','>=',52],['H','>=',55]],expo:[['E','>=',53],['X','<=',30]],peace:[['X','<=',30],['NOWAR']],war_k:[['M','>=',65]],pand_k:[['COV'],['I','>=',20]],
+const NEED={amend:[['P','>=',45]],coup:[['P','>=',70],['M','>=',65],['NODICT']],g20:[['A','>=',50],['E','>=',50],['P','<=',50]],olym:[['E','>=',57],['A','>=',52],['H','>=',55]],expo:[['E','>=',53],['X','<=',30]],peace:[['X','<=',30],['NOWAR']],war_k:[['M','>=',65]],pand_k:[['COV'],['I','>=',20]],
  jikgye:[['P','>=',50]],envoy:[['A','>=',45],['E','>=',47]],gwageo:[['X','<=',30],['P','<=',50]],compile:[['E','>=',55],['X','<=',30]],war_j:[['M','>=',65]],pand_j:[['I','>=',25]],
  amend22:[['T2'],['P','>=',50]],moon:[['E','>=',58],['X','<=',30]],war_u:[['M','>=',65]],pand_u:[['I','>=',25]],olym_u:[['E','>=',55],['A','>=',50]],newdeal:[['E','<=',45]],wolym:[['WOLY']],wolym_u:[['WOLY']]};
 function needEval(n){if(n[0]==='WOLY')return {ok:true,txt:'하계올림픽 2년 뒤부터'};
@@ -6773,10 +6774,10 @@ function tick(){const te=MOD.te||1,D=DIFF[dif],yr=Math.floor(S.turn/PY),TD=(CAR.
   S.i=cl(Math.max(D.fl+(TD>0?2+2*TD:0),S.i+S.i*r*(1-S.i/100)));if(S.i>peakI)peakI=S.i;
   S.m=cl(S.m-Math.max(0,S.i-50)/13+S.e/150+.2+(CP.mk||0));
   const dd=(S.i/28)*(1+Math.max(0,50-S.m)/42)*(MOD.dd||1)*D.dd*(1+TD*.2);deaths+=dd;yd+=dd;cDeaths+=dd;if(TD===0)covD+=dd*320*(yr===0?Math.min(1,Math.pow((S.turn+.3)/PY,2)):1);
-  S.e=cl(S.e-S.i/72-S.p/170+S.saf/210+.48+(MOD.ep||0)-S.c/62+(TD>0?SCX().eb||0:0));
+  S.e=cl(S.e-S.i/72-S.p/170+S.saf/210+.48+(MOD.ep||0)+(CP.ek||0)-S.c/62+(TD>0?SCX().eb||0:0));
   S.c=cl(S.c+.22+TD*.07+Math.max(0,S.p-34)/22*(1-(S.trn*te)/150)-(S.trn*te)/320);
-  S.u=cl(S.u+S.i/95+Math.max(0,S.p-45)/47+Math.max(0,45-S.e)/58-S.saf/230-.32+(MOD.up||0));
-  const a0=S.a;S.a=cl(S.a-.32-D.ad-TD*.06-Math.max(0,S.a-55)/65+Math.max(0,S.p-40)/260*(S.i>40?1:0)-S.i/85-Math.max(0,48-S.e)/62-S.u/130-S.c/160+Math.max(0,S.e-55)/95+(MOD.ap||0));
+  S.u=cl(S.u+S.i/95+Math.max(0,S.p-45)/47+Math.max(0,45-S.e)/58-S.saf/230-.32+(MOD.up||0)+(CP.uk||0));
+  const a0=S.a;S.a=cl(S.a-.32-D.ad-TD*.06-Math.max(0,S.a-55)/65+Math.max(0,S.p-40)/260*(S.i>40?1:0)-S.i/85-Math.max(0,48-S.e)/62-S.u/130-S.c/160+Math.max(0,S.e-55)/95+(MOD.ap||0)+(CP.ak||0));
   if(CAR&&CAR.dict&&S.a<a0)S.a=cl(a0-(a0-S.a)*DICT_AK);
   S.p=cl(S.p-S.chk/100*(S.p/115));
   S.chk=cl(S.chk-.12-TD*.03-Math.max(0,S.p-45)/70);S.trn=cl(S.trn-.1-S.c/260);S.saf=cl(S.saf-.08);
@@ -6965,7 +6966,7 @@ function termEnd(){window.scrollTo(0,0);
     isLast=CAR.term>=capT||limit,can=!CAR.dict&&pct>0&&!isLast,n=CAR.term+1;
   const risk=av>=35?0:av<15?100:Math.round((35-av)*5);
   // 마지막 승부: 헌법이 막고 있어도 임기 말에 한 번, 개헌을 밀어붙일 수 있다(커리어에 한 번, 지지율 35 이상)
-  const lsOK=limit&&!CAR.lastShot&&CAR.amendFail!==CAR.term&&CAR.term<MAXT&&av>=35,lsP=Math.max(.1,Math.min(.8,.15+(av-35)/90+(vVal('P')-40)/160+.05*cnPow('S')));
+  const lsOK=limit&&!CAR.lastShot&&CAR.amendFail!==CAR.term&&CAR.term<MAXT&&av>=35,lsB=CP.id==='kr'?[.27,.85]:CP.id==='usa'?[.21,.8]:[.15,.8],lsP=Math.max(.1,Math.min(lsB[1],lsB[0]+(av-35)/90+(vVal('P')-40)/160+.05*cnPow('S')));
   te.winP=isLast?'':CAR.dict?100-risk:pct;
   const acol=av>=65?'#2e7d55':av>=35?'#9a6400':'#b3261e';
   const opt=(id,t,sub,col)=>'<button id="'+id+'" style="width:100%;text-align:left;padding:14px 15px;margin-bottom:8px;'+(col?'border-color:'+col+'99;':'')+'"><span style="display:block;font-size:15px;font-weight:600">'+t+'</span><span style="display:block;font-size:12px;color:var(--text-muted);margin-top:3px">'+sub+'</span></button>';
@@ -7587,7 +7588,7 @@ const KGK={
  foreign:{soft:1,bad:{p:-12,a:-8,e:-6},why:S=>[['군사가 약하다',50-S.mil],['언로가 막혔다',50-S.trn],['국고가 비었다',50-S.e]],
   rate:S=>.7+Math.max(0,50-S.mil)*.06+Math.max(0,50-S.trn)*.07+Math.max(0,50-S.e)*.04,
   odds:S=>[['군사',(S.mil-50)*.45],['국고',(S.e-50)*.25],['언로',(S.trn-50)*.25],['당쟁',-(S.u-40)*.25]]},
- oust:{b:30,why:S=>[['외세에 굴복했다',KG_HUMB()*30],['군사가 무너졌다',35-S.mil],['왕권이 꺾였다',35-S.p]],
+ oust:{b:25,why:S=>[['외세에 굴복했다',KG_HUMB()*30],['군사가 무너졌다',35-S.mil],['왕권이 꺾였다',35-S.p]],
   rate:S=>KG_HUMB()*2.5+Math.max(0,35-S.mil)*.1+Math.max(0,35-S.p)*.1,
   odds:S=>[['군사',(S.mil-50)*.4],['왕권',(S.p-50)*.35],['민심',(S.a-50)*.3]]}};
 const KGE={
@@ -8032,12 +8033,12 @@ const KG_ERA={taejo:['waegu','pyojeon','wangja1','yeojinNE','wangssi'],taejong:[
  heungseon:['byeongin','sinmi','oppert','choik','imsul'],gojong:['ganghwa','imo','gapsin','donghak','eulsa','hague']};
 // 같은 임금으로 다시 해도 언제 · 무엇이 먼저 오는지는 조짐과 문턱으로 판마다 달라진다
 const kgList=()=>(KG_ERA[CAR&&CAR.bgid]||KG_ERA.seonjo).map(id=>Object.assign({id:id},KGK[KGE[id].k],KGE[id]));
-const KG_TH=[75,135];   // 문턱: 판마다 국난마다 이 사이에서 무작위로 정한다(언제 올지 미리 알 수 없게)
-const KG_B=36;   // 왕권을 지킬 기본 가능성(양위 강요는 30)
+const KG_TH=[68,124];   // (v5.2: 75~135 → 68~124) 문턱: 판마다 국난마다 이 사이에서 무작위로 정한다(언제 올지 미리 알 수 없게)
+const KG_B=30;   // 왕권을 지킬 기본 가능성(양위 강요는 25). v5.2에서 36 → 30
 const KG_P=[5,80];   // 가능성의 바닥과 천장. 직접 지휘를 잘하면 천장을 10 넘을 수 있다
-const KG_TIRE=6;   // 국난을 하나 넘길 때마다 다음 국난은 이만큼 어려워진다(나라가 지쳤다)
+const KG_TIRE=8;   // 국난을 하나 넘길 때마다 다음 국난은 이만큼 어려워진다(나라가 지쳤다)
 // 가끔(국난의 45%) 맞서는 길을 고른 뒤 직접 지휘한다(lazy/kgmini). 지휘 결과(0 대승 ~ 3 참패)만큼 가능성이 오르내린다
-const KG_MGP=.45,KG_MG=[15,5,-8,-20],KG_MGT=['대승','선전','고전','참패'];
+const KG_MGP=.45,KG_MG=[12,4,-8,-20],KG_MGT=['대승','선전','고전','참패'];
 const KG_MGK={sea:'sea',north:'wall',coup:'spy',palace:'spy',oust:'spy',revolt:'riot',foreign:'talk'};
 // 가능성은 숫자 대신 네 단계로만 보여 준다(가장 높은 숫자만 고르면 끝나지 않게)
 const kgBand=p=>p>=65?['유리','g']:p>=48?['반반','m']:p>=30?['불리','o']:['위태','r'];
@@ -8230,7 +8231,7 @@ function acEnter(id,p){PF={school:p.school,name:p.name,phone:p.phone||'',agree:t
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v5.1';
+const GAME_VER='v5.2';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -8404,6 +8405,10 @@ setTimeout(()=>{try{const me=!IN_ART&&acGet();if(!me||!me.prof||!me.prof.name)re
    홈 메뉴 「기타 → 업데이트 소식」에서 언제든 다시 볼 수 있다. 처음 온 사람(기록이 전혀 없음)에게는 띄우지 않고 읽은 것으로 쳐 둔다.
    v1부터 v4.9까지 모든 업데이트를 넣었다(v4.7은 크게, 나머지는 접어서 짧게). */
 const PATCHES=[
+ {v:'v5.2',t:'난이도 조정 · 대한민국 · 조선 · 미국',d:'2026-11-02',l:[
+  ['대한민국 연임이 쉬워졌어요','연임 개헌 과제가 권력 45부터 열리고(전에는 50), 국민투표 통과 가능성이 지지율이 같아도 25%p쯤 높아요. 임기 말 마지막 승부의 성공 가능성도 올랐어요(최대 85%).'],
+  ['조선 왕권 지키기가 어려워졌어요','국난에서 왕권을 지킬 기본 가능성이 낮아지고(36 → 30), 국난을 넘길 때마다 다음 국난이 더 어려워지며(−6 → −8%p), 직접 지휘 대승 보너스가 줄고(+15 → +12%p), 국난의 조짐도 조금 더 빨리 차요.'],
+  ['미국이 쉬워졌어요','달마다 지지율과 경제가 덜 깎이고 양극화가 덜 자라요. 수정헌법 22조 폐지 비준 가능성과 임기 말 마지막 승부 가능성도 올랐어요.']]},
  {v:'v5.1',t:'동계올림픽 · 특별 과제 버그',d:'2026-11-02',l:[
   ['동계올림픽은 고르는 과제로','하계올림픽 2년 뒤에 저절로 열리지 않고, 그해부터 특별 국정 과제 판의 하계올림픽 자리에 동계올림픽 칸이 생겨요. 원할 때 골라요.'],
   ['엉뚱한 폐막식','올림픽이 해를 넘겨 이어지는 중에 다른 과제(방역 총력전 등)를 고르면, 백신 슬래시 뒤에 올림픽 폐막식이 나오던 문제를 고쳤어요. 앞 과제가 끝나지 않은 해에는 과제 판이 열리지 않아요.']]},
