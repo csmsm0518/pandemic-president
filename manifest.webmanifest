@@ -1,0 +1,17 @@
+{
+  "name": "팬데믹 대통령",
+  "short_name": "팬데믹 대통령",
+  "description": "위기 속 선택으로 한 사람의 정치 인생을 플레이하는 브라우저 게임",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#efe9dd",
+  "theme_color": "#efe9dd",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
