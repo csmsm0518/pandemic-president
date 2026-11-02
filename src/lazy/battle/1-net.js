@@ -19,7 +19,7 @@ function btAuth(){const ok=a=>a&&a.uid&&a.it&&a.exp>Date.now()+120e3;
     .then(d=>save({uid:d.localId,it:d.idToken,rt:d.refreshToken,exp:Date.now()+(+d.expiresIn||3600)*1e3}));
   const rt=BT_AU&&BT_AU.rt;
   const p=rt?fetch(BT_CFG.st+'/token?key='+BT_CFG.key,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'grant_type=refresh_token&refresh_token='+encodeURIComponent(rt)}).then(btJ)
-      .then(d=>save({uid:d.user_id,it:d.id_token,rt:d.refresh_token,exp:Date.now()+(+d.expires_in||3600)*1e3}),up):up();
+      .then(d=>save({uid:d.user_id,it:d.id_token,rt:d.refresh_token,exp:Date.now()+(+d.expires_in||3600)*1e3}),e=>e&&e.st===400?up():Promise.reject(e)):up();   // 새 계정은 토큰이 정말 무효(400)일 때만. 잠깐 끊긴 것이면 같은 uid를 지킨다
   BT_AP=p.then(a=>{BT_AP=null;return a;},e=>{BT_AP=null;throw e;});
   return BT_AP;}
 // DB 읽고 쓰기. 토큰이 막 끝났으면(401) 한 번 새로 받아 다시 한다

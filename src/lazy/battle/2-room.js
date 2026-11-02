@@ -67,7 +67,10 @@ function btJoin(raw){const code=String(raw||'').toUpperCase().replace(/[^A-Z0-9]
 function btEnter(code){if(BT)btStop(BT);try{localStorage.setItem(BT_LAST,code);}catch(e){}
   BT={code:code,uid:BT_AU.uid,room:null,played:-1,view:'room'};const me=BT;
   me.L=btListen('rooms/'+code,(T,why)=>{if(BT!==me)return;btOnRoom(T,why);});
-  const beat=()=>{if(BT!==me)return;btReq('PUT','rooms/'+code+'/p/'+me.uid+'/at',BT_TS).then(v=>{if(typeof v==='number')BT_OFF=v-Date.now();},()=>{});};
+  const beat=()=>{if(BT!==me)return;
+    // 결산 화면에서 '대결 나가기' 대신 홈 등으로 떠났으면 방에서도 나간다(남아 있으면 '준비 중'으로 보여 다음 판을 막는다)
+    if(me.view==='res'){if(document.getElementById('btRes'))me.resSeen=1;else if(me.resSeen){btLeave();return;}}
+    btReq('PUT','rooms/'+code+'/p/'+me.uid+'/at',BT_TS).then(v=>{if(typeof v==='number')BT_OFF=v-Date.now();},()=>{});};
   me.hb=setInterval(beat,15e3);beat();
   btPanel().innerHTML='<p class="bt-wait">방에 들어가는 중…</p>';}
 function btStop(b){if(b.L)b.L.close();clearInterval(b.hb);clearInterval(b.rep);btHudOff();}
@@ -85,6 +88,11 @@ function btOnRoom(T,why){const b=BT;
     if(b.view==='play'||b.view==='res'||b.view==='wo'){if(gone){if(BT_RES&&BT_RES.code===b.code)BT_RES.closed=1;BT=null;btStop(b);}btHudDraw();btResDraw();if(b.view==='wo')woRoom(gone?null:T);return;}
     BT=null;btStop(b);if(document.querySelector('.bt-bg'))btEntry(gone?'방이 닫혔어요.':'방에서 나왔어요.');return;}
   b.room=T;
+  // 방장이 나갔거나 연결이 끊겼으면, 남은 사람 중 가장 먼저 들어온 사람이 방장을 이어받는다(아니면 방이 영영 시작되지 않는다)
+  if(T.host!==b.uid&&!b.claim&&!(T.p[T.host]&&btLive(T.p[T.host]))){const L=btP(T).filter(btLive);
+    if(L.length&&L[0].uid===b.uid){b.claim=1;btReq('PUT','rooms/'+b.code+'/host',b.uid)
+      .then(()=>{if(BT===b&&b.view==='room'&&b.room&&b.room.st==='play')return btReq('PATCH','rooms/'+b.code,{st:'lobby'});})
+      .catch(()=>{}).then(()=>{b.claim=0;});}}
   if(T.st==='play'&&(+T.rd||0)>b.played&&(b.view==='room'||b.view==='count')){b.played=+T.rd||0;return btCount(T);}
   if(b.view==='room'){if(!document.getElementById('btPl'))btRoom();else btRoomUpd();}
   if(b.view==='play')btHudDraw();
