@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"battle":{"v":"faa8acd6ef","h":"27d9f72d414fa2f7"},"board":{"v":"c00012fc7d","h":"36258d130deedbab"},"boxes":{"v":"9f3a40eb75","h":"cdd3c4c349144d91"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"dex":{"v":"a834d42e11","h":"214b42847560de78"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"f2406bd47f","h":"58269006748ccbe1"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"sail":{"v":"f33f245bee","h":"5e31bd0bd96d66a3"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"9c063d1e79","h":"8be41e26b02aa7ed"},"whockey":{"v":"4a95063de7","h":"79ff537df9c211af"},"wjump":{"v":"8ef76a96e8","h":"68c8ed4472fdd34e"},"wskate":{"v":"0467876b26","h":"61b1d673af868556"}};
+const LZ_M={"battle":{"v":"1df969e3a2","h":"3d1bf9aa1a813894"},"board":{"v":"c00012fc7d","h":"36258d130deedbab"},"boxes":{"v":"9f3a40eb75","h":"cdd3c4c349144d91"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"dex":{"v":"a834d42e11","h":"214b42847560de78"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"f2406bd47f","h":"58269006748ccbe1"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"sail":{"v":"f33f245bee","h":"5e31bd0bd96d66a3"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"93fe18c498","h":"7ae7436429524514"},"whockey":{"v":"4a95063de7","h":"79ff537df9c211af"},"wjump":{"v":"b76e628a74","h":"051fb590c1646b11"},"wskate":{"v":"6d0ed6ce3a","h":"a407b9cdb8bc3715"}};
 function btOpen(){return lzCall('battle','btOpen',arguments);}
 function btFinish(){return lzCall('battle','btFinish',arguments);}
 function btResMount(){return lzCall('battle','btResMount',arguments);}
@@ -4863,9 +4863,9 @@ const MG_SPORT={
   pk:{n:'축구 결승 승부차기',how:'우리 차례엔 직접 차고, 상대 차례엔 직접 막는다',run:(b,d)=>mgPK(b,d),sim:()=>simPK()},
   tkd:{n:'태권도 결승',how:'상대의 발차기를 막고 반격해 점수를 딴다',run:(b,d)=>mgTkd(b,d),sim:()=>simTkd()},
   // 동계 종목: 종목마다 조각이 따로 있다
-  skate:{n:'쇼트트랙 500m 결승',how:'곧은 길에서 밀고, 코너 앞에서 떼어 속도를 맞춘다',run:(b,d)=>mgSkate(b,d),sim:()=>simSkate(),lz:'wskate'},
-  curl:{n:'컬링 결승 마지막 엔드',how:'겨누고 회전을 고른 뒤 세기를 멈추고 연타로 스위핑한다',run:(b,d)=>mgCurl(b,d),sim:()=>simCurl(),lz:'wcurl'},
-  jump:{n:'스키점프 라지힐 결승',how:'도약·돌풍·착지, 표시가 맞물릴 때 한 번씩 누른다',run:(b,d)=>mgJump(b,d),sim:()=>simJump(),lz:'wjump'},
+  skate:{n:'쇼트트랙 500m 결승',how:'곧은 길에서 밀고, 코너 앞에서 떼어 속도를 맞춘다',run:(b,d,n)=>mgSkate(b,d,n),sim:()=>simSkate(),lz:'wskate'},
+  curl:{n:'컬링 결승 마지막 엔드',how:'겨누고 회전을 고른 뒤 세기를 멈추고 연타로 스위핑한다',run:(b,d,n)=>mgCurl(b,d,n),sim:()=>simCurl(),lz:'wcurl'},
+  jump:{n:'스키점프 라지힐 결승',how:'도약·돌풍·착지, 표시가 맞물릴 때 한 번씩 누른다',run:(b,d,n)=>mgJump(b,d,n),sim:()=>simJump(),lz:'wjump'},
   hockey:{n:'아이스하키 결승',how:'스트라이커를 끌어 퍽을 쳐서 상대 골문에 넣는다',run:(b,d)=>mgHockey(b,d),sim:()=>simHockey(),lz:'whockey'},
   // 체육 종목이 아닌 경기: 시상식(nc) 없이 바로 판정한다
   war:{n:'전선 배치',how:'사흘 동안 세 전선에 병력을 나눠 보낸다',run:(b,d)=>mgWar(b,d),sim:()=>simWar(),nc:1,lz:'games',
@@ -8233,7 +8233,7 @@ function acEnter(id,p){PF={school:p.school,name:p.name,phone:p.phone||'',agree:t
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v5.3';
+const GAME_VER='v5.4';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -8407,6 +8407,10 @@ setTimeout(()=>{try{const me=!IN_ART&&acGet();if(!me||!me.prof||!me.prof.name)re
    홈 메뉴 「기타 → 업데이트 소식」에서 언제든 다시 볼 수 있다. 처음 온 사람(기록이 전혀 없음)에게는 띄우지 않고 읽은 것으로 쳐 둔다.
    v1부터 v4.9까지 모든 업데이트를 넣었다(v4.7은 크게, 나머지는 접어서 짧게). */
 const PATCHES=[
+ {v:'v5.4',t:'동계올림픽 · 같은 경기장',d:'2026-11-02',big:1,l:[
+  ['쇼트트랙: 같은 링크에서 함께','모두 같은 순간에 출발 총성을 듣고, 친구들이 바로 옆에서 달려요. 앞지르고 앞질리는 게 그대로 보여요.'],
+  ['스키점프: 같은 언덕에서 함께','모두 같은 순간에 출발하고, 친구들 점퍼가 반투명으로 함께 날아가요.'],
+  ['컬링: 1:1 맞대결','두 명씩 짝을 지어 돌을 번갈아 던져요(남는 한 명은 인공지능과). 상대가 던진 돌은 그대로 다시 굴러가 보여요. 메달이 적은 쪽이 마지막 돌(망치)을 쥐어요.']]},
  {v:'v5.3',t:'실시간 대결 · 동계올림픽',d:'2026-11-02',big:1,l:[
   ['동계올림픽 대결','실시간 대결 대기실에서 방장이 「동계올림픽」을 고르면, 쇼트트랙 · 스키점프 · 컬링 · 아이스하키 네 종목을 모두 함께 차례로 치러요.'],
   ['종목마다 시상식','모두 안내 화면에 모이면 3 · 2 · 1로 함께 시작하고, 모두 끝나면 시상대에 올라요. 금메달이 많은 사람이 우승이에요.'],

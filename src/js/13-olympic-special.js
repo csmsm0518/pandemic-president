@@ -232,9 +232,9 @@ const MG_SPORT={
   pk:{n:'축구 결승 승부차기',how:'우리 차례엔 직접 차고, 상대 차례엔 직접 막는다',run:(b,d)=>mgPK(b,d),sim:()=>simPK()},
   tkd:{n:'태권도 결승',how:'상대의 발차기를 막고 반격해 점수를 딴다',run:(b,d)=>mgTkd(b,d),sim:()=>simTkd()},
   // 동계 종목: 종목마다 조각이 따로 있다
-  skate:{n:'쇼트트랙 500m 결승',how:'곧은 길에서 밀고, 코너 앞에서 떼어 속도를 맞춘다',run:(b,d)=>mgSkate(b,d),sim:()=>simSkate(),lz:'wskate'},
-  curl:{n:'컬링 결승 마지막 엔드',how:'겨누고 회전을 고른 뒤 세기를 멈추고 연타로 스위핑한다',run:(b,d)=>mgCurl(b,d),sim:()=>simCurl(),lz:'wcurl'},
-  jump:{n:'스키점프 라지힐 결승',how:'도약·돌풍·착지, 표시가 맞물릴 때 한 번씩 누른다',run:(b,d)=>mgJump(b,d),sim:()=>simJump(),lz:'wjump'},
+  skate:{n:'쇼트트랙 500m 결승',how:'곧은 길에서 밀고, 코너 앞에서 떼어 속도를 맞춘다',run:(b,d,n)=>mgSkate(b,d,n),sim:()=>simSkate(),lz:'wskate'},
+  curl:{n:'컬링 결승 마지막 엔드',how:'겨누고 회전을 고른 뒤 세기를 멈추고 연타로 스위핑한다',run:(b,d,n)=>mgCurl(b,d,n),sim:()=>simCurl(),lz:'wcurl'},
+  jump:{n:'스키점프 라지힐 결승',how:'도약·돌풍·착지, 표시가 맞물릴 때 한 번씩 누른다',run:(b,d,n)=>mgJump(b,d,n),sim:()=>simJump(),lz:'wjump'},
   hockey:{n:'아이스하키 결승',how:'스트라이커를 끌어 퍽을 쳐서 상대 골문에 넣는다',run:(b,d)=>mgHockey(b,d),sim:()=>simHockey(),lz:'whockey'},
   // 체육 종목이 아닌 경기: 시상식(nc) 없이 바로 판정한다
   war:{n:'전선 배치',how:'사흘 동안 세 전선에 병력을 나눠 보낸다',run:(b,d)=>mgWar(b,d),sim:()=>simWar(),nc:1,lz:'games',

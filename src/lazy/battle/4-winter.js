@@ -7,9 +7,9 @@
    진행 g: r 판 · y 지금 종목(0~3) · t 끝낸 종목 수 · n 4 · a 경기 중이면 1 · ex 종목별 값 '값,값,…'(못 끝내면 x) · lid 종목별 짧은 기록 'a|b|…' · sc 메달 점수 · fin 모두 끝남 */
 const WO_EV=['skate','jump','curl','hockey'],WO_IC={skate:'⛸️',jump:'🎿',curl:'🥌',hockey:'🏒'},
   WO_N={skate:'쇼트트랙 500m',jump:'스키점프 라지힐',curl:'컬링 · 마지막 엔드',hockey:'아이스하키'},
-  WO_HOW={skate:'같은 상대들과 4바퀴 반. <b>기록(초)</b>이 빠른 사람이 이긴다.',jump:'같은 바람에서 한 번 뛴다. <b>점수</b>(비거리 + 심판 + 바람)가 높은 사람이 이긴다.',
-    curl:'같은 상대와 마지막 엔드. <b>득점</b>이 많은 사람, 같으면 우리 돌이 버튼에 더 가까운 사람이 이긴다.',hockey:'같은 상대와 한 경기. <b>골 득실</b> → 넣은 골 → 슈팅 차 순으로 가린다.'},
-  WO_INTRO=5e3,WO_INMAX=20e3,WO_WAIT=240e3,WO_POD=7e3,WO_MED=['🥇','🥈','🥉'];
+  WO_HOW={skate:'<b>같은 링크에서 모두 함께</b> 출발해 4바퀴 반. 친구들이 바로 옆에서 달린다. <b>기록(초)</b>이 빠른 사람이 이긴다.',jump:'<b>같은 언덕에서 모두 함께</b> 뛴다(친구 점퍼는 반투명). 바람도 같다. <b>점수</b>가 높은 사람이 이긴다.',
+    curl:'<b>두 명씩 1:1</b>로 돌을 번갈아 던진다(남는 한 명은 인공지능과). 메달이 적은 쪽이 마지막 돌(망치)을 쥔다. <b>득점</b> → 버튼에 더 가까운 돌 순으로 가린다.',hockey:'같은 상대와 한 경기. <b>골 득실</b> → 넣은 골 → 슈팅 차 순으로 가린다.'},
+  WO_INTRO=5e3,WO_INMAX=20e3,WO_WAIT=240e3,WO_POD=7e3,WO_MED=['🥇','🥈','🥉'],WO_SYNC={skate:1,jump:1};   // WO_SYNC: 같은 경기장에서 같은 시각에 출발하는 종목
 let WO=null;   // {code, rd, seed, k 지금 종목, ph intro|count|play|wait|pod|final, at 이 단계에 들어온 때, ex 내 값, lb 내 짧은 기록, seen uid→마지막 칸, room, iv, r0}
 const woIs=T=>String((T&&T.seed)||'')[0]==='W';
 // 짧은 기록 → 보여 줄 글
@@ -41,11 +41,20 @@ function woW(g){const b=BT;if(!b||!WO||b.code!==WO.code)return;btReq('PATCH','ro
   // 내 칸에도 바로 넣는다(서버 소식이 오기 전에 화면을 그릴 수 있게)
   if(WO.room&&WO.room.p&&WO.room.p[b.uid])WO.room=btSet(WO.room,'p/'+b.uid+'/g',Object.assign({},WO.room.p[b.uid].g||{},g));}
 
+// 위치 신호 보내기: 0.11초에 한 번까지만, 바뀌었을 때만(마지막 값은 꼭 보낸다)
+function woSend(a){const W=WO;if(!W||!BT||BT.code!==W.code||a===W.la)return;const now=Date.now(),wt=110-(now-W.lt);
+  if(wt>0){W.pend=a;if(!W.ptm)W.ptm=setTimeout(()=>{if(WO!==W)return;W.ptm=0;woSend(W.pend);},wt);return;}
+  W.lt=now;W.la=a;btReq('PATCH','rooms/'+BT.code+'/p/'+BT.uid+'/g',{a:a}).catch(()=>{W.la=0;});}
+// 컬링 짝: 들어온 순서로 두 명씩(1-2, 3-4). 남는 한 명은 인공지능과. 메달 점수가 적은 쪽이 망치, 같으면 나중에 들어온 사람
+function woPair(){const W=WO,me=BT_AU&&BT_AU.uid,P=woPl(),L=P.filter(p=>woOn(p)||p.uid===me),i=L.findIndex(p=>p.uid===me),j=i^1;
+  if(i<0||j>=L.length)return null;const tb=woTable(P,W.k),pt=u=>woPts((tb.find(o=>o.p.uid===u)||{m:[0,0,0]}).m),a=pt(L[i].uid),b=pt(L[j].uid);
+  return {opp:{uid:L[j].uid,n:L[j].n||'익명'},ham:a<b||(a===b&&i>j)};}
+
 /* 시작: 3 · 2 · 1이 끝나면 btBegin이 부른다 */
 function woBegin(T){const b=BT;if(!b)return;b.view='wo';b.rd=+T.rd||0;
   const o=document.querySelector('.bt-bg');if(o)o.remove();BT_FROM=null;btHudOff();try{cineClose();}catch(e){}
   if(WO)woClose();
-  WO={code:b.code,rd:b.rd,seed:String(T.seed||''),k:0,ph:'',at:0,ex:[],lb:[],seen:{},room:T,r0:null};
+  WO={code:b.code,rd:b.rd,seed:String(T.seed||''),k:0,ph:'',at:0,ex:[],lb:[],seen:{},room:T,r0:null,st0:+T.t0||0,go:0,lt:0,la:0,ptm:0};
   let bg=document.getElementById('woBg');if(!bg){bg=document.createElement('div');bg.id='woBg';bg.className='wo-bg';document.body.appendChild(bg);}
   bg.innerHTML='<div class="wo" role="region" aria-label="동계올림픽 대결"><div class="wo-top"><b>동계올림픽 대결<small>방 '+gEsc(b.code)+' · '+b.rd+'번째 판</small></b><span id="woStep"></span><button type="button" id="woQuit">기권</button></div>'+
     '<div class="wo-strip" id="woStrip" aria-live="polite"></div><div class="wo-main" id="woMain"></div></div>';
@@ -74,15 +83,23 @@ const woMain=h=>{const m=document.getElementById('woMain');if(m)m.innerHTML=h;re
 function woLag(f){const me=BT_AU&&BT_AU.uid;return woPl().filter(p=>p.uid!==me&&woOn(p)&&!f(p.g||{}));}
 
 /* 안내 → 3 · 2 · 1 → 경기 → 기다림 → 시상대 */
-function woIntro(k){const W=WO;W.k=k;W.ph='intro';W.at=Date.now();const e=WO_EV[k],G=MG_SPORT[e];
+function woIntro(k){const W=WO;W.k=k;W.ph='intro';W.at=Date.now();W.srv0=btNow();W.go=0;W.t0s=0;const e=WO_EV[k],G=MG_SPORT[e],pr=e==='curl'?woPair():null;
   woW({y:k,a:0});try{SFX.gate();}catch(x){}
   woMain('<div class="wo-in"><span class="wo-ic" aria-hidden="true">'+WO_IC[e]+'</span><span class="wo-k">'+(k+1)+'번째 종목</span><h2>'+WO_N[e]+'</h2>'+
-    '<p class="wo-how">'+(G?G.how:'')+'</p><p class="wo-rule">'+WO_HOW[e]+'</p><div class="wo-wt" id="woWt"></div></div>');
+    '<p class="wo-how">'+(G?G.how:'')+'</p><p class="wo-rule">'+WO_HOW[e]+'</p>'+(e==='curl'?'<p class="wo-vs">'+(pr?'<b>나</b> vs <b>'+gEsc(pr.opp.n)+'</b> · 망치: '+(pr.ham?'나':gEsc(pr.opp.n)):'짝이 없어 <b>인공지능</b>과 맞붙는다')+'</p>':'')+'<div class="wo-wt" id="woWt"></div></div>');
   woStrip();woTick();}
 function woTick(){const W=WO;if(!W)return;const now=Date.now(),k=W.k;
   if(W.ph==='intro'){const lag=woLag(g=>(+g.y||0)>=k&&(+g.r||0)===W.rd),el=document.getElementById('woWt'),dt=now-W.at;
-    if(el)el.innerHTML=lag.length&&dt<WO_INMAX?'<b>'+lag.map(p=>gEsc(p.n||'익명')).join(' · ')+'</b> 기다리는 중 · '+Math.ceil((WO_INMAX-dt)/1000)+'초 뒤 시작':'곧 시작해요';
-    if(dt>=WO_INTRO&&(!lag.length||dt>=WO_INMAX))woCount();}
+    const ready=dt>=WO_INTRO&&(!lag.length||dt>=WO_INMAX);
+    if(WO_SYNC[WO_EV[k]]){const T=W.room,host=!!(T&&BT&&T.host===BT.uid);
+      // 출발 시각(서버 시각)은 방장이 정해 방의 t0에 넣는다. 방장이 없으면 각자 정한다
+      if(!W.go&&T&&+T.t0&&+T.t0!==W.st0&&+T.t0>W.srv0-4000)W.go=+T.t0;
+      if(!W.go&&host&&ready&&!W.t0s){W.t0s=1;W.go=btNow()+5000;btReq('PATCH','rooms/'+BT.code,{t0:W.go}).catch(()=>{});}
+      if(!W.go&&dt>=WO_INMAX+8000)W.go=btNow()+3000;
+      if(W.go){const left=W.go-btNow();if(el)el.innerHTML='<span class="wo-gl">모두 함께 출발</span><b class="wo-cd">'+Math.max(1,Math.ceil(left/1000))+'</b>';if(left<=3600)woPlay();}
+      else if(el)el.innerHTML=lag.length&&dt<WO_INMAX?'<b>'+lag.map(p=>gEsc(p.n||'익명')).join(' · ')+'</b> 기다리는 중 · '+Math.ceil((WO_INMAX-dt)/1000)+'초 안에 시작':'출발 시각을 맞추는 중…';}
+    else{if(el)el.innerHTML=lag.length&&dt<WO_INMAX?'<b>'+lag.map(p=>gEsc(p.n||'익명')).join(' · ')+'</b> 기다리는 중 · '+Math.ceil((WO_INMAX-dt)/1000)+'초 뒤 시작':'곧 시작해요';
+      if(ready)woCount();}}
   else if(W.ph==='wait'){const lag=woLag(g=>(+g.t||0)>k),dt=now-W.at,el=document.getElementById('woWt');
     if(el)el.innerHTML=lag.length?'<b>'+lag.map(p=>gEsc(p.n||'익명')).join(' · ')+'</b> 경기 중 · 끝나면 시상식':'시상식으로…';
     if(!lag.length||dt>=WO_WAIT)woPod();}
@@ -93,9 +110,13 @@ function woCount(){const W=WO;W.ph='count';let n=3;
   const t=setInterval(()=>{if(WO!==W||W.ph!=='count'){clearInterval(t);return;}n--;if(n>0)return show();clearInterval(t);woPlay();},800);}
 function woPlay(){const W=WO,k=W.k,e=WO_EV[k],G=MG_SPORT[e];W.ph='play';W.at=Date.now();woW({a:1});woStrip();
   const m=woMain('<div class="wo-g" id="woBox"></div>'),box=document.getElementById('woBox');
+  // 같은 경기장: 함께 출발하는 종목은 친구들 신호(진행 칸 a), 컬링은 짝의 투구(진행 칸 m)를 넘긴다
+  const me=BT_AU&&BT_AU.uid,gOf=u=>{const p=W.room&&W.room.p&&W.room.p[u],g=p&&p.g;return g&&+g.r===W.rd&&+g.y===k?g:null;};let net=null;
+  if(WO_SYNC[e]&&W.go)net={at:W.go-BT_OFF,rd:W.rd,peers:woPl().filter(p=>p.uid!==me&&woOn(p)).map(p=>({uid:p.uid,n:p.n||'익명'})),raw:u=>{const g=gOf(u);return g?+g.a||0:0;},send:woSend};
+  if(e==='curl'){const pr=woPair();if(pr)net={rd:W.rd,opp:pr.opp,hammer:pr.ham,m:u=>{const g=gOf(u);return g?g.m||'':'';},sendM:s=>woW({m:s})};}
   let gone=0;const done=()=>{if(gone++||WO!==W)return;if(W.r0){Math.random=W.r0;W.r0=null;}const o=MG_OUT;MG_OUT=null;woDone(k,o);};
   const run=()=>{if(WO!==W||!box.isConnected)return;MG_OUT=null;if(!W.r0)W.r0=Math.random;Math.random=woRand(k);
-    try{if(window.__woFake)window.__woFake(e,box,done);else G.run(box,done);}catch(x){done();setTimeout(()=>{throw x;});}};
+    try{if(window.__woFake)window.__woFake(e,box,done,net);else G.run(box,done,net);}catch(x){done();setTimeout(()=>{throw x;});}};
   if(G&&G.lz)lzThen(G.lz,run);else run();
   try{m.scrollIntoView({block:'start'});}catch(x){}}
 function woDone(k,o){const W=WO;const e=WO_EV[k];W.ex[k]=o&&isFinite(o.v)?String(Math.round(o.v*100)/100):'x';W.lb[k]=woShort(e,o);

@@ -53,6 +53,7 @@
               "sc": { ".validate": "newData.isNumber()" },
               "lid": { ".validate": "newData.isString() && newData.val().length <= 40" },
               "ex": { ".validate": "newData.isString() && newData.val().length <= 60" },
+              "m": { ".validate": "newData.isString() && newData.val().length <= 600" },
               "$other": { ".validate": false }
             },
             "$other": { ".validate": false }

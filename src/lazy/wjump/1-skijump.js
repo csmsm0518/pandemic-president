@@ -73,7 +73,10 @@ const SJ_SND={
  bell:w=>{tone(800,'square',.09,.04,w);tone(540,'square',.12,.035,w+.005);},
  roar:big=>{sweep(2.8,big?.12:.06,380,1000,0,.35);noise(2.2,big?.06:.03,.3,1300);if(big)for(let i=0;i<7;i++)SJ_SND.bell(.25+i*.2+Math.random()*.06);}};
 const sjSfx=(k,a)=>{try{SJ_SND[k](a);}catch(e){}};
-function mgJump(box,done){const $=id=>document.getElementById(id);let RM=false;try{RM=matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}
+// 실시간 대결(동계올림픽): 친구 점퍼 신호 = 경기 시계 · 월드 x · y · 단계(0 진입로 · 1 비행 · 2 착지 · 3 넘어짐)를 정수 하나에 담는다
+const sjPack=(t,x,y,p)=>((Math.max(0,Math.min(9999,Math.round((t+3)*100)))*1e4+Math.max(0,Math.min(9999,Math.round((x+100)*10))))*1e4+Math.max(0,Math.min(9999,Math.round((y+300)*10))))*4+p;
+function sjUnpack(a){const p=a%4;a=(a-p)/4;const y=a%1e4;a=(a-y)/1e4;const x=a%1e4,t=(a-x)/1e4;return {t:t/100-3,x:x/10-100,y:y/10-300,p:p};}
+function mgJump(box,done,net){if(net&&!(net.peers&&net.peers.length))net=null;const $=id=>document.getElementById(id);let RM=false;try{RM=matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}
   let home='대한민국';try{home=OLY_HOME()||home;}catch(e){}
   const riv=sjRivals(),W0=sjWind(),nz=sjG()*1.2,lead=riv.reduce((a,r)=>r.tot>a.tot?r:a),bd=riv.slice().sort((a,b)=>b.tot-a.tot);
   // 선두를 넘으려면 몇 m가 필요한지(심판 54점을 받는다고 보고) — 중계 화면의 초록 선
@@ -88,7 +91,7 @@ function mgJump(box,done){const $=id=>document.getElementById(id);let RM=false;t
     '<div class="sj-fx" id="sjFx"></div><div class="sj-ov" id="sjOv"></div></div>'+
     '<div class="sj-side"><div class="pk-msg" id="sjMsg">마지막 점퍼다. 출발을 누르면 신호가 켜진다</div>'+
     '<button type="button" id="sjP" class="sj-p" disabled>누르기<small>스페이스 · 엔터</small></button><button type="button" id="sjGo" class="pri">출발</button></div></div></div>';
-  const root=$('sjRoot'),sc=$('sjSc'),cv=$('sjC'),g=cv.getContext('2d'),pb=$('sjP');
+  const root=$('sjRoot'),sc=$('sjSc'),cv=$('sjC'),g=cv.getContext('2d'),pb=$('sjP'),PE=net?net.peers.map(p=>({uid:p.uid,n:String(p.n||'친구').slice(0,8),buf:[],raw:0})):[];
   let W=320,H=220,S=8,DPR=1;
   const fit=()=>{const side=innerHeight<480&&root.clientWidth>=520;root.classList.toggle('side',side);
     const w=sc.clientWidth||320,cap=w*(w<480?.85:.62);W=w;H=Math.round(Math.max(side?150:180,Math.min(cap,side?innerHeight-96:innerHeight-260)));
@@ -117,7 +120,7 @@ function mgJump(box,done){const $=id=>document.getElementById(id);let RM=false;t
     if(t<TL||!landed){const u=Math.min(1,(t-TE)/SJ.TFL),r=gfn(u),s=dCur*r,x=sjXs(s),B=14+6*Math.max(0,qv),h=(1-r)*(3+B*r);return {x:x,y:sjGy(x)+h,s:s,v:dCur*(.92+.16*u)/SJ.TFL,h:h};}
     const x=sjXs(outS);return {x:x,y:sjGy(x),a:sjGa(x),s:outS,v:outV,h:0};};
   // 누르기: 이벤트 시각(ts)을 경기 시계로 바꿔, 그 순간 떠 있는 표시 하나에만 매긴다
-  const press=ts=>{if(st==='brief'){start();return;}if(st!=='play')return;
+  const press=ts=>{if(st==='brief'){if(!net)start();return;}if(st!=='play')return;
     const now=performance.now();if(!(ts>0)||Math.abs(ts-now)>2000)ts=now;const tp=(ts-clk0)/1000;
     pb.classList.remove('hit');void pb.offsetWidth;pb.classList.add('hit');
     if(R.e===undefined&&tp>=TE-.95&&tp<=TE+.25){const e=R.e=tp-TE,a=Math.abs(e);R.pe=tp;qv=sjQ(e);
@@ -137,7 +140,7 @@ function mgJump(box,done){const $=id=>document.getElementById(id);let RM=false;t
   document.addEventListener('keydown',key);addEventListener('resize',fit);
   const stop=()=>{cancelAnimationFrame(raf);raf=0;document.removeEventListener('keydown',key);removeEventListener('resize',fit);};
   const start=()=>{if(st!=='brief')return;try{aInit();}catch(e){}st='play';$('sjGo').style.display='none';$('sjOv').style.display='none';pb.disabled=false;
-    clk0=performance.now()+1800;T=-1.8;lastNow=performance.now();msg('신호가 초록으로 바뀌면 출발한다');};
+    clk0=performance.now()+(net?Math.max(0,net.at-Date.now()):1800);T=(performance.now()-clk0)/1000;lastNow=performance.now();msg('신호가 초록으로 바뀌면 출발한다');};
   $('sjGo').onclick=()=>{if(st==='brief')start();else if(st==='end'){try{SFX.click();}catch(e){}stop();done(res.t);}};
   // 고정 걸음(1/240초)으로 시간을 나아가게 해, 화면 주사율과 상관없이 판정 창이 같다
   const DT=1/240;
@@ -290,6 +293,12 @@ function mgJump(box,done){const $=id=>document.getElementById(id);let RM=false;t
       if(fallen){const ft=fallT?T-fallT:0;P=sjMix(SJ_PO.two,SJ_PO.fall,ft/.3);if(!RM&&ft<.8)ang+=Math.sin(ft*9)*.25;}
       else if(Lk===4)P=lt<.9?SJ_PO.touch:sjMix(SJ_PO.touch,SJ_PO.glide,(lt-.9)/.6);
       else{const lp=Lk<=1?SJ_PO.tele:SJ_PO.two;P=lt<1?lp:sjMix(lp,res&&res.L<=1?SJ_PO.glide:sjMix(SJ_PO.glide,SJ_PO.two,.5),(lt-1)/.6);if(R.le===undefined)P=SJ_PO.two;}}
+    // 친구 점퍼: 같은 언덕 위에 반투명으로(받은 신호를 0.15초 늦게 이어 그린다)
+    if(PE.length){
+      PE.forEach(q=>{const B=q.buf;if(!B.length)return;const st2=t=>{let i=0;while(i<B.length-1&&B[i+1].t<=t)i++;const a=B[i],b=B[i+1];if(b&&t>=a.t){const r=(t-a.t)/Math.max(1e-3,b.t-a.t);return {x:a.x+(b.x-a.x)*r,y:a.y+(b.y-a.y)*r,p:a.p};}return a;};
+        const t=T-.15,A=st2(t),B2=st2(t-.06),an=A.p===2||A.p===3?sjGa(A.x):Math.atan2(A.y-B2.y,A.x-B2.x)||0,PP=A.p===0?(t<0?SJ_PO.bar:SJ_PO.tuck):A.p===1?SJ_PO.fly:A.p===2?SJ_PO.tele:SJ_PO.fall;
+        const X=sx(A.x),Y=sy(A.y);if(X<-60||X>W+60||Y<-60||Y>H+60)return;g.save();g.globalAlpha=.5;jumper(X,Y,an,PP,Math.max(13,S*1.6));g.restore();
+        g.font='800 11px system-ui,sans-serif';g.textAlign='center';g.lineWidth=3;g.strokeStyle='rgba(8,17,48,.85)';g.strokeText(q.n,X,Y-Math.max(13,S*1.6)*2.1);g.fillStyle='#cfe3ff';g.fillText(q.n,X,Y-Math.max(13,S*1.6)*2.1);});}
     jumper(sx(J.x),sy(J.y),ang,P,Math.max(13,S*1.6));
     // 비행 속도선(장식)
     if(fl&&!RM){g.strokeStyle='rgba(230,240,255,.28)';g.lineWidth=1;for(let i=0;i<7;i++){const yy=(rnd(i,50)*H+T*40*(i%3+1))%H,xx=(W-((T*(320+i*40)+rnd(i,51)*W)%(W+80)));ln(xx,yy,xx+18+i*3,yy-4);}}
@@ -306,12 +315,16 @@ function mgJump(box,done){const $=id=>document.getElementById(id);let RM=false;t
     if(st==='play'){// 탭을 잠깐 떠났다 오면 그만큼 시계를 멈춘 걸로 친다
       if(now-lastNow>250)clk0+=now-lastNow-16;lastNow=now;const tg=(now-clk0)/1000;let n=0;while(T+DT<=tg&&n++<240)step();}
     else if(st==='end'){T+=1/60;}
+    if(net){PE.forEach(q=>{const a=net.raw(q.uid);if(!a||a===q.raw)return;q.raw=a;const s=sjUnpack(a);if(!q.buf.length||s.t>q.buf[q.buf.length-1].t){q.buf.push(s);if(q.buf.length>40)q.buf.shift();}});
+      if(st!=='brief'){const J=where(T);net.send(sjPack(T,J.x,J.y,T<TE?0:!landed?1:(R.le===null||(res&&res.L===5))?3:2));}}
     draw();};
   // 안내판: 바람 · 선두 점수 · 세 번의 타이밍
   $('sjOv').innerHTML='<div class="sj-br"><b>라지힐 결승 · 마지막 점퍼</b><ol><li><em>도약</em>도약대 끝에서 고리가 맞물릴 때</li><li><em>비행</em>돌풍 표시가 초록 칸에 올 때</li><li><em>착지</em>땅에 닿기 직전(텔레마크)</li></ol>'+
     '<span>'+bd.map((r,i)=>(i+1)+'위 '+r.n+' <b>'+r.tot.toFixed(1)+'</b>').join(' · ')+'</span><span class="w">'+sjWtx(W0)+' · 선두를 넘으려면 약 '+need.toFixed(1)+'m</span></div>';
   // 시험·자동화용으로 일정만 바깥에서 읽을 수 있게 둔다
   box.__sj={get T(){return T;},get clk0(){return clk0;},get st(){return st;},TE:TE,TS:TS,TL:TL,GU:GU,R:R,get res(){return res;}};
+  // 실시간 대결: 모두 같은 시각(net.at)에 신호가 초록으로 바뀌게 자동으로 출발한다
+  if(net){$('sjGo').style.display='none';msg('친구들과 같은 언덕 · 곧 함께 출발한다');setTimeout(()=>{if(box.isConnected)start();},Math.max(0,net.at-1800-Date.now()));}
   raf=requestAnimationFrame(frame);}
 // 시뮬레이션: 보통 선수. 도약 ±75ms · 돌풍 ±70ms · 착지 ±120ms 정도로 흔들리고, 가끔(6%) 한 번씩 크게 어긋난다
 function simJump(){const riv=sjRivals(),w=sjWind(),k=()=>Math.random()<.06?3:1;

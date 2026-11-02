@@ -119,7 +119,13 @@ const cuClack=v=>{const k=Math.min(1,v/7);try{clk(1900,.35+.6*k);clk(3100,.25*k,
 const cuSwish=()=>{try{sweep(.11,.035,2600,1100,0,1.3);}catch(e){}};
 const CU_SHOUT=['영미~!','영미~!','영미야~!!','영미 영미!','헐! 헐!','더! 더!'];
 
-function mgCurl(box,done){const $=id=>document.getElementById(id),RM=cuRM(),home=OLY_HOME(),opn=cuNat(),base=4+Math.floor(Math.random()*4);
+// 실시간 대결(동계올림픽) 1:1: 던진 사람 기기가 돌이 멈춘 뒤 '판 ; 몇 구 ; 실제 세기 ; 각도 ; 회전 ; 종류 ; 스위핑(0.1초마다 0~9) ; 모든 돌의 최종 자리'를 보낸다.
+// 받는 쪽은 같은 세기 · 각도 · 스위핑으로 다시 굴려 보여 준 뒤, 멈추면 보낸 쪽의 최종 자리에 맞춘다(기기마다 소수점 끝이 달라도 판이 어긋나지 않게)
+function cuNetMsg(rd,i,c0,w,k,rec,S){return [rd,i,c0.v0.toFixed(5),c0.th.toFixed(6),w,k,rec.join(''),S.map(o=>o.out?'o':o.x.toFixed(3)+','+o.y.toFixed(3)).join('|')].join(';');}
+function cuNetParse(m,rd){if(!m)return null;const a=String(m).split(';');if(a.length<8||+a[0]!==rd)return null;
+  const fin=a[7].split('|').map(s=>{if(s==='o')return {o:1};const q=s.split(',');return {x:+q[0],y:+q[1]};}),L=fin[fin.length-1]||{o:1};
+  return {i:+a[1],c:{v0:+a[2],th:+a[3],w:+a[4]>0?1:-1,k:CU_KN[a[5]]?a[5]:'d',P:L.o?[0,CU.TEE]:[L.x,L.y]},sw:a[6].split('').map(Number),fin:fin};}
+function mgCurl(box,done,net){const $=id=>document.getElementById(id),RM=cuRM(),home=net?String((typeof NICK!=='undefined'&&NICK)||'나').slice(0,8):OLY_HOME(),opn=net?String(net.opp.n||'상대').slice(0,8):cuNat(),base=4+Math.floor(Math.random()*4);
   box.innerHTML='<div class="mgx cu" id="cuX">'+
    '<div class="cu-sb"><div class="u"><span>'+home+'</span><b id="cuPu"></b></div><div class="c"><strong>'+base+' : '+base+'</strong><em id="cuRd">결승 · 마지막 엔드</em></div><div class="r"><span>'+opn+'</span><b id="cuPr"></b></div></div>'+
    '<div class="cu-sc" id="cuSc"><canvas id="cuC"></canvas><div class="cu-ov" id="cuOv"></div></div>'+
@@ -130,7 +136,7 @@ function mgCurl(box,done){const $=id=>document.getElementById(id),RM=cuRM(),home
     '<button type="button" id="cuGo" class="pri cu-go">경기 시작</button></div></div>';
   const X=$('cuX'),cv=$('cuC'),g=cv.getContext('2d'),D=Math.min(2,window.devicePixelRatio||1),peb=cuPebble(D),pat=g.createPattern(peb,'repeat');
   const S=[],trail=new Map();let ph='intro',idx=-1,T=null,spec=null,B=[-1.05,CU.TEE+.05],w=1,gp=0,gd=1,sw=0,tWait=0,ghost=null,res=null,clock=0,alive=true,raf=0,acc=0,last=performance.now(),
-    shouts=[],dust=[],lastShout=0,shN=0,lastSwish=0,swPh=0,vs=0,hum=null,pd=0,drag=false,endT=0,kind='d';
+    shouts=[],dust=[],lastShout=0,shN=0,lastSwish=0,swPh=0,vs=0,hum=null,pd=0,drag=false,endT=0,kind='d',netW=0;
   // 화면 배치: 짧은 가로 화면은 시트 옆에 조작판, 그 밖에는 아래. 넓으면 시트를 눕혀(왼쪽→오른쪽) 그린다
   let CW=300,CH=300,HZ=false,LAT=300,ALG=300,sc0=40,scE=60,cam={cy:CU.TEE,sc:40};
   const fit=()=>{const iw=X.clientWidth-24,ih=window.innerHeight||640,side=iw>=400&&ih<520&&iw>ih*1.2;X.classList.toggle('side',side);
@@ -163,15 +169,19 @@ function mgCurl(box,done){const $=id=>document.getElementById(id),RM=cuRM(),home
   const setB=(x,y)=>{B=[Math.max(-CU.W/2+.25,Math.min(CU.W/2-.25,x)),Math.max(CU.HOG+.6,Math.min(CU.BACK+.5,y))];aimL();mkGhost(mkL);};
   // 차례 진행
   const next=()=>{if(!alive)return;idx++;T=null;spec=null;ghost=null;pips();if(idx>7)return finish();
-    const tm=idx%2?'u':'r';
+    const tm=net?((idx%2===1)===!!net.hammer?'u':'r'):(idx%2?'u':'r');
+    if(tm==='r'&&net&&!net.dead){ph='net';netW=0;slot('');go('상대 차례',1);msg('<b>'+opn+'</b> '+(idx+1)+'구 · 조준하는 중…');return;}
     if(tm==='r'){ph='ai';const c=cuAI(S,'r',idx);spec={c:c,tm:'r',nz:CU_NZR};tWait=RM?.6:1.1;pips();slot('');go('상대 차례',1);
       msg(opn+' <b>'+(idx+1)+'구</b> · '+CU_KO[c.k]+' 노린다');}
     else{ph='aim';const n=(idx+1)/2;slot('aim');go('세기 정하기 <small>스페이스</small>');setB(B[0],B[1]);
       msg('<b>우리 '+n+'구'+(idx===7?' · 마지막 돌(망치)':'')+'</b> · 시트를 눌러 조준점(빗자루)을 옮겨라. 점선 끝이 멈출 곳이다');}};
-  const launch=()=>{T=cuLaunch(S,spec.c,spec.tm,spec.nz);T.hits=[];sw=0;vs=0;ph='run';pips();try{thud(70,.2,0,.3);sweep(.4,.03,500,180,0,.7);}catch(e){}
+  const launch=()=>{T=cuLaunch(S,spec.c,spec.tm,spec.nz);T.hits=[];T.k=0;T.rec=[];T.rsw=spec.rsw||null;T.fin=spec.fin||null;T.c0={v0:Math.hypot(T.s.vx,T.s.vy),th:Math.atan2(T.s.vx,T.s.vy)};sw=0;vs=0;ph='run';pips();try{thud(70,.2,0,.3);sweep(.4,.03,500,180,0,.7);}catch(e){}
     if(spec.tm==='u'){go('스위핑! <small>연타 · 스페이스</small><i class="cu-swm" id="cuSwm"></i>',0,'sw');msg('빨리 연타할수록 더 멀리, 덜 휘어 간다');}
     else{go('상대 투구 중',1);}};
-  const settle=()=>{cuSettle(T);const s=T.s,txt=cuWhat(T.pre,S,s,T.s.tm,T.c.k);
+  const settle=()=>{cuSettle(T);
+    if(net&&T.fin)T.fin.forEach((f,j)=>{const o=S[j];if(!o||!f)return;o.vx=o.vy=0;o.m=0;if(f.o){if(!o.out){o.out=1;o.why='back';}}else{o.x=f.x;o.y=f.y;o.out=0;}});
+    if(net&&T.s.tm==='u'&&!net.dead)net.sendM(cuNetMsg(net.rd,idx,T.c0,T.c.w,T.c.k,T.rec,S));
+    const s=T.s,txt=cuWhat(T.pre,S,s,T.s.tm,T.c.k);
     // 1번 스톤이 되면 짧은 알림(우리 것은 밝게, 상대 것은 낮게)
     const sc1=cuScore(S);try{if(s.out&&s.why==='hog')thud(90,.15);else if(sc1.n&&sc1.H[0].s===s){if(s.tm==='u'){tone(784,'sine',.16,.08);tone(1047,'sine',.3,.07,.1);}else tone(311,'triangle',.3,.07);}}catch(e){}
     msg((s.tm==='u'?'<b>우리</b> ':'<b>'+opn+'</b> ')+CU_KN[T.c.k]+' · '+txt);ph='wait';tWait=RM?1:1.6;go(idx<7?'다음 투구':'측정',1);slot('');};
@@ -180,7 +190,7 @@ function mgCurl(box,done){const $=id=>document.getElementById(id),RM=cuRM(),home
     {const ud=Math.min(5,...S.filter(o=>!o.out&&o.tm==='u').map(o=>Math.hypot(o.x,o.y-CU.TEE)),5),pt=r.tm==='u'?r.n:r.tm==='r'?-r.n:0;   // 실시간 대결: 득점(10점 단위) − 우리 돌이 버튼에서 떨어진 거리
       MG_OUT={v:Math.round((pt*10-ud)*100)/100,hi:1,lb:r.tm==='u'?r.n+'점 득점':r.tm==='r'?r.n+'점 실점':'무득점 · 버튼까지 '+ud.toFixed(2)+'m'};}slot('');try{if(hum)hum.g.gain.setTargetAtTime(0,hum.ac.currentTime,.05);}catch(e){}
     const big=r.tm==='u'?'우리 '+r.n+'점':r.tm==='r'?opn+' '+r.n+'점 스틸':'득점 없음';
-    $('cuOv').innerHTML='<div class="cu-res '+(t?'s':'g')+'"><b>'+big+'</b><span>'+(t?'은메달':'금메달!')+'</span></div>';$('cuOv').className='cu-ov on res'+(HZ?' hz':'');
+    $('cuOv').innerHTML='<div class="cu-res '+(t?'s':'g')+'"><b>'+big+'</b><span>'+(net?(r.tm==='u'?'승리!':r.tm==='r'?'패배':'무득점'):(t?'은메달':'금메달!'))+'</span></div>';$('cuOv').className='cu-ov on res'+(HZ?' hz':'');
     const d0=r.H.length?r.H[0].d:0;
     msg(r.tm?'버튼(한가운데)에서 가장 가까운 돌: <b>'+(r.tm==='u'?'우리':opn)+'</b> · '+d0.toFixed(2)+'m'+(r.n>1?' · '+(r.tm==='u'?opn:'우리')+' 돌보다 안쪽에 '+r.n+'개':''):'하우스에 남은 돌이 없다. 망치를 쥐고도 점수를 내지 못했다');
     go('결과 보기');setTimeout(()=>{if(alive||box.isConnected)try{SFX.medal(t);}catch(e){}},700);};
@@ -305,7 +315,12 @@ function mgCurl(box,done){const $=id=>document.getElementById(id),RM=cuRM(),home
   const loop=now=>{if(!alive)return;if(!box.isConnected){cleanup();return;}const dt=Math.min(.05,Math.max(0,(now-last)/1000));last=now;clock+=dt;
     if(ph==='pow'){gp+=gd*.68*dt;if(gp>1){gp=2-gp;gd=-1;}if(gp<0){gp=-gp;gd=1;}$('cuNd').style.left=gp*100+'%';mkGhost(cuPL(gp));}
     if(ph==='ai'||ph==='pre'){tWait-=dt;if(tWait<=0){if(ph==='ai'){ph='pre';tWait=RM?.15:.75;}else{const pre=S.map(o=>o.out);launch();T.pre=pre;}}}
-    if(ph==='run'&&T){acc+=dt;let mv=true;const ps=S.map(o=>o.out);while(acc>=CU.DT){acc-=CU.DT;mv=cuTick(T,CU.DT,T.s.tm==='u'?sw:null);if(!mv)break;}if(!mv)acc=0;
+    if(ph==='net'){netW+=dt;const R=cuNetParse(net.m(net.opp.uid),net.rd);
+      if(R&&R.i===idx){spec={c:R.c,tm:'r',nz:null,rsw:R.sw,fin:R.fin};ph='ai';tWait=RM?.2:.5;pips();msg('<b>'+opn+'</b> '+(idx+1)+'구 · '+CU_KO[R.c.k]+' 던졌다');}
+      else if(netW>75){net.dead=1;const c=cuAI(S,'r',idx);spec={c:c,tm:'r',nz:CU_NZR};ph='ai';tWait=.6;msg('<b>'+opn+'</b> 연결이 끊겨 인공지능이 대신 던진다');}}
+    if(ph==='run'&&T){acc+=dt;let mv=true;const ps=S.map(o=>o.out);while(acc>=CU.DT){acc-=CU.DT;let s2=null;
+        if(T.s.tm==='u'){s2=sw;if(T.k%12===0)T.rec.push(Math.min(9,Math.round(sw*9)));}else if(T.rsw)s2=(T.rsw[Math.min(T.rsw.length-1,Math.floor(T.k/12))]||0)/9;
+        T.k++;mv=cuTick(T,CU.DT,s2);if(!mv)break;}if(!mv)acc=0;
       T.hits.splice(0).slice(0,3).forEach(v=>cuClack(v));if(S.some((o,i)=>o.out&&!ps[i]))try{thud(120,.14,0,.18);}catch(e){}
       if(T.s.tm==='u'){sw*=Math.exp(-dt*2.6);const m=$('cuSwm');if(m)m.style.width=sw*100+'%';
         if(sw>.68&&T.s.m&&clock-lastShout>.75){lastShout=clock;shN++;shouts.push({i:shN%2,t:0,txt:CU_SHOUT[Math.floor(Math.random()*CU_SHOUT.length)]});}}
@@ -324,7 +339,7 @@ function mgCurl(box,done){const $=id=>document.getElementById(id),RM=cuRM(),home
     if(ph==='end'&&clock-endT>2.6){alive=false;window.removeEventListener('resize',onR);if(hum){try{hum.s.stop();}catch(e){}hum=null;}return;}   // 측정 그림이 다 그려지면 멈춘다(누르기는 아직 받는다)
     raf=requestAnimationFrame(loop);};
   fit();spinLbl();slot('');pips();cam.cy=cyH(sc0);
-  $('cuOv').className='cu-ov on';$('cuOv').innerHTML='<div class="cu-br"><b>동점으로 맞은 마지막 엔드</b><span>상대가 먼저, 우리가 나중에 네 개씩 번갈아 던진다. 마지막 돌(망치)은 우리 것. 끝났을 때 하우스 한가운데에 가장 가까운 돌이 우리 것이면 <em>금메달</em>.</span><span class="cu-how">조준 → 회전 → 세기 → 스위핑</span></div>';
+  $('cuOv').className='cu-ov on';$('cuOv').innerHTML='<div class="cu-br"><b>'+(net?opn+'와 1:1 · 마지막 엔드':'동점으로 맞은 마지막 엔드')+'</b><span>'+(net?(net.hammer?opn+'이(가) 먼저, 우리가 나중에 네 개씩 번갈아 던진다. 마지막 돌(망치)은 우리 것.':'우리가 먼저, '+opn+'이(가) 나중에 네 개씩 번갈아 던진다. 마지막 돌(망치)은 상대 것.')+' 끝났을 때 하우스 한가운데에 가장 가까운 돌의 주인이 이긴다.':'상대가 먼저, 우리가 나중에 네 개씩 번갈아 던진다. 마지막 돌(망치)은 우리 것. 끝났을 때 하우스 한가운데에 가장 가까운 돌이 우리 것이면 <em>금메달</em>.')+'</span><span class="cu-how">조준 → 회전 → 세기 → 스위핑</span></div>';
   msg('시트를 눌러 조준하고, 게이지를 멈춰 던진 뒤, 스위핑 버튼을 연타한다');
   raf=requestAnimationFrame(loop);}
 // 시뮬레이션: 우리 팀도 같은 인공지능으로 던진다(상대보다 조금 더 흔들린다). 여덟 돌을 다 굴리고 점수를 센다

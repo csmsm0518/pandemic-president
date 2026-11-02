@@ -67,9 +67,21 @@ const skSnd={scr:()=>noise(.08,.03,0,2600+Math.random()*1800),slide:()=>{sweep(.
   fall:()=>{thud(80,.4,0,.3);noise(.7,.12,0,1400);sweep(.8,.06,2500,500,.05,.7);},gun:()=>{noise(.18,.4,0,4000);thud(120,.3,0,.15);},
   bell:()=>{[0,.3,.6].forEach(w=>{tone(1568,'triangle',.45,.12,w);tone(2349,'sine',.35,.05,w);});},line:()=>{clk(1600,.6);tone(1320,'sine',.35,.1,.02);}};
 const skS=f=>{try{f();}catch(e){}};
-function mgSkate(box,done){const $=id=>document.getElementById(id),MQ=q=>!!(window.matchMedia&&matchMedia(q).matches),RM=MQ('(prefers-reduced-motion: reduce)'),TCH=MQ('(pointer: coarse)');
-  const riv=skRivals(),me=skMk('우리',{me:1}),all=[me].concat(riv),L0=[.6,1.8,3,4.2].sort(()=>Math.random()-.5);all.forEach((k,i)=>{k.ln=k.lt=L0[i];});
-  const col=k=>k.me?['#e3a72f','#fff4d6']:SK_COL[k.n]||['#6b7a90','#dfe6ee'];
+// 실시간 대결(동계올림픽): 친구 선수의 색과 신호. 신호 하나 = 경기 시각 · 거리 · 속도 · 상태(넘어짐 1 · 미는 중 2 · 결승 4)를 정수 하나에 담는다
+const SK_NETC=[['#2f7fd8','#e8f1fb'],['#d63a3a','#ffe9e6'],['#2f9d5a','#f2e6a8']];
+const skPack=(e,d,v,f)=>((Math.max(0,Math.round(e*100))*1e4+Math.max(0,Math.min(9999,Math.round(d*10))))*1e3+Math.max(0,Math.min(999,Math.round(v*10))))*8+f;
+function skUnpack(a){const f=a%8;a=(a-f)/8;const v=a%1e3;a=(a-v)/1e3;const d=a%1e4,e=(a-d)/1e4;return {e:e/100,d:d/10,v:v/10,f:f&1,p:f&2?1:0,fin:f&4?1:0};}
+// 받은 신호를 모은다(같은 값은 건너뛴다). 결승 신호는 기록만 따로 둔다
+function skNetIn(riv,net){riv.forEach(k=>{if(!k.rem)return;const a=net.raw(k.rem);if(!a||a===k.raw)return;k.raw=a;const s=skUnpack(a);
+  if(s.fin){k.fT=s.e;return;}const B=k.buf;if(!B.length||s.e>B[B.length-1].e){B.push(s);if(B.length>40)B.shift();}});}
+// 친구 선수는 받은 신호를 0.3초(경기 시각) 늦게 이어 그린다. 신호가 끊기면 0.5초까지만 앞으로 미끄러뜨린다. 결승 기록이 오면 그 시각에 들어오고, 그 뒤로는 스스로 미끄러진다
+function skRem(k,el){if(k.fT&&el>=k.fT&&!k.t){k.t=k.fT;k.gl=1;k.fall=0;return;}const B=k.buf,t=el-.3;if(!B.length){k.v=0;return;}
+  let i=0;while(i<B.length-1&&B[i+1].e<=t)i++;const a=B[i],b=B[i+1];let d,v;
+  if(b&&t>=a.e){const r=(t-a.e)/Math.max(1e-3,b.e-a.e);d=a.d+(b.d-a.d)*r;v=a.v+(b.v-a.v)*r;}else if(t<a.e){d=a.d;v=a.v;}else{d=a.d+a.v*Math.min(.5,t-a.e);v=a.v;}
+  if(a.f&&!(k.fall>0))k.nf++;k.fall=a.f?1:0;k.pu=a.p;k.d=Math.max(k.d,d);k.v=v;}
+function mgSkate(box,done,net){if(net&&!(net.peers&&net.peers.length))net=null;const $=id=>document.getElementById(id),MQ=q=>!!(window.matchMedia&&matchMedia(q).matches),RM=MQ('(prefers-reduced-motion: reduce)'),TCH=MQ('(pointer: coarse)');
+  const riv=net?net.peers.map((p,i)=>skMk(String(p.n||'친구').slice(0,8),{rem:p.uid,ci:i,buf:[],raw:0,fT:0})):skRivals(),me=skMk('우리',{me:1}),all=[me].concat(riv),L0=[.6,1.8,3,4.2].sort(()=>Math.random()-.5);all.forEach((k,i)=>{k.ln=k.lt=L0[i];});
+  const col=k=>k.me?['#e3a72f','#fff4d6']:k.rem?SK_NETC[k.ci%3]:SK_COL[k.n]||['#6b7a90','#dfe6ee'];
   box.innerHTML='<div class="mgx sk"><div class="sk-in"><div class="sk-sc" id="skSc"><canvas id="skC"></canvas><div class="sk-ov" id="skOv"></div></div><div class="sk-pn">'+
     '<div class="sk-hud"><div><span>기록</span><b id="skT">0.00</b></div><div><span>순위</span><b id="skRk">-</b></div><div><span>남은 바퀴</span><b id="skLp">4½</b></div></div>'+
     '<div class="sk-gs"><div class="sk-g sk-sp" id="skSp"><span>속도</span><i><em id="skSpF"></em><u style="left:'+(SK.VC/SK.GX*100).toFixed(1)+'%"></u></i><b><em id="skV">0</em><small>km/h</small></b></div>'+
@@ -180,7 +192,8 @@ function mgSkate(box,done){const $=id=>document.getElementById(id),MQ=q=>!!(wind
     // 우리 선수 이름표(늘 똑바로, 위가 모자라면 아래에)
     const p=skXY(me.d,Math.min(5.6,me.ln+me.sx)),tx=sx(p[0]),fs=Math.max(10,Math.min(12,u)),ty=sy(p[1])-u*1.55<fs+2?sy(p[1])+u*1.55+fs:sy(p[1])-u*1.55;
     g.font='800 '+fs+'px '+FF;g.textAlign='center';g.textBaseline='bottom';
-    g.lineWidth=3;g.strokeStyle='rgba(13,20,36,.85)';g.strokeText('우리',tx,ty);g.fillStyle='#ffe08a';g.fillText('우리',tx,ty);};
+    g.lineWidth=3;g.strokeStyle='rgba(13,20,36,.85)';g.strokeText('우리',tx,ty);g.fillStyle='#ffe08a';g.fillText('우리',tx,ty);
+    if(net)riv.forEach(k=>{const q=skXY(k.d,Math.min(5.6,k.ln+k.sx)),x=sx(q[0]),y=sy(q[1])-u*1.55<fs+2?sy(q[1])+u*1.55+fs:sy(q[1])-u*1.55;g.lineWidth=3;g.strokeStyle='rgba(13,20,36,.85)';g.strokeText(k.n,x,y);g.fillStyle=col(k)[1];g.fillText(k.n,x,y);});};
   const hud=()=>{const kmh=me.v*SK.KM,inC=skIn(me.d)&&!me.t,toC=skToC(me.d),warn=!me.t&&st==='race'&&toC>0&&SK.D-me.d>toC&&skGl(me.v+.3,toC-me.v*.3)>SK.VC;   // 사람 손이 늦는 만큼(0.3초) 미리 알린다
     $('skT').textContent=(fin||Math.max(0,el)).toFixed(2);$('skV').textContent=Math.round(kmh);$('skSpF').style.width=Math.min(100,me.v/SK.GX*100)+'%';
     $('skSp').className='sk-g sk-sp'+(inC&&me.over>0?' x':warn?' w':'');$('skEnF').style.width=(me.E*100).toFixed(1)+'%';$('skEn').className='sk-g sk-en'+(me.E<.2?' lo':'');
@@ -189,7 +202,7 @@ function mgSkate(box,done){const $=id=>document.getElementById(id),MQ=q=>!!(wind
     const o=order(),r=o.indexOf(me)+1;$('skRk').textContent=st==='ready'?'-':r+'위';$('skLp').textContent=me.t?'끝':skLap(me.d);return r;};
   // 고정 간격 한 걸음: 선수들 · 줄 바꾸기 · 경기 중 일어난 일(미끄러짐 · 넘어짐 · 마지막 바퀴 · 앞지르기)
   const tick=dt=>{el+=dt;if(el<0)return;const P=inp()&&st==='race';
-    all.forEach(k=>{const ns=k.ns,nf=k.nf;skStep(k,k.me?P:el>=k.rt&&skAI(k),dt);
+    all.forEach(k=>{const ns=k.ns,nf=k.nf;if(k.rem&&!k.gl)skRem(k,el);else skStep(k,k.me?P:k.rem?0:el>=k.rt&&skAI(k),dt);
       if(k.pu)k.ph+=dt*(2.4+k.v*.3);
       k.lean+=((skIn(k.d)&&k.v>5&&k.fall<=0?1:0)-k.lean)*Math.min(1,dt*6);if(k.fall>0)k.spin+=dt*(3+k.v*.4);else{if(k.spin>Math.PI)k.spin=(k.spin+Math.PI)%(2*Math.PI)-Math.PI;k.spin*=Math.max(0,1-dt*8);}
       if(k.ns>ns){spray(k,10,1);if(k.me){skS(skSnd.slide);say('<b class="x">코너 과속!</b> 바깥으로 밀려 속도를 잃었다',2.2);}else if(!me.t)say(k.n+' 선수가 코너에서 밀려났다',1.8);}
@@ -205,16 +218,18 @@ function mgSkate(box,done){const $=id=>document.getElementById(id),MQ=q=>!!(wind
       const toC=skToC(me.d);if(tipC<2&&toC>0&&toC<14&&skGl(me.v,toC)>SK.VC+.25&&msgT<=0){tipC++;say('코너가 다가온다 · <b>손을 떼어</b> 속도를 줄여라',1.8);}}};
   const finish=()=>{st='done';endAt=el;const t=Math.min(3,place-1);res=t;MG_OUT={v:fin,hi:0,lb:fin.toFixed(2)+'초'};ptr.clear();keyOn=0;$('skPush').classList.remove('on');
     $('skOv').innerHTML='<div class="sk-fx'+(t===0?' g':'')+'">'+place+'위<small>'+fin.toFixed(2)+'초</small></div>';
-    setTimeout(()=>{if(!box.isConnected)return;skS(()=>SFX.medal(t));say('<b class="'+(t<3?'g':'x')+'">'+place+'위 · '+fin.toFixed(2)+'초</b> · '+['금메달!','은메달','동메달','메달을 놓쳤다'][t]+(me.nf?' (넘어짐 '+me.nf+'번)':me.ns?' (코너 밀림 '+me.ns+'번)':''),0);
+    setTimeout(()=>{if(!box.isConnected)return;skS(()=>SFX.medal(t));say('<b class="'+(t<3?'g':'x')+'">'+place+'위 · '+fin.toFixed(2)+'초</b> · '+(net?(riv.some(r=>!r.t)?'친구들이 들어오는 중':'모두 들어왔다'):['금메달!','은메달','동메달','메달을 놓쳤다'][t])+(me.nf?' (넘어짐 '+me.nf+'번)':me.ns?' (코너 밀림 '+me.ns+'번)':''),0);
       $('skPush').style.display='none';const b=$('skGo');b.style.display='';b.textContent='결과 보기';b.onclick=()=>{if(ended)return;ended=true;skS(SFX.click);stop();done(t);};},700);};
   const loop=now=>{raf=0;if(!box.isConnected){stop();return;}const dr=last?Math.min(.1,(now-last)/1000):0;last=now;
-    if(st==='race'||st==='done'){acc+=dr*SK.TS;while(acc>=SK.DT){acc-=SK.DT;tick(SK.DT);}}
+    if(net)skNetIn(riv,net);
+    if(st==='race'||st==='done'){acc+=dr*SK.TS;while(acc>=SK.DT){acc-=SK.DT;tick(SK.DT);}
+      if(net)net.send(me.t?skPack(me.t,SK.D,me.v,4):skPack(el,me.d,me.v,(me.fall>0?1:0)|(me.pu?2:0)));}
     parts.forEach(p=>{p.x+=p.vx*dr;p.y+=p.vy*dr;p.vx*=.92;p.vy*=.92;p.l-=dr;});parts=parts.filter(p=>p.l>0);if(msgT>0&&(msgT-=dr)<=0&&st==='race')say('');
     draw();const r=hud();if(st==='race'&&r<rk&&msgT<=0)say('<b class="g">앞질렀다!</b> '+r+'위',1.1);if(st==='race')rk=r;
     // 우리가 들어온 뒤 모두 들어오면(또는 4초가 지나면) 그림을 멈춘다
-    if(st==='done'&&(all.every(k=>k.t)&&el-endAt>1.2||el-endAt>6)){st='over';draw();unkey();return;}
+    if(st==='done'&&(all.every(k=>k.t)&&el-endAt>1.2||el-endAt>(net?40:6))){st='over';draw();unkey();return;}
     raf=requestAnimationFrame(loop);};
-  const kd=e=>{if(e.key!==' '&&e.key!=='ArrowUp')return;if(st==='ready'){if(e.target&&e.target.tagName==='BUTTON')return;e.preventDefault();go();return;}
+  const kd=e=>{if(e.key!==' '&&e.key!=='ArrowUp')return;if(st==='ready'){if(net)return;if(e.target&&e.target.tagName==='BUTTON')return;e.preventDefault();go();return;}
     if(st==='count'||st==='race'){e.preventDefault();if(!e.repeat)keyOn=1;$('skPush').classList.toggle('on',inp());}};
   const ku=e=>{if(e.key===' '||e.key==='ArrowUp'){keyOn=0;$('skPush').classList.toggle('on',inp());}},bl=()=>{keyOn=0;ptr.clear();$('skPush').classList.remove('on');};
   let rzT=0;const rz=()=>{clearTimeout(rzT);rzT=setTimeout(()=>{if(box.isConnected){fit();if(!raf)draw();}else stop();},120);};
@@ -229,9 +244,11 @@ function mgSkate(box,done){const $=id=>document.getElementById(id),MQ=q=>!!(wind
   const go=()=>{if(st!=='ready')return;st='count';skS(SFX.click);$('skGo').style.display='none';$('skPush').style.display='';const ov=$('skOv');let c=3;
     const show=s=>{ov.innerHTML='<div class="sk-cd'+(RM?'':' pop')+'">'+s+'</div>';};show(c);say('출발 신호와 함께 <b>밀기</b>를 누르고 있어라');skS(()=>SFX.beep(3));
     const iv=setInterval(()=>{if(!box.isConnected){clearInterval(iv);return;}c--;if(c>0){show(c);skS(()=>SFX.beep(c));}
-      else{clearInterval(iv);show('출발!');skS(()=>{SFX.beep(0);skSnd.gun();});st='race';el=0;acc=0;say('');setTimeout(()=>{if(st==='race'||st==='done')ov.innerHTML=st==='race'?'':ov.innerHTML;},650);}},700);};
+      else{clearInterval(iv);show('출발!');skS(()=>{SFX.beep(0);skSnd.gun();});st='race';el=net?Math.max(0,(Date.now()-net.at)/1000*SK.TS):0;acc=0;say('');setTimeout(()=>{if(st==='race'||st==='done')ov.innerHTML=st==='race'?'':ov.innerHTML;},650);}},700);};
   $('skGo').onclick=go;
-  $('skOv').innerHTML='<div class="sk-br"><b>누르면 밀고, 떼면 미끄러진다</b><span>곧은 길에서 밀어 속도를 올리고, 코너 앞에서 떼어 <em>'+Math.round(SK.VC*SK.KM)+'km/h</em>(속도계 금색 눈금) 아래로 들어가라. 마지막 바퀴에 쓸 체력을 남겨 둬라.</span></div>';
+  // 실시간 대결: 모두 같은 시각(net.at)에 출발 총성이 울리게 3 · 2 · 1을 맞춰 시작한다
+  if(net){$('skGo').style.display='none';setTimeout(()=>{if(box.isConnected)go();},Math.max(0,net.at-2100-Date.now()));}
+  $('skOv').innerHTML='<div class="sk-br"><b>'+(net?'친구들과 같은 링크 · 곧 함께 출발한다':'누르면 밀고, 떼면 미끄러진다')+'</b><span>곧은 길에서 밀어 속도를 올리고, 코너 앞에서 떼어 <em>'+Math.round(SK.VC*SK.KM)+'km/h</em>(속도계 금색 눈금) 아래로 들어가라. 마지막 바퀴에 쓸 체력을 남겨 둬라.</span></div>';
   say(TCH?'<b>밀기</b> 버튼이나 경기장을 누르고 있으면 민다':'스페이스 · ↑ 키나 <b>밀기</b> 버튼을 누르고 있으면 민다');
   fit();raf=requestAnimationFrame(loop);}
 // 시뮬레이션: 우리 선수도 상대와 같은 판단(skAI)으로 탄다. 코너 여유와 판단 어긋남은 경기마다 다르다(가끔 과속으로 밀려나거나 넘어진다)
