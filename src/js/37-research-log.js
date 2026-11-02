@@ -54,7 +54,10 @@ function obSet(L){try{let n=0;const K=[];for(let i=L.length-1;i>=0;i--){n+=L[i].
 function obPush(items){const ks=new Set(items.map(x=>x.k));obSet(obGet().filter(x=>!ks.has(x.k)).concat(items));}
 function obFlush(){if(OB_BUSY||!SHEET_URL||IN_ART)return;const it=obGet()[0];if(!it)return;OB_BUSY=true;
   const done=()=>{obSet(obGet().filter(x=>x.k!==it.k));OB_BUSY=false;obFlush();};
-  try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:it.b}).then(done,()=>{OB_BUSY=false;});}catch(e){OB_BUSY=false;}}
+  // 서버 답을 읽어, 받았거나('ok' · 'dup') 다시 보내도 소용없는 조각('bad…' 등)만 지운다. 'busy' · 잠금 시간 초과 · 끊김이면 남겨 두었다가 다시 보낸다
+  const later=()=>{OB_BUSY=false;setTimeout(obFlush,30000);};
+  try{fetch(SHEET_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:it.b}).then(r=>r.text()).then(t=>{t=String(t||'').trim();
+    if(t==='ok'||t==='dup'||/^(bad|too big|empty)/.test(t))done();else later();},later);}catch(e){OB_BUSY=false;}}
 addEventListener('online',()=>obFlush());
 setTimeout(obFlush,4000);
 function sendArcade(game,o){if(!SHEET_URL||IN_ART)return;const id=Date.now().toString(36)+Math.random().toString(36).slice(2,7),k='arc:'+id;
@@ -161,7 +164,7 @@ const EGGN=[
  [/^claude$/i,'AI가 나라를 이끈다고요? 흥미롭군요. 판정 주사위는 공정합니다.']];
 function hub(){window.scrollTo(0,0);document.documentElement.dataset.camp='kr';godSync();
   const eg=EGGN.find(x=>x[0].test(NICK||''));if(eg&&eg[2])eg[2]();
-  HUB_MSG=(PF.name||NICK)+'님, 준비됐어요.'+(NICK&&NICK!=='익명'?' 명예의 전당에는 <b style="color:#f1d589">'+NICK+'</b>(으)로 올라가요.':'')+(eg?'<div class="cs-fx" style="margin-top:12px">✨ '+eg[1]+'</div>':'');
+  HUB_MSG=acEsc(PF.name||NICK)+'님, 준비됐어요.'+(NICK&&NICK!=='익명'?' 명예의 전당에는 <b style="color:#f1d589">'+acEsc(NICK)+'</b>(으)로 올라가요.':'')+(eg?'<div class="cs-fx" style="margin-top:12px">✨ '+eg[1]+'</div>':'');
   home();}
 function intro(){bgmIntro(true);window.scrollTo(0,0);document.documentElement.dataset.camp="kr";R.innerHTML=INTRO;bindIntro();}
 bgmIntro(true);bindIntro();
@@ -169,4 +172,5 @@ bgmIntro(true);bindIntro();
 setTimeout(()=>{try{const me=!IN_ART&&acGet();if(!me||!me.prof||!me.prof.name)return;
   acEnter(me.id,me.prof);
   acApi('me',{id:me.id,token:me.token}).then(r=>{if(r.ok){try{acPut({id:me.id,token:r.token||me.token,exp:r.exp||me.exp||0,prof:{school:r.prof.school,name:r.prof.name,nick:r.prof.nick}});}catch(e){}return;}
-    if(r.err==='net')return;acPut(null);PF={school:'',name:'',phone:'',agree:false};intro();});}catch(e){}},0);
+    if(r.err==='net')return;acPut(null);if(RUN&&CAR&&!CAR.done)return; // 확인이 늦게 와도 하던 판을 끊지 않는다(로그인만 풀고, 다음에 첫 화면으로)
+    PF={school:'',name:'',phone:'',agree:false};intro();});}catch(e){}},0);

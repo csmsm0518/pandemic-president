@@ -30,7 +30,7 @@ function svPut(a){for(let k=0;k<3;k++){try{localStorage.setItem(SAVES_KEY,JSON.s
 function svSave(at){if(!CAR||CAR.done||!S||!RUN)return false;try{const bad=[];
   const G={S:S,pool:pool,cur:cur,last:last,tally:tally,chron:chron,queue:queue,base:base,deaths:deaths,yd:yd,MOD:MOD,tok:tok,streak:streak,lastT:lastT,lastO:lastO,
     peakI:peakI,hist:hist,adv:adv,CAR:CAR,TH:TH,SEEN:SEEN,YS:YS,yTally:yTally,cDeaths:cDeaths,covD:covD,SEENT:SEENT,SEENN:SEENN,banner:banner,pendingNews:pendingNews,LOG:LOG,RUN:RUN};
-  const d={v:1,dv:2,id:RUN.id,at:at,t:Date.now(),camp:camp,bg:bg,mode:mode,dif:dif,nick:NICK,pf:PF,pin:PINH,el:Date.now()-T0,bn:!!cur&&bnSeen===cur,dt:MAP.dtgt,
+  const d={v:1,dv:2,id:RUN.id,at:at,t:Date.now(),camp:camp,bg:bg,mode:mode,dif:dif,nick:NICK,pf:Object.assign({},PF,{phone:''}),pin:PINH,el:Date.now()-T0,bn:!!cur&&bnSeen===cur,dt:MAP.dtgt,
     meta:{n:CP.n,who:CAR.bgn,term:CAR.term,year:Math.min(YRS,Math.floor(S.turn/PY)+1),jo:CP.id==='joseon',dif:DIFF[dif].n},g:svEnc(G,bad,'')};
   if(bad.length)console.warn('[저장] 저장할 수 없는 값',bad.slice(0,8));
   return svPut([d].concat(svList().filter(x=>x.id!==d.id)).slice(0,SV_MAX));}catch(e){return false;}}

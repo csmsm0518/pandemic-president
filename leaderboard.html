@@ -485,7 +485,7 @@ function renderError(e){$('board').innerHTML='<div class="empty">기록을 불�
   const r=$('retry');if(r)r.onclick=()=>{$('board').innerHTML='<div class="skel big"></div><div class="skel"></div>';load();};}
 
 // 명판을 누르거나 Enter·Space: 세부 수치를 펼치고 접는다
-$('board').addEventListener('click',e=>{const p=e.target.closest('[data-open]');if(!p)return;OPEN=OPEN===p.dataset.open?null:p.dataset.open;renderBoard();const q=$('board').querySelector('[data-open="'+p.dataset.open+'"] .more');if(q)q.focus({preventScroll:true});});
+$('board').addEventListener('click',e=>{const p=e.target.closest('[data-open]');if(!p)return;OPEN=OPEN===p.dataset.open?null:p.dataset.open;renderBoard();const q=$('board').querySelector('[data-open="'+(window.CSS&&CSS.escape?CSS.escape(p.dataset.open):p.dataset.open)+'"] .more');if(q)q.focus({preventScroll:true});});
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('button[data-t]');if(!b||b.dataset.t===tab)return;tab=b.dataset.t;
   document.querySelectorAll('#tabs button').forEach(x=>x.setAttribute('aria-selected',x===b?'true':'false'));if(data){hang();renderBoard();}});
 $('difs').addEventListener('click',e=>{const b=e.target.closest('button[data-d]');if(!b||b.dataset.d===diff)return;diff=b.dataset.d;
