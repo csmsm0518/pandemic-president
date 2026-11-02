@@ -16,6 +16,13 @@
   fit();addEventListener('orientationchange',function(){setTimeout(fit,60);});addEventListener('resize',fit);})();
 </script>
 <meta name="theme-color" content="#efe9dd">
+<!-- 아이콘 · 홈 화면에 설치(웹앱): icons/ · manifest.webmanifest · sw.js -->
+<link rel="icon" href="icons/logo.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-title" content="팬데믹 대통령">
+<script>if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});</script>
 <!-- 삼성 인터넷 · 크롬의 '다크 모드 강제'가 종이 화면 색을 뒤집지 않게(이 게임은 화면마다 밝기를 스스로 정한다) -->
 <meta name="color-scheme" content="only light">
 <title>팬데믹 대통령</title>
@@ -56,6 +63,6 @@
 <noscript><div style="margin:14px 16px;padding:12px 14px;border:1px solid #b3261e;border-radius:10px;color:#a8321f;font-size:14px;line-height:1.7">이 화면에서는 게임이 실행되지 않아요. 파일 미리보기가 아니라 <b>사파리·크롬 같은 브라우저</b>에서 게임 링크로 열어 주세요.</div></noscript>
 <div id="bootmsg" style="display:none;position:fixed;left:12px;right:12px;bottom:12px;z-index:99;background:#f6e3dd;border:1px solid #b3261e;border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.6;color:#a8321f"></div>
 <script>window.onerror=function(m,s,l,c){try{var b=document.getElementById("bootmsg");if(b&&b.style.display!=="block"){b.style.display="block";b.textContent="오류가 났어요: "+m+" ("+l+":"+c+") · 이 화면을 캡처해서 알려 주세요. (누르면 닫힘)";b.onclick=function(){b.style.display="none";};}}catch(e){}};</script>
-<script src="game.js?v=0fcf83f493"></script>
+<script src="game.js?v=dd958cb7cb"></script>
 </body>
 </html>
