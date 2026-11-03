@@ -159,7 +159,8 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
     pb('지도자 도감',Object.keys(MEM.leaders||{}).length,LEADK.length)+pb('임기 평가 도감',Object.keys(MEM.ends||{}).length,ENDC.length)+
     (MEM.zg&&MEM.zg.runs?'<div class="gx-pc-z"><span>방역선 최고</span><b>'+MEM.zg.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+MEM.zg.wins+'번</span></div>':'')+
     (MEM.sail&&MEM.sail.v===2&&MEM.sail.best?'<div class="gx-pc-z"><span>대항해 최고</span><b>'+Math.floor(MEM.sail.best/60)+':'+(MEM.sail.best%60).toFixed(1).padStart(4,'0')+'</b><span>금메달 '+(MEM.sail.gold||0)+'번</span></div>':'')+
-    (MEM.star&&MEM.star.v===1&&MEM.star.best?'<div class="gx-pc-z st"><span>별똥별 최고</span><b>'+MEM.star.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+(MEM.star.dawn||0)+'번</span></div>':'')+'</aside>';
+    (MEM.star&&MEM.star.v===1&&MEM.star.best?'<div class="gx-pc-z st"><span>별똥별 최고</span><b>'+MEM.star.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+(MEM.star.dawn||0)+'번</span></div>':'')+
+    (MEM.qx&&MEM.qx.v===1&&(MEM.qx.clears||MEM.qx.bestLv)?'<div class="gx-pc-z qx"><span>격리 탈출</span><b>'+(MEM.qx.clears?MEM.qx.bestD+'<small>번 감염</small>':MEM.qx.bestLv+'<small>단계</small>')+'</b><span>'+(MEM.qx.clears?'완주 '+MEM.qx.clears+'번':'완주 전')+'</span></div>':'')+'</aside>';
   let sel=0;
   cine([{t:'메인 메뉴',h:'<div class="gx gx-title"><canvas class="gx-bg" aria-hidden="true"></canvas><div class="gx-seal" aria-hidden="true">'+emblemSvg('embgS',1)+
     '<span class="gx-sstar" hidden><svg viewBox="-12 -12 24 24"><path d="M0-10.5L2.7-3.4 10-3.2 4.3 1.3 6.3 8.5 0 4.3-6.3 8.5-4.3 1.3-10-3.2-2.7-3.4Z"/></svg></span></div>'+
@@ -205,6 +206,9 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   // 이스터에그: 뒤의 큰 나침반을 돌려 하얀 바늘 끝이 원 밖의 별을 3초 동안 가리키면 「별똥별을 피해라」가 열리고 바로 시작한다
   sealSpin(document.querySelector('.cine .gx-seal'),()=>{const first=!eggOn('star');eggSet('star');try{SFX.unlock();[1319,1568,2093].forEach((f,i)=>tone(f,'sine',.6,.08,.15+i*.12));}catch(e){}
     if(first)eggToast('🌠 <b>하얀 바늘이 별을 가리키자 하늘이 열린다…</b><br>미니게임 「별똥별을 피해라」가 열렸어요.');setTimeout(()=>starOpen(home),first?1400:700);});
+  // 이스터에그: 부제 「한 번의 인생, 한 나라의 운명」을 3초 동안 꾹 누르고 있으면 「격리 탈출」이 열리고 바로 시작한다
+  lifeHold(document.querySelector('.cine .gx-logo .emb-s'),()=>{const first=!eggOn('qx');eggSet('qx');try{SFX.unlock();[392,523,659,784].forEach((f,i)=>tone(f,'triangle',.3,.07,.1+i*.1));}catch(e){}
+    if(first)eggToast('🦠 <b>한 번뿐인 인생을 놓지 않자 격리 병동의 문이 열린다…</b><br>미니게임 「격리 탈출」이 열렸어요.');setTimeout(()=>qxOpen(home),first?1600:800);});
   // 이스터에그: 제목을 3초 안에 7번 누르면(터치·클릭 모두) 좀비 무대가 열린다
   const tt=document.querySelector('.cine .emb-t');tt.id='ttl';tt.style.cursor='default';tt.style.userSelect='none';
   tt.onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];
@@ -262,7 +266,15 @@ const CP_ART=(()=>{const sv=(id,b,w)=>'<svg viewBox="0 0 '+(w||300)+' 600" prese
     ms(250,150,120,4,'#f4e3b0')+ms(120,90,90,3,'#bfe3ff')+ms(70,380,110,3.5,'#f4e3b0')+ms(280,420,80,3,'#ffb08a')+
     '<path d="M150 214 L164 286 L236 300 L164 314 L150 386 L136 314 L64 300 L136 286Z" fill="#e8c45a" stroke="#8a6a24" stroke-width="2"/><path d="M150 214 L155.5 242 L144.5 242Z" fill="#fff8e6"/><circle cx="150" cy="300" r="12" fill="#13204a" stroke="#f1d589" stroke-width="2.5"/>'+
     '<path d="M0 560 h40 v-30 h22 v18 h30 v-42 h26 v54 h34 v-24 h30 v36 h28 v-48 h24 v40 h30 v-22 h36 V600 H0Z" fill="#0a1230"/>'+fold('t'));
-  return {kr:kr,usa:usa,joseon:jo,zombie:zb,sail:sa,star:st};})();
+  // 격리 탈출: 병동 바닥 타일, 위쪽 금빛 브리핑룸 · 아래 파란 격리실, 오가는 바이러스와 백신 하나, 파란 네모(대통령)
+  let qt='<rect width="300" height="600" fill="#1b2232"/>';for(let j=0;j<12;j++)for(let i=0;i<6;i++)qt+='<rect x="'+i*50+'" y="'+j*50+'" width="50.5" height="50.5" fill="'+(j<2?((i+j)%2?'#eed68e':'#f6e3a6'):j>9?((i+j)%2?'#c3d6ef':'#cfe0f5'):((i+j)%2?'#e6e9ee':'#f3f4f6'))+'"/>';
+  const vir=(x,y)=>{let o='<g transform="translate('+x+' '+y+')">';for(let k=0;k<8;k++){const a=k*Math.PI/4,c=Math.cos(a),s=Math.sin(a);o+='<path d="M'+(c*14).toFixed(1)+' '+(s*14).toFixed(1)+'L'+(c*23).toFixed(1)+' '+(s*23).toFixed(1)+'" stroke="#7d1622" stroke-width="3.5" stroke-linecap="round"/><circle cx="'+(c*24).toFixed(1)+'" cy="'+(s*24).toFixed(1)+'" r="3.6" fill="#e0566a" stroke="#7d1622" stroke-width="2"/>';}
+    return o+'<circle r="16" fill="#d8344b" stroke="#5c0f19" stroke-width="3"/><circle cx="-5" cy="-5" r="4" fill="#ff9aa6" opacity=".7"/></g>';};
+  qt+='<path d="M60 130V470M150 130V470M240 130V470" stroke="#d8344b" stroke-width="3" stroke-dasharray="4 12" opacity=".35"/>'+vir(60,190)+vir(150,330)+vir(240,250)+vir(60,420)+vir(240,440)+
+    '<g transform="translate(110 210)"><rect x="-9" y="-12" width="18" height="28" rx="3" fill="#eef6fb" stroke="#1f4f6e" stroke-width="2.5"/><rect x="-7" y="-1" width="14" height="15" fill="#43c2f0"/><rect x="-8" y="-18" width="16" height="7" rx="2" fill="#f6f2e6" stroke="#1f4f6e" stroke-width="2.5"/></g>'+
+    '<g transform="translate(150 548)"><rect x="-17" y="-17" width="34" height="34" rx="5" fill="#2f5fb3" stroke="#0d1a36" stroke-width="3"/><rect x="-12" y="1" width="24" height="9" fill="#f4f6fa"/><rect x="-8" y="-8" width="4" height="5" fill="#0d1a36"/><rect x="4" y="-8" width="4" height="5" fill="#0d1a36"/></g>';
+  const qx=sv('q',qt+fold('q'));
+  return {kr:kr,usa:usa,joseon:jo,zombie:zb,sail:sa,star:st,qx:qx};})();
 // 비밀 모드 「대항해」: 나라가 아니라 따로 노는 레이스라 CAMPS에 넣지 않고, 열렸으면 무대 고르기 맨 끝에 판 하나로 붙인다
 const SAIL_CP={tag:'비밀 모드',n:'대항해',sub:'폭풍을 뚫고 섬마을로 · 시간과의 레이스',intro:'백신이 상하기 전에 폭풍 해협을 뚫고 섬마을 세 곳을 지나 달려라. 암초를 스치면 시간이 붙고, 부딪히면 배가 상한다.'};
 // 새 게임 화면 위쪽의 탭 둘: 나라 고르기(무대) · 미니게임. 미니게임은 메인 메뉴가 아니라 여기서 연다
@@ -284,7 +296,7 @@ function stepCamp(){const ids=Object.keys(CAMPS).filter(id=>id!=='zombie'&&campO
   const go=()=>{const id=ids[k];gxSfx('click');if(camp!==id){camp=id;bg=-1;}stepLeader();};
   P.forEach((p,i)=>{if(hov)p.onmouseenter=()=>pick(i,1);p.onclick=()=>{if(i===k)go();else pick(i,1);};});
   gxTabsBind();pick(k);}
-// 미니게임: 비밀을 찾아 연 작은 게임 셋. 새 게임의 무대 고르기와 같은 판 모양이고, 잠긴 판은 그림이 어둡고 수수께끼 같은 힌트만 보인다.
+// 미니게임: 비밀을 찾아 연 작은 게임 넷. 새 게임의 무대 고르기와 같은 판 모양이고, 잠긴 판은 그림이 어둡고 수수께끼 같은 힌트만 보인다.
 // 판을 고르고(한 번) 한 번 더 누르면(또는 Enter) 그 게임을 연다. 게임을 마치고 나오면 이 화면으로 돌아온다.
 const MINI=[
   {id:'zombie',tag:'좀비 서바이벌',n:'방역선',sub:'밀려드는 감염자 사이에서 새벽까지',intro:'10분 동안 사방에서 몰려오는 감염자를 막아 내며 무기를 키운다. 해가 뜰 때까지 버티면 <b>새벽 맞이</b>.',
@@ -292,8 +304,10 @@ const MINI=[
   {id:'sail',tag:'폭풍 해협 레이스',n:'대항해',sub:'백신을 싣고 섬마을 세 곳으로',intro:'백신이 상하기 전에 폭풍 해협을 뚫고 섬마을 세 곳을 지나 달린다. 암초를 스치면 시간이 붙고, 부딪히면 배가 상한다.',
    h:'나침반은 한 바퀴만으로는 길을 보여 주지 않는다.',rec:()=>MEM.sail&&MEM.sail.v===2&&MEM.sail.best?'최고 '+Math.floor(MEM.sail.best/60)+':'+(MEM.sail.best%60).toFixed(1).padStart(4,'0')+' · 금메달 '+(MEM.sail.gold||0)+'번':'',open:()=>sailOpen(stepMini)},
   {id:'star',tag:'밤하늘 서바이벌',n:'별똥별을 피해라',sub:'쏟아지는 별똥별 사이를 날아라',intro:'나침반의 금빛 별을 끌어 별똥별을 피하고 소원 조각을 모은다. <b>150초</b>를 버티면 새벽이 온다.',
-   h:'큰 나침반의 하얀 바늘 끝이 별을 오래 바라보면 하늘이 열린다.',rec:()=>MEM.star&&MEM.star.v===1&&MEM.star.best?'최고 '+MEM.star.best.toLocaleString('ko-KR')+'점 · 새벽 맞이 '+(MEM.star.dawn||0)+'번':'',open:()=>starOpen(stepMini)}];
-const miniSub=()=>{const n=MINI.filter(x=>eggOn(x.id)).length;return n?n+' / '+MINI.length+' 열림 · 비밀을 찾으면 하나씩 열린다':'숨겨진 게임 셋 · 비밀을 찾으면 열린다';};
+   h:'큰 나침반의 하얀 바늘 끝이 별을 오래 바라보면 하늘이 열린다.',rec:()=>MEM.star&&MEM.star.v===1&&MEM.star.best?'최고 '+MEM.star.best.toLocaleString('ko-KR')+'점 · 새벽 맞이 '+(MEM.star.dawn||0)+'번':'',open:()=>starOpen(stepMini)},
+  {id:'qx',tag:'극악 회피 퍼즐',n:'격리 탈출',sub:'바이러스를 피해 브리핑룸까지',intro:'격리 병동의 바이러스를 피해 백신을 모두 챙기고 브리핑룸으로. 닿으면 바로 감염, <b>8단계</b>를 적게 감염될수록 잘한 것.',
+   h:'한 번뿐인 인생을 꾹 붙잡고 놓지 않으면 문이 열린다.',rec:()=>{const m=MEM.qx;return m&&m.v===1&&(m.clears||m.bestLv)?(m.clears?'완주 최소 감염 '+m.bestD+'번 · 완주 '+m.clears+'번':'최고 '+m.bestLv+'단계'):'';},open:()=>qxOpen(stepMini)}];
+const miniSub=()=>{const n=MINI.filter(x=>eggOn(x.id)).length;return n?n+' / '+MINI.length+' 열림 · 비밀을 찾으면 하나씩 열린다':'숨겨진 게임 '+MINI.length+'개 · 비밀을 찾으면 열린다';};
 // 수영 금메달 선물을 받았는데 아직 대항해를 못 열었으면, 잠긴 대항해 칸에 여는 법을 그대로 적고 그 칸을 고르면 튜토리얼을 다시 연다
 const miniGift=x=>x.id==='sail'&&!!MEM.sailHint&&!eggOn('sail');
 function stepMini(){let k=Math.max(0,MINI.findIndex(x=>eggOn(x.id)));const n=MINI.filter(x=>eggOn(x.id)).length;

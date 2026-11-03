@@ -22,12 +22,12 @@
 //
 // 열은 항상 예전 버전 뒤에 이어 붙이므로, 이미 쌓인 기록과 줄이 어긋나지 않는다. 머리글(1행)은 자동으로 새 버전으로 바뀐다.
 
-const SCRIPT_VER = 'v22';
+const SCRIPT_VER = 'v23';
 // [비밀 게임 기록] v13: 좀비 서바이벌 「방역선」과 비밀 모드 「대항해」의 점수가 "비밀 게임 기록" 탭에 쌓이고, 명예의 전당 오른쪽 두 칸에 순위가 나온다.
 const ARCADE = [['판ID', 'id'], ['게임', 'game'], ['닉네임', 'nickname'], ['학교', 'school'], ['점수', 'score'], ['시간(초)', 'sec'], ['성공', 'win'], ['세부', 'detail'], ['게임 버전', 'gv'],
   // ----- v15: 숨김(관리자가 아무 글자나 적으면 그 줄은 순위에서 빠진다. 서버가 말이 안 되는 기록을 받으면 스스로 사유를 적는다) -----
   ['숨김', 'hidden'], ['학교(적은 그대로)', 'schoolRaw'], ['플레이어ID', 'pid']];
-const ARCADE_GAMES = {zg: '방역선', sail: '대항해', star: '별똥별'};
+const ARCADE_GAMES = {zg: '방역선', sail: '대항해', star: '별똥별', qx: '격리 탈출'};
 // [건의사항] 메인 화면 '건의사항함'에서 보낸 글(kind: 'suggest')이 "건의사항" 탭에 한 줄씩 쌓인다. 명예의 전당 · 분석 · 기록 비우기(archiveAndReset)에는 쓰지 않는다.
 //   맨 끝 '처리 · 답변' 칸은 비워 두고 관리자가 적는다(게임은 이 칸을 읽지 않는다).
 const SUGGEST = [['분류', 'cat'], ['내용', 'text'], ['닉네임', 'nickname'], ['학교', 'school'], ['게임 버전', 'gv'], ['화면', 'view'], ['브라우저', 'ua'],
@@ -381,6 +381,7 @@ const MAX_CELL = 3000;       // 한 칸의 최대 글자 수
 const SCORE_MAX = 60000;     // 커리어 점수의 절댓값이 이보다 크면 조작으로 보고 순위에서 뺀다
 const ZG_MAX = 120000;       // 방역선 점수 상한(10분을 다 버텨도 4만 점 안팎)
 const STAR_MAX = 200000;     // 별똥별 점수 상한
+const QX_MAX = 8000;         // 격리 탈출 점수 상한(깬 단계 × 1000 − 감염, 8단계)
 const RATE_SUGGEST = 6;      // 같은 기기(플레이어ID)의 건의는 10분에 이만큼까지(게임은 10분에 다섯 번까지만 보낸다)
 const RATE_SUGGEST_ALL = 120; // 모든 건의를 합쳐 10분에 이만큼까지(주소를 아는 누군가가 건의를 쏟아붓는 것 막기)
 const SUGGEST_MAX = 1000;    // 건의 내용의 최대 글자 수(게임은 500자까지 받는다)
@@ -493,7 +494,8 @@ function doPost(e) {
       rec.hidden = !isFinite(rec.score) || !isFinite(rec.sec) || rec.sec < 0 ? '자동: 숫자 아님'
         : a.game === 'zg' && (rec.score < 0 || rec.score > ZG_MAX || rec.sec > 700) ? '자동: 점수 이상'
         : a.game === 'sail' && (rec.sec < SAIL_MIN_SEC || rec.sec > 1200) ? '자동: 시간 이상'
-        : a.game === 'star' && (rec.score < 0 || rec.score > STAR_MAX || rec.sec > 3600) ? '자동: 점수 이상' : '';
+        : a.game === 'star' && (rec.score < 0 || rec.score > STAR_MAX || rec.sec > 3600) ? '자동: 점수 이상'
+        : a.game === 'qx' && (rec.score < 0 || rec.score > QX_MAX || rec.sec < 8 || rec.sec > 7200) ? '자동: 점수 이상' : '';
       appendRows_(ss, '비밀 게임 기록', ARCADE, [rec], now);
       return out_('ok');
     }
@@ -1265,7 +1267,7 @@ function schoolRank_(rows) {
 }
 // 비밀 게임 순위: 방역선은 점수가 높은 순, 대항해는 귀항한 판만 시간이 짧은 순. 한 사람은 가장 좋은 기록 하나만, 5명씩
 function arcadeBoard_() {
-  const out = {zg: [], sail: [], star: []};
+  const out = {zg: [], sail: [], star: [], qx: []};
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('비밀 게임 기록');
   if (!sh || sh.getLastRow() < 2) return out;
   const v = sh.getDataRange().getValues(), ix = {};
@@ -1279,6 +1281,9 @@ function arcadeBoard_() {
   out.zg = best(rows.filter(r => r.game === 'zg' && r.score <= ZG_MAX), (a, b) => a.score > b.score).sort((a, b) => b.score - a.score).slice(0, 5);
   out.sail = best(rows.filter(r => r.game === 'sail' && r.win && r.sec >= SAIL_MIN_SEC), (a, b) => a.sec < b.sec).sort((a, b) => a.sec - b.sec).slice(0, 5);
   out.star = best(rows.filter(r => r.game === 'star' && r.score <= STAR_MAX), (a, b) => a.score > b.score).sort((a, b) => b.score - a.score).slice(0, 5);
+  // v23 격리 탈출: 점수(깬 단계 × 1000 − 감염)가 높은 순, 같으면 시간이 짧은 순
+  const qxBetter = (a, b) => a.score > b.score || (a.score === b.score && a.sec < b.sec);
+  out.qx = best(rows.filter(r => r.game === 'qx' && r.score <= QX_MAX), qxBetter).sort((a, b) => (qxBetter(a, b) ? -1 : qxBetter(b, a) ? 1 : 0)).slice(0, 5);
   return out;
 }
 // 무대마다 가장 높은 커리어 하나

@@ -101,3 +101,17 @@ function sealSpin(seal,done){const sv=seal&&seal.querySelector('svg'),star=seal&
   addEventListener('resize',onR);
   // 글꼴 · 메뉴가 자리 잡은 뒤에 별을 놓는다(메뉴 등장 연출이 끝난 뒤)
   setTimeout(place,60);setTimeout(place,2600);}
+// 이스터에그: 메인 화면 부제 「한 번의 인생, 한 나라의 운명」을 3초 동안 꾹 누르고 있으면(손가락 · 마우스) done()을 부른다(미니게임 「격리 탈출」이 열린다).
+// 누르는 동안 글자가 왼쪽부터 붉게 물들고(--lp), 다 차면 잠깐 '천 번의 인생, 한 번의 탈출'로 바뀐다. 중간에 떼면 천천히 되돌아간다
+const LIFE_HOLD=3;
+function lifeHold(el,done){if(!el)return;let hold=0,on=false,raf=0,last=0,fired=false,tick=0;
+  el.classList.add('life');
+  const f=now=>{raf=0;if(!el.isConnected||fired)return;const dt=Math.min(.1,(now-(last||now))/1000);last=now;
+    hold=on?hold+dt:Math.max(0,hold-dt*1.5);el.style.setProperty('--lp',(Math.min(1,hold/LIFE_HOLD)*100).toFixed(1)+'%');
+    if(on&&(tick+=dt)>=.5){tick=0;gxSfx('tick',Math.min(7,Math.floor(hold*2)));}
+    if(hold>=LIFE_HOLD){fired=true;on=false;el.classList.add('go');vib([30,40,30,40,120]);const t0=el.textContent;el.textContent='천 번의 인생, 한 번의 탈출';
+      setTimeout(()=>{if(el.isConnected){el.textContent=t0;el.classList.remove('go');el.style.setProperty('--lp','0%');}},2600);done();return;}
+    if(on||hold>0)raf=requestAnimationFrame(f);};
+  const kick=()=>{if(!raf){last=0;raf=requestAnimationFrame(f);}};
+  el.addEventListener('pointerdown',e=>{if(fired)return;e.preventDefault();try{el.setPointerCapture(e.pointerId);}catch(x){}on=true;tick=0;kick();});
+  const up=()=>{on=false;kick();};el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);el.addEventListener('contextmenu',e=>e.preventDefault());}
