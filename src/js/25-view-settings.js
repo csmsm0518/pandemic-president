@@ -160,7 +160,8 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
     (MEM.zg&&MEM.zg.runs?'<div class="gx-pc-z"><span>방역선 최고</span><b>'+MEM.zg.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+MEM.zg.wins+'번</span></div>':'')+
     (MEM.sail&&MEM.sail.v===2&&MEM.sail.best?'<div class="gx-pc-z"><span>대항해 최고</span><b>'+Math.floor(MEM.sail.best/60)+':'+(MEM.sail.best%60).toFixed(1).padStart(4,'0')+'</b><span>금메달 '+(MEM.sail.gold||0)+'번</span></div>':'')+
     (MEM.star&&MEM.star.v===1&&MEM.star.best?'<div class="gx-pc-z st"><span>별똥별 최고</span><b>'+MEM.star.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+(MEM.star.dawn||0)+'번</span></div>':'')+
-    (MEM.qx&&MEM.qx.v===1&&(MEM.qx.clears||MEM.qx.bestLv)?'<div class="gx-pc-z qx"><span>격리 탈출</span><b>'+(MEM.qx.clears?MEM.qx.bestD+'<small>번 감염</small>':MEM.qx.bestLv+'<small>단계</small>')+'</b><span>'+(MEM.qx.clears?'완주 '+MEM.qx.clears+'번':'완주 전')+'</span></div>':'')+'</aside>';
+    (MEM.qx&&MEM.qx.v===1&&(MEM.qx.clears||MEM.qx.bestLv)?'<div class="gx-pc-z qx"><span>격리 탈출</span><b>'+(MEM.qx.clears?MEM.qx.bestD+'<small>번 감염</small>':MEM.qx.bestLv+'<small>단계</small>')+'</b><span>'+(MEM.qx.clears?'완주 '+MEM.qx.clears+'번':'완주 전')+'</span></div>':'')+
+    (MEM.cg&&MEM.cg.v===1&&MEM.cg.best?'<div class="gx-pc-z cg"><span>대통령 출근길</span><b>'+MEM.cg.best+'<small>칸</small></b><span>출근 '+(MEM.cg.runs||0)+'번</span></div>':'')+'</aside>';
   let sel=0;
   cine([{t:'메인 메뉴',h:'<div class="gx gx-title"><canvas class="gx-bg" aria-hidden="true"></canvas><div class="gx-seal" aria-hidden="true">'+emblemSvg('embgS',1)+
     '<span class="gx-sstar" hidden><svg viewBox="-12 -12 24 24"><path d="M0-10.5L2.7-3.4 10-3.2 4.3 1.3 6.3 8.5 0 4.3-6.3 8.5-4.3 1.3-10-3.2-2.7-3.4Z"/></svg></span></div>'+
@@ -209,6 +210,12 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   // 이스터에그: 부제 「한 번의 인생, 한 나라의 운명」을 3초 동안 꾹 누르고 있으면 「격리 탈출」이 열리고 바로 시작한다
   lifeHold(document.querySelector('.cine .gx-logo .emb-s'),()=>{const first=!eggOn('qx');eggSet('qx');try{SFX.unlock();[392,523,659,784].forEach((f,i)=>tone(f,'triangle',.3,.07,.1+i*.1));}catch(e){}
     if(first)eggToast('🦠 <b>한 번뿐인 인생을 놓지 않자 격리 병동의 문이 열린다…</b><br>미니게임 「격리 탈출」이 열렸어요.');setTimeout(()=>qxOpen(home),first?1600:800);});
+  // 이스터에그: 기록 보관소의 내 이름을 2.5초 안에 다섯 번 누르면(누를 때마다 이름이 깡충) 「대통령 출근길」이 열리고 바로 시작한다
+  const nk=document.querySelector('.cine .gx-pc-h b');if(nk){let tp=[];nk.classList.add('gx-nk');
+    nk.onclick=()=>{const n=Date.now();tp=tp.filter(x=>n-x<2500);tp.push(n);nk.classList.remove('hop');void nk.offsetWidth;nk.classList.add('hop');
+      try{aInit();tone(480+tp.length*90,'triangle',.06,.04);}catch(e){}if(tp.length<5)return;tp=[];const first=!eggOn('cg');eggSet('cg');
+      try{SFX.unlock();[523,659,784,1047].forEach((f,i)=>tone(f,'triangle',.22,.07,.08+i*.08));}catch(e){}
+      if(first)eggToast('🚶 <b>대통령님, 출근하실 시간입니다…</b><br>미니게임 「대통령 출근길」이 열렸어요.');setTimeout(()=>cgOpen(home),first?1500:700);};}
   // 이스터에그: 제목을 3초 안에 7번 누르면(터치·클릭 모두) 좀비 무대가 열린다
   const tt=document.querySelector('.cine .emb-t');tt.id='ttl';tt.style.cursor='default';tt.style.userSelect='none';
   tt.onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];
@@ -274,7 +281,21 @@ const CP_ART=(()=>{const sv=(id,b,w)=>'<svg viewBox="0 0 '+(w||300)+' 600" prese
     '<g transform="translate(110 210)"><rect x="-9" y="-12" width="18" height="28" rx="3" fill="#eef6fb" stroke="#1f4f6e" stroke-width="2.5"/><rect x="-7" y="-1" width="14" height="15" fill="#43c2f0"/><rect x="-8" y="-18" width="16" height="7" rx="2" fill="#f6f2e6" stroke="#1f4f6e" stroke-width="2.5"/></g>'+
     '<g transform="translate(150 548)"><rect x="-17" y="-17" width="34" height="34" rx="5" fill="#2f5fb3" stroke="#0d1a36" stroke-width="3"/><rect x="-12" y="1" width="24" height="9" fill="#f4f6fa"/><rect x="-8" y="-8" width="4" height="5" fill="#0d1a36"/><rect x="4" y="-8" width="4" height="5" fill="#0d1a36"/></g>';
   const qx=sv('q',qt+fold('q'));
-  return {kr:kr,usa:usa,joseon:jo,zombie:zb,sail:sa,star:st,qx:qx};})();
+  // 대통령 출근길: 아래에서 위로 풀밭 · 차도(택시 · 구급차) · 한강(오리배 · 뗏목) · 인도 · 철길 · 광장, 맨 아래 대통령
+  const lanes=[['#7cb763',0],['#3f434c',1],['#3f434c',1],['#86bf6b',0],['#3a8bd0',2],['#3a8bd0',2],['#cbc3b3',3],['#716b63',4],['#7cb763',0],['#3f434c',1],['#86bf6b',0],['#d6cbb1',0]];
+  let ct='';lanes.forEach((L,i)=>{const y=600-(i+1)*50;ct+='<rect y="'+y+'" width="300" height="50.5" fill="'+L[0]+'"/>';
+    if(L[1]===1&&lanes[i+1]&&lanes[i+1][1]===1)ct+='<path d="M0 '+y+'H300" stroke="#fff" stroke-width="3" stroke-dasharray="18 16" opacity=".5"/>';
+    if(L[1]===4)ct+='<path d="M0 '+(y+15)+'H300M0 '+(y+35)+'H300" stroke="#c9cdd3" stroke-width="3"/>';});
+  ct+='<g transform="translate(40 470)"><rect width="56" height="34" rx="8" fill="#f2a33a"/><rect x="14" y="6" width="28" height="22" rx="4" fill="#ffcf7a"/><rect x="44" y="5" width="8" height="24" rx="2" fill="#1d2a3c"/></g>'+
+    '<g transform="translate(180 420)"><rect width="104" height="34" rx="8" fill="#f4f5f7"/><rect y="13" width="104" height="8" fill="#d8344b"/><rect x="8" y="6" width="8" height="22" fill="#1d2a3c"/></g>'+
+    '<g transform="translate(70 320)"><rect width="100" height="36" rx="15" fill="#f7f3e6"/><rect x="22" y="8" width="50" height="20" rx="8" fill="#f4c542"/><circle cx="88" cy="18" r="9" fill="#fff"/><path d="M95 14L104 18L95 22Z" fill="#f08a2a"/></g>'+
+    '<g transform="translate(150 270)"><rect width="140" height="36" rx="4" fill="#7a5432"/><path d="M28 0V36M56 0V36M84 0V36M112 0V36" stroke="#5e3f24" stroke-width="3"/></g>'+
+    '<g transform="translate(0 157)"><rect width="190" height="40" rx="18" fill="#eef1f5"/><rect y="16" width="170" height="8" fill="#2b5ea8"/><rect x="150" y="8" width="26" height="24" rx="6" fill="#1d2a3c"/></g>'+
+    '<circle cx="250" cy="145" r="9" fill="#ff4a4a"/><circle cx="250" cy="145" r="20" fill="#ff4a4a" opacity=".25"/>'+
+    '<g transform="translate(150 568)"><ellipse cy="20" rx="20" ry="6" fill="#000" opacity=".25"/><rect x="-18" y="-6" width="36" height="22" rx="7" fill="#22325a"/><circle cy="-18" r="14" fill="#1c1c22"/><rect x="-8" y="18" width="6" height="8" fill="#161d30"/><rect x="2" y="18" width="6" height="8" fill="#161d30"/></g>'+
+    '<g fill="#2e7a3c"><circle cx="30" cy="527" r="15"/><circle cx="262" cy="377" r="15"/><circle cx="70" cy="77" r="15"/></g>';
+  const cg=sv('g',ct+fold('g'));
+  return {kr:kr,usa:usa,joseon:jo,zombie:zb,sail:sa,star:st,qx:qx,cg:cg};})();
 // 비밀 모드 「대항해」: 나라가 아니라 따로 노는 레이스라 CAMPS에 넣지 않고, 열렸으면 무대 고르기 맨 끝에 판 하나로 붙인다
 const SAIL_CP={tag:'비밀 모드',n:'대항해',sub:'폭풍을 뚫고 섬마을로 · 시간과의 레이스',intro:'백신이 상하기 전에 폭풍 해협을 뚫고 섬마을 세 곳을 지나 달려라. 암초를 스치면 시간이 붙고, 부딪히면 배가 상한다.'};
 // 새 게임 화면 위쪽의 탭 둘: 나라 고르기(무대) · 미니게임. 미니게임은 메인 메뉴가 아니라 여기서 연다
@@ -296,7 +317,7 @@ function stepCamp(){const ids=Object.keys(CAMPS).filter(id=>id!=='zombie'&&campO
   const go=()=>{const id=ids[k];gxSfx('click');if(camp!==id){camp=id;bg=-1;}stepLeader();};
   P.forEach((p,i)=>{if(hov)p.onmouseenter=()=>pick(i,1);p.onclick=()=>{if(i===k)go();else pick(i,1);};});
   gxTabsBind();pick(k);}
-// 미니게임: 비밀을 찾아 연 작은 게임 넷. 새 게임의 무대 고르기와 같은 판 모양이고, 잠긴 판은 그림이 어둡고 수수께끼 같은 힌트만 보인다.
+// 미니게임: 비밀을 찾아 연 작은 게임들. 새 게임의 무대 고르기와 같은 판 모양이고, 잠긴 판은 그림이 어둡고 수수께끼 같은 힌트만 보인다.
 // 판을 고르고(한 번) 한 번 더 누르면(또는 Enter) 그 게임을 연다. 게임을 마치고 나오면 이 화면으로 돌아온다.
 const MINI=[
   {id:'zombie',tag:'좀비 서바이벌',n:'방역선',sub:'밀려드는 감염자 사이에서 새벽까지',intro:'10분 동안 사방에서 몰려오는 감염자를 막아 내며 무기를 키운다. 해가 뜰 때까지 버티면 <b>새벽 맞이</b>.',
@@ -306,7 +327,9 @@ const MINI=[
   {id:'star',tag:'밤하늘 서바이벌',n:'별똥별을 피해라',sub:'쏟아지는 별똥별 사이를 날아라',intro:'나침반의 금빛 별을 끌어 별똥별을 피하고 소원 조각을 모은다. <b>150초</b>를 버티면 새벽이 온다.',
    h:'큰 나침반의 하얀 바늘 끝이 별을 오래 바라보면 하늘이 열린다.',rec:()=>MEM.star&&MEM.star.v===1&&MEM.star.best?'최고 '+MEM.star.best.toLocaleString('ko-KR')+'점 · 새벽 맞이 '+(MEM.star.dawn||0)+'번':'',open:()=>starOpen(stepMini)},
   {id:'qx',tag:'극악 회피 퍼즐',n:'격리 탈출',sub:'바이러스를 피해 브리핑룸까지',intro:'격리 병동의 바이러스를 피해 백신을 모두 챙기고 브리핑룸으로. 닿으면 바로 감염, <b>8단계</b>를 적게 감염될수록 잘한 것.',
-   h:'한 번뿐인 인생을 꾹 붙잡고 놓지 않으면 문이 열린다.',rec:()=>{const m=MEM.qx;return m&&m.v===1&&(m.clears||m.bestLv)?(m.clears?'완주 최소 감염 '+m.bestD+'번 · 완주 '+m.clears+'번':'최고 '+m.bestLv+'단계'):'';},open:()=>qxOpen(stepMini)}];
+   h:'한 번뿐인 인생을 꾹 붙잡고 놓지 않으면 문이 열린다.',rec:()=>{const m=MEM.qx;return m&&m.v===1&&(m.clears||m.bestLv)?(m.clears?'완주 최소 감염 '+m.bestD+'번 · 완주 '+m.clears+'번':'최고 '+m.bestLv+'단계'):'';},open:()=>qxOpen(stepMini)},
+  {id:'cg',tag:'끝없는 길 건너기',n:'대통령 출근길',sub:'차도 · 한강 · 철길을 건너 출근',intro:'한 칸씩 깡충 뛰어 차도와 한강, 철길을 건넌다. 머뭇거리면 뒤에서 <b>기자단</b>이 따라잡는다. 멀리 갈수록 높은 기록.',
+   h:'기록 보관소에 적힌 이름을 거듭 부르면 출근 시간이 된다.',rec:()=>{const m=MEM.cg;return m&&m.v===1&&m.best?'최고 '+m.best+'칸 · 출근 '+(m.runs||0)+'번':'';},open:()=>cgOpen(stepMini)}];
 const miniSub=()=>{const n=MINI.filter(x=>eggOn(x.id)).length;return n?n+' / '+MINI.length+' 열림 · 비밀을 찾으면 하나씩 열린다':'숨겨진 게임 '+MINI.length+'개 · 비밀을 찾으면 열린다';};
 // 수영 금메달 선물을 받았는데 아직 대항해를 못 열었으면, 잠긴 대항해 칸에 여는 법을 그대로 적고 그 칸을 고르면 튜토리얼을 다시 연다
 const miniGift=x=>x.id==='sail'&&!!MEM.sailHint&&!eggOn('sail');

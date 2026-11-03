@@ -111,14 +111,14 @@ function hofRender(){const v=hofView(),body=document.getElementById('hofBody');h
     hofCard({i:7,ga:'g',t:'무대별 최고',u:'무대마다 1위',list:C.camp,it:r=>P(r,num(r.score)+'<small>점</small>',E(hofCampN(r.camp))+(r.school?' · '+E(r.school):''))});
   body.classList.toggle('still',!first);
   body.innerHTML=mainCard+left+right+sub;hofArcBind();}
-// 오른쪽 끝 한 칸(넓은 화면에서는 위아래 두 줄 높이): 미니게임 순위. 방역선 · 대항해 · 별똥별 · 격리 탈출을 탭으로 넘겨 보고,
+// 오른쪽 끝 한 칸(넓은 화면에서는 위아래 두 줄 높이): 미니게임 순위. 방역선 · 대항해 · 별똥별 · 격리 탈출 · 출근길을 탭으로 넘겨 보고,
 // 가만히 두면 9초마다 다음 게임으로 넘어간다(탭을 누르면 그 게임에 머문다). 순위는 난이도와 상관없이 하나다
-const HOF_ARC=[{k:'zg',t:'방역선',u:'좀비 서바이벌 · 최고 점수',empty:'아직 해가 뜬 기록이 없어요'},{k:'sail',t:'대항해',u:'폭풍 해협 · 최단 기록',empty:'아직 돌아온 배가 없어요'},{k:'star',t:'별똥별',u:'밤하늘 서바이벌 · 최고 점수',empty:'아직 하늘을 난 별이 없어요'},{k:'qx',t:'격리 탈출',u:'깬 단계 → 적은 감염 → 짧은 시간',empty:'아직 병동을 빠져나온 대통령이 없어요'}];
+const HOF_ARC=[{k:'zg',t:'방역선',u:'좀비 서바이벌 · 최고 점수',empty:'아직 해가 뜬 기록이 없어요'},{k:'sail',t:'대항해',u:'폭풍 해협 · 최단 기록',empty:'아직 돌아온 배가 없어요'},{k:'star',t:'별똥별',u:'밤하늘 서바이벌 · 최고 점수',empty:'아직 하늘을 난 별이 없어요'},{k:'qx',t:'격리 탈출',u:'깬 단계 → 적은 감염 → 짧은 시간',empty:'아직 병동을 빠져나온 대통령이 없어요'},{k:'cg',t:'출근길',u:'대통령 출근길 · 가장 멀리 간 칸',empty:'아직 출근한 대통령이 없어요'}];
 function hofArcCard(){const A=(HOF.d&&HOF.d.arcade)||{},E=lbEsc,num=x=>Number(x||0).toLocaleString('ko-KR'),k=HOF.arc%HOF_ARC.length,X=HOF_ARC[k];
   const ini=r=>hofAnon(r.nick)?HOF_SH:'<span class="hc-ini">'+E(String(r.nick).slice(0,1))+'</span>',mmss=s=>Math.floor(s/60)+':'+(s%60).toFixed(1).padStart(4,'0');
   return hofCard({i:6,ga:'f',id:'hofArc',cls:'arc',t:'미니게임 순위',u:X.u,list:A[X.k]||[],empty:X.empty,
     tabs:HOF_ARC.map((x,i)=>'<button type="button" role="tab" class="hc-tab'+(i===k?' on':'')+'" aria-selected="'+(i===k)+'" data-arc="'+i+'">'+x.t+'</button>').join(''),
-    it:r=>({n:E(r.nick),s:[r.school,r.detail].filter(Boolean).map(E).join(' · ')||'&nbsp;',v:X.k==='sail'?mmss(r.sec):X.k==='qx'?(r.win?'완주':Math.floor(r.score/1000)+'<small>단계</small>'):num(r.score)+'<small>점</small>',a:ini(r),me:false})});}
+    it:r=>({n:E(r.nick),s:[r.school,r.detail].filter(Boolean).map(E).join(' · ')||'&nbsp;',v:X.k==='sail'?mmss(r.sec):X.k==='qx'?(r.win?'완주':Math.floor(r.score/1000)+'<small>단계</small>'):X.k==='cg'?num(r.score)+'<small>칸</small>':num(r.score)+'<small>점</small>',a:ini(r),me:false})});}
 function hofArcBind(){const s=document.getElementById('hofArc');if(!s)return;clearTimeout(HOF.arcT);
   s.querySelectorAll('[data-arc]').forEach(b=>b.onclick=()=>{try{SFX.click();}catch(e){}HOF.arc=+b.dataset.arc;HOF.arcHold=1;hofArcSwap();});
   if(!HOF.arcHold)HOF.arcT=setTimeout(()=>{if(!document.getElementById('hofArc'))return;if(!document.hidden)HOF.arc=(HOF.arc+1)%HOF_ARC.length;hofArcSwap();},9000);}

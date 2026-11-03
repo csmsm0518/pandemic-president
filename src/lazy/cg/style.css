@@ -1,0 +1,39 @@
+/* ---------- 대통령 출근길: 가운데 큰 칸 수, 양옆 닫기 · 쉬기. 안내 카드는 격리 탈출과 같은 금장 결 ---------- */
+.cg{position:fixed;inset:0;z-index:120;overflow:hidden;background:#0e1424;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.cg canvas{display:block;touch-action:none}
+.cg-hud{position:absolute;left:0;right:0;top:0;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:max(10px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left));color:#dfe6ff;pointer-events:none}
+.cg-hud button{pointer-events:auto}
+.cg-x,.cg-p{background:rgba(10,14,26,.55)!important;width:40px;height:40px;padding:0;border-radius:50%;font-size:15px;color:#f3ead7;background:rgba(255,255,255,.08);border:1px solid rgba(241,213,137,.32);display:inline-flex;align-items:center;justify-content:center;gap:3px}
+.cg-x:hover,.cg-p:hover{background:rgba(255,255,255,.16);border-color:rgba(241,213,137,.6)}
+.cg-p i{display:block;width:4px;height:13px;border-radius:1px;background:#f1d589}
+.cg-r{justify-self:end}
+.cg-mid{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;text-align:center}
+.cg-mid>b{font:800 34px/1 var(--font-ui);color:#fff;font-variant-numeric:tabular-nums;text-shadow:0 2px 0 rgba(0,0,0,.45),0 0 14px rgba(0,0,0,.35)}
+.cg-mid small{display:flex;gap:12px;font-size:12px;font-weight:700;color:#e8ecf6;font-variant-numeric:tabular-nums;text-shadow:0 1px 2px rgba(0,0,0,.7)}
+.cg-mid small b{font:800 13px var(--font-ui);color:#fff}
+#cgK b.on{color:#9fe3ff}#cgB b{color:#ffe08a}
+/* 단계 알림 */
+.cg-ban{position:absolute;left:50%;top:50%;display:flex;flex-direction:column;align-items:center;gap:6px;width:min(92vw,560px);padding:14px 18px;border-radius:14px;background:rgba(9,13,26,.82);
+  transform:translate(-50%,-50%) scale(.94);opacity:0;pointer-events:none;text-align:center;transition:opacity .3s,transform .3s}
+.cg-ban.on{animation:cgBan 2s both}
+@keyframes cgBan{0%{opacity:0;transform:translate(-50%,-50%) scale(.94)}12%,78%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+.cg-ban b{font:800 clamp(22px,5vw,32px)/1.2 var(--font-voice);color:#fff4d6}
+.cg-ban span{font-size:13px;font-weight:700;letter-spacing:.04em;color:#c9d6ff}
+/* 안내 · 결과 카드 */
+.cg-ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(6,9,18,.62);overflow-y:auto}
+.cg-card{width:min(450px,100%);max-height:calc(100% - 8px);overflow-y:auto;margin:auto;padding:22px 20px;border-radius:16px;text-align:center;color:#f3ead7;background:linear-gradient(180deg,#141a2e,#0b0f1d);border:1px solid rgba(201,162,74,.45);
+  box-shadow:inset 0 0 0 4px #0b0f1d,inset 0 0 0 5px rgba(201,162,74,.25),0 20px 50px rgba(0,0,0,.55)}
+.cg-card.sm{width:min(340px,100%)}
+.cg-k{font-size:11.5px;font-weight:800;letter-spacing:.2em;color:#c9a24a}
+.cg-card h2{margin:6px 0 8px;font:800 30px/1.2 var(--font-voice);color:#fff4d6}
+.cg-s{margin:0 0 12px;font-size:14px;line-height:1.65;color:#d6d2c4}
+.cg-note{margin:-4px 0 10px;font-size:12px;color:#a7a596}
+.cg-card ul{margin:0 0 14px;padding:0;list-style:none;text-align:left;font-size:12.5px;line-height:1.6;color:#c4c2b8}
+.cg-card li{position:relative;padding-left:14px;margin-bottom:5px}.cg-card li::before{content:"";position:absolute;left:2px;top:.6em;width:5px;height:5px;transform:rotate(45deg);background:#c9a24a}
+.cg-card li b{color:#ffe08a}
+.cg-big{margin:2px 0 12px;font:800 46px/1 var(--font-ui);color:#fff6d8;font-variant-numeric:tabular-nums}
+.cg-big small{margin-left:6px;font-size:16px;color:#ff9aa6}
+.cg-b{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin-bottom:14px;font-size:12.5px;color:#a7a596}.cg-b b{margin-left:4px;font-size:16px;color:#fff;font-variant-numeric:tabular-nums}
+.cg-card>button{width:100%;padding:14px;font-size:15px;margin-top:6px}
+@media (max-width:420px){@media (max-height:460px){.cg-card{padding:14px 16px}.cg-card h2{font-size:24px;margin:2px 0 4px}.cg-s{margin-bottom:6px;font-size:13px}.cg-card ul{font-size:12px;margin-bottom:8px}.cg-card li{margin-bottom:2px}.cg-big{font-size:36px;margin-bottom:8px}.cg-card>button{padding:11px;font-size:14px}}
+@media (prefers-reduced-motion:reduce){.cg-ban.on{animation-duration:2.4s}}
