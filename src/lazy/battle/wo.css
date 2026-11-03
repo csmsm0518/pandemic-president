@@ -82,3 +82,14 @@ html.wo-on,html.wo-on body{overflow:hidden}
 .wo-vs b{color:#ffe08a}
 .wo-wt .wo-gl{display:block;margin-bottom:4px;font-size:12px;font-weight:800;letter-spacing:.08em;color:#9fd8ff}
 .wo-wt:has(.wo-gl){flex-direction:column}
+/* 컬링 대결 점수판: 엔드마다 점수, 망치(●) */
+.cm-sbw{overflow-x:auto;margin:12px auto 4px;max-width:100%}
+.cm-sb{border-collapse:collapse;margin:0 auto;font:700 14px/1 var(--font-ui);font-variant-numeric:tabular-nums;color:#e6eef8}
+.cm-sb th,.cm-sb td{min-width:28px;padding:7px 5px;text-align:center;border:1px solid rgba(241,213,137,.18)}
+.cm-sb th{font-size:11px;color:#9fb0d8;font-weight:800}
+.cm-sb td:first-child{min-width:64px;max-width:96px;padding:7px 8px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cm-sb tr.me td{color:#ffe08a}
+.cm-sb td.t{font-size:17px;font-weight:800;background:rgba(241,213,137,.1)}
+.cm-sb td.now{background:rgba(110,160,255,.14)}
+.cm-sb .cm-h{display:inline-block;margin-left:2px;font-size:8px;font-style:normal;color:#ff7a70;vertical-align:super}
+.cm-hl{margin:0;font-size:11px;color:#8b98b5;text-align:center}

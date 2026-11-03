@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"battle":{"v":"1df969e3a2","h":"3d1bf9aa1a813894"},"board":{"v":"e93a03db5f","h":"129bbadeec9bbed5"},"boxes":{"v":"9f3a40eb75","h":"cdd3c4c349144d91"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"dex":{"v":"a834d42e11","h":"214b42847560de78"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"f2406bd47f","h":"58269006748ccbe1"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"qx":{"v":"b59a54b3ea","h":"a5dfdc9a8a91b253"},"sail":{"v":"f33f245bee","h":"5e31bd0bd96d66a3"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"93fe18c498","h":"7ae7436429524514"},"whockey":{"v":"4a95063de7","h":"79ff537df9c211af"},"wjump":{"v":"b76e628a74","h":"051fb590c1646b11"},"wskate":{"v":"6d0ed6ce3a","h":"a407b9cdb8bc3715"}};
+const LZ_M={"battle":{"v":"5091c4c035","h":"583d39cea0053431"},"board":{"v":"e93a03db5f","h":"129bbadeec9bbed5"},"boxes":{"v":"9f3a40eb75","h":"cdd3c4c349144d91"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"dex":{"v":"a834d42e11","h":"214b42847560de78"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"f2406bd47f","h":"58269006748ccbe1"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"qx":{"v":"b59a54b3ea","h":"a5dfdc9a8a91b253"},"sail":{"v":"f33f245bee","h":"5e31bd0bd96d66a3"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"a6c71124bb","h":"cde6281585382b34"},"whockey":{"v":"4a95063de7","h":"79ff537df9c211af"},"wjump":{"v":"b76e628a74","h":"051fb590c1646b11"},"wskate":{"v":"6d0ed6ce3a","h":"a407b9cdb8bc3715"}};
 function btOpen(){return lzCall('battle','btOpen',arguments);}
 function btFinish(){return lzCall('battle','btFinish',arguments);}
 function btResMount(){return lzCall('battle','btResMount',arguments);}
@@ -5731,7 +5731,7 @@ function bagOpen(){
    기록 시트로 보내지 않는다. */
 let DC=null;
 // 홈의 「실시간 대결」 칸 작은 글(대결 조각 lazy/battle은 누르면 받는다)
-const btSub=()=>'2~4명 · 대통령 대결 · 동계올림픽';
+const btSub=()=>'2~4명 · 대통령 대결 · 동계올림픽 · 컬링';
 const DC_RAND0=Math.random;
 const dcHash=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h>>>0;};
 let DC_S=0;
@@ -8262,7 +8262,7 @@ function acEnter(id,p){PF={school:p.school,name:p.name,phone:p.phone||'',agree:t
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v5.5';
+const GAME_VER='v5.6';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -8436,6 +8436,11 @@ setTimeout(()=>{try{const me=!IN_ART&&acGet();if(!me||!me.prof||!me.prof.name)re
    홈 메뉴 「기타 → 업데이트 소식」에서 언제든 다시 볼 수 있다. 처음 온 사람(기록이 전혀 없음)에게는 띄우지 않고 읽은 것으로 쳐 둔다.
    v1부터 v4.9까지 모든 업데이트를 넣었다(v4.7은 크게, 나머지는 접어서 짧게). */
 const PATCHES=[
+ {v:'v5.6',t:'실시간 대결 · 컬링 모드',d:'2026-11-03',big:1,l:[
+  ['🥌 컬링 모드','실시간 대결 대기실에서 방장이 「컬링」을 고르면 두 명씩 1:1로 맞붙어요(남는 한 명은 인공지능과).'],
+  ['규칙은 직접','엔드 수(1~10)와 엔드마다 팀당 돌 수(2~8)를 방장이 정해요. 정식 경기는 10엔드 · 팀당 8개예요.'],
+  ['진짜 컬링 규칙','첫 엔드 망치는 동전 던지기, 점수를 낸 쪽은 다음 엔드에 망치를 넘기고, 블랭크 엔드면 망치는 그대로. 정한 엔드가 끝나 동점이면 연장 엔드!'],
+  ['점수판','엔드마다 점수와 망치(●)가 점수판에 쌓여요. 상대가 나가면 인공지능이 대신 던져 끝까지 할 수 있어요.']]},
  {v:'v5.5',t:'새 미니게임 「격리 탈출」',d:'2026-11-03',big:1,l:[
   ['격리 탈출','네 번째 비밀 미니게임. 격리 병동에 갇힌 대통령이 바이러스를 피해 백신을 모두 챙기고 브리핑룸으로 가요. 닿으면 바로 감염! 숨겨진 방법으로 열어요(힌트는 미니게임 판의 잠긴 칸에).'],
   ['8단계 · 극악 난이도','바이러스는 정해진 길만 오가서 길은 늘 있어요. 소독 구역(초록)에서 다시 시작하고, 1단계부터 이어서 깨면 「깬 단계 → 적은 감염 → 짧은 시간」 순으로 명예의 전당 미니게임 순위에 올라요.'],

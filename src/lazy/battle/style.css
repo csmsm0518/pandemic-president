@@ -94,3 +94,10 @@ html.bt-on.bt-min body{padding-top:calc(26px + env(safe-area-inset-top))}
 .bt-rb{display:grid;grid-template-columns:1.4fr 1fr;gap:8px}
 .bt-rb button{padding:12px 8px;font-size:14px;font-weight:700}
 .bt-rb button:only-child{grid-column:1/-1}
+/* 게임 고르기 셋(대통령 · 동계 · 컬링)과 컬링 설정 */
+#btGm .bt-seg{grid-template-columns:repeat(3,1fr)}
+#btGm .bt-seg button{padding:9px 4px;font-size:13px}
+@media (max-width:420px){#btGm .bt-seg button small{font-size:10.5px}}
+.bt-cfg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.bt-cfg label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--text-muted)}
+.bt-cfg .bt-sel{width:100%}

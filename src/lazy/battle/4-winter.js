@@ -70,7 +70,7 @@ function woClose(){if(!WO)return;clearInterval(WO.iv);if(WO.r0){Math.random=WO.r
 function woQuitNow(){const W=WO;if(!W)return;const ex=W.ex.slice(),lb=W.lb.slice();while(ex.length<WO_EV.length){ex.push('x');lb.push('x');}
   woW({ex:ex.join(','),lid:lb.join('|'),t:WO_EV.length,a:0,fin:1});woClose();if(BT)btLeave();}
 // 방 소식(btOnRoom이 부른다). 방이 닫혀도 혼자 끝까지 할 수 있다
-function woRoom(T){if(!WO)return;if(T)WO.room=T;else WO.room=null;woStrip();woTick();}
+function woRoom(T){if(CM){cmRoom(T);return;}if(!WO)return;if(T)WO.room=T;else WO.room=null;woStrip();woTick();}
 function woStrip(){const el=document.getElementById('woStrip');if(!el||!WO)return;const W=WO,me=BT_AU&&BT_AU.uid,P=woPl(),k=W.k;
   el.innerHTML=P.map(p=>{const g=p.g||{},t=+g.t||0,lb=woLbs(p);let s,c='';
     if(p.gone){s='나감';c='off';}else if(!btLive(p)){s='연결 끊김';c='off';}

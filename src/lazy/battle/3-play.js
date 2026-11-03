@@ -4,6 +4,7 @@
    판이 끝나면(careerEnd → btFinish) 점수를 올리고, 결산 화면 맨 위 칸(#btRes, btResMount)에 실시간 순위를 보여 준다. */
 function btBegin(T){const b=BT;if(!b)return;const me=(T.p||{})[b.uid];if(!me){btEntry('방에서 빠졌어요.');return;}
   if(woIs(T))return woBegin(T);   // 동계올림픽 대결(4-winter.js)
+  if(cuIs(T))return cmBegin(T);   // 컬링 대결(5-curl.js)
   const L=CAMPS.kr.bg;let i=L.findIndex(q=>q.id===me.bg);if(i<0||bgLock(L[i])||L[i].god||L[i].once)i=L.findIndex(q=>!q.sec&&!q.god&&!q.once);
   b.view='play';b.rd=+T.rd||0;b.last='';
   const o=document.querySelector('.bt-bg');if(o)o.remove();BT_FROM=null;
