@@ -159,9 +159,9 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
     pb('지도자 도감',Object.keys(MEM.leaders||{}).length,LEADK.length)+pb('임기 평가 도감',Object.keys(MEM.ends||{}).length,ENDC.length)+
     (MEM.zg&&MEM.zg.runs?'<div class="gx-pc-z"><span>방역선 최고</span><b>'+MEM.zg.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+MEM.zg.wins+'번</span></div>':'')+
     (MEM.sail&&MEM.sail.v===2&&MEM.sail.best?'<div class="gx-pc-z"><span>대항해 최고</span><b>'+Math.floor(MEM.sail.best/60)+':'+(MEM.sail.best%60).toFixed(1).padStart(4,'0')+'</b><span>금메달 '+(MEM.sail.gold||0)+'번</span></div>':'')+
-    (MEM.star&&MEM.star.v===1&&MEM.star.best?'<div class="gx-pc-z st"><span>별똥별 최고</span><b>'+MEM.star.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+(MEM.star.dawn||0)+'번</span></div>':'')+
-    (MEM.qx&&MEM.qx.v===1&&(MEM.qx.clears||MEM.qx.bestLv)?'<div class="gx-pc-z qx"><span>격리 탈출</span><b>'+(MEM.qx.clears?MEM.qx.bestD+'<small>번 감염</small>':MEM.qx.bestLv+'<small>단계</small>')+'</b><span>'+(MEM.qx.clears?'완주 '+MEM.qx.clears+'번':'완주 전')+'</span></div>':'')+
-    (MEM.cg&&MEM.cg.v===1&&MEM.cg.best?'<div class="gx-pc-z cg"><span>대통령 출근길</span><b>'+MEM.cg.best+'<small>칸</small></b><span>출근 '+(MEM.cg.runs||0)+'번</span></div>':'')+'</aside>';
+    (MEM.star&&MEM.star.v===1&&MEM.star.best?'<div class="gx-pc-z pz-st"><span>별똥별 최고</span><b>'+MEM.star.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+(MEM.star.dawn||0)+'번</span></div>':'')+
+    (MEM.qx&&MEM.qx.v===1&&(MEM.qx.clears||MEM.qx.bestLv)?'<div class="gx-pc-z pz-qx"><span>격리 탈출</span><b>'+(MEM.qx.clears?MEM.qx.bestD+'<small>번 감염</small>':MEM.qx.bestLv+'<small>단계</small>')+'</b><span>'+(MEM.qx.clears?'완주 '+MEM.qx.clears+'번':'완주 전')+'</span></div>':'')+
+    (MEM.cg&&MEM.cg.v===1&&MEM.cg.best?'<div class="gx-pc-z pz-cg"><span>대통령 출근길</span><b>'+MEM.cg.best+'<small>칸</small></b><span>출근 '+(MEM.cg.runs||0)+'번</span></div>':'')+'</aside>';
   let sel=0;
   cine([{t:'메인 메뉴',h:'<div class="gx gx-title"><canvas class="gx-bg" aria-hidden="true"></canvas><div class="gx-seal" aria-hidden="true">'+emblemSvg('embgS',1)+
     '<span class="gx-sstar" hidden><svg viewBox="-12 -12 24 24"><path d="M0-10.5L2.7-3.4 10-3.2 4.3 1.3 6.3 8.5 0 4.3-6.3 8.5-4.3 1.3-10-3.2-2.7-3.4Z"/></svg></span></div>'+

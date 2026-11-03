@@ -5910,9 +5910,9 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
     pb('지도자 도감',Object.keys(MEM.leaders||{}).length,LEADK.length)+pb('임기 평가 도감',Object.keys(MEM.ends||{}).length,ENDC.length)+
     (MEM.zg&&MEM.zg.runs?'<div class="gx-pc-z"><span>방역선 최고</span><b>'+MEM.zg.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+MEM.zg.wins+'번</span></div>':'')+
     (MEM.sail&&MEM.sail.v===2&&MEM.sail.best?'<div class="gx-pc-z"><span>대항해 최고</span><b>'+Math.floor(MEM.sail.best/60)+':'+(MEM.sail.best%60).toFixed(1).padStart(4,'0')+'</b><span>금메달 '+(MEM.sail.gold||0)+'번</span></div>':'')+
-    (MEM.star&&MEM.star.v===1&&MEM.star.best?'<div class="gx-pc-z st"><span>별똥별 최고</span><b>'+MEM.star.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+(MEM.star.dawn||0)+'번</span></div>':'')+
-    (MEM.qx&&MEM.qx.v===1&&(MEM.qx.clears||MEM.qx.bestLv)?'<div class="gx-pc-z qx"><span>격리 탈출</span><b>'+(MEM.qx.clears?MEM.qx.bestD+'<small>번 감염</small>':MEM.qx.bestLv+'<small>단계</small>')+'</b><span>'+(MEM.qx.clears?'완주 '+MEM.qx.clears+'번':'완주 전')+'</span></div>':'')+
-    (MEM.cg&&MEM.cg.v===1&&MEM.cg.best?'<div class="gx-pc-z cg"><span>대통령 출근길</span><b>'+MEM.cg.best+'<small>칸</small></b><span>출근 '+(MEM.cg.runs||0)+'번</span></div>':'')+'</aside>';
+    (MEM.star&&MEM.star.v===1&&MEM.star.best?'<div class="gx-pc-z pz-st"><span>별똥별 최고</span><b>'+MEM.star.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+(MEM.star.dawn||0)+'번</span></div>':'')+
+    (MEM.qx&&MEM.qx.v===1&&(MEM.qx.clears||MEM.qx.bestLv)?'<div class="gx-pc-z pz-qx"><span>격리 탈출</span><b>'+(MEM.qx.clears?MEM.qx.bestD+'<small>번 감염</small>':MEM.qx.bestLv+'<small>단계</small>')+'</b><span>'+(MEM.qx.clears?'완주 '+MEM.qx.clears+'번':'완주 전')+'</span></div>':'')+
+    (MEM.cg&&MEM.cg.v===1&&MEM.cg.best?'<div class="gx-pc-z pz-cg"><span>대통령 출근길</span><b>'+MEM.cg.best+'<small>칸</small></b><span>출근 '+(MEM.cg.runs||0)+'번</span></div>':'')+'</aside>';
   let sel=0;
   cine([{t:'메인 메뉴',h:'<div class="gx gx-title"><canvas class="gx-bg" aria-hidden="true"></canvas><div class="gx-seal" aria-hidden="true">'+emblemSvg('embgS',1)+
     '<span class="gx-sstar" hidden><svg viewBox="-12 -12 24 24"><path d="M0-10.5L2.7-3.4 10-3.2 4.3 1.3 6.3 8.5 0 4.3-6.3 8.5-4.3 1.3-10-3.2-2.7-3.4Z"/></svg></span></div>'+
@@ -8286,7 +8286,7 @@ function acEnter(id,p){PF={school:p.school,name:p.name,phone:p.phone||'',agree:t
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v5.7';
+const GAME_VER='v5.8';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -8460,6 +8460,8 @@ setTimeout(()=>{try{const me=!IN_ART&&acGet();if(!me||!me.prof||!me.prof.name)re
    홈 메뉴 「기타 → 업데이트 소식」에서 언제든 다시 볼 수 있다. 처음 온 사람(기록이 전혀 없음)에게는 띄우지 않고 읽은 것으로 쳐 둔다.
    v1부터 v4.9까지 모든 업데이트를 넣었다(v4.7은 크게, 나머지는 접어서 짧게). */
 const PATCHES=[
+ {v:'v5.8',t:'홈 기록 보관소 고침',d:'2026-11-04',l:[
+  ['기록 보관소','격리 탈출 · 대통령 출근길을 한 번 하고 홈으로 돌아오면 기록 보관소 카드가 남색으로 덮여 이름과 기록이 안 보이던 문제를 고쳤어요.']]},
  {v:'v5.7',t:'새 미니게임 「대통령 출근길」',d:'2026-11-03',big:1,l:[
   ['대통령 출근길','다섯 번째 비밀 미니게임. 관저를 나선 대통령이 한 칸씩 깡충 뛰어 차도 · 인도 · 한강 · 철길을 건너 끝없이 출근해요. 숨겨진 방법으로 열어요(힌트는 미니게임 판의 잠긴 칸에).'],
   ['피할 것 · 밟을 것','택시 · 구급차 · 버스 · 방역차와 고속열차를 피하고, 한강은 오리배와 뗏목을 밟고 건너요. 인도의 기침하는 확진자는 마스크로 한 번 막을 수 있어요.'],
