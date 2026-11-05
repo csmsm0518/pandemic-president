@@ -812,6 +812,10 @@ html:not([data-ori="p"]) .gx-sl[data-g="etc"] .gx-mt b{font-size:13.5px;white-sp
 .gx-nk.hop{animation:gxNkHop .32s cubic-bezier(.3,.7,.4,1)}
 @keyframes gxNkHop{0%{transform:translateY(0)}40%{transform:translateY(-6px)}70%{transform:translateY(0) scaleY(.92)}100%{transform:none}}
 @media (prefers-reduced-motion:reduce){.gx-nk.hop{animation:none}}
+/* 라이트 홈의 기록 보관소 줄: 여기 이름도 다섯 번 누르면 출근길이 열린다 */
+.hl-pc{display:flex;align-items:baseline;gap:8px;margin:0 0 8px;font-size:12px;color:var(--text-muted);min-width:0}
+.hl-pc b{display:inline-block;font-size:15px;font-weight:700;color:var(--text-primary,inherit);max-width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hl-pc small{margin-left:auto;font-size:12px;white-space:nowrap}
 /* ---------- 전체 화면 연출(시네마) ---------- */
 .cine{position:fixed;inset:0;z-index:75;overflow:hidden;color:var(--dk-text);background:radial-gradient(ellipse at 50% 38%,#3a2e1c 0%,#1b1610 55%,#0b0907 100%);animation:dkFade .45s both}
 .cine.out{opacity:0;transition:opacity .45s ease;pointer-events:none}

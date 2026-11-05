@@ -109,7 +109,7 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
       burst(P.x,P.r,12,'#bfeaff',3);snd(()=>{tone(1320,'triangle',.12,.07);tone(1760,'triangle',.12,.05,.06);});}
     if(rw.t==='w'&&!raftAt(rw,P.x,T)){die('water');return;}
     if(qd){const q=qd;qd=null;tryHop(q[0],q[1]);}};
-  const step=dt=>{if(banT>0)banT-=dt;if(shake>0)shake=Math.max(0,shake-dt);if(bump>0)bump=Math.max(0,bump-dt);if(inv>0)inv-=dt;
+  const step=dt=>{if(banT>0){banT-=dt;if(banT<=0)$('cgBan').classList.remove('on');}if(shake>0)shake=Math.max(0,shake-dt);if(bump>0)bump=Math.max(0,bump-dt);if(inv>0)inv-=dt;
     for(const p of FX){p.x+=p.vx*dt;p.r+=p.vy*dt;p.vx*=.9;p.vy*=.9;p.l-=dt;}FX=FX.filter(p=>p.l>0);
     for(const p of POP){p.r+=dt*.9;p.l-=dt*.85;}POP=POP.filter(p=>p.l>0);
     if(st==='dead'){deadT-=dt;if(deadAt)deadAt.t+=dt;T+=dt;if(deadT<=0)end();return;}

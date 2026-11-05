@@ -47,6 +47,13 @@ document.body.insertAdjacentHTML('beforeend','<div class="rotq" role="alert"><sv
 document.querySelectorAll('.rotq [data-o]').forEach(b=>b.onclick=()=>setView('ori',b.dataset.o));
 
 // 라이트 모드의 메인 화면: 예전 버전처럼 종이 한 장에 무대·출발 인물·결정 빈도·난이도를 두고 바로 취임한다
+// 이스터에그: 기록 보관소의 내 이름을 2.5초 안에 다섯 번 누르면(누를 때마다 이름이 깡충) 「대통령 출근길」이 열리고 바로 시작한다.
+// 메인 메뉴(기록 보관소 카드)와 라이트 홈(기록 보관소 줄) 모두 같은 방법으로 연다
+function cgNameBind(nk){if(!nk)return;let tp=[];nk.classList.add('gx-nk');
+  nk.onclick=()=>{const n=Date.now();tp=tp.filter(x=>n-x<2500);tp.push(n);nk.classList.remove('hop');void nk.offsetWidth;nk.classList.add('hop');
+    try{aInit();tone(480+tp.length*90,'triangle',.06,.04);}catch(e){}if(tp.length<5)return;tp=[];const first=!eggOn('cg');eggSet('cg');
+    try{SFX.unlock();[523,659,784,1047].forEach((f,i)=>tone(f,'triangle',.22,.07,.08+i*.08));}catch(e){}
+    if(first)eggToast('🚶 <b>대통령님, 출근하실 시간입니다…</b><br>미니게임 「대통령 출근길」이 열렸어요.');setTimeout(()=>cgOpen(home),first?1500:700);};}
 function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp)||camp==='zombie')camp='kr';document.documentElement.dataset.camp=camp;
   const msg=HUB_MSG;HUB_MSG='';const C=CAMPS[camp],BGS=C.bg;
   // 출발 인물은 드롭다운으로 고른다. 처음엔 '인물을 선택하세요'이고, 고르기 전에는 취임할 수 없다.
@@ -71,6 +78,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   // 세로 화면에서는 무대 소개와 기록 카드를 취임 버튼 아래로 내려, 게임을 시작하는 데 필요한 것만 첫 화면에 둔다
   // 이름을 introH로: intro라고 하면 첫 화면을 여는 intro() 함수를 가려 '인적사항 바꾸기'가 오류를 낸다
   const P=isP(),introH='<div class="hl-in" style="font-size:14px;color:var(--text-secondary);line-height:1.75;margin:12px 0 18px">'+C.intro+'</div>'+
+    '<div class="hl-pc"><span>기록 보관소</span><b id="hlNk">'+gEsc(NICK||'익명')+'</b>'+(MEM.cg&&MEM.cg.v===1&&MEM.cg.best?'<small>출근길 최고 '+MEM.cg.best+'칸</small>':'')+'</div>'+
     '<div style="display:flex;gap:8px;margin-bottom:24px">'+stat('최고 커리어 점수',MEM.best100?MEM.best100.toLocaleString('ko-KR')+'<span style="font-size:12px;color:var(--text-muted)">점</span>':'—')+stat('최장 재임',MEM.longest?MEM.longest+'년':'—')+stat('지나온 인생',(MEM.careers||0)+'번')+'</div>';
   R.innerHTML='<div class="hl" style="animation:fdIn .35s ease-out">'+
   '<div class="hl-hd" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span class="hd" id="ttl" style="font-size:25px;user-select:none">팬데믹 대통령</span><button id="snd" style="width:38px;height:34px;padding:0;display:flex;align-items:center;justify-content:center" aria-label="소리 설정">'+sndIco()+'</button></div>'+
@@ -110,6 +118,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   $('edBtn').onclick=()=>{SFX.click();intro();};
   $('newsBtn').onclick=e=>{e.preventDefault();SFX.click();newsOpen(true);};
   vwBind(R,k=>{if(k==='lite')home();});
+  cgNameBind($('hlNk'));
   // 이스터에그: 제목을 3초 안에 7번 누르면 좀비 무대가 열린다
   $('ttl').onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];
     if(eggOn('zombie')){eggToast('🧟 좀비 무대는 이미 열려 있어요.');return;}
@@ -211,11 +220,7 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   lifeHold(document.querySelector('.cine .gx-logo .emb-s'),()=>{const first=!eggOn('qx');eggSet('qx');try{SFX.unlock();[392,523,659,784].forEach((f,i)=>tone(f,'triangle',.3,.07,.1+i*.1));}catch(e){}
     if(first)eggToast('🦠 <b>한 번뿐인 인생을 놓지 않자 격리 병동의 문이 열린다…</b><br>미니게임 「격리 탈출」이 열렸어요.');setTimeout(()=>qxOpen(home),first?1600:800);});
   // 이스터에그: 기록 보관소의 내 이름을 2.5초 안에 다섯 번 누르면(누를 때마다 이름이 깡충) 「대통령 출근길」이 열리고 바로 시작한다
-  const nk=document.querySelector('.cine .gx-pc-h b');if(nk){let tp=[];nk.classList.add('gx-nk');
-    nk.onclick=()=>{const n=Date.now();tp=tp.filter(x=>n-x<2500);tp.push(n);nk.classList.remove('hop');void nk.offsetWidth;nk.classList.add('hop');
-      try{aInit();tone(480+tp.length*90,'triangle',.06,.04);}catch(e){}if(tp.length<5)return;tp=[];const first=!eggOn('cg');eggSet('cg');
-      try{SFX.unlock();[523,659,784,1047].forEach((f,i)=>tone(f,'triangle',.22,.07,.08+i*.08));}catch(e){}
-      if(first)eggToast('🚶 <b>대통령님, 출근하실 시간입니다…</b><br>미니게임 「대통령 출근길」이 열렸어요.');setTimeout(()=>cgOpen(home),first?1500:700);};}
+  cgNameBind(document.querySelector('.cine .gx-pc-h b'));
   // 이스터에그: 제목을 3초 안에 7번 누르면(터치·클릭 모두) 좀비 무대가 열린다
   const tt=document.querySelector('.cine .emb-t');tt.id='ttl';tt.style.cursor='default';tt.style.userSelect='none';
   tt.onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];

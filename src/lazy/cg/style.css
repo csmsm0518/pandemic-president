@@ -37,3 +37,5 @@
 .cg-card>button{width:100%;padding:14px;font-size:15px;margin-top:6px}
 @media (max-width:420px){@media (max-height:460px){.cg-card{padding:14px 16px}.cg-card h2{font-size:24px;margin:2px 0 4px}.cg-s{margin-bottom:6px;font-size:13px}.cg-card ul{font-size:12px;margin-bottom:8px}.cg-card li{margin-bottom:2px}.cg-big{font-size:36px;margin-bottom:8px}.cg-card>button{padding:11px;font-size:14px}}
 @media (prefers-reduced-motion:reduce){.cg-ban.on{animation-duration:2.4s}}
+/* 라이트 모드는 애니메이션을 모두 끄므로 알림은 2초 동안 그냥 띄웠다가 지운다(지우는 것은 게임 쪽 banT) */
+html[data-lite] .cg-ban.on{animation:none!important;opacity:1;transform:translate(-50%,-50%)}

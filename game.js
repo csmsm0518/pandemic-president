@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"battle":{"v":"5091c4c035","h":"583d39cea0053431"},"board":{"v":"0d891c23be","h":"5d05be5a848e9a72"},"boxes":{"v":"9f3a40eb75","h":"cdd3c4c349144d91"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"cg":{"v":"9f2abd957f","h":"f0fb2628f5bd7865"},"dex":{"v":"a834d42e11","h":"214b42847560de78"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"f2406bd47f","h":"58269006748ccbe1"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"qx":{"v":"b59a54b3ea","h":"a5dfdc9a8a91b253"},"sail":{"v":"f33f245bee","h":"5e31bd0bd96d66a3"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"a6c71124bb","h":"cde6281585382b34"},"whockey":{"v":"4a95063de7","h":"79ff537df9c211af"},"wjump":{"v":"b76e628a74","h":"051fb590c1646b11"},"wskate":{"v":"6d0ed6ce3a","h":"a407b9cdb8bc3715"}};
+const LZ_M={"battle":{"v":"5091c4c035","h":"583d39cea0053431"},"board":{"v":"0d891c23be","h":"5d05be5a848e9a72"},"boxes":{"v":"9f3a40eb75","h":"cdd3c4c349144d91"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"cg":{"v":"12ae45a5ae","h":"2883cf4a50ddf81d"},"dex":{"v":"a834d42e11","h":"214b42847560de78"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"f2406bd47f","h":"58269006748ccbe1"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"qx":{"v":"b59a54b3ea","h":"a5dfdc9a8a91b253"},"sail":{"v":"f33f245bee","h":"5e31bd0bd96d66a3"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"a6c71124bb","h":"cde6281585382b34"},"whockey":{"v":"4a95063de7","h":"79ff537df9c211af"},"wjump":{"v":"b76e628a74","h":"051fb590c1646b11"},"wskate":{"v":"6d0ed6ce3a","h":"a407b9cdb8bc3715"}};
 function btOpen(){return lzCall('battle','btOpen',arguments);}
 function btFinish(){return lzCall('battle','btFinish',arguments);}
 function btResMount(){return lzCall('battle','btResMount',arguments);}
@@ -5798,6 +5798,13 @@ document.body.insertAdjacentHTML('beforeend','<div class="rotq" role="alert"><sv
 document.querySelectorAll('.rotq [data-o]').forEach(b=>b.onclick=()=>setView('ori',b.dataset.o));
 
 // 라이트 모드의 메인 화면: 예전 버전처럼 종이 한 장에 무대·출발 인물·결정 빈도·난이도를 두고 바로 취임한다
+// 이스터에그: 기록 보관소의 내 이름을 2.5초 안에 다섯 번 누르면(누를 때마다 이름이 깡충) 「대통령 출근길」이 열리고 바로 시작한다.
+// 메인 메뉴(기록 보관소 카드)와 라이트 홈(기록 보관소 줄) 모두 같은 방법으로 연다
+function cgNameBind(nk){if(!nk)return;let tp=[];nk.classList.add('gx-nk');
+  nk.onclick=()=>{const n=Date.now();tp=tp.filter(x=>n-x<2500);tp.push(n);nk.classList.remove('hop');void nk.offsetWidth;nk.classList.add('hop');
+    try{aInit();tone(480+tp.length*90,'triangle',.06,.04);}catch(e){}if(tp.length<5)return;tp=[];const first=!eggOn('cg');eggSet('cg');
+    try{SFX.unlock();[523,659,784,1047].forEach((f,i)=>tone(f,'triangle',.22,.07,.08+i*.08));}catch(e){}
+    if(first)eggToast('🚶 <b>대통령님, 출근하실 시간입니다…</b><br>미니게임 「대통령 출근길」이 열렸어요.');setTimeout(()=>cgOpen(home),first?1500:700);};}
 function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp)||camp==='zombie')camp='kr';document.documentElement.dataset.camp=camp;
   const msg=HUB_MSG;HUB_MSG='';const C=CAMPS[camp],BGS=C.bg;
   // 출발 인물은 드롭다운으로 고른다. 처음엔 '인물을 선택하세요'이고, 고르기 전에는 취임할 수 없다.
@@ -5822,6 +5829,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   // 세로 화면에서는 무대 소개와 기록 카드를 취임 버튼 아래로 내려, 게임을 시작하는 데 필요한 것만 첫 화면에 둔다
   // 이름을 introH로: intro라고 하면 첫 화면을 여는 intro() 함수를 가려 '인적사항 바꾸기'가 오류를 낸다
   const P=isP(),introH='<div class="hl-in" style="font-size:14px;color:var(--text-secondary);line-height:1.75;margin:12px 0 18px">'+C.intro+'</div>'+
+    '<div class="hl-pc"><span>기록 보관소</span><b id="hlNk">'+gEsc(NICK||'익명')+'</b>'+(MEM.cg&&MEM.cg.v===1&&MEM.cg.best?'<small>출근길 최고 '+MEM.cg.best+'칸</small>':'')+'</div>'+
     '<div style="display:flex;gap:8px;margin-bottom:24px">'+stat('최고 커리어 점수',MEM.best100?MEM.best100.toLocaleString('ko-KR')+'<span style="font-size:12px;color:var(--text-muted)">점</span>':'—')+stat('최장 재임',MEM.longest?MEM.longest+'년':'—')+stat('지나온 인생',(MEM.careers||0)+'번')+'</div>';
   R.innerHTML='<div class="hl" style="animation:fdIn .35s ease-out">'+
   '<div class="hl-hd" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span class="hd" id="ttl" style="font-size:25px;user-select:none">팬데믹 대통령</span><button id="snd" style="width:38px;height:34px;padding:0;display:flex;align-items:center;justify-content:center" aria-label="소리 설정">'+sndIco()+'</button></div>'+
@@ -5861,6 +5869,7 @@ function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=C
   $('edBtn').onclick=()=>{SFX.click();intro();};
   $('newsBtn').onclick=e=>{e.preventDefault();SFX.click();newsOpen(true);};
   vwBind(R,k=>{if(k==='lite')home();});
+  cgNameBind($('hlNk'));
   // 이스터에그: 제목을 3초 안에 7번 누르면 좀비 무대가 열린다
   $('ttl').onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];
     if(eggOn('zombie')){eggToast('🧟 좀비 무대는 이미 열려 있어요.');return;}
@@ -5962,11 +5971,7 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
   lifeHold(document.querySelector('.cine .gx-logo .emb-s'),()=>{const first=!eggOn('qx');eggSet('qx');try{SFX.unlock();[392,523,659,784].forEach((f,i)=>tone(f,'triangle',.3,.07,.1+i*.1));}catch(e){}
     if(first)eggToast('🦠 <b>한 번뿐인 인생을 놓지 않자 격리 병동의 문이 열린다…</b><br>미니게임 「격리 탈출」이 열렸어요.');setTimeout(()=>qxOpen(home),first?1600:800);});
   // 이스터에그: 기록 보관소의 내 이름을 2.5초 안에 다섯 번 누르면(누를 때마다 이름이 깡충) 「대통령 출근길」이 열리고 바로 시작한다
-  const nk=document.querySelector('.cine .gx-pc-h b');if(nk){let tp=[];nk.classList.add('gx-nk');
-    nk.onclick=()=>{const n=Date.now();tp=tp.filter(x=>n-x<2500);tp.push(n);nk.classList.remove('hop');void nk.offsetWidth;nk.classList.add('hop');
-      try{aInit();tone(480+tp.length*90,'triangle',.06,.04);}catch(e){}if(tp.length<5)return;tp=[];const first=!eggOn('cg');eggSet('cg');
-      try{SFX.unlock();[523,659,784,1047].forEach((f,i)=>tone(f,'triangle',.22,.07,.08+i*.08));}catch(e){}
-      if(first)eggToast('🚶 <b>대통령님, 출근하실 시간입니다…</b><br>미니게임 「대통령 출근길」이 열렸어요.');setTimeout(()=>cgOpen(home),first?1500:700);};}
+  cgNameBind(document.querySelector('.cine .gx-pc-h b'));
   // 이스터에그: 제목을 3초 안에 7번 누르면(터치·클릭 모두) 좀비 무대가 열린다
   const tt=document.querySelector('.cine .emb-t');tt.id='ttl';tt.style.cursor='default';tt.style.userSelect='none';
   tt.onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];
@@ -8286,7 +8291,7 @@ function acEnter(id,p){PF={school:p.school,name:p.name,phone:p.phone||'',agree:t
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v5.8';
+const GAME_VER='v5.9';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -8460,6 +8465,9 @@ setTimeout(()=>{try{const me=!IN_ART&&acGet();if(!me||!me.prof||!me.prof.name)re
    홈 메뉴 「기타 → 업데이트 소식」에서 언제든 다시 볼 수 있다. 처음 온 사람(기록이 전혀 없음)에게는 띄우지 않고 읽은 것으로 쳐 둔다.
    v1부터 v4.9까지 모든 업데이트를 넣었다(v4.7은 크게, 나머지는 접어서 짧게). */
 const PATCHES=[
+ {v:'v5.9',t:'핫패치 · 건의사항 반영',d:'2026-11-06',l:[
+  ['라이트 모드에서도 출근길','건의사항을 반영했어요. 라이트 모드 홈에도 「기록 보관소」 줄에 내 이름이 생겨서, 메인 메뉴와 똑같이 이름을 2.5초 안에 다섯 번 누르면 「대통령 출근길」이 열려요. 최고 칸 수도 그 줄에 보여요.'],
+  ['라이트 모드 출근길 알림','라이트 모드에서 출근길을 하면 「출근!」과 50칸마다 나오는 서울 명소 알림이 보이지 않던 문제를 고쳤어요.']]},
  {v:'v5.8',t:'홈 기록 보관소 고침',d:'2026-11-04',l:[
   ['기록 보관소','격리 탈출 · 대통령 출근길을 한 번 하고 홈으로 돌아오면 기록 보관소 카드가 남색으로 덮여 이름과 기록이 안 보이던 문제를 고쳤어요.']]},
  {v:'v5.7',t:'새 미니게임 「대통령 출근길」',d:'2026-11-03',big:1,l:[
