@@ -6,10 +6,12 @@
    · 한강: 오리배 · 뗏목 · 구조 보트를 밟고 건넌다. 물에 빠지거나 판 밖으로 떠내려가면 끝.
    · 머뭇거리면 뒤에서 기자단이 따라온다(화면이 저절로 올라간다). 화면 아래로 밀려나면 붙잡힌다.
    · 길은 판마다 새로 만든다. 광장(풀밭)에는 늘 지나갈 길이 하나 이상 남는다. 50칸마다 서울의 이름난 곳을 지난다.
-   · 정해진 간격 없이 가끔 왕복 8~24차선 큰길이 나온다(아래 절반은 오른쪽, 위 절반은 왼쪽으로 달리고 가운데 두 줄은 중앙버스전용차로).
+   · 정해진 간격 없이 가끔 왕복 8~24차선 큰길이 나온다(차선마다 방향이 섞이고 가운데 두 줄은 중앙버스전용차로).
      멀리 갈수록 더 넓은 길까지 나온다. 5~10줄 내리 풀밭인 「쉼터」(나무 · 벤치)도 아무 때나 나와 잠깐 숨을 고를 수 있다.
      큰길 한가운데에 50칸이 걸리면 그 칸의 명소 광장은 큰길을 다 건넌 뒤 첫 줄로 미룬다.
-   · 붙어 있는 두 차도 줄은 차 빠르기가 30% 넘게 차이 난다(apart).
+   · 붙어 있는 두 차도 줄은 차 빠르기가 30% 넘게 차이 난다(apart). 차도는 같은 방향이 세 줄 넘게 이어지지 않고(laneDir),
+     바로 아래 차도와 같은 방향이면 차를 덜 넣는다(같은 방향 차가 벽처럼 몰려 피할 곳이 없어지지 않게).
+   · 400칸부터 110칸은 판마다 같은 고정 구간 「도심 관통」: 차도 10줄 → 철길 1줄을 열 번(풀밭 없음). 앞 399칸에 도로명판.
    · 숨은 길: 아직 앞으로 한 칸도 안 간 채 관저 문(가운데 세 칸) 쪽으로 뒤로 뛰면 관저로 들어가 메인 게임(새 게임 · 무대 선택)이 열린다.
    판은 가로 9칸. 좌표는 칸 단위(왼쪽 끝 0, 칸 c의 가운데 c+.5), 줄 r은 관저 앞이 0이고 위로 갈수록 커진다.
    기록: 가장 멀리 간 줄 수(칸). 10칸 이상 간 판은 명예의 전당에 오른다. 이 기기의 기록은 MEM.cg. */
@@ -46,19 +48,23 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
   const grass=(r,dens,lm,ex)=>{ex=ex||{};const np=Math.max(0,Math.min(CG_C-1,pathC+ri(-2,2))),lo=Math.min(pathC,np),hi=Math.max(pathC,np),b=[];
     for(let c=0;c<CG_C;c++)b.push((c>=lo&&c<=hi)||rnd()>=dens?0:ex.pk?(rnd()<.45?4:rnd()<.6?1:3):(rnd()<.55?1:rnd()<.6?2:3));pathC=np;
     const row={t:'g',b:b,lm:lm||'',mk:-1,pk:ex.pk||0,sg:ex.sg||''};if(r>4&&rnd()<.09){const f=[];b.forEach((v,c)=>{if(!v)f.push(c);});row.mk=f[Math.floor(rnd()*f.length)];}return row;};
-  // 왕복 L차선 큰길의 한 줄(i=0..L-1). 우측 통행이라 아래 절반은 오른쪽, 위 절반은 왼쪽으로 달린다.
+  // 왕복 L차선 큰길의 한 줄(i=0..L-1). 방향은 차선마다 laneDir로 섞는다(가운데에서 한 번만 바뀌면 같은 방향 차가 너무 몰린다).
   // 가운데 두 줄은 중앙버스전용차로(버스만). ln은 그 줄 위쪽 경계선: y=노란 중앙선, b=파란 버스차로 선
   const CG_RD=['세종대로','강남대로','테헤란로','올림픽대로','강변북로','여의대로','한강대로','을지로','종로','경부고속도로'];
-  const roadBig=(r,i,L)=>{const h=L/2,d=dif(r),dir=i<h?1:-1,bus=i===h-1||i===h,ks=['taxi','taxi','taxi','amb','dis','bus'],k=bus?'bus':ks[Math.floor(rnd()*ks.length)],K=CG_CAR[k],o=[],o0=rnd()*CG_L,
-      v=apart(r,(bus?1.75+1.6*d+rnd()*.4:(1.15+2.2*d+rnd()*1.1)*K.sp)*dir),n=Math.max(1,Math.round(CG_L/(K.len+lerp(bus?7.5:6.9,bus?4.4:3.6,d)+rnd()*1.6))),s=CG_L/n,j=Math.max(0,s-K.len-2.6);
+  const roadBig=(r,i,L)=>{const h=L/2,d=dif(r),dir=laneDir(r),bus=i===h-1||i===h,ks=['taxi','taxi','taxi','amb','dis','bus'],k=bus?'bus':ks[Math.floor(rnd()*ks.length)],K=CG_CAR[k],o=[],o0=rnd()*CG_L,
+      v=apart(r,(bus?1.75+1.6*d+rnd()*.4:(1.15+2.2*d+rnd()*1.1)*K.sp)*dir),n=Math.max(1,Math.round(CG_L/(K.len+lerp(bus?7.8:7.4,bus?4.8:4.2,d)+sameGap(r,dir)+rnd()*1.6))),s=CG_L/n,j=Math.max(0,s-K.len-2.6);
     for(let q=0;q<n;q++)o.push({o:o0+q*s+(rnd()-.5)*j*.5,len:K.len,k:k});return {t:'r',v:v,o:o,big:i+1,bn:L,bus:bus?1:0,ln:i===h-1?'y':i===h-2||i===h?'b':''};};
+  // 차도 방향: 바로 아래 두 줄이 같은 방향 차도면 반대로, 아니면 운으로. sameGap: 바로 아래 차도와 같은 방향이면 차 사이를 더 띄운다
+  const laneDir=r=>{const a=R[r-1],b=R[r-2];if(a&&a.t==='r'&&b&&b.t==='r'&&Math.sign(a.v)===Math.sign(b.v))return -Math.sign(a.v);return rnd()<.5?1:-1;};
+  const sameGap=(r,dir)=>{const a=R[r-1];return a&&a.t==='r'&&Math.sign(a.v)===dir?2.4:0;};
   // 바로 아래 줄도 차도이면 빠르기가 30% 넘게 차이 나게(느린 줄 위에는 주로 더 빠르게, 빠른 줄 위에는 주로 더 느리게)
   const apart=(r,v)=>{const p=R[r-1];if(!p||p.t!=='r')return v;const a=Math.abs(v),b=Math.abs(p.v);if(Math.abs(a-b)>=.3*Math.max(a,b))return v;
     return Math.sign(v)*(rnd()<(b<2.4?.75:b>4.2?.25:.5)?b*1.45:b*.68);};
-  const park=r=>{const n=ri(5,10);lastPark=r+n;for(let i=0;i<n;i++)Q.push({t:'g',d:i===0?.06:.12,ex:{pk:i===0?1:2}});};
-  const lane=(t,r)=>{const d=dif(r),dir=rnd()<.5?1:-1,o=[],o0=rnd()*CG_L;
+  const CG_FX=400,CG_FXN=110,fxOK=(a,b)=>b<CG_FX-1||a>=CG_FX+CG_FXN;   // 고정 구간(도로명판 399 + 400~509)과 겹치지 않는가
+  const park=r=>{const n=ri(5,10);if(!fxOK(r,r+n))return false;lastPark=r+n;for(let i=0;i<n;i++)Q.push({t:'g',d:i===0?.06:.12,ex:{pk:i===0?1:2}});return true;};
+  const lane=(t,r)=>{const d=dif(r),dir=t==='r'?laneDir(r):rnd()<.5?1:-1,o=[],o0=rnd()*CG_L;
     if(t==='r'){const ks=['taxi','taxi','amb','bus','dis'],k=ks[Math.floor(rnd()*ks.length)],K=CG_CAR[k],v=apart(r,(1.25+2.5*d+rnd()*1.1)*K.sp*dir),
-        n=Math.max(1,Math.round(CG_L/(K.len+lerp(6.5,3.1,d)+rnd()*1.6))),s=CG_L/n,j=Math.max(0,s-K.len-2.6);
+        n=Math.max(1,Math.round(CG_L/(K.len+lerp(6.5,3.1,d)+sameGap(r,dir)+rnd()*1.6))),s=CG_L/n,j=Math.max(0,s-K.len-2.6);
       for(let i=0;i<n;i++)o.push({o:o0+i*s+(rnd()-.5)*j*.5,len:K.len,k:k});return {t:'r',v:v,o:o};}
     if(t==='p'){const v=(.45+.75*d+rnd()*.45)*dir,n=Math.max(1,Math.round(CG_L/(.7+lerp(4.4,2.1,d)+rnd()*1.2))),s=CG_L/n,j=Math.max(0,s-2.3);
       for(let i=0;i<n;i++)o.push({o:o0+i*s+(rnd()-.5)*j*.5,len:.7,k:ri(0,3)});return {t:'p',v:v,o:o,mk:rnd()<.14?ri(0,CG_C-1):-1};}
@@ -68,18 +74,21 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
     const Pd=lerp(7.5,4.2,d)+rnd()*3;return {t:'t',P:Pd,ph:rnd()*Pd,v:34*dir,len:14,hn:-1};};
   const pick=r=>{const d=dif(r);
     // 큰길: 20칸부터, 앞 큰길을 건넌 뒤 15칸 넘게 지나면 줄을 고를 때마다 운으로. 차선 수는 왕복 8~24 중 무작위(멀리 갈수록 넓은 길까지)
-    if(r>=20&&r-lastBig>=15&&rnd()<.04+.05*d){const mx=Math.min(12,4+Math.floor(r/30)),L=2*ri(4,mx);lastBig=r+L;
-      Q.push({t:'g',d:0,ex:{sg:CG_RD[Math.floor(rnd()*CG_RD.length)]+' · 왕복 '+L+'차선'}});for(let i=0;i<L;i++)Q.push({t:'R',i:i,L:L});segT='r';segN=0;return;}
+    if(r>=20&&r-lastBig>=15&&rnd()<.04+.05*d){const mx=Math.min(12,4+Math.floor(r/30)),L=2*ri(4,mx);if(fxOK(r,r+L)){lastBig=r+L;
+      Q.push({t:'g',d:0,ex:{sg:CG_RD[Math.floor(rnd()*CG_RD.length)]+' · 왕복 '+L+'차선'}});for(let i=0;i<L;i++)Q.push({t:'R',i:i,L:L});segT='r';segN=0;return;}}
     if(sinceG>=5){segT='g';segN=1;return;}
     const Wt=[['g',2.2-d],['r',3+1.6*d],['p',1.2],['w',1.4+.9*d],['t',.6+.7*d]].filter(x=>x[0]!==segT&&(r>=8||(x[0]!=='w'&&x[0]!=='t')));
     let s=Wt.reduce((a,x)=>a+x[1],0)*rnd(),k='r';for(const x of Wt){s-=x[1];if(s<=0){k=x[0];break;}}
-    if(k==='g'&&r>=10&&r-lastPark>=8&&rnd()<.45){park(r);segT='g';segN=0;return;}
+    if(k==='g'&&r>=10&&r-lastPark>=8&&rnd()<.45&&park(r)){segT='g';segN=0;return;}
     segT=k;segN=k==='g'?ri(1,2):k==='r'?ri(1,2+Math.round(2*d)):k==='w'?ri(1,2+Math.round(d)):ri(1,2);if(k==='w')lastW=rnd()<.5?1:-1;};
   const gen=r=>{if(r<3)return grass(r,0,'');
-    // 50칸마다 명소 광장. 큰길을 건너는 중이면 다 건넌 뒤 첫 줄로 미룬다
-    if(r>=nextLm&&!(Q.length&&(Q[0].t==='R'||Q[0].ex.sg))){const k=nextLm/50-1;nextLm+=50;sinceG=0;if(Q.length&&Q[0].ex.pk){const q=Q.shift();if(Q.length&&Q[0].ex&&Q[0].ex.pk)Q[0].ex.pk=q.ex.pk;}return grass(r,0,CG_PL[k%CG_PL.length]);}
+    // 고정 구간: 399칸 도로명판, 400~509칸은 차도 10줄 → 철길 1줄을 열 번
+    if(r===CG_FX-1){Q=[];segN=0;segT='t';Q.push({t:'g',d:0,ex:{sg:'도심 관통 · 차도 10 + 철길 1 × 10'}});
+      for(let b=0;b<10;b++){for(let i=0;i<10;i++)Q.push({t:'R',i:i,L:10});Q.push({t:'T'});}}
+    // 50칸마다 명소 광장. 큰길 · 고정 구간을 건너는 중이면 다 건넌 뒤 첫 줄로 미룬다(그사이 지나친 명소는 건너뛴다)
+    if(r>=nextLm&&!(Q.length&&(Q[0].t!=='g'||Q[0].ex.sg))){const k=Math.floor(r/50)-1;nextLm=(Math.floor(r/50)+1)*50;sinceG=0;if(Q.length&&Q[0].ex.pk){const q=Q.shift();if(Q.length&&Q[0].ex&&Q[0].ex.pk)Q[0].ex.pk=q.ex.pk;}return grass(r,0,CG_PL[k%CG_PL.length]);}
     if(!Q.length&&segN<=0)pick(r);
-    if(Q.length){const q=Q.shift();if(q.t==='g'){sinceG=0;return grass(r,q.d,'',q.ex);}sinceG++;return roadBig(r,q.i,q.L);}
+    if(Q.length){const q=Q.shift();if(q.t==='g'){sinceG=0;return grass(r,q.d,'',q.ex);}sinceG++;return q.t==='T'?lane('t',r):roadBig(r,q.i,q.L);}
     segN--;if(segT==='g'){sinceG=0;return grass(r,.16+.16*dif(r),'');}
     sinceG++;return lane(segT,r);};
   const row=r=>{if(r<0)return WALL;while(gHi<r){gHi++;R[gHi]=gen(gHi);}return R[r]||WALL;};
