@@ -54,14 +54,14 @@ function cgNameBind(nk){if(!nk)return;let tp=[];nk.classList.add('gx-nk');
     try{aInit();tone(480+tp.length*90,'triangle',.06,.04);}catch(e){}if(tp.length<5)return;tp=[];const first=!eggOn('cg');eggSet('cg');
     try{SFX.unlock();[523,659,784,1047].forEach((f,i)=>tone(f,'triangle',.22,.07,.08+i*.08));}catch(e){}
     if(first)eggToast('🚶 <b>대통령님, 출근하실 시간입니다…</b><br>미니게임 「대통령 출근길」이 열렸어요.');setTimeout(()=>cgOpen(home),first?1500:700);};}
-// 이스터에그: 메인 화면을 좌 · 우 · 좌 · 우로 번갈아 밀면(키보드는 ← → ← →, 5초 안에 네 번) 「지지율 고공행진」이 열리고 바로 시작한다.
+// 이스터에그: 메인 화면을 좌 · 우 · 좌 · 우로 번갈아 밀면(키보드는 ← → ← →, 5초 안에 네 번) 「백신 점프」가 열리고 바로 시작한다.
 // el이 화면에서 사라지면(다른 화면으로 넘어가면) 스스로 듣기를 그만둔다. 로고 나침반 · 큰 나침반을 돌리는 손짓과 글자 칸은 빼고 듣는다
 function axSwingBind(el){if(!el)return;let seq=[],pd=null,swT=0,done=false;
   const busy=()=>!!document.querySelector('.bx-bg,#eggT,.vset,#stut,#ax,#cg');
   const hit=d=>{if(done)return;if(!el.isConnected){off();return;}const n=Date.now();seq=seq.filter(x=>n-x.t<5000);if(seq.length&&seq[seq.length-1].d===d)seq=[];seq.push({d:d,t:n});
     el.classList.remove('ax-sw-l','ax-sw-r');void el.offsetWidth;el.classList.add(d<0?'ax-sw-l':'ax-sw-r');try{aInit();tone(d<0?392:494,'triangle',.07,.04);}catch(e){}
     if(seq.length<4)return;seq=[];done=true;setTimeout(off,450);const first=!eggOn('ax');eggSet('ax');try{SFX.unlock();[392,523,659,880].forEach((f,i)=>tone(f,'triangle',.22,.07,.08+i*.08));}catch(e){}vib([30,30,30,30,120]);
-    if(first)eggToast('📈 <b>지지율이 들썩인다…</b><br>미니게임 「지지율 고공행진」이 열렸어요.');setTimeout(()=>axOpen(home),first?1500:700);};
+    if(first)eggToast('💉 <b>꼬마 백신이 통통 튀어 오른다…</b><br>미니게임 「백신 점프」가 열렸어요.');setTimeout(()=>axOpen(home),first?1500:700);};
   const kd=e=>{if(!el.isConnected){off();return;}if(busy()||e.repeat||(e.key!=='ArrowLeft'&&e.key!=='ArrowRight'))return;const t=e.target;if(t&&t.closest&&t.closest('input,select,textarea'))return;hit(e.key==='ArrowLeft'?-1:1);};
   // 휴대폰에서는 옆으로 밀면 브라우저가 스크롤로 가져가 pointerup이 안 올 수 있어 터치는 touchstart · touchend로, 마우스는 mousedown · mouseup으로 듣는다
   const dn=(t,x,y)=>{if(!el.isConnected){off();return;}pd=null;if(busy()||!t||!t.closest||!(el.contains(t)||t===document.body||t===document.documentElement||t.id==='root')||t.closest('.gx-logo svg,.gx-seal,input,select,textarea'))return;pd={x:x,y:y};};
@@ -189,7 +189,7 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
     (MEM.star&&MEM.star.v===1&&MEM.star.best?'<div class="gx-pc-z pz-st"><span>별똥별 최고</span><b>'+MEM.star.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+(MEM.star.dawn||0)+'번</span></div>':'')+
     (MEM.qx&&MEM.qx.v===1&&(MEM.qx.clears||MEM.qx.bestLv)?'<div class="gx-pc-z pz-qx"><span>격리 탈출</span><b>'+(MEM.qx.clears?MEM.qx.bestD+'<small>번 감염</small>':MEM.qx.bestLv+'<small>단계</small>')+'</b><span>'+(MEM.qx.clears?'완주 '+MEM.qx.clears+'번':'완주 전')+'</span></div>':'')+
     (MEM.cg&&MEM.cg.v===1&&MEM.cg.best?'<div class="gx-pc-z pz-cg"><span>대통령 출근길</span><b>'+MEM.cg.best+'<small>칸</small></b><span>출근 '+(MEM.cg.runs||0)+'번</span></div>':'')+
-    (MEM.ax&&MEM.ax.v===2&&MEM.ax.best?'<div class="gx-pc-z pz-ax"><span>지지율 고공행진</span><b>'+MEM.ax.best+'<small>m</small></b><span>도전 '+(MEM.ax.runs||0)+'번</span></div>':'')+'</aside>';
+    (MEM.ax&&MEM.ax.v===2&&MEM.ax.best?'<div class="gx-pc-z pz-ax"><span>백신 점프</span><b>'+MEM.ax.best+'<small>m</small></b><span>도전 '+(MEM.ax.runs||0)+'번</span></div>':'')+'</aside>';
   let sel=0;
   cine([{t:'메인 메뉴',h:'<div class="gx gx-title"><canvas class="gx-bg" aria-hidden="true"></canvas><div class="gx-seal" aria-hidden="true">'+emblemSvg('embgS',1)+
     '<span class="gx-sstar" hidden><svg viewBox="-12 -12 24 24"><path d="M0-10.5L2.7-3.4 10-3.2 4.3 1.3 6.3 8.5 0 4.3-6.3 8.5-4.3 1.3-10-3.2-2.7-3.4Z"/></svg></span></div>'+
@@ -320,18 +320,24 @@ const CP_ART=(()=>{const sv=(id,b,w)=>'<svg viewBox="0 0 '+(w||300)+' 600" prese
     '<g transform="translate(150 568)"><ellipse cy="20" rx="20" ry="6" fill="#000" opacity=".25"/><rect x="-18" y="-6" width="36" height="22" rx="7" fill="#22325a"/><circle cy="-18" r="14" fill="#1c1c22"/><rect x="-8" y="18" width="6" height="8" fill="#161d30"/><rect x="2" y="18" width="6" height="8" fill="#161d30"/></g>'+
     '<g fill="#2e7a3c"><circle cx="30" cy="527" r="15"/><circle cx="262" cy="377" r="15"/><circle cx="70" cy="77" r="15"/></g>';
   const cg=sv('g',ct+fold('g'));
-  // 지지율 고공행진: 밤하늘에 층층이 놓인 발판(초록 · 파랑 · 노랑 · 금 간 회색)과 튀어 오르는 대통령, 주사기 · 바이러스
-  let at='<defs><linearGradient id="axsk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#141a3a"/><stop offset="1" stop-color="#27406b"/></linearGradient></defs><rect width="300" height="600" fill="url(#axsk)"/>';
-  for(let i=0;i<26;i++)at+='<rect x="'+(i*71%300)+'" y="'+(i*137%430)+'" width="'+(i%5?2:3)+'" height="'+(i%5?2:3)+'" fill="#fff" opacity="'+(.3+(i%4)*.15)+'"/>';
-  for(let i=0;i<7;i++)at+='<rect x="'+(i*46-6)+'" y="'+(520-(i*37%60))+'" width="42" height="120" fill="'+(i%2?'#141c33':'#19233f')+'"/><rect x="'+(i*46+4)+'" y="'+(540-(i*37%60))+'" width="6" height="7" fill="#ffd682" opacity=".6"/><rect x="'+(i*46+20)+'" y="'+(560-(i*37%60))+'" width="6" height="7" fill="#aad7ff" opacity=".5"/>';
-  const pf=(x,y,c0,c1,c2)=>'<rect x="'+(x-38)+'" y="'+(y+3)+'" width="76" height="14" rx="7" fill="#000" opacity=".25"/><rect x="'+(x-38)+'" y="'+y+'" width="76" height="14" rx="7" fill="'+c2+'"/><rect x="'+(x-38)+'" y="'+y+'" width="76" height="11" rx="6" fill="'+c0+'"/><rect x="'+(x-32)+'" y="'+(y+2)+'" width="64" height="3" rx="1.5" fill="'+c1+'"/>';
-  at+=pf(80,470,'#3f9a55','#7fd68f','#2a6e3c')+pf(215,385,'#3d86c9','#8cc6f5','#275f93')+pf(95,300,'#3f9a55','#7fd68f','#2a6e3c')+pf(210,215,'#d9a52e','#ffe08a','#9a7214')+pf(70,130,'#7d6f72','#a89a9c','#514648')+pf(190,60,'#3f9a55','#7fd68f','#2a6e3c')+
-    '<path d="M68 130L76 136L66 141L73 144" stroke="#2c2325" stroke-width="2.5" fill="none"/>'+
-    '<g transform="translate(112 300)"><rect x="-1" y="-30" width="2" height="8" fill="#c9d3de"/><rect x="-6" y="-22" width="12" height="22" rx="2" fill="#eef6fb" stroke="#1f4f6e" stroke-width="2"/><rect x="-4" y="-13" width="8" height="12" fill="#43c2f0"/><rect x="-8" y="-25" width="16" height="4" fill="#f1d589"/></g>'+
-    '<g transform="translate(232 160)"><circle r="22" fill="#ff5a6e" opacity=".2"/><path d="M0-19V19M-19 0H19M-13-13L13 13M-13 13L13-13" stroke="#ffb0bc" stroke-width="3"/><circle r="13" fill="#d8344b"/><circle cx="-4" cy="-2" r="2.6" fill="#fff"/><circle cx="5" cy="-2" r="2.6" fill="#fff"/></g>'+
-    '<g transform="translate(160 372) rotate(-8)"><rect x="-11" y="-9" width="8" height="7" rx="2" fill="#161d30"/><rect x="2" y="-9" width="8" height="7" rx="2" fill="#161d30"/><rect x="-15" y="-36" width="30" height="28" rx="8" fill="#22325a"/><path d="M-1-36H11L5-24Z" fill="#f4f6fa"/><rect x="3" y="-34" width="3.5" height="14" fill="#d8344b"/>'+
-    '<circle cx="1" cy="-46" r="12.5" fill="#f2c9a0"/><path d="M-11.5-48A12.5 12.5 0 0 1 13-50L1-51Z" fill="#1c1c22"/><circle cx="7" cy="-47" r="1.6" fill="#1c1c22"/></g>'+
-    '<path d="M160 392V420M150 402L160 392L170 402" stroke="#fff" stroke-width="3" fill="none" opacity=".35"/>';
+  // 백신 점프: 아침 하늘에 층층이 뜬 구름(흰 · 하늘색 날개 · 분홍 솜사탕 · 보라 먹구름)과 통통 튀는 꼬마 백신 「백이」, 바이러스 · 로켓
+  let at='<defs><linearGradient id="axsk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5aaefa"/><stop offset=".7" stop-color="#bfe6ff"/><stop offset="1" stop-color="#ffecd0"/></linearGradient>'+
+    '<linearGradient id="axbd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b4f5e6"/><stop offset="1" stop-color="#4fcfb8"/></linearGradient></defs><rect width="300" height="600" fill="url(#axsk)"/>'+
+    '<circle cx="236" cy="96" r="46" fill="#fff4c4" opacity=".5"/><circle cx="236" cy="96" r="27" fill="#fff3b8"/>'+
+    '<g fill="#fff" opacity=".45"><ellipse cx="60" cy="210" rx="70" ry="18"/><ellipse cx="250" cy="330" rx="80" ry="20"/><ellipse cx="40" cy="450" rx="60" ry="16"/></g>'+
+    '<path d="M0 600V540Q50 505 100 532T200 525T300 540V600Z" fill="#9fd9a8"/><path d="M0 600V565Q60 540 120 560T240 555T300 570V600Z" fill="#7cc98b"/>';
+  const cl2=(x,y,c,sh)=>'<g transform="translate('+x+' '+y+')"><g fill="#2a3358"><rect x="-37" y="0" width="74" height="19" rx="9"/><circle cx="-27" cy="9" r="12"/><circle cx="27" cy="9" r="12"/><circle cx="-13" cy="2" r="12"/><circle cx="3" cy="-1" r="13.5"/><circle cx="17" cy="3" r="11"/></g>'+
+    '<g fill="'+c+'"><rect x="-35" y="2" width="70" height="15" rx="7.5"/><circle cx="-27" cy="9" r="10"/><circle cx="27" cy="9" r="10"/><circle cx="-13" cy="2" r="10"/><circle cx="3" cy="-1" r="11.5"/><circle cx="17" cy="3" r="9"/></g><rect x="-31" y="11" width="62" height="6" rx="3" fill="'+sh+'"/></g>';
+  at+=cl2(80,480,'#ffffff','#d6e6f7')+cl2(215,395,'#c9e8ff','#8fc6f2')+cl2(90,305,'#ffffff','#d6e6f7')+cl2(212,222,'#ffd9ea','#f7a9cb')+cl2(74,140,'#bdaadc','#8d79b8')+cl2(190,62,'#ffffff','#d6e6f7')+
+    '<g fill="#2a3358"><circle cx="66" cy="148" r="2.4"/><circle cx="82" cy="148" r="2.4"/></g><path d="M68 156Q74 151 80 156" stroke="#2a3358" stroke-width="2" fill="none"/>'+
+    '<g transform="translate(110 305)" stroke="#2a3358" stroke-width="2.5" stroke-linejoin="round"><rect x="-6" y="-21" width="12" height="22" rx="2.5" fill="#eaf6ff"/><rect x="-11" y="-28" width="22" height="7" rx="3.5" fill="#ff7a8a"/></g><rect x="106" y="298" width="8" height="12" fill="#4fc3f7"/>'+
+    '<g transform="translate(236 160)" stroke="#2a3358" stroke-width="2.5"><path d="M0-21V21M-21 0H21M-15-15L15 15M-15 15L15-15" stroke-width="5"/><path d="M0-21V21M-21 0H21M-15-15L15 15M-15 15L15-15" stroke="#ff9aa8" stroke-width="2.4"/><circle r="14" fill="#ff6b81"/><circle cx="-5" cy="-1" r="3.4" fill="#fff" stroke="none"/><circle cx="5" cy="-1" r="3.4" fill="#fff" stroke="none"/></g>'+
+    '<g fill="#2a3358"><circle cx="232" cy="160" r="1.6"/><circle cx="242" cy="160" r="1.6"/></g>'+
+    '<g transform="translate(160 380) rotate(-6)" stroke="#2a3358" stroke-width="2.6" stroke-linejoin="round"><ellipse cx="-7" cy="-2" rx="5.5" ry="3.4" fill="#2a3358"/><ellipse cx="7" cy="-2" rx="5.5" ry="3.4" fill="#2a3358"/>'+
+    '<rect x="-15" y="-43" width="30" height="40" rx="11" fill="url(#axbd)"/><rect x="-10" y="-52" width="20" height="10" rx="3" fill="#ffd166"/>'+
+    '<circle cx="-3" cy="-28" r="4.6" fill="#fff"/><circle cx="9" cy="-28" r="4.6" fill="#fff"/><g stroke="none"><circle cx="-1.5" cy="-28.5" r="2.4" fill="#2a3358"/><circle cx="10.5" cy="-28.5" r="2.4" fill="#2a3358"/><ellipse cx="-8" cy="-21" rx="2.8" ry="1.7" fill="#ff8ca0" opacity=".7"/><ellipse cx="14" cy="-21" rx="2.8" ry="1.7" fill="#ff8ca0" opacity=".7"/><rect x="-11" y="-38" width="4" height="15" rx="2" fill="#fff" opacity=".55"/></g>'+
+    '<path d="M0-19Q3-15 6-19" fill="none" stroke-width="2"/></g>'+
+    '<path d="M160 398V424M151 407L160 398L169 407" stroke="#fff" stroke-width="3" fill="none" opacity=".7"/>';
   const ax=sv('a',at+fold('a'));
   return {kr:kr,usa:usa,joseon:jo,zombie:zb,sail:sa,star:st,qx:qx,cg:cg,ax:ax};})();
 // 비밀 모드 「대항해」: 나라가 아니라 따로 노는 레이스라 CAMPS에 넣지 않고, 열렸으면 무대 고르기 맨 끝에 판 하나로 붙인다
@@ -368,8 +374,8 @@ const MINI=[
    h:'한 번뿐인 인생을 꾹 붙잡고 놓지 않으면 문이 열린다.',rec:()=>{const m=MEM.qx;return m&&m.v===1&&(m.clears||m.bestLv)?(m.clears?'완주 최소 감염 '+m.bestD+'번 · 완주 '+m.clears+'번':'최고 '+m.bestLv+'단계'):'';},open:()=>qxOpen(stepMini)},
   {id:'cg',tag:'끝없는 길 건너기',n:'대통령 출근길',sub:'차도 · 한강 · 철길을 건너 출근',intro:'한 칸씩 깡충 뛰어 차도와 한강, 철길을 건넌다. 머뭇거리면 뒤에서 <b>기자단</b>이 따라잡는다. 멀리 갈수록 높은 기록.',
    h:'기록 보관소에 적힌 이름을 거듭 부르면 출근 시간이 된다.',rec:()=>{const m=MEM.cg;return m&&m.v===1&&m.best?'최고 '+m.best+'칸 · 출근 '+(m.runs||0)+'번':'';},open:()=>cgOpen(stepMini)},
-  {id:'ax',tag:'발판 밟고 위로',n:'지지율 고공행진',sub:'민심을 딛고 끝없이 위로',intro:'통통 튀어 오르는 대통령을 <b>기울여서</b>(컴퓨터는 ← →) 발판에서 발판으로. 떨어지면 지지율 추락, 높이 오를수록 높은 기록.',
-   h:'메인 화면을 좌우로 번갈아 흔들면 지지율이 들썩인다.',rec:()=>{const m=MEM.ax;return m&&m.v===2&&m.best?'최고 '+m.best+'m · 도전 '+(m.runs||0)+'번':'';},open:()=>axOpen(stepMini)}];
+  {id:'ax',tag:'구름 밟고 위로',n:'백신 점프',sub:'꼬마 백신 「백이」, 하늘 끝까지',intro:'통통 튀는 꼬마 백신을 <b>기울여서</b>(컴퓨터는 ← →) 구름에서 구름으로. 바이러스와 가시를 피하고 물약 · 로켓을 챙겨 더 높이.',
+   h:'메인 화면을 좌우로 번갈아 흔들면 백신이 튀어 오른다.',rec:()=>{const m=MEM.ax;return m&&m.v===2&&m.best?'최고 '+m.best+'m · 도전 '+(m.runs||0)+'번':'';},open:()=>axOpen(stepMini)}];
 const miniSub=()=>{const n=MINI.filter(x=>eggOn(x.id)).length;return n?n+' / '+MINI.length+' 열림 · 비밀을 찾으면 하나씩 열린다':'숨겨진 게임 '+MINI.length+'개 · 비밀을 찾으면 열린다';};
 // 수영 금메달 선물을 받았는데 아직 대항해를 못 열었으면, 잠긴 대항해 칸에 여는 법을 그대로 적고 그 칸을 고르면 튜토리얼을 다시 연다
 const miniGift=x=>x.id==='sail'&&!!MEM.sailHint&&!eggOn('sail');

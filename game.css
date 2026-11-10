@@ -633,7 +633,7 @@ html[data-ori="p"] .gx-menu .gx-lp-r:last-of-type{border-bottom:0}
 .gx-mi.open{color:#fff4d6}
 .gx-pc-z{display:flex;align-items:baseline;gap:8px;white-space:nowrap;margin-top:10px;padding-top:9px;border-top:1px solid rgba(201,162,74,.16);font-size:11.5px;color:#a39678}
 .gx-pc-z b{font:800 16px var(--font-voice);color:#9fd68b}.gx-pc-z.pz-st b{color:#bcd6ff}.gx-pc-z.pz-qx b{color:#ff9aa6}.gx-pc-z.pz-cg b{color:#ffd27a}.gx-pc-z.pz-ax b{color:#9fe3ff}
-/* 「지지율 고공행진」 여는 손짓: 좌우로 밀 때마다 로고(라이트 화면은 제목)가 그쪽으로 기운다 */
+/* 「백신 점프」 여는 손짓: 좌우로 밀 때마다 로고(라이트 화면은 제목)가 그쪽으로 기운다 */
 .ax-sw-l .gx-logo,.ax-sw-l #ttl{animation:axSwL .32s ease-out}.ax-sw-r .gx-logo,.ax-sw-r #ttl{animation:axSwR .32s ease-out}
 /* 옆으로 밀 때 브라우저의 뒤로 · 앞으로 가기(가로 오버스크롤)가 걸리지 않게 */
 html,body{overscroll-behavior-x:none}
