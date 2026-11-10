@@ -632,7 +632,13 @@ html[data-ori="p"] .gx-menu .gx-lp-h{display:none}
 html[data-ori="p"] .gx-menu .gx-lp-r:last-of-type{border-bottom:0}
 .gx-mi.open{color:#fff4d6}
 .gx-pc-z{display:flex;align-items:baseline;gap:8px;white-space:nowrap;margin-top:10px;padding-top:9px;border-top:1px solid rgba(201,162,74,.16);font-size:11.5px;color:#a39678}
-.gx-pc-z b{font:800 16px var(--font-voice);color:#9fd68b}.gx-pc-z.pz-st b{color:#bcd6ff}.gx-pc-z.pz-qx b{color:#ff9aa6}.gx-pc-z.pz-cg b{color:#ffd27a}.gx-pc-z b small{font-size:11px;margin-left:2px;color:#a39678}.gx-pc-z span:last-child{margin-left:auto}
+.gx-pc-z b{font:800 16px var(--font-voice);color:#9fd68b}.gx-pc-z.pz-st b{color:#bcd6ff}.gx-pc-z.pz-qx b{color:#ff9aa6}.gx-pc-z.pz-cg b{color:#ffd27a}.gx-pc-z.pz-ax b{color:#9fe3ff}
+/* 「백신 공수 작전」 여는 손짓: 좌우로 밀 때마다 로고(라이트 화면은 제목)가 그쪽으로 기운다 */
+.ax-sw-l .gx-logo,.ax-sw-l #ttl{animation:axSwL .32s ease-out}.ax-sw-r .gx-logo,.ax-sw-r #ttl{animation:axSwR .32s ease-out}
+/* 옆으로 밀 때 브라우저의 뒤로 · 앞으로 가기(가로 오버스크롤)가 걸리지 않게 */
+html,body{overscroll-behavior-x:none}
+@keyframes axSwL{40%{transform:translateX(-10px) rotate(-3deg)}}@keyframes axSwR{40%{transform:translateX(10px) rotate(3deg)}}
+.gx-pc-z b small{font-size:11px;margin-left:2px;color:#a39678}.gx-pc-z span:last-child{margin-left:auto}
 .gx-mi.open .gx-ar2{opacity:1;transform:none}
 html[data-ori="p"] .gx-mi.open .gx-ar2{transform:rotate(90deg)}
 .gs-pin{grid-column:1/-1;display:inline-flex;align-items:center;justify-content:center;gap:6px;color:#8f6a12!important}
@@ -1217,6 +1223,30 @@ html:has(.cine:not(.out)),html:has(.cine:not(.out)) body,html:has(.lbfs),html:ha
 html[data-ori="p"] .gx-tabs{top:56px}
 html[data-ori="p"] .gx-camp .gx-q{top:104px}
 html[data-ori="p"] .gx-camp .gx-cpw{padding-top:152px}
+/* 미니게임이 다섯 개를 넘으면 길쭉한 깃발 판 대신 네모 칸으로 놓는다(가로 화면은 두 줄, 세로 화면은 두 칸씩) */
+.gx-grid .gx-cpw{display:grid;grid-template-columns:repeat(var(--gc,3),minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:8px;padding:clamp(150px,21vh,180px) clamp(12px,2vw,28px) clamp(12px,2.4vh,24px)}
+.gx-grid .gx-cp,.gx-grid .gx-cp:first-child,.gx-grid .gx-cp:last-child{margin:0;clip-path:none;border-radius:6px;filter:saturate(.7) brightness(.68);transition:filter .3s,box-shadow .3s}
+.gx-grid .gx-cp.on{filter:none;outline:2px solid #f1d589;outline-offset:-2px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.gx-grid .gx-cp.lk.on{filter:saturate(.6) brightness(.85)}
+.gx-grid .gx-cp::after{background:linear-gradient(0deg,rgba(6,5,4,.95) 0%,rgba(6,5,4,.74) 42%,rgba(6,5,4,.2) 78%,rgba(6,5,4,0) 100%)}
+.gx-grid .gx-cp-tx{left:clamp(14px,1.6vw,24px);right:clamp(14px,1.6vw,24px);bottom:clamp(12px,2.2vh,22px);gap:5px}
+.gx-grid .gx-cp-tx>b{font-size:clamp(22px,4vh,34px)}
+.gx-grid .gx-cp-in{font-size:12.5px;line-height:1.55}
+.gx-grid .gx-cp-go{margin-top:4px;padding:6px 14px;font-size:13px;max-height:0;padding-block:0;overflow:hidden}
+.gx-grid .gx-cp.on .gx-cp-go{max-height:3em;padding-block:6px}
+.gx-grid .gx-cp-rec{font-size:12.5px;font-weight:800;color:#f1d589}
+.gx-cp-tx>.gx-cp-rec{margin-top:0}
+@media (max-height:700px){.gx-grid .gx-cp-in{display:none}}
+@media (orientation:landscape) and (max-height:540px){.gx-grid .gx-cpw{padding-top:118px;gap:6px}.gx-grid .gx-cp-tag{display:none}.gx-grid .gx-cp-tx>b{font-size:20px}.gx-grid .gx-cp-sub{font-size:12px}.gx-grid .gx-cp-tx{gap:3px;bottom:8px}
+  .gx-grid .gx-cp-go{position:absolute;right:0;top:0;margin:0;font-size:12px}.gx-grid .gx-cp.on .gx-cp-go{padding:4px 10px}}
+html[data-ori="p"] .gx-grid .gx-cpw{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(150px,1fr);gap:6px;padding:152px 8px 10px}
+html[data-ori="p"] .gx-grid .gx-cp,html[data-ori="p"] .gx-grid .gx-cp:first-child,html[data-ori="p"] .gx-grid .gx-cp:last-child{margin:0}
+html[data-ori="p"] .gx-grid .gx-cp::after{background:linear-gradient(0deg,rgba(6,5,4,.95) 0%,rgba(6,5,4,.76) 45%,rgba(6,5,4,.2) 80%,rgba(6,5,4,0) 100%)}
+html[data-ori="p"] .gx-grid .gx-cp-tx{padding:10px 11px 10px;gap:4px}
+html[data-ori="p"] .gx-grid .gx-cp-tx>b{font-size:clamp(17px,5vw,24px)}
+html[data-ori="p"] .gx-grid .gx-cp-sub{font-size:12px;line-height:1.4}
+html[data-ori="p"] .gx-grid .gx-cp-in{display:none}
+html[data-ori="p"] .gx-grid .gx-cp-tag{font-size:10px;letter-spacing:.1em}
 /* ---------- 게임 진행 화면: 메뉴와 같은 결의 움직임 ---------- */
 /* 턴 카드: 새 사건이 열릴 때 비스듬한 금테 띠가 화면을 가로지르며 몇 번째 결정인지와 사건 이름을 알린다. 누르면 걷힌다. */
 .turnfx{position:fixed;inset:0;z-index:70;display:flex;align-items:center;overflow:hidden;cursor:pointer}
