@@ -37,25 +37,30 @@ function lbFetch(){let ab=null,tm=0;try{ab=new AbortController();tm=setTimeout((
 /* ---------- 게임 안 명예의 전당: 스포츠 기록실 형식 ----------
    가운데 큰 카드가 커리어 점수 순위(1위는 메달·초상·닉네임·학교·지도자·점수를 크게, 2위부터는 한 줄씩),
    양옆 카드는 부문별 순위(최장 집권·최다 연임·학교 평균·최다 업적·최고 지지율·무대별 최고). 웹 리더보드(leaderboard.html)는 '전체 순위'로 따로 연다. */
-const HOF={d:null,diff:'',timer:0,back:null,id:'',nick:'',busy:false,err:'',sig:'',arc:0,arcT:0,arcHold:0};
+const HOF={d:null,diff:'',timer:0,back:null,id:'',nick:'',busy:false,err:'',sig:'',vw:'car'};
 function openBoard(o){o=o||{};if(IN_ART)return artBoard(o);hofClose();lbeClose();window.scrollTo(0,0);
-  HOF.back=o.back||home;HOF.id=o.id||'';HOF.nick=o.nick||'';HOF.diff=o.diff||(DIFF[dif]&&DIFF[dif].n)||'보통';HOF.sig='';
+  HOF.back=o.back||home;HOF.id=o.id||'';HOF.nick=o.nick||'';HOF.diff=o.diff||(DIFF[dif]&&DIFF[dif].n)||'보통';HOF.sig='';if(o.vw)HOF.vw=o.vw;
   const w=document.createElement('div');w.id='hof';w.className='lbfs hof';w.setAttribute('role','dialog');w.setAttribute('aria-label','명예의 전당');
   w.innerHTML='<canvas class="gx-bg" aria-hidden="true"></canvas><div class="hof-in">'+
     '<header class="hof-top"><button class="hof-back" id="hofBack">← 돌아가기</button>'+
     '<div class="hof-ttl"><span class="hof-k">HALL OF FAME</span><h1>명예의 전당</h1></div>'+
     '<div class="hof-r"><span id="hofLive" class="hof-live"><i></i>불러오는 중</span><a id="hofAll" class="hof-all" target="_blank" rel="noopener">전체 순위 ↗</a></div></header>'+
+    '<div class="hof-vw" id="hofVw" role="tablist" aria-label="순위 종류">'+HOF_VW.map(x=>'<button type="button" role="tab" data-v="'+x.k+'" aria-selected="'+(HOF.vw===x.k)+'">'+x.t+'</button>').join('')+'</div>'+
     '<div class="hof-dif" id="hofDif" role="group" aria-label="난이도">'+LB_DIFS.map(k=>'<button data-d="'+k+'" style="--dc:'+LB_DCOL[k]+'" aria-pressed="'+(HOF.diff===k)+'">'+k+'</button>').join('')+'</div>'+
-    '<div id="hofTiles" class="hof-tiles"></div><div id="hofBody" class="hof-g">'+hofSkel()+'</div></div>';
+    '<div id="hofTiles" class="hof-tiles"></div><div id="hofBody" class="hof-g">'+hofSkel()+'</div></div>';w.classList.toggle('arc-v',HOF.vw==='arc');
   document.body.appendChild(w);document.body.style.overflow='hidden';gxLattice(w.querySelector('.gx-bg'));
   const all=()=>{document.getElementById('hofAll').href='leaderboard.html?diff='+encodeURIComponent(HOF.diff)+(HOF.id?'&id='+encodeURIComponent(HOF.id)+'&me='+encodeURIComponent(HOF.nick):'');};all();
   document.getElementById('hofBack').onclick=()=>{SFX.back();const b=HOF.back;hofClose();b();};
   w.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();document.getElementById('hofBack').click();}});
   document.getElementById('hofDif').onclick=e=>{const b=e.target.closest('button[data-d]');if(!b||b.dataset.d===HOF.diff)return;SFX.click();HOF.diff=b.dataset.d;
     document.querySelectorAll('#hofDif button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));all();HOF.sig='';hofRender();};
+  // 대통령 순위 ↔ 미니게임 순위. 미니게임 순위는 난이도와 상관없어 난이도 버튼 · 통계 줄을 숨긴다
+  document.getElementById('hofVw').onclick=e=>{const b=e.target.closest('button[data-v]');if(!b||b.dataset.v===HOF.vw)return;SFX.click();HOF.vw=b.dataset.v;
+    document.querySelectorAll('#hofVw button').forEach(x=>x.setAttribute('aria-selected',x===b?'true':'false'));w.classList.toggle('arc-v',HOF.vw==='arc');
+    const g=document.getElementById('hofBody');HOF.sig='';if(HOF.d)hofRender();else if(g){g.className='hof-g'+(HOF.vw==='arc'?' mg':'');g.innerHTML=hofSkel();}};
   setTimeout(()=>{const b=document.getElementById('hofBack');if(b)b.focus({preventScroll:true});},50);
   if(HOF.d)hofRender();hofLoad();}
-function hofClose(){clearTimeout(HOF.timer);clearTimeout(HOF.arcT);const w=document.getElementById('hof');if(w){w.remove();document.body.style.overflow='';}}
+function hofClose(){clearTimeout(HOF.timer);const w=document.getElementById('hof');if(w){w.remove();document.body.style.overflow='';}}
 function hofLoad(){if(HOF.busy||!document.getElementById('hof'))return;HOF.busy=true;
   lbFetch().then(d=>{if(!d||!Array.isArray(d.top))throw new Error('형식이 다른 응답');HOF.err='';HOF.d=d;hofRender();})
   .catch(e=>{HOF.err=(e&&e.message)||String(e);hofLive();if(!HOF.d){const b=document.getElementById('hofBody');if(b)b.innerHTML='<div class="hc hof-main hc-empty" style="grid-column:1/-1">기록을 불러오지 못했어요.<br><small>인터넷 연결을 확인해 주세요. ('+lbEsc(HOF.err)+')</small><br><button id="hofRetry" class="hof-back" style="margin-top:12px">다시 시도</button></div>';
@@ -64,7 +69,7 @@ function hofLoad(){if(HOF.busy||!document.getElementById('hof'))return;HOF.busy=
 function hofLive(){const el=document.getElementById('hofLive');if(!el)return;
   if(HOF.err)el.innerHTML='<i class="off"></i>'+(HOF.d?'다시 연결하는 중':'연결이 안 돼요');
   else{const u=HOF.d&&HOF.d.updated?new Date(HOF.d.updated):new Date();el.innerHTML='<i></i>LIVE · '+u.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});}}
-function hofSkel(){return '<div class="hc hof-main hc-sk big" style="grid-area:M"></div>'+'abcdefgh'.split('').map(a=>'<div class="hc hc-sk" style="grid-area:'+a+'"></div>').join('');}
+function hofSkel(){if(HOF.vw==='arc')return HOF_ARC.map(()=>'<div class="hc hc-sk mg"></div>').join('');return '<div class="hc hof-main hc-sk big" style="grid-area:M"></div>'+'abcdefgh'.split('').map(a=>'<div class="hc hc-sk" style="grid-area:'+a+'"></div>').join('');}
 // 지금 난이도의 묶음. 예전 스크립트라 부문별 순위(cards)가 없으면 받은 목록으로 만든다.
 function hofView(){const d=HOF.d;if(!d)return null;const f=a=>(a||[]).filter(r=>r.diff===HOF.diff);
   const v=HOF.diff==='전체'?d:d.byDiff?(d.byDiff[HOF.diff]||{careers:0,players:0,top:[],longest:[],recent:[],order:[],stats:{}}):Object.assign({},d,{top:f(d.top),longest:f(d.longest),recent:f(d.recent),cards:null});
@@ -77,18 +82,23 @@ const HOF_SH='<span class="hc-ini sh">'+'<svg viewBox="0 0 64 64" aria-hidden="t
 const hofAv=(name,px)=>portrait(name,px)||HOF_SH;
 // 부문 카드 하나. it(r)은 {n 이름, s 둘째 줄, v 기록, a 초상 자리 HTML, me 내 기록인지}
 // 커리어 점수(main)만 1위를 크게 띄우고, 나머지 부문은 작은 순위표(1~5위)로만 보여 준다. ga는 화면 격자의 자리 이름
-function hofCard(o){const L=o.list||[],main=!!o.main;
-  let h='<section class="hc'+(main?' hof-main':' cp')+(o.cls?' '+o.cls:'')+'"'+(o.id?' id="'+o.id+'"':'')+' style="--i:'+(o.i||0)+(o.ga?';grid-area:'+o.ga:'')+'"><div class="hc-h"><b>'+o.t+'</b><span>'+(o.u||'')+'</span></div>'+(o.tabs?'<div class="hc-tabs" role="tablist">'+o.tabs+'</div>':'');
+function hofCard(o){const L=o.list||[],main=!!o.main,big=main||!!o.hero;
+  let h='<section class="hc'+(main?' hof-main':' cp')+(o.cls?' '+o.cls:'')+'"'+(o.id?' id="'+o.id+'"':'')+' style="--i:'+(o.i||0)+(o.ga?';grid-area:'+o.ga:'')+(o.ac?';--ac:'+o.ac:'')+'"><div class="hc-h"><b>'+o.t+'</b><span>'+(o.u||'')+'</span></div>'+(o.tabs?'<div class="hc-tabs" role="tablist">'+o.tabs+'</div>':'');
   if(o.me)h+=o.me;
   if(!L.length)return h+'<div class="hc-empty">'+(o.empty||'아직 기록이 없어요')+'</div></section>';
   const f=L.map(o.it),one=f[0],row=(x,k)=>'<div class="hc-r'+(x.me?' me':'')+(k<=3?' r'+k:'')+'"><span class="k">'+k+'</span><span class="a">'+x.a+'</span><span class="t"><b>'+x.n+'</b><small>'+x.s+'</small></span><span class="v">'+x.v+'</span></div>';
-  if(main){h+='<div class="hc-hero'+(one.me?' me':'')+'"><span class="hc-md" aria-label="1위">1</span><div class="hc-av">'+one.a+'</div><div class="hc-hx"><div class="hc-n">'+one.n+'</div><div class="hc-s">'+one.s+'</div></div><div class="hc-v">'+one.v+'</div></div>';
-    f.slice(1,o.n||10).forEach((x,i)=>{h+=row(x,i+2);});}
+  if(big){h+='<div class="hc-hero'+(one.me?' me':'')+'"><span class="hc-md" aria-label="1위">1</span><div class="hc-av">'+one.a+'</div><div class="hc-hx"><div class="hc-n">'+one.n+'</div><div class="hc-s">'+one.s+'</div></div><div class="hc-v">'+one.v+'</div></div>';
+    f.slice(1,o.n||10).forEach((x,i)=>{h+=row(x,i+2);});
+    // 미니게임 카드: 다섯 명이 안 되면 빈 줄로 채워 다섯 카드 높이를 맞춘다
+    if(o.fill)for(let k=f.length+1;k<=o.n;k++)h+='<div class="hc-r nil"><span class="k">'+k+'</span><span class="a"></span><span class="t"><b>—</b></span><span class="v"></span></div>';}
   else f.slice(0,o.n||5).forEach((x,i)=>{h+=row(x,i+1);});
   if(o.more)h+='<a class="hc-more" href="'+o.more+'" target="_blank" rel="noopener">더보기</a>';
   return h+'</section>';}
 function hofRender(){const v=hofView(),body=document.getElementById('hofBody');hofLive();if(!v||!body)return;
-  const sig=HOF.diff+'|'+JSON.stringify(v)+'|'+JSON.stringify((HOF.d&&HOF.d.arcade)||{});if(sig===HOF.sig)return;const first=!HOF.sig;HOF.sig=sig;
+  const sig=HOF.vw+'|'+HOF.diff+'|'+JSON.stringify(v)+'|'+JSON.stringify((HOF.d&&HOF.d.arcade)||{});if(sig===HOF.sig)return;const first=!HOF.sig;HOF.sig=sig;
+  body.className='hof-g'+(HOF.vw==='arc'?' mg':'')+(first?'':' still');
+  if(HOF.vw==='arc'){document.getElementById('hofTiles').innerHTML='<p class="hof-note">난이도와 상관없이 게임마다 순위 하나 · 한 사람은 가장 좋은 기록 하나만</p>';
+    body.innerHTML=HOF_ARC.map(hofMgCard).join('');return;}
   const C=v.cards||{},E=lbEsc,num=x=>Number(x||0).toLocaleString('ko-KR');
   const who=r=>[r.school,r.leader].filter(Boolean).map(E).join(' · ')||'&nbsp;';
   const P=(r,val,s)=>({n:E(r.nick),s:s!=null?s:who(r),v:val,a:hofAv(r.leader,main?120:40),me:!!HOF.id&&r.id===HOF.id});let main=false;
@@ -105,21 +115,15 @@ function hofRender(){const v=hofView(),body=document.getElementById('hofBody');h
     hofCard({i:2,ga:'b',t:'최다 연임',u:'임기 수',list:C.terms,it:r=>P(r,r.terms+'<small>선</small>')})+
     // 학교 평균: 순위를 매긴 값(인원 보정 평균 adj)을 그대로 보여 준다(인원 수는 보여 주지 않는다). 예전 서버(adj 없음)면 평균
     hofCard({i:3,ga:'c',t:'학교 평균 점수',u:'사람마다 최고 기록 · 인원 보정 평균',list:C.school,empty:'학교를 적은 기록이 아직 없어요',it:x=>({n:E(x.school),s:x.best&&x.best.nick?'최고 기록 · '+E(x.best.nick):'&nbsp;',v:num(x.adj!=null?x.adj:x.avg)+'<small>점</small>',a:'<span class="hc-ini sc">'+E(String(x.school).slice(0,1))+'</span>',me:false})});
-  const right=hofCard({i:4,ga:'d',t:'최다 업적',u:'한 커리어의 업적 수',list:C.tro,it:r=>P(r,r.tro+'<small>개</small>')})+hofArcCard();
+  const right=hofCard({i:4,ga:'d',t:'최다 업적',u:'한 커리어의 업적 수',list:C.tro,it:r=>P(r,r.tro+'<small>개</small>')});
   // 지지율·무대별 최고는 가운데 큰 순위 아래 두 칸으로
   const sub=hofCard({i:5,ga:'e',t:'최고 지지율',u:'물러날 때 지지율',list:C.appr,it:r=>P(r,Math.round(r.appr)+'<small>%</small>')})+
     hofCard({i:7,ga:'g',t:'무대별 최고',u:'무대마다 1위',list:C.camp,it:r=>P(r,num(r.score)+'<small>점</small>',E(hofCampN(r.camp))+(r.school?' · '+E(r.school):''))});
-  body.classList.toggle('still',!first);
-  body.innerHTML=mainCard+left+right+sub;hofArcBind();}
-// 오른쪽 끝 한 칸(넓은 화면에서는 위아래 두 줄 높이): 미니게임 순위. 방역선 · 대항해 · 별똥별 · 격리 탈출 · 출근길을 탭으로 넘겨 보고,
-// 가만히 두면 9초마다 다음 게임으로 넘어간다(탭을 누르면 그 게임에 머문다). 순위는 난이도와 상관없이 하나다
-const HOF_ARC=[{k:'zg',t:'방역선',u:'좀비 서바이벌 · 최고 점수',empty:'아직 해가 뜬 기록이 없어요'},{k:'sail',t:'대항해',u:'폭풍 해협 · 최단 기록',empty:'아직 돌아온 배가 없어요'},{k:'star',t:'별똥별',u:'밤하늘 서바이벌 · 최고 점수',empty:'아직 하늘을 난 별이 없어요'},{k:'qx',t:'격리 탈출',u:'깬 단계 → 적은 감염 → 짧은 시간',empty:'아직 병동을 빠져나온 대통령이 없어요'},{k:'cg',t:'출근길',u:'대통령 출근길 · 가장 멀리 간 칸',empty:'아직 출근한 대통령이 없어요'}];
-function hofArcCard(){const A=(HOF.d&&HOF.d.arcade)||{},E=lbEsc,num=x=>Number(x||0).toLocaleString('ko-KR'),k=HOF.arc%HOF_ARC.length,X=HOF_ARC[k];
+  body.innerHTML=mainCard+left+right+sub;}
+// 미니게임 순위(따로 보는 화면): 다섯 게임을 한 화면에 나란히. 카드마다 1위를 크게(메달 · 이름 · 학교 · 기록), 2~5위는 한 줄씩. 순위는 난이도와 상관없이 하나다
+const HOF_VW=[{k:'car',t:'대통령 순위'},{k:'arc',t:'미니게임 순위'}];
+const HOF_ARC=[{k:'zg',t:'방역선',u:'좀비 서바이벌 · 최고 점수',c:'#e0604f',empty:'아직 해가 뜬 기록이 없어요'},{k:'sail',t:'대항해',u:'폭풍 해협 · 최단 기록',c:'#4a9bd6',empty:'아직 돌아온 배가 없어요'},{k:'star',t:'별똥별',u:'밤하늘 서바이벌 · 최고 점수',c:'#9b8cff',empty:'아직 하늘을 난 별이 없어요'},{k:'qx',t:'격리 탈출',u:'깬 단계 → 적은 감염 → 짧은 시간',c:'#3fc38f',empty:'아직 병동을 빠져나온 대통령이 없어요'},{k:'cg',t:'출근길',u:'가장 멀리 간 칸',c:'#e3b341',empty:'아직 출근한 대통령이 없어요'}];
+function hofMgCard(X,i){const A=(HOF.d&&HOF.d.arcade)||{},E=lbEsc,num=x=>Number(x||0).toLocaleString('ko-KR');
   const ini=r=>hofAnon(r.nick)?HOF_SH:'<span class="hc-ini">'+E(String(r.nick).slice(0,1))+'</span>',mmss=s=>Math.floor(s/60)+':'+(s%60).toFixed(1).padStart(4,'0');
-  return hofCard({i:6,ga:'f',id:'hofArc',cls:'arc',t:'미니게임 순위',u:X.u,list:A[X.k]||[],empty:X.empty,
-    tabs:HOF_ARC.map((x,i)=>'<button type="button" role="tab" class="hc-tab'+(i===k?' on':'')+'" aria-selected="'+(i===k)+'" data-arc="'+i+'">'+x.t+'</button>').join(''),
+  return hofCard({i:i,cls:'mg',ac:X.c,t:X.t,u:X.u,list:(A[X.k]||[]).slice(0,5),hero:true,n:5,fill:true,empty:X.empty,
     it:r=>({n:E(r.nick),s:[r.school,r.detail].filter(Boolean).map(E).join(' · ')||'&nbsp;',v:X.k==='sail'?mmss(r.sec):X.k==='qx'?(r.win?'완주':Math.floor(r.score/1000)+'<small>단계</small>'):X.k==='cg'?num(r.score)+'<small>칸</small>':num(r.score)+'<small>점</small>',a:ini(r),me:false})});}
-function hofArcBind(){const s=document.getElementById('hofArc');if(!s)return;clearTimeout(HOF.arcT);
-  s.querySelectorAll('[data-arc]').forEach(b=>b.onclick=()=>{try{SFX.click();}catch(e){}HOF.arc=+b.dataset.arc;HOF.arcHold=1;hofArcSwap();});
-  if(!HOF.arcHold)HOF.arcT=setTimeout(()=>{if(!document.getElementById('hofArc'))return;if(!document.hidden)HOF.arc=(HOF.arc+1)%HOF_ARC.length;hofArcSwap();},9000);}
-function hofArcSwap(){const s=document.getElementById('hofArc');if(!s)return;const t=document.createElement('div');t.innerHTML=hofArcCard();const n=t.firstChild;n.classList.add('swap');s.replaceWith(n);hofArcBind();}

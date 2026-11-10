@@ -218,7 +218,7 @@
 /* ---------- 한 화면 배치: 커리어 점수(M)만 1위를 크게, 나머지 여덟 부문은 작은 순위표(1~5위). 줄 높이는 화면 높이에 맞춰 줄었다 늘었다 한다 ---------- */
 #hof .hof-in{display:flex;flex-direction:column;min-height:100vh;padding-top:max(38px,calc(env(safe-area-inset-top) + 32px));padding-bottom:16px}
 #hof .hof-dif{margin:8px 0 6px}#hof .hof-tiles{margin:0 0 10px}
-#hof .hof-g{--rh:clamp(26px,3.8vh,40px);grid-template-columns:repeat(2,minmax(0,1fr)) minmax(0,1.7fr) repeat(2,minmax(0,1fr));grid-template-areas:"a b M e f" "c d M g f";gap:12px;align-items:stretch}
+#hof .hof-g{--rh:clamp(26px,3.8vh,40px);grid-template-columns:repeat(2,minmax(0,1fr)) minmax(0,1.7fr) repeat(2,minmax(0,1fr));grid-template-areas:"a b M c d" "e e M g g";gap:12px;align-items:stretch}
 #hof .hc{display:flex;flex-direction:column}
 #hof .hc-h{padding:10px 12px 6px}#hof .hc-h b{font-size:14px;white-space:nowrap}#hof .hc-h span{overflow:hidden;text-overflow:ellipsis}
 #hof .hc.cp .hc-r{grid-template-columns:16px 24px minmax(0,1fr) auto;gap:8px;height:var(--rh);padding:0 12px}
@@ -241,18 +241,56 @@
 #hof .hc-sk{min-height:150px}#hof .hc-sk.big{min-height:380px}
 /* 중간 너비: 커리어 점수가 왼쪽 두 칸, 나머지는 네 칸씩 / 좁은 화면은 두 칸 · 한 칸으로 내려가며 넘치면 스크롤 */
 @media (max-width:1180px){#hof .hc.cp .hc-r{gap:6px;padding:0 9px}#hof .hc-h{padding:9px 10px 5px}#hof .hc-h span{font-size:10px}}
-@media (max-width:980px){#hof .hc.cp .hc-r .t small{display:none}#hof .hof-main .hc-r{height:calc(var(--rh) + 9px)}#hof .hof-g{--rh:clamp(22px,3vh,30px);grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"M M a b" "M M c d" "e g f f"}}
-@media (max-width:760px){#hof .hof-g{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"M M" "a b" "c d" "e g" "f f"}}
-@media (max-width:440px){#hof .hof-g{grid-template-columns:minmax(0,1fr);grid-template-areas:"M" "a" "b" "c" "d" "e" "g" "f"}}
+@media (max-width:980px){#hof .hc.cp .hc-r .t small{display:none}#hof .hof-main .hc-r{height:calc(var(--rh) + 9px)}#hof .hof-g{--rh:clamp(22px,3vh,30px);grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"M M a b" "M M c d" "e e g g"}}
+@media (max-width:760px){#hof .hof-g{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"M M" "a b" "c d" "e g"}}
+@media (max-width:440px){#hof .hof-g{grid-template-columns:minmax(0,1fr);grid-template-areas:"M" "a" "b" "c" "d" "e" "g"}}
 /* 익명 · 초상 없음: 그림자 사람 */
 .hc-ini.sh{align-items:flex-end;background:radial-gradient(circle at 50% 35%,#3a2f20,#15110c)}.hc-ini.sh svg{width:88%;height:88%;fill:rgba(241,213,137,.32)}
 
-/* 미니게임 순위: 머리 아래 탭 셋(방역선 · 대항해 · 별똥별). 넘어갈 때 살짝 떠오른다 */
-#hof .hc.arc .hc-tabs{display:flex;gap:4px;margin:-2px 0 6px}
-#hof .hc-tab{flex:1 1 0;min-width:0;padding:5px 4px;border-radius:999px;font:700 11.5px var(--font-ui);color:#a39678;background:rgba(255,255,255,.04);border:1px solid rgba(201,162,74,.22);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#hof .hc-tab:hover{color:#f1d589;border-color:rgba(201,162,74,.5);background:rgba(255,255,255,.06)}
-#hof .hc-tab.on{color:#15120e;background:linear-gradient(180deg,#f1d589,#c9a24a);border-color:#c9a24a}
-#hof .hc.arc.swap{animation:hcSwap .45s cubic-bezier(.2,.8,.2,1) both}
-@keyframes hcSwap{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
-@media (pointer:coarse){#hof .hc-tab{padding:8px 4px}}
-@media (prefers-reduced-motion:reduce){#hof .hc.arc.swap{animation:none}}
+/* 대통령 순위 ↔ 미니게임 순위 전환 */
+.hof-vw{display:flex;justify-content:center;gap:4px;width:max-content;max-width:100%;margin:12px auto 0;padding:4px;border-radius:999px;background:rgba(14,12,9,.66);border:1px solid rgba(201,162,74,.3)}
+.hof-vw button{padding:7px 18px;border-radius:999px;font:700 13px var(--font-ui);color:#a39678;background:none;border:0;white-space:nowrap}
+.hof-vw button:hover{color:#f1d589}
+.hof-vw button[aria-selected="true"]{color:#15120e;background:linear-gradient(180deg,#f1d589,#c9a24a)}
+#hof.arc-v .hof-dif{display:none}#hof.arc-v .hof-tiles{margin:12px 0 14px}
+.hof-note{margin:0;font-size:12px;color:#8a7e68;text-align:center}
+@media (pointer:coarse){.hof-vw button{padding:10px 18px}}
+/* 미니게임 순위: 다섯 게임 카드를 한 줄에. 카드마다 1위는 크게(메달 · 머리글자 · 이름 · 기록), 2~5위는 한 줄씩 */
+#hof .hof-g.mg{grid-template-columns:repeat(5,minmax(0,1fr));grid-template-areas:none;--rh:clamp(32px,6.4vh,58px)}
+#hof .hc.mg{position:relative;overflow:hidden}
+#hof .hc.mg::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--ac,#c9a24a)}
+#hof .hc.mg .hc-h{flex-direction:column;align-items:flex-start;gap:2px;padding:13px 14px 4px}
+#hof .hc.mg .hc-h b{font-size:16px;display:flex;align-items:center;gap:7px}
+#hof .hc.mg .hc-h b::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ac,#c9a24a);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac,#c9a24a) 22%,transparent)}
+#hof .hc.mg .hc-h span{white-space:normal;line-height:1.4}
+#hof .hc.mg .hc-hero{padding:10px 12px 14px;text-align:center;background:radial-gradient(70% 80% at 50% 0%,color-mix(in srgb,var(--ac,#c9a24a) 14%,transparent),transparent 72%)}
+#hof .hc.mg .hc-md{left:12px;top:10px}
+#hof .hc.mg .hc-av{width:clamp(60px,12.5vh,120px);height:clamp(60px,12.5vh,120px);margin:clamp(2px,1.4vh,14px) auto clamp(6px,1.4vh,14px)}
+#hof .hc.mg .hc-av .hc-ini{font-size:clamp(24px,5vh,46px)}
+#hof .hc.mg .hc-n{font-size:clamp(15px,2vh,19px)}
+#hof .hc.mg .hc-v{font-size:clamp(22px,4.2vh,38px)}
+#hof .hc.mg .hc-r{height:var(--rh)}
+#hof .hc.mg .hc-r .v{font-size:14px}
+#hof .hc.mg .hc-r.nil .t b{color:#4f4636;font-weight:600}
+#hof .hc.mg .hc-r.nil .a{background:rgba(255,255,255,.03);border-color:rgba(201,162,74,.12)}
+#hof .hc.mg .hc-empty{flex:1;display:flex;align-items:center;justify-content:center}
+#hof .hc-sk.mg{min-height:440px}
+/* 1100px 아래: 다섯 칸 그대로, 줄의 작은 초상 · 둘째 줄을 뺀다 / 900px 아래: 위 셋 · 아래 둘 / 휴대폰: 두 칸씩 작게(마지막 카드는 가로로 길게) */
+@media (max-width:1100px){#hof .hof-g.mg{gap:10px}#hof .hc.mg .hc-r{grid-template-columns:14px minmax(0,1fr) auto;gap:6px;padding:0 10px}#hof .hc.mg .hc-r .a{display:none}#hof .hc.mg .hc-r .t small{display:none}
+  #hof .hc.mg .hc-h{padding:12px 10px 2px}#hof .hc.mg .hc-h span{font-size:10px}#hof .hc.mg .hc-md{left:8px;top:8px;width:26px;height:26px;font-size:12px}}
+@media (max-width:900px){#hof .hof-g.mg{grid-template-columns:repeat(6,minmax(0,1fr))}#hof .hof-g.mg>.hc{grid-column:span 2}#hof .hof-g.mg>.hc:nth-child(n+4){grid-column:span 3}
+  #hof .hof-g.mg{--rh:clamp(28px,3.9vh,44px)}#hof .hc.mg .hc-av{width:clamp(56px,8.5vh,100px);height:clamp(56px,8.5vh,100px)}}
+@media (max-width:600px){#hof .hof-vw{margin-top:8px}#hof.arc-v .hof-tiles{margin:6px 0 8px}#hof .hof-note{font-size:10.5px}
+  #hof .hof-g.mg{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;--rh:clamp(22px,3vh,30px)}#hof .hof-g.mg>.hc,#hof .hof-g.mg>.hc:nth-child(n+4){grid-column:auto}
+  #hof .hc.mg .hc-h{padding:9px 9px 0}#hof .hc.mg .hc-h b{font-size:13.5px;gap:5px}#hof .hc.mg .hc-h b::before{width:6px;height:6px}#hof .hc.mg .hc-h span{display:none}
+  #hof .hc.mg .hc-hero{padding:4px 8px 6px}#hof .hc.mg .hc-md{left:6px;top:4px;width:22px;height:22px;font-size:11px}#hof .hc.mg .hc-md::before{display:none}
+  #hof .hc.mg .hc-av{width:44px;height:44px;margin:2px auto 3px;padding:2px}#hof .hc.mg .hc-av .hc-ini{font-size:19px}
+  #hof .hc.mg .hc-n{font-size:13px}#hof .hc.mg .hc-s{font-size:10px;margin-top:0}#hof .hc.mg .hc-v{font-size:19px;margin-top:2px}
+  #hof .hc.mg .hc-r{padding:0 8px;gap:5px}#hof .hc.mg .hc-r .k{font-size:11.5px}#hof .hc.mg .hc-r .t b{font-size:11.5px}#hof .hc.mg .hc-r .v{font-size:11.5px}
+  #hof .hc.mg .hc-empty{padding:12px 8px;font-size:11px}
+  /* 마지막(출근길): 가로로 길게 — 1위 띠 왼쪽, 2~5위 오른쪽 두 줄 */
+  #hof .hof-g.mg>.hc:last-child{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-auto-rows:auto;column-gap:0}
+  #hof .hof-g.mg>.hc:last-child .hc-h{grid-column:1/-1}#hof .hof-g.mg>.hc:last-child .hc-hero{grid-row:2/span 4}#hof .hof-g.mg>.hc:last-child .hc-empty{grid-column:1/-1}
+  #hof .hof-g.mg>.hc:last-child .hc-r{grid-column:2}}
+@media (max-width:340px){#hof .hof-g.mg{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){#hof .hc.mg{animation:none}}
