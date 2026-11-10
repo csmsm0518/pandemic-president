@@ -79,7 +79,24 @@ function hofView(){const d=HOF.d;if(!d)return null;const f=a=>(a||[]).filter(r=>
 const hofCampN=c=>{const k=Object.keys(CAMPS).find(k=>CAMPS[k].id===c||CAMPS[k].n===c);return k?CAMPS[k].n:(c||'');};
 // 초상이 없으면(닮은 지도자 미상) 이니셜 대신 그림자 사람
 const HOF_SH='<span class="hc-ini sh">'+'<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M9 64c2-12 11-19 23-19s21 7 23 19z"/><ellipse cx="32" cy="28" rx="11.5" ry="13.5"/></svg>'+'</span>',hofAnon=n=>!n||/^\s*(익명|anonymous)?\s*$/i.test(String(n));
-const hofAv=(name,px)=>portrait(name,px)||HOF_SH;
+/* 사람마다 지도자 얼굴 하나(미니게임 순위 · 닮은 지도자를 모르는 기록). 사람은 닉네임+학교로 가른다.
+   같은 사람은 늘 같은 얼굴, 지금 명예의 전당에 오른 사람끼리는 서로 다른 얼굴(사람이 얼굴 수보다 많을 때만 겹친다).
+   얼굴은 이름의 해시로 정하고, 겹치면 다음 빈 얼굴로 넘긴다. 해시 순서로 자리를 잡으므로 새 사람이 들어와도 다른 사람 얼굴은 거의 그대로다.
+   현직 · 최근 정치인, 학교 선생님 · 게임 속 인물, 이름난 폭군은 넣지 않았다. */
+const HOF_FACE=['세종','태조 이성계','태종','영조','정조','광개토대왕','선덕여왕','김춘추','왕건','공민왕','단군왕검','안창호',
+  '조지 워싱턴','토머스 제퍼슨','에이브러햄 링컨','율리시스 S. 그랜트','시어도어 루스벨트','우드로 윌슨','프랭클린 루스벨트','해리 트루먼','드와이트 아이젠하워','존 F. 케네디','지미 카터',
+  '킨키나투스','솔론','페리클레스','함무라비','아소카','아크바르','율리우스 카이사르','아우구스투스','마르쿠스 아우렐리우스','디오클레티아누스','유스티니아누스 1세',
+  '당 태종','측천무후','진시황','앨프레드 대왕','엘리자베스 1세','루이 14세','표트르 대제','프리드리히 2세','마리아 테레지아','예카테리나 2세','나폴레옹','시몬 볼리바르',
+  '오토 폰 비스마르크','윈스턴 처칠','클레멘트 애틀리','샤를 드골','무스타파 케말 아타튀르크','넬슨 만델라','리콴유','바츨라프 하벨','미하일 고르바초프','호세 무히카'];
+const hofWho=r=>String(r.nick||'').trim()+'|'+String(r.school||'').trim();
+const hofHash=t=>{let h=2166136261;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619);}h^=h>>>15;h=Math.imul(h,2246822507);return (h^h>>>13)>>>0;};
+let HOF_FM={d:null,m:{}};
+function hofFaces(){const d=HOF.d;if(HOF_FM.d===d)return HOF_FM.m;const F=HOF_FACE.filter(n=>PFS[n]),N=F.length,K=new Set(),m={},used=new Set();
+  // 받은 기록 전체(난이도별 · 부문별 · 미니게임)에서 사람을 모은다
+  const walk=o=>{if(!o||typeof o!=='object')return;if(Array.isArray(o)){o.forEach(walk);return;}if(typeof o.nick==='string'&&!hofAnon(o.nick))K.add(hofWho(o));for(const k in o)if(o[k]&&typeof o[k]==='object')walk(o[k]);};walk(d);
+  [...K].sort((a,b)=>hofHash(a)-hofHash(b)||(a<b?-1:a>b?1:0)).forEach(k=>{let i=hofHash(k)%N;if(used.size<N)while(used.has(i))i=(i+1)%N;used.add(i);m[k]=F[i];});
+  HOF_FM={d:d,m:m};return m;}
+const hofFace=(r,px)=>{if(!r||hofAnon(r.nick)||!HOF_FACE.length)return HOF_SH;const n=hofFaces()[hofWho(r)]||HOF_FACE[hofHash(hofWho(r))%HOF_FACE.length];return portrait(n,px)||HOF_SH;};
 // 부문 카드 하나. it(r)은 {n 이름, s 둘째 줄, v 기록, a 초상 자리 HTML, me 내 기록인지}
 // 커리어 점수(main)만 1위를 크게 띄우고, 나머지 부문은 작은 순위표(1~5위)로만 보여 준다. ga는 화면 격자의 자리 이름
 function hofCard(o){const L=o.list||[],main=!!o.main,big=main||!!o.hero;
@@ -101,7 +118,7 @@ function hofRender(){const v=hofView(),body=document.getElementById('hofBody');h
     body.innerHTML=HOF_ARC.map(hofMgCard).join('');return;}
   const C=v.cards||{},E=lbEsc,num=x=>Number(x||0).toLocaleString('ko-KR');
   const who=r=>[r.school,r.leader].filter(Boolean).map(E).join(' · ')||'&nbsp;';
-  const P=(r,val,s)=>({n:E(r.nick),s:s!=null?s:who(r),v:val,a:hofAv(r.leader,main?120:40),me:!!HOF.id&&r.id===HOF.id});let main=false;
+  const P=(r,val,s)=>({n:E(r.nick),s:s!=null?s:who(r),v:val,a:portrait(r.leader,main?120:40)||hofFace(r,main?120:40),me:!!HOF.id&&r.id===HOF.id});let main=false;
   const s=v.stats||{},tile=(k,x)=>'<div><span>'+k+'</span><b>'+x+'</b></div>';
   document.getElementById('hofTiles').innerHTML=tile('지나간 인생',num(v.careers))+tile('참가자',num(v.players))+tile('평균 임기',(s.avgTerms||0)+'선')+tile('2선 이상',(s.reelectRate||0)+'%')+tile('개헌한 비율',(s.amendRate||0)+'%');
   // 내 순위: 이번 커리어가 몇 위인지, 1위까지 몇 점 남았는지
@@ -120,10 +137,10 @@ function hofRender(){const v=hofView(),body=document.getElementById('hofBody');h
   const sub=hofCard({i:5,ga:'e',t:'최고 지지율',u:'물러날 때 지지율',list:C.appr,it:r=>P(r,Math.round(r.appr)+'<small>%</small>')})+
     hofCard({i:7,ga:'g',t:'무대별 최고',u:'무대마다 1위',list:C.camp,it:r=>P(r,num(r.score)+'<small>점</small>',E(hofCampN(r.camp))+(r.school?' · '+E(r.school):''))});
   body.innerHTML=mainCard+left+right+sub;}
-// 미니게임 순위(따로 보는 화면): 다섯 게임을 한 화면에 나란히. 카드마다 1위를 크게(메달 · 이름 · 학교 · 기록), 2~5위는 한 줄씩. 순위는 난이도와 상관없이 하나다
+// 미니게임 순위(따로 보는 화면): 다섯 게임을 한 화면에 나란히. 카드마다 1위를 크게(메달 · 얼굴 · 이름 · 학교 · 기록), 2~5위는 한 줄씩. 얼굴은 hofFace(사람마다 지도자 하나). 순위는 난이도와 상관없이 하나다
 const HOF_VW=[{k:'car',t:'대통령 순위'},{k:'arc',t:'미니게임 순위'}];
 const HOF_ARC=[{k:'zg',t:'방역선',u:'좀비 서바이벌 · 최고 점수',c:'#e0604f',empty:'아직 해가 뜬 기록이 없어요'},{k:'sail',t:'대항해',u:'폭풍 해협 · 최단 기록',c:'#4a9bd6',empty:'아직 돌아온 배가 없어요'},{k:'star',t:'별똥별',u:'밤하늘 서바이벌 · 최고 점수',c:'#9b8cff',empty:'아직 하늘을 난 별이 없어요'},{k:'qx',t:'격리 탈출',u:'깬 단계 → 적은 감염 → 짧은 시간',c:'#3fc38f',empty:'아직 병동을 빠져나온 대통령이 없어요'},{k:'cg',t:'출근길',u:'가장 멀리 간 칸',c:'#e3b341',empty:'아직 출근한 대통령이 없어요'}];
 function hofMgCard(X,i){const A=(HOF.d&&HOF.d.arcade)||{},E=lbEsc,num=x=>Number(x||0).toLocaleString('ko-KR');
-  const ini=r=>hofAnon(r.nick)?HOF_SH:'<span class="hc-ini">'+E(String(r.nick).slice(0,1))+'</span>',mmss=s=>Math.floor(s/60)+':'+(s%60).toFixed(1).padStart(4,'0');
+  const mmss=s=>Math.floor(s/60)+':'+(s%60).toFixed(1).padStart(4,'0');
   return hofCard({i:i,cls:'mg',ac:X.c,t:X.t,u:X.u,list:(A[X.k]||[]).slice(0,5),hero:true,n:5,fill:true,empty:X.empty,
-    it:r=>({n:E(r.nick),s:[r.school,r.detail].filter(Boolean).map(E).join(' · ')||'&nbsp;',v:X.k==='sail'?mmss(r.sec):X.k==='qx'?(r.win?'완주':Math.floor(r.score/1000)+'<small>단계</small>'):X.k==='cg'?num(r.score)+'<small>칸</small>':num(r.score)+'<small>점</small>',a:ini(r),me:false})});}
+    it:r=>({n:E(r.nick),s:[r.school,r.detail].filter(Boolean).map(E).join(' · ')||'&nbsp;',v:X.k==='sail'?mmss(r.sec):X.k==='qx'?(r.win?'완주':Math.floor(r.score/1000)+'<small>단계</small>'):X.k==='cg'?num(r.score)+'<small>칸</small>':num(r.score)+'<small>점</small>',a:hofFace(r,96),me:false})});}

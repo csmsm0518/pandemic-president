@@ -6,8 +6,9 @@
    · 한강: 오리배 · 뗏목 · 구조 보트를 밟고 건넌다. 물에 빠지거나 판 밖으로 떠내려가면 끝.
    · 머뭇거리면 뒤에서 기자단이 따라온다(화면이 저절로 올라간다). 화면 아래로 밀려나면 붙잡힌다.
    · 길은 판마다 새로 만든다. 광장(풀밭)에는 늘 지나갈 길이 하나 이상 남는다. 50칸마다 서울의 이름난 곳을 지난다.
-   · 가끔 왕복 10차선 「세종대로」(아래 5줄은 오른쪽, 위 5줄은 왼쪽으로 달리고 가운데 두 줄은 중앙버스전용차로)가 나온다.
-     6줄 내리 풀밭인 「쉼터」(나무 · 벤치)도 가끔 나와 잠깐 숨을 고를 수 있다(10차선을 건넌 뒤에 자주).
+   · 정해진 간격 없이 가끔 왕복 8~24차선 큰길이 나온다(아래 절반은 오른쪽, 위 절반은 왼쪽으로 달리고 가운데 두 줄은 중앙버스전용차로).
+     멀리 갈수록 더 넓은 길까지 나온다. 5~10줄 내리 풀밭인 「쉼터」(나무 · 벤치)도 아무 때나 나와 잠깐 숨을 고를 수 있다.
+     큰길 한가운데에 50칸이 걸리면 그 칸의 명소 광장은 큰길을 다 건넌 뒤 첫 줄로 미룬다.
    판은 가로 9칸. 좌표는 칸 단위(왼쪽 끝 0, 칸 c의 가운데 c+.5), 줄 r은 관저 앞이 0이고 위로 갈수록 커진다.
    기록: 가장 멀리 간 줄 수(칸). 10칸 이상 간 판은 명예의 전당에 오른다. 이 기기의 기록은 MEM.cg. */
 const CG_C=9,CG_M=8,CG_L=CG_C+CG_M*2,CG_HOP=.13;
@@ -32,7 +33,7 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
   const tm=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
   const snd=f=>{try{f();}catch(e){}};
   // ----- 상태 -----
-  let st='brief',seed=0,rnd=Math.random,R={},gHi=-1,segT='g',segN=0,sinceG=0,pathC=4,lastW=1,Q=[],lastBig=-999,lastPark=-999,
+  let st='brief',seed=0,rnd=Math.random,R={},gHi=-1,segT='g',segN=0,sinceG=0,pathC=4,lastW=1,Q=[],lastBig=-999,lastPark=-999,nextLm=50,
     T=0,tt=0,P=null,hop=null,qd=null,maxR=0,camY=0,started=false,shield=0,inv=0,masks=0,cause='',deadT=0,god=false,
     FX=[],POP=[],run=0,shake=0,bump=0,live=true,prev=0,raf=0,banT=0,hudK='',pst='run',danger=0,deadAt=null;
   const WALL={t:'x'};
@@ -43,12 +44,13 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
   const grass=(r,dens,lm,ex)=>{ex=ex||{};const np=Math.max(0,Math.min(CG_C-1,pathC+ri(-2,2))),lo=Math.min(pathC,np),hi=Math.max(pathC,np),b=[];
     for(let c=0;c<CG_C;c++)b.push((c>=lo&&c<=hi)||rnd()>=dens?0:ex.pk?(rnd()<.45?4:rnd()<.6?1:3):(rnd()<.55?1:rnd()<.6?2:3));pathC=np;
     const row={t:'g',b:b,lm:lm||'',mk:-1,pk:ex.pk||0,sg:ex.sg||''};if(r>4&&rnd()<.09){const f=[];b.forEach((v,c)=>{if(!v)f.push(c);});row.mk=f[Math.floor(rnd()*f.length)];}return row;};
-  // 왕복 10차선 한 줄(i=0..9). 우측 통행이라 아래 다섯 줄은 오른쪽, 위 다섯 줄은 왼쪽으로 달린다.
-  // 가운데 두 줄(4 · 5)은 중앙버스전용차로(버스만). ln은 그 줄 위쪽 경계선: y=노란 중앙선, b=파란 버스차로 선
-  const road10=(r,i)=>{const d=dif(r),dir=i<5?1:-1,bus=i===4||i===5,ks=['taxi','taxi','taxi','amb','dis','bus'],k=bus?'bus':ks[Math.floor(rnd()*ks.length)],K=CG_CAR[k],o=[],o0=rnd()*CG_L,
+  // 왕복 L차선 큰길의 한 줄(i=0..L-1). 우측 통행이라 아래 절반은 오른쪽, 위 절반은 왼쪽으로 달린다.
+  // 가운데 두 줄은 중앙버스전용차로(버스만). ln은 그 줄 위쪽 경계선: y=노란 중앙선, b=파란 버스차로 선
+  const CG_RD=['세종대로','강남대로','테헤란로','올림픽대로','강변북로','여의대로','한강대로','을지로','종로','경부고속도로'];
+  const roadBig=(r,i,L)=>{const h=L/2,d=dif(r),dir=i<h?1:-1,bus=i===h-1||i===h,ks=['taxi','taxi','taxi','amb','dis','bus'],k=bus?'bus':ks[Math.floor(rnd()*ks.length)],K=CG_CAR[k],o=[],o0=rnd()*CG_L,
       v=(bus?1.75+1.6*d+rnd()*.4:(1.15+2.2*d+rnd()*1.1)*K.sp)*dir,n=Math.max(1,Math.round(CG_L/(K.len+lerp(bus?7.5:6.9,bus?4.4:3.6,d)+rnd()*1.6))),s=CG_L/n,j=Math.max(0,s-K.len-2.6);
-    for(let q=0;q<n;q++)o.push({o:o0+q*s+(rnd()-.5)*j*.5,len:K.len,k:k});return {t:'r',v:v,o:o,big:i+1,ln:i===4?'y':i===3||i===5?'b':''};};
-  const park=r=>{lastPark=r;for(let i=0;i<6;i++)Q.push({t:'g',d:i===0?.06:.12,ex:{pk:i===0?1:2}});};
+    for(let q=0;q<n;q++)o.push({o:o0+q*s+(rnd()-.5)*j*.5,len:K.len,k:k});return {t:'r',v:v,o:o,big:i+1,bn:L,bus:bus?1:0,ln:i===h-1?'y':i===h-2||i===h?'b':''};};
+  const park=r=>{const n=ri(5,10);lastPark=r+n;for(let i=0;i<n;i++)Q.push({t:'g',d:i===0?.06:.12,ex:{pk:i===0?1:2}});};
   const lane=(t,r)=>{const d=dif(r),dir=rnd()<.5?1:-1,o=[],o0=rnd()*CG_L;
     if(t==='r'){const ks=['taxi','taxi','amb','bus','dis'],k=ks[Math.floor(rnd()*ks.length)],K=CG_CAR[k],v=(1.25+2.5*d+rnd()*1.1)*K.sp*dir,
         n=Math.max(1,Math.round(CG_L/(K.len+lerp(6.5,3.1,d)+rnd()*1.6))),s=CG_L/n,j=Math.max(0,s-K.len-2.6);
@@ -60,18 +62,19 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
       for(let i=0;i<n;i++)o.push({o:o0+i*s+(rnd()-.5)*.4,len:len,k:k});return {t:'w',v:v,o:o};}
     const Pd=lerp(7.5,4.2,d)+rnd()*3;return {t:'t',P:Pd,ph:rnd()*Pd,v:34*dir,len:14,hn:-1};};
   const pick=r=>{const d=dif(r);
-    // 왕복 10차선: 34칸부터, 앞의 것과 70칸 넘게 떨어지고 50칸 명소를 가로지르지 않을 때. 도로명판 줄 → 10줄 → (60%) 쉼터
-    if(r>=34&&r-lastBig>=70&&Math.floor((r+11)/50)===Math.floor(r/50)&&rnd()<.16+.12*d){lastBig=r;Q.push({t:'g',d:0,ex:{sg:'세종대로 · 왕복 10차선'}});
-      for(let i=0;i<10;i++)Q.push({t:'R',i:i});segT='r';segN=0;if(rnd()<.6){park(r+11);segT='g';}return;}
+    // 큰길: 20칸부터, 앞 큰길을 건넌 뒤 15칸 넘게 지나면 줄을 고를 때마다 운으로. 차선 수는 왕복 8~24 중 무작위(멀리 갈수록 넓은 길까지)
+    if(r>=20&&r-lastBig>=15&&rnd()<.04+.05*d){const mx=Math.min(12,4+Math.floor(r/30)),L=2*ri(4,mx);lastBig=r+L;
+      Q.push({t:'g',d:0,ex:{sg:CG_RD[Math.floor(rnd()*CG_RD.length)]+' · 왕복 '+L+'차선'}});for(let i=0;i<L;i++)Q.push({t:'R',i:i,L:L});segT='r';segN=0;return;}
     if(sinceG>=5){segT='g';segN=1;return;}
     const Wt=[['g',2.2-d],['r',3+1.6*d],['p',1.2],['w',1.4+.9*d],['t',.6+.7*d]].filter(x=>x[0]!==segT&&(r>=8||(x[0]!=='w'&&x[0]!=='t')));
     let s=Wt.reduce((a,x)=>a+x[1],0)*rnd(),k='r';for(const x of Wt){s-=x[1];if(s<=0){k=x[0];break;}}
-    if(k==='g'&&r>=14&&r-lastPark>=30&&rnd()<.3){park(r);segT='g';segN=0;return;}
+    if(k==='g'&&r>=10&&r-lastPark>=8&&rnd()<.45){park(r);segT='g';segN=0;return;}
     segT=k;segN=k==='g'?ri(1,2):k==='r'?ri(1,2+Math.round(2*d)):k==='w'?ri(1,2+Math.round(d)):ri(1,2);if(k==='w')lastW=rnd()<.5?1:-1;};
   const gen=r=>{if(r<3)return grass(r,0,'');
-    if(r%50===0){sinceG=0;if(Q.length&&Q[0].t==='g')Q.shift();return grass(r,0,CG_PL[(r/50-1)%CG_PL.length]);}
+    // 50칸마다 명소 광장. 큰길을 건너는 중이면 다 건넌 뒤 첫 줄로 미룬다
+    if(r>=nextLm&&!(Q.length&&(Q[0].t==='R'||Q[0].ex.sg))){const k=nextLm/50-1;nextLm+=50;sinceG=0;if(Q.length&&Q[0].ex.pk){const q=Q.shift();if(Q.length&&Q[0].ex&&Q[0].ex.pk)Q[0].ex.pk=q.ex.pk;}return grass(r,0,CG_PL[k%CG_PL.length]);}
     if(!Q.length&&segN<=0)pick(r);
-    if(Q.length){const q=Q.shift();if(q.t==='g'){sinceG=0;return grass(r,q.d,'',q.ex);}sinceG++;return road10(r,q.i);}
+    if(Q.length){const q=Q.shift();if(q.t==='g'){sinceG=0;return grass(r,q.d,'',q.ex);}sinceG++;return roadBig(r,q.i,q.L);}
     segN--;if(segT==='g'){sinceG=0;return grass(r,.16+.16*dif(r),'');}
     sinceG++;return lane(segT,r);};
   const row=r=>{if(r<0)return WALL;while(gHi<r){gHi++;R[gHi]=gen(gHi);}return R[r]||WALL;};
@@ -98,7 +101,7 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
   const pop=(s,x,r,c)=>{if(POP.length<14)POP.push({s:s,x:x,r:r,c:c||'#fff',l:1});};
   const burst=(x,r,n,c,sp)=>{for(let i=0;i<n&&FX.length<220;i++){const a=Math.random()*6.283,v=(sp||4)*(.3+Math.random());FX.push({x:x,r:r,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:.45+Math.random()*.45,c:c});}};
   /* ----- 한 판 ----- */
-  const reset=s=>{run++;seed=s==null?(Math.random()*2147483647)|0:s;rnd=cgRng(seed);R={};gHi=-1;segT='g';segN=0;sinceG=0;pathC=4;lastW=1;Q=[];lastBig=-999;lastPark=-999;
+  const reset=s=>{run++;seed=s==null?(Math.random()*2147483647)|0:s;rnd=cgRng(seed);R={};gHi=-1;segT='g';segN=0;sinceG=0;pathC=4;lastW=1;Q=[];lastBig=-999;lastPark=-999;nextLm=50;
     T=0;tt=0;P={x:4.5,r:0,f:'u'};hop=null;qd=null;maxR=0;started=false;shield=0;inv=0;masks=0;cause='';FX=[];POP=[];danger=0;deadAt=null;hudK='';
     camY=-lead();row(40);hud();};
   const start=s=>{try{aInit();SFX.click();}catch(e){}ov('');reset(s);st='run';ban('출근!','관저를 나선다 · 앞으로 깡충');};
@@ -120,7 +123,7 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
   const land=()=>{const h=hop;hop=null;P.x=h.tx;P.r=h.tr;const rw=row(P.r);
     if(P.r>maxR){maxR=P.r;if(rw.lm){ban(rw.lm,maxR+'칸 지점');snd(()=>[523,659,784].forEach((f,i)=>tone(f,'triangle',.2,.07,i*.08)));burst(P.x,P.r,24,'#f2c94c',5);}
       else if(rw.pk===1)pop('쉼터 · 잠깐 숨 고르기',P.x,P.r+.9,'#c8f5b0');
-      else if(row(P.r-1).big===10){pop('10차선 건넜다!',P.x,P.r+.9,'#ffe08a');burst(P.x,P.r,16,'#f2c94c',4);snd(()=>[659,880].forEach((f,i)=>tone(f,'triangle',.15,.06,i*.07)));}
+      else if(row(P.r-1).big&&row(P.r-1).big===row(P.r-1).bn){pop(row(P.r-1).bn+'차선 건넜다!',P.x,P.r+.9,'#ffe08a');burst(P.x,P.r,16,'#f2c94c',4);snd(()=>[659,880].forEach((f,i)=>tone(f,'triangle',.15,.06,i*.07)));}
       else if(maxR%25===0){pop(maxR+'칸!',P.x,P.r+.9,'#ffe08a');}}
     if((rw.t==='g'||rw.t==='p')&&rw.mk>=0&&Math.floor(P.x)===rw.mk){rw.mk=-1;masks++;
       if(shield){pop('마스크 하나 더(이미 쓰고 있다)',P.x,P.r+.8,'#cfefff');}else{shield=1;pop('마스크 착용!',P.x,P.r+.8,'#9fe3ff');}
@@ -167,7 +170,7 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
     '<li>차도의 <b>택시 · 구급차 · 버스 · 방역차</b>, 철길의 <b>고속열차</b>를 피한다. 빨간 불이 깜빡이면 열차가 온다.</li>'+
     '<li><b>한강</b>은 오리배 · 뗏목을 밟고 건넌다. 물에 빠지거나 판 밖으로 떠내려가면 끝.</li>'+
     '<li>인도의 <b>기침하는 확진자</b>에 닿으면 감염. <b>마스크</b>를 주우면 한 번 막아 준다.</li>'+
-    '<li>가끔 <b>왕복 10차선 세종대로</b>가 나온다. 풀밭이 길게 이어진 <b>쉼터</b>에서는 잠깐 숨을 고를 수 있다.</li>'+
+    '<li>가끔 <b>왕복 8~24차선 큰길</b>이 나온다. 풀밭이 길게 이어진 <b>쉼터</b>에서는 잠깐 숨을 고를 수 있다.</li>'+
     '<li>머뭇거리면 뒤에서 <b>기자단</b>이 따라잡는다. 50칸마다 서울의 이름난 곳을 지난다.</li></ul>'+
     '<div class="cg-b"><span>최고 <b>'+(m.best||0)+'칸</b></span><span>출근 <b>'+(m.runs||0)+'번</b></span></div>'+
     '<button type="button" class="pri" id="cgGo">출근하기</button><button type="button" id="cgBack">미니게임으로</button></div>');
@@ -214,7 +217,7 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
       if(up==='r'){if(rw.ln==='y'){g.fillStyle='#f2c230';g.fillRect(0,y-cs*.075,W,cs*.05);g.fillRect(0,y+cs*.025,W,cs*.05);}
         else if(rw.ln==='b'){g.fillStyle='#3f86e8';g.fillRect(0,y-2,W,4);}
         else{g.fillStyle='rgba(255,255,255,.5)';for(let i=c0;i<=c1;i++)g.fillRect(sx(i+.2),y-1.5,cs*.55,3);}}else{g.fillStyle='#9a958a';g.fillRect(0,y,W,cs*.07);}
-      if(rw.big===5||rw.big===6){g.fillStyle='rgba(120,170,255,.22)';g.font='800 '+Math.round(cs*.3)+'px '+FF;g.textAlign='center';g.textBaseline='middle';
+      if(rw.bus){g.fillStyle='rgba(120,170,255,.22)';g.font='800 '+Math.round(cs*.3)+'px '+FF;g.textAlign='center';g.textBaseline='middle';
         for(let i=c0;i<=c1;i++)if(((i%4)+4)%4===1)g.fillText('버스전용',sx(i+.5),y+cs*.5);}
       if(dn!=='r'){g.fillStyle='#9a958a';g.fillRect(0,y+cs*.93,W,cs*.07+1);}
       g.fillStyle='rgba(0,0,0,.08)';for(let i=c0;i<=c1;i++)if(cgHs(i,r)<.18)g.fillRect(sx(i+.3),y+cs*.4,cs*.3,cs*.08);return;}
