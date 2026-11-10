@@ -9,6 +9,8 @@
    · 정해진 간격 없이 가끔 왕복 8~24차선 큰길이 나온다(아래 절반은 오른쪽, 위 절반은 왼쪽으로 달리고 가운데 두 줄은 중앙버스전용차로).
      멀리 갈수록 더 넓은 길까지 나온다. 5~10줄 내리 풀밭인 「쉼터」(나무 · 벤치)도 아무 때나 나와 잠깐 숨을 고를 수 있다.
      큰길 한가운데에 50칸이 걸리면 그 칸의 명소 광장은 큰길을 다 건넌 뒤 첫 줄로 미룬다.
+   · 붙어 있는 두 차도 줄은 차 빠르기가 30% 넘게 차이 난다(apart).
+   · 숨은 길: 아직 앞으로 한 칸도 안 간 채 관저 문(가운데 세 칸) 쪽으로 뒤로 뛰면 관저로 들어가 메인 게임(새 게임 · 무대 선택)이 열린다.
    판은 가로 9칸. 좌표는 칸 단위(왼쪽 끝 0, 칸 c의 가운데 c+.5), 줄 r은 관저 앞이 0이고 위로 갈수록 커진다.
    기록: 가장 멀리 간 줄 수(칸). 10칸 이상 간 판은 명예의 전당에 오른다. 이 기기의 기록은 MEM.cg. */
 const CG_C=9,CG_M=8,CG_L=CG_C+CG_M*2,CG_HOP=.13;
@@ -35,7 +37,7 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
   // ----- 상태 -----
   let st='brief',seed=0,rnd=Math.random,R={},gHi=-1,segT='g',segN=0,sinceG=0,pathC=4,lastW=1,Q=[],lastBig=-999,lastPark=-999,nextLm=50,
     T=0,tt=0,P=null,hop=null,qd=null,maxR=0,camY=0,started=false,shield=0,inv=0,masks=0,cause='',deadT=0,god=false,
-    FX=[],POP=[],run=0,shake=0,bump=0,live=true,prev=0,raf=0,banT=0,hudK='',pst='run',danger=0,deadAt=null;
+    FX=[],POP=[],run=0,shake=0,bump=0,live=true,prev=0,raf=0,banT=0,hudK='',pst='run',danger=0,deadAt=null,homeT=0;
   const WALL={t:'x'};
   /* ----- 길 만들기 ----- */
   const dif=r=>Math.min(1,r/320),lerp=(a,b,k)=>a+(b-a)*k,ri=(a,b)=>a+Math.floor(rnd()*(b-a+1));
@@ -48,11 +50,14 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
   // 가운데 두 줄은 중앙버스전용차로(버스만). ln은 그 줄 위쪽 경계선: y=노란 중앙선, b=파란 버스차로 선
   const CG_RD=['세종대로','강남대로','테헤란로','올림픽대로','강변북로','여의대로','한강대로','을지로','종로','경부고속도로'];
   const roadBig=(r,i,L)=>{const h=L/2,d=dif(r),dir=i<h?1:-1,bus=i===h-1||i===h,ks=['taxi','taxi','taxi','amb','dis','bus'],k=bus?'bus':ks[Math.floor(rnd()*ks.length)],K=CG_CAR[k],o=[],o0=rnd()*CG_L,
-      v=(bus?1.75+1.6*d+rnd()*.4:(1.15+2.2*d+rnd()*1.1)*K.sp)*dir,n=Math.max(1,Math.round(CG_L/(K.len+lerp(bus?7.5:6.9,bus?4.4:3.6,d)+rnd()*1.6))),s=CG_L/n,j=Math.max(0,s-K.len-2.6);
+      v=apart(r,(bus?1.75+1.6*d+rnd()*.4:(1.15+2.2*d+rnd()*1.1)*K.sp)*dir),n=Math.max(1,Math.round(CG_L/(K.len+lerp(bus?7.5:6.9,bus?4.4:3.6,d)+rnd()*1.6))),s=CG_L/n,j=Math.max(0,s-K.len-2.6);
     for(let q=0;q<n;q++)o.push({o:o0+q*s+(rnd()-.5)*j*.5,len:K.len,k:k});return {t:'r',v:v,o:o,big:i+1,bn:L,bus:bus?1:0,ln:i===h-1?'y':i===h-2||i===h?'b':''};};
+  // 바로 아래 줄도 차도이면 빠르기가 30% 넘게 차이 나게(느린 줄 위에는 주로 더 빠르게, 빠른 줄 위에는 주로 더 느리게)
+  const apart=(r,v)=>{const p=R[r-1];if(!p||p.t!=='r')return v;const a=Math.abs(v),b=Math.abs(p.v);if(Math.abs(a-b)>=.3*Math.max(a,b))return v;
+    return Math.sign(v)*(rnd()<(b<2.4?.75:b>4.2?.25:.5)?b*1.45:b*.68);};
   const park=r=>{const n=ri(5,10);lastPark=r+n;for(let i=0;i<n;i++)Q.push({t:'g',d:i===0?.06:.12,ex:{pk:i===0?1:2}});};
   const lane=(t,r)=>{const d=dif(r),dir=rnd()<.5?1:-1,o=[],o0=rnd()*CG_L;
-    if(t==='r'){const ks=['taxi','taxi','amb','bus','dis'],k=ks[Math.floor(rnd()*ks.length)],K=CG_CAR[k],v=(1.25+2.5*d+rnd()*1.1)*K.sp*dir,
+    if(t==='r'){const ks=['taxi','taxi','amb','bus','dis'],k=ks[Math.floor(rnd()*ks.length)],K=CG_CAR[k],v=apart(r,(1.25+2.5*d+rnd()*1.1)*K.sp*dir),
         n=Math.max(1,Math.round(CG_L/(K.len+lerp(6.5,3.1,d)+rnd()*1.6))),s=CG_L/n,j=Math.max(0,s-K.len-2.6);
       for(let i=0;i<n;i++)o.push({o:o0+i*s+(rnd()-.5)*j*.5,len:K.len,k:k});return {t:'r',v:v,o:o};}
     if(t==='p'){const v=(.45+.75*d+rnd()*.45)*dir,n=Math.max(1,Math.round(CG_L/(.7+lerp(4.4,2.1,d)+rnd()*1.2))),s=CG_L/n,j=Math.max(0,s-2.3);
@@ -102,7 +107,7 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
   const burst=(x,r,n,c,sp)=>{for(let i=0;i<n&&FX.length<220;i++){const a=Math.random()*6.283,v=(sp||4)*(.3+Math.random());FX.push({x:x,r:r,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:.45+Math.random()*.45,c:c});}};
   /* ----- 한 판 ----- */
   const reset=s=>{run++;seed=s==null?(Math.random()*2147483647)|0:s;rnd=cgRng(seed);R={};gHi=-1;segT='g';segN=0;sinceG=0;pathC=4;lastW=1;Q=[];lastBig=-999;lastPark=-999;nextLm=50;
-    T=0;tt=0;P={x:4.5,r:0,f:'u'};hop=null;qd=null;maxR=0;started=false;shield=0;inv=0;masks=0;cause='';FX=[];POP=[];danger=0;deadAt=null;hudK='';
+    T=0;tt=0;P={x:4.5,r:0,f:'u'};hop=null;qd=null;maxR=0;started=false;homeT=0;shield=0;inv=0;masks=0;cause='';FX=[];POP=[];danger=0;deadAt=null;hudK='';
     camY=-lead();row(40);hud();};
   const start=s=>{try{aInit();SFX.click();}catch(e){}ov('');reset(s);st='run';ban('출근!','관저를 나선다 · 앞으로 깡충');};
   const NM={car:c=>(CG_CAR[c.k]||{n:'차'}).n+'에 치였다',walk:()=>'기침하는 확진자에게 감염됐다',water:()=>'한강에 빠졌다',drift:()=>'강물에 떠내려갔다',train:()=>'고속열차에 치였다',press:()=>'기자단에게 붙잡혔다',quit:()=>'출근을 그만뒀다'};
@@ -116,7 +121,7 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
   // 한 칸 뛰기. 뛰는 중에 또 누르면 하나는 기억했다가 내리자마자 뛴다
   const tryHop=(dx,dr)=>{if(st!=='run')return;if(hop){qd=[dx,dr];return;}
     const tr=P.r+dr,to=row(tr);P.f=dr>0?'u':dr<0?'d':dx<0?'l':'r';
-    if(to.t==='x'){bump=.14;return;}
+    if(to.t==='x'){if(dr<0&&P.r===0&&maxR===0&&P.x>3&&P.x<6){goHome();return;}bump=.14;return;}
     let tx;if(to.t==='w'){tx=P.x+dx;if(tx<.15||tx>CG_C-.15){bump=.14;return;}}
     else{const c=Math.floor(P.x)+dx;if(c<0||c>=CG_C||(to.t==='g'&&to.b[c])){bump=.14;snd(()=>tone(150,'triangle',.05,.04));return;}tx=c+.5;}
     hop={fx:P.x,fr:P.r,tx:tx,tr:tr,t:0};started=true;snd(()=>tone(dr>0?620:520,'triangle',.05,.035));};
@@ -130,10 +135,13 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
       burst(P.x,P.r,12,'#bfeaff',3);snd(()=>{tone(1320,'triangle',.12,.07);tone(1760,'triangle',.12,.05,.06);});}
     if(rw.t==='w'&&!raftAt(rw,P.x,T)){die('water');return;}
     if(qd){const q=qd;qd=null;tryHop(q[0],q[1]);}};
+  const goHome=()=>{st='home';homeT=0;hop=null;qd=null;P.f='d';ban('관저로 돌아간다','출근은 내일 · 오늘은 국정을 맡는다');
+    snd(()=>{tone(392,'triangle',.18,.06);tone(523,'triangle',.22,.06,.12);tone(659,'triangle',.4,.07,.24);});};
   const step=dt=>{if(banT>0){banT-=dt;if(banT<=0)$('cgBan').classList.remove('on');}if(shake>0)shake=Math.max(0,shake-dt);if(bump>0)bump=Math.max(0,bump-dt);if(inv>0)inv-=dt;
     for(const p of FX){p.x+=p.vx*dt;p.r+=p.vy*dt;p.vx*=.9;p.vy*=.9;p.l-=dt;}FX=FX.filter(p=>p.l>0);
     for(const p of POP){p.r+=dt*.9;p.l-=dt*.85;}POP=POP.filter(p=>p.l>0);
     if(st==='dead'){deadT-=dt;if(deadAt)deadAt.t+=dt;T+=dt;if(deadT<=0)end();return;}
+    if(st==='home'){T+=dt;homeT+=dt;if(homeT>=1.5){st='gone';shut();try{stepCamp();}catch(e){back();}}return;}
     if(st!=='run'){T+=dt*.6;return;}
     T+=dt;if(started)tt+=dt;
     if(hop){const fr=row(hop.fr);if(fr.t==='w'&&hop.tr===hop.fr){hop.fx+=fr.v*dt;hop.tx+=fr.v*dt;}hop.t+=dt/CG_HOP;if(hop.t>=1){land();if(st!=='run')return;}}
@@ -179,9 +187,10 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
       '<button type="button" class="pri" id="cgRe">계속하기</button><button type="button" id="cgQ">그만두기</button></div>');
       $('cgRe').onclick=()=>pause(false);$('cgQ').onclick=()=>{ov('');st=pst;die('quit');};}
     else if(!on&&st==='pause'){ov('');st=pst;prev=performance.now();}};
-  const close=()=>{try{SFX.back();}catch(e){}live=false;cancelAnimationFrame(raf);w.remove();document.body.style.overflow='';document.removeEventListener('keydown',kd);
-    removeEventListener('resize',onR);document.removeEventListener('visibilitychange',vis);back();};
-  $('cgX').onclick=()=>{if(st==='run'){pause(true);return;}if(st==='pause'){pause(false);return;}if(st==='dead')return;close();};
+  const shut=()=>{live=false;cancelAnimationFrame(raf);w.remove();document.body.style.overflow='';document.removeEventListener('keydown',kd);
+    removeEventListener('resize',onR);document.removeEventListener('visibilitychange',vis);};
+  const close=()=>{try{SFX.back();}catch(e){}shut();back();};
+  $('cgX').onclick=()=>{if(st==='run'){pause(true);return;}if(st==='pause'){pause(false);return;}if(st==='dead'||st==='home'||st==='gone')return;close();};
   $('cgP').onclick=()=>{try{SFX.click();}catch(e){}if(st==='run')pause(true);else if(st==='pause')pause(false);};
   /* ----- 입력: 누르기 = 앞으로, 밀기 = 그 방향(손가락을 떼기 전에 26px 넘게 밀면 바로 뛴다) ----- */
   let pd=null;
@@ -205,6 +214,7 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
       if(r===-1){g.fillStyle='#5a4a33';g.fillRect(0,y,W,cs*.82);g.fillStyle='#6e5b3e';for(let i=c0;i<=c1;i++)g.fillRect(sx(i)+1,y+cs*.06,cs-2,cs*.16);
         g.fillStyle='rgba(0,0,0,.22)';for(let i=c0;i<=c1;i++)g.fillRect(sx(i),y+cs*.22,1,cs*.6);
         g.fillStyle='#c9a24a';RR(sx(3),y+cs*.18,cs*3,cs*.64,cs*.08);g.fill();g.fillStyle='#8a6512';for(let i=0;i<7;i++)g.fillRect(sx(3.2+i*.41),y+cs*.24,cs*.06,cs*.52);
+        if(st==='home'||st==='gone'){const k=Math.min(1,homeT*3),dw=cs*2.4*k;g.fillStyle='#120c05';g.fillRect(sx(4.5)-dw/2,y+cs*.2,dw,cs*.6);g.fillStyle='rgba(255,214,120,'+(.35*k)+')';g.fillRect(sx(4.5)-dw/2,y+cs*.74,dw,cs*.06);}
         g.fillStyle='#fff4d6';g.font='800 '+Math.round(cs*.3)+'px '+FF;g.textAlign='center';g.textBaseline='middle';g.fillText('관저',sx(4.5),y+cs*.5);}
       return;}
     if(t==='g'){if(rw.lm){g.fillStyle='#d6cbb1';g.fillRect(0,y,W,h);g.fillStyle='rgba(120,100,70,.16)';for(let i=c0;i<=c1;i++){g.fillRect(sx(i),y,1,h);g.fillRect(sx(i+.5),y+cs*.5,1,cs*.5);}g.fillRect(0,y+cs*.5,W,1);}
@@ -304,7 +314,8 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
     for(let r=r0;r<=r1;r++)bgRow(r,sy(r),c0,c1);
     // 대통령이 그려질 줄(뛰는 중이면 가까운 쪽)
     let px=0,prr=0,lift=0,sq=1;if(P){if(hop){const k=Math.min(1,hop.t);px=lerp(hop.fx,hop.tx,k);prr=lerp(hop.fr,hop.tr,k);lift=Math.sin(k*Math.PI)*cs*.32;sq=1+Math.sin(k*Math.PI)*.08;}
-      else{px=P.x;prr=P.r;sq=1-bump*.6;}if(deadAt){px=deadAt.x;prr=deadAt.r;}}
+      else{px=P.x;prr=P.r;sq=1-bump*.6;}if(deadAt){px=deadAt.x;prr=deadAt.r;}
+      if(st==='home'||st==='gone'){const k=Math.min(1,homeT/.6);px=lerp(P.x,4.5,k);prr=-.85*k;lift=Math.abs(Math.sin(homeT*14))*cs*.06;}}
     const pRow=Math.round(prr);
     for(let r=r1;r>=r0;r--){const rw=row(r),y=sy(r),cy=y+cs/2;
       if(rw.t==='g'){for(let c=c0;c<=c1;c++){if(c>=0&&c<CG_C){if(rw.b[c])blk(rw.b[c],sx(c+.5),cy);}else if(cgHs(r,c+99)<.5)tree(sx(c+.5),cy);}if(rw.mk>=0)mask(sx(rw.mk+.5),cy);
@@ -318,7 +329,8 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
       else if(rw.t==='p'){if(rw.mk>=0)mask(sx(rw.mk+.5),cy);rw.o.forEach(c=>walker(c.k,sx(cgWrap(c.o,rw.v,T)),cy,rw.v>0));}
       else if(rw.t==='t'){const q=train(rw,T),on=warn(rw,T);sig(sx(-.32),y,on);sig(sx(CG_C+.32),y,on);if(q)trainD(sx(q[0]),cy,(q[1]-q[0])*cs,rw.v>0);}
       if(P&&r===pRow&&st!=='brief'){const cyP=sy(prr)+cs/2;
-        if(!deadAt)pres(sx(px),cyP,lift,sq,P.f,inv>0&&Math.floor(T*12)%2?.45:1,false);
+        if(st==='home'||st==='gone')pres(sx(px),cyP,lift,1,'u',Math.max(0,1-Math.max(0,homeT-.45)*2.2),false);
+        else if(!deadAt)pres(sx(px),cyP,lift,sq,P.f,inv>0&&Math.floor(T*12)%2?.45:1,false);
         else{const d=deadAt,t=d.t;
           if(d.k==='car'||d.k==='train'){if(d.k==='train'){g.save();g.translate(sx(px)+t*cs*9,cyP-t*cs*3);g.rotate(t*9);pres(0,0,0,1,'d',Math.max(0,1-t),false);g.restore();}else pres(sx(px),cyP+cs*.18,0,.3,'d',1,false);}
           else if(d.k==='water'||d.k==='drift'){g.strokeStyle='rgba(255,255,255,'+Math.max(0,.8-t*.6)+')';g.lineWidth=2;g.beginPath();g.arc(sx(px),cyP,cs*(.15+t*.5),0,6.283);g.stroke();if(t<.3)pres(sx(px),cyP+t*cs,0,1-t*2,P.f,1-t*3,false);}
@@ -340,8 +352,9 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
         g.fillStyle='#2c3242';g.fillRect(x-cs*.16,hy-cs*.36,cs*.32,cs*.2);g.fillStyle='#5a6378';g.beginPath();g.arc(x,hy-cs*.26,cs*.06,0,6.283);g.fill();
         if(cgHs(i,Math.floor(T*7))<.12*dk){g.fillStyle='rgba(255,255,255,.95)';g.beginPath();g.arc(x,hy-cs*.3,cs*.16,0,6.283);g.fill();g.fillStyle='rgba(255,255,255,.25)';g.beginPath();g.arc(x,hy-cs*.3,cs*.5,0,6.283);g.fill();}}
       if(dk>.35&&st==='run'){g.font='800 '+Math.max(13,Math.min(17,cs*.38))+'px '+FF;g.fillStyle='#ffe08a';g.textAlign='center';g.fillText('기자단이 따라붙는다! 앞으로!',W/2,H-bh-cs*.3);}}};
+  const fade=()=>{if(st==='home'&&homeT>.8){g.setTransform(D,0,0,D,0,0);g.fillStyle='rgba(6,9,18,'+Math.min(1,(homeT-.8)/.6)+')';g.fillRect(0,0,W,H);}};
   const loop=now=>{if(!live||!w.isConnected){live=false;return;}const dt=Math.min(.05,(now-prev)/1000||0);prev=now;
-    if(st!=='pause')step(dt);draw();raf=requestAnimationFrame(loop);};
+    if(st!=='pause')step(dt);if(!live)return;draw();fade();raf=requestAnimationFrame(loop);};
   fit();brief();prev=performance.now();raf=requestAnimationFrame(loop);
   // 시험용: window.__cgDbg를 미리 켜 두면 상태를 밖에서 보고 움직인다(이 판은 명예의 전당에 보내지 않는다)
   if(window.__cgDbg)window.__cgDbg={st:()=>st,P:()=>({x:P.x,r:P.r}),busy:()=>!!hop,hop:(dx,dr)=>tryHop(dx,dr),start:s=>start(s),row:r=>row(r),T:()=>T,cam:()=>camY,
