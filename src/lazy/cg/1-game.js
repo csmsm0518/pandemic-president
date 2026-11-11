@@ -16,6 +16,9 @@
    · 판 안 9칸에는 여린 칸 격자를 바탕 바로 위(차 · 배 · 사람 아래)에 그린다. 어두운 바탕(차도 · 한강 · 철길)엔 밝은 선, 밝은 바탕(풀밭 · 광장 · 인도)엔 어두운 선.
      대통령이 서 있는(뛰어갈) 칸은 살짝 밝게 표시한다. 그림일 뿐 규칙과는 상관없다.
    판은 가로 9칸. 좌표는 칸 단위(왼쪽 끝 0, 칸 c의 가운데 c+.5), 줄 r은 관저 앞이 0이고 위로 갈수록 커진다.
+   · 지옥 모드(hm): 안내 · 결과 카드의 「🔥 지옥 모드」. 관저 앞 3줄 뒤로는 차도와 철길만 끝없이 나온다(풀밭 · 쉼터 · 한강 · 인도 · 명소 없음).
+     처음부터 난이도 절반(dif .5)에서 시작하고, 한 차도에 택시 · 구급차 · 방역차 · 버스가 섞여 달린다. 철길은 세 줄 넘게 붙지 않는다. 가끔 큰길도 나온다.
+     기록은 MEM.cg.hb(지옥 최고) · hr(지옥 판 수) · hbS로 따로 둔다. 명예의 전당에는 같은 'cg'로 보내되 detail 앞에 「지옥 모드」를 붙인다.
    기록: 가장 멀리 간 줄 수(칸). 10칸 이상 간 판은 명예의 전당에 오른다. 이 기기의 기록은 MEM.cg. */
 const CG_C=9,CG_M=8,CG_L=CG_C+CG_M*2,CG_HOP=.13;
 const CG_PL=['광화문 광장','시청 앞 광장','서울역 앞','여의도 공원','국회 앞','남산 아래','청계천 길','세종로 네거리'];
@@ -41,10 +44,10 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
   // ----- 상태 -----
   let st='brief',seed=0,rnd=Math.random,R={},gHi=-1,segT='g',segN=0,sinceG=0,pathC=4,lastW=1,Q=[],lastBig=-999,lastPark=-999,nextLm=50,
     T=0,tt=0,P=null,hop=null,qd=null,maxR=0,camY=0,started=false,shield=0,inv=0,masks=0,cause='',deadT=0,god=false,
-    FX=[],POP=[],run=0,shake=0,bump=0,live=true,prev=0,raf=0,banT=0,hudK='',pst='run',danger=0,deadAt=null,homeT=0;
+    FX=[],POP=[],run=0,shake=0,bump=0,live=true,prev=0,raf=0,banT=0,hudK='',pst='run',danger=0,deadAt=null,homeT=0,hm=false;
   const WALL={t:'x'};
   /* ----- 길 만들기 ----- */
-  const dif=r=>Math.min(1,r/320),lerp=(a,b,k)=>a+(b-a)*k,ri=(a,b)=>a+Math.floor(rnd()*(b-a+1));
+  const dif=r=>Math.min(1,hm?.5+r/360:r/320),lerp=(a,b,k)=>a+(b-a)*k,ri=(a,b)=>a+Math.floor(rnd()*(b-a+1));
   // 광장: 가로수 · 바리케이드 · 화분. 지난 광장의 길 칸(pathC)에서 새 길 칸까지는 비워 두어 늘 지나갈 수 있다
   // ex.pk: 쉼터 줄(1=첫 줄), ex.sg: 줄 가운데 도로명판. 쉼터에는 나무 · 벤치 · 화분만 둔다
   const grass=(r,dens,lm,ex)=>{ex=ex||{};const np=Math.max(0,Math.min(CG_C-1,pathC+ri(-2,2))),lo=Math.min(pathC,np),hi=Math.max(pathC,np),b=[];
@@ -83,7 +86,16 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
     let s=Wt.reduce((a,x)=>a+x[1],0)*rnd(),k='r';for(const x of Wt){s-=x[1];if(s<=0){k=x[0];break;}}
     if(k==='g'&&r>=10&&r-lastPark>=8&&rnd()<.45&&park(r)){segT='g';segN=0;return;}
     segT=k;segN=k==='g'?ri(1,2):k==='r'?ri(1,2+Math.round(2*d)):k==='w'?ri(1,2+Math.round(d)):ri(1,2);if(k==='w')lastW=rnd()<.5?1:-1;};
-  const gen=r=>{if(r<3)return grass(r,0,'');
+  // 지옥 모드 차도: 한 줄에 여러 차가 섞여 달린다(빠르기는 줄마다 하나). 고리를 한 바퀴 돌아 처음 차와 만나는 곳에도 gp 넘게 띄운다
+  const roadH=r=>{const d=dif(r),dir=laneDir(r),ks=['taxi','taxi','taxi','amb','dis','bus'],v=apart(r,(1.5+2.4*d+rnd()*1.1)*dir),gp=lerp(5.4,3.3,d)+sameGap(r,dir),o=[],o0=rnd()*CG_L;
+    let x=0;for(;;){const k=ks[Math.floor(rnd()*ks.length)],len=CG_CAR[k].len;if(o.length&&x+len+gp>CG_L)break;o.push({o:o0+x,len:len,k:k});x+=len+gp+rnd()*1.8;if(o.length>=7)break;}return {t:'r',v:v,o:o};};
+  // 지옥 모드 길: 0~2줄 관저 앞(2줄 도로명판) 뒤로 차도 · 철길만. 가끔 큰길(앞 도로명판 없이)
+  const genH=r=>{if(r<2)return grass(r,0,'');if(r===2)return grass(r,0,'',{sg:'지옥 출근길 · 끝없는 차도와 철길'});
+    if(!Q.length&&r>=10&&r-lastBig>=12&&rnd()<.07){const L=2*ri(4,Math.min(12,5+Math.floor(r/25)));lastBig=r+L;for(let i=0;i<L;i++)Q.push({t:'R',i:i,L:L});}
+    if(Q.length){const q=Q.shift();return roadBig(r,q.i,q.L);}
+    const a=R[r-1],b=R[r-2],t3=a&&a.t==='t'&&b&&b.t==='t';
+    return !t3&&r>=4&&rnd()<.24+.08*dif(r)?lane('t',r):roadH(r);};
+  const gen=r=>{if(hm)return genH(r);if(r<3)return grass(r,0,'');
     // 고정 구간: 399칸 도로명판, 400~509칸은 차도 10줄 → 철길 1줄을 열 번
     if(r===CG_FX-1){Q=[];segN=0;segT='t';Q.push({t:'g',d:0,ex:{sg:'도심 관통 · 차도 10 + 철길 1 × 10'}});
       for(let b=0;b<10;b++){for(let i=0;i<10;i++)Q.push({t:'R',i:i,L:10});Q.push({t:'T'});}}
@@ -110,8 +122,8 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
   const lead=()=>Math.min(VR*.3,4.6);   // 대통령 아래로 보이는 줄 수
   const sx=x=>ox+x*cs,sy=r=>H-(r+1-camY)*cs;
   /* ----- 화면 윗줄 · 알림 ----- */
-  const hud=()=>{const m=cgMem(),k=maxR+'|'+shield+'|'+m.best;if(k===hudK)return;hudK=k;$('cgS').textContent=maxR;
-    $('cgB').innerHTML='최고 <b>'+Math.max(m.best,maxR)+'</b>';$('cgK').innerHTML=shield?'<b class="on">😷 마스크</b>':'';};
+  const hud=()=>{const m=cgMem(),bb=hm?m.hb||0:m.best,k=maxR+'|'+shield+'|'+bb+'|'+hm;if(k===hudK)return;hudK=k;$('cgS').textContent=maxR;
+    $('cgB').innerHTML=(hm?'지옥 최고 <b>':'최고 <b>')+Math.max(bb,maxR)+'</b>';$('cgK').innerHTML=shield?'<b class="on">😷 마스크</b>':hm?'<b class="hl">🔥 지옥 모드</b>':'';};
   const ov=h=>{$('cgOv').innerHTML=h;$('cgOv').style.display=h?'flex':'none';};
   const ban=(s,sub)=>{const b=$('cgBan');b.innerHTML='<b>'+s+'</b>'+(sub?'<span>'+sub+'</span>':'');b.classList.remove('on');void b.offsetWidth;b.classList.add('on');banT=2;};
   const pop=(s,x,r,c)=>{if(POP.length<14)POP.push({s:s,x:x,r:r,c:c||'#fff',l:1});};
@@ -120,7 +132,8 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
   const reset=s=>{run++;seed=s==null?(Math.random()*2147483647)|0:s;rnd=cgRng(seed);R={};gHi=-1;segT='g';segN=0;sinceG=0;pathC=4;lastW=1;Q=[];lastBig=-999;lastPark=-999;nextLm=50;
     T=0;tt=0;P={x:4.5,r:0,f:'u'};hop=null;qd=null;maxR=0;started=false;homeT=0;shield=0;inv=0;masks=0;cause='';FX=[];POP=[];danger=0;deadAt=null;hudK='';
     camY=-lead();row(40);hud();};
-  const start=s=>{try{aInit();SFX.click();}catch(e){}ov('');reset(s);st='run';ban('출근!','관저를 나선다 · 앞으로 깡충');};
+  const start=(s,h)=>{try{aInit();SFX.click();}catch(e){}if(h!=null)hm=!!h;w.classList.toggle('hell',hm);ov('');reset(s);st='run';
+    if(hm)ban('지옥 출근!','끝없는 차도와 철길 · 쉴 곳이 없다');else ban('출근!','관저를 나선다 · 앞으로 깡충');};
   const NM={car:c=>(CG_CAR[c.k]||{n:'차'}).n+'에 치였다',walk:()=>'기침하는 확진자에게 감염됐다',water:()=>'한강에 빠졌다',drift:()=>'강물에 떠내려갔다',train:()=>'고속열차에 치였다',press:()=>'기자단에게 붙잡혔다',quit:()=>'출근을 그만뒀다'};
   const die=(k,o)=>{if(st!=='run'||god&&k!=='quit')return;st='dead';cause=NM[k](o||{});deadT=k==='quit'?.01:1.35;
     const x=hop?lerp(hop.fx,hop.tx,Math.min(1,hop.t)):P.x,r=hop?lerp(hop.fr,hop.tr,Math.min(1,hop.t)):P.r;deadAt={k:k,x:x,r:r,t:0};hop=null;qd=null;
@@ -170,18 +183,20 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
     row(Math.ceil(camY+VR)+3);for(const key in R){if(+key<camY-40)delete R[key];}
     hud();};
   /* ----- 한 판 끝 ----- */
-  const end=()=>{if(st==='end')return;const quit=deadAt&&deadAt.k==='quit';st='end';const m=cgMem();m.runs++;const nb=maxR>m.best;
-    if(nb){m.best=maxR;m.bestS=Math.round(tt*10)/10;}m.masks=(m.masks||0)+masks;msave();
+  const end=()=>{if(st==='end')return;const quit=deadAt&&deadAt.k==='quit';st='end';const m=cgMem();m.runs++;const nb=maxR>(hm?m.hb||0:m.best);
+    if(hm){m.hr=(m.hr||0)+1;if(nb){m.hb=maxR;m.hbS=Math.round(tt*10)/10;}}else if(nb){m.best=maxR;m.bestS=Math.round(tt*10)/10;}m.masks=(m.masks||0)+masks;msave();
     // 시험(window.__cgDbg) 판 · 10칸도 못 간 판은 보내지 않는다
-    if(!window.__cgDbg&&maxR>=10&&tt>=4)sendArcade('cg',{score:maxR,sec:Math.round(tt*10)/10,win:false,detail:(maxR+'칸 · '+cause+' · '+tm(tt)).slice(0,80)});
+    if(!window.__cgDbg&&maxR>=10&&tt>=4)sendArcade('cg',{score:maxR,sec:Math.round(tt*10)/10,win:false,detail:((hm?'지옥 모드 · ':'')+maxR+'칸 · '+cause+' · '+tm(tt)).slice(0,80)});
     if(nb&&maxR>=10)snd(()=>[784,988,1175,1568].forEach((f,i)=>tone(f,'triangle',.4,.09,i*.1)));
     const my=run;setTimeout(()=>{if(!live||my!==run||st!=='end')return;
-      ov('<div class="cg-card"><span class="cg-k">'+(nb&&maxR>0?'최고 기록!':quit?'출근 중단':'출근 실패')+'</span><h2>'+cause+'</h2>'+
+      ov('<div class="cg-card"><span class="cg-k">'+(hm?'🔥 지옥 모드 · ':'')+(nb&&maxR>0?'최고 기록!':quit?'출근 중단':'출근 실패')+'</span><h2>'+cause+'</h2>'+
         '<div class="cg-big">'+maxR+'<small>칸</small></div>'+
-        '<div class="cg-b"><span>최고 <b>'+m.best+'칸</b></span><span>걸린 시간 <b>'+tm(tt)+'</b></span><span>주운 마스크 <b>'+masks+'</b></span></div>'+
+        '<div class="cg-b"><span>'+(hm?'지옥 최고':'최고')+' <b>'+(hm?m.hb||0:m.best)+'칸</b></span><span>걸린 시간 <b>'+tm(tt)+'</b></span>'+(hm?'':'<span>주운 마스크 <b>'+masks+'</b></span>')+'</div>'+
         (maxR<10?'<p class="cg-note">10칸 넘게 가면 명예의 전당에 올라요.</p>':'')+
-        '<button type="button" class="pri" id="cgAg">다시 출근</button><button type="button" id="cgOut">미니게임으로</button></div>');
-      $('cgAg').onclick=()=>start();$('cgOut').onclick=close;setTimeout(()=>{const b=$('cgAg');if(b)try{b.focus({preventScroll:true});}catch(e){}},60);},quit?60:500);};
+        '<button type="button" class="pri" id="cgAg">'+(hm?'다시 지옥 출근':'다시 출근')+'</button>'+
+        (hm?'<button type="button" id="cgSw">보통 출근길로</button>':'<button type="button" class="cg-hell" id="cgSw">🔥 지옥 모드</button>')+
+        '<button type="button" id="cgOut">미니게임으로</button></div>');
+      $('cgAg').onclick=()=>start();$('cgSw').onclick=()=>start(null,!hm);$('cgOut').onclick=close;setTimeout(()=>{const b=$('cgAg');if(b)try{b.focus({preventScroll:true});}catch(e){}},60);},quit?60:500);};
   /* ----- 안내 · 쉬기 ----- */
   const brief=()=>{st='brief';const m=cgMem();if(gHi<0)reset();ov('<div class="cg-card"><span class="cg-k">미니게임 · 끝없는 길 건너기</span><h2>대통령 출근길</h2>'+
     '<p class="cg-s">관저를 나선 대통령. 차도와 한강, 철길을 건너 오늘도 출근한다. 멀리 갈수록 높은 기록.</p>'+
@@ -191,9 +206,11 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
     '<li>인도의 <b>기침하는 확진자</b>에 닿으면 감염. <b>마스크</b>를 주우면 한 번 막아 준다.</li>'+
     '<li>가끔 <b>왕복 8~24차선 큰길</b>이 나온다. 풀밭이 길게 이어진 <b>쉼터</b>에서는 잠깐 숨을 고를 수 있다.</li>'+
     '<li>머뭇거리면 뒤에서 <b>기자단</b>이 따라잡는다. 50칸마다 서울의 이름난 곳을 지난다.</li></ul>'+
-    '<div class="cg-b"><span>최고 <b>'+(m.best||0)+'칸</b></span><span>출근 <b>'+(m.runs||0)+'번</b></span></div>'+
-    '<button type="button" class="pri" id="cgGo">출근하기</button><button type="button" id="cgBack">미니게임으로</button></div>');
-    $('cgGo').onclick=()=>start();$('cgBack').onclick=close;setTimeout(()=>{const b=$('cgGo');if(b)try{b.focus({preventScroll:true});}catch(e){}},60);};
+    '<div class="cg-b"><span>최고 <b>'+(m.best||0)+'칸</b></span>'+(m.hr?'<span>지옥 최고 <b>'+(m.hb||0)+'칸</b></span>':'')+'<span>출근 <b>'+(m.runs||0)+'번</b></span></div>'+
+    '<button type="button" class="pri" id="cgGo">출근하기</button>'+
+    '<button type="button" class="cg-hell" id="cgHell">🔥 지옥 모드 <small>끝없는 자동차 · 기차, 쉴 곳 없음</small></button>'+
+    '<button type="button" id="cgBack">미니게임으로</button></div>');
+    $('cgGo').onclick=()=>start(null,false);$('cgHell').onclick=()=>start(null,true);$('cgBack').onclick=close;setTimeout(()=>{const b=$('cgGo');if(b)try{b.focus({preventScroll:true});}catch(e){}},60);};
   const pause=on=>{if(on&&(st==='run')){pst=st;st='pause';ov('<div class="cg-card sm"><span class="cg-k">잠깐</span><h2>쉬는 중</h2><p class="cg-s">'+maxR+'칸 · '+tm(tt)+'</p>'+
       '<button type="button" class="pri" id="cgRe">계속하기</button><button type="button" id="cgQ">그만두기</button></div>');
       $('cgRe').onclick=()=>pause(false);$('cgQ').onclick=()=>{ov('');st=pst;die('quit');};}
@@ -234,7 +251,7 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
         g.fillStyle='rgba(40,90,40,.22)';
         for(let i=c0;i<=c1;i++){const q=cgHs(r,i);if(q<.35){const x=sx(i+q*2.4),yy=y+cs*(.25+cgHs(i,r)*.5);g.fillRect(x,yy,cs*.05,cs*.12);g.fillRect(x+cs*.08,yy+cs*.03,cs*.05,cs*.09);}}}
       return;}
-    if(t==='r'){g.fillStyle='#3f434c';g.fillRect(0,y,W,h);
+    if(t==='r'){g.fillStyle=hm?'#433b3e':'#3f434c';g.fillRect(0,y,W,h);
       if(up==='r'){if(rw.ln==='y'){g.fillStyle='#f2c230';g.fillRect(0,y-cs*.075,W,cs*.05);g.fillRect(0,y+cs*.025,W,cs*.05);}
         else if(rw.ln==='b'){g.fillStyle='#3f86e8';g.fillRect(0,y-2,W,4);}
         else{g.fillStyle='rgba(255,255,255,.5)';for(let i=c0;i<=c1;i++)g.fillRect(sx(i+.2),y-1.5,cs*.55,3);}}else{g.fillStyle='#9a958a';g.fillRect(0,y,W,cs*.07);}
@@ -358,6 +375,10 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
     const bx=sx(0),ex=sx(CG_C);g.fillStyle='rgba(6,10,20,.42)';g.fillRect(0,0,bx,H);g.fillRect(ex,0,W-ex,H);
     if(bx>cs*2){const gr=g.createLinearGradient(0,0,bx,0);gr.addColorStop(0,'rgba(6,10,20,.9)');gr.addColorStop(1,'rgba(6,10,20,0)');g.fillStyle=gr;g.fillRect(0,0,bx,H);
       const g2=g.createLinearGradient(ex,0,W,0);g2.addColorStop(0,'rgba(6,10,20,0)');g2.addColorStop(1,'rgba(6,10,20,.9)');g.fillStyle=g2;g.fillRect(ex,0,W-ex,H);}
+    // 지옥 모드: 위쪽이 붉게 달아오르고 불씨가 올라간다
+    if(hm){const gr=g.createLinearGradient(0,0,0,H*.55);gr.addColorStop(0,'rgba(200,40,20,.26)');gr.addColorStop(1,'rgba(200,40,20,0)');g.fillStyle=gr;g.fillRect(0,0,W,H*.55);
+      for(let i=0;i<18;i++){const q=cgHs(i,3),ph=(T*(.05+q*.06)+cgHs(7,i))%1,x=((q*W+Math.sin(T*.9+i)*cs*.4)%W+W)%W,y=H*(1-ph);
+        g.globalAlpha=Math.min(1,(1-ph)*1.6)*.8;g.fillStyle=i%3?'#ff8a3a':'#ffd36a';g.fillRect(x,y,Math.max(2,cs*.07),Math.max(2,cs*.07));}g.globalAlpha=1;}
     // 불티 · 글씨
     for(const p of FX){g.globalAlpha=Math.min(1,p.l*2);g.fillStyle=p.c;const r=Math.max(2,cs*.09);g.fillRect(sx(p.x)-r/2,sy(p.r)+cs/2-r/2,r,r);}g.globalAlpha=1;
     g.font='800 '+Math.max(12,Math.min(17,cs*.42))+'px '+FF;g.textAlign='center';g.textBaseline='middle';
@@ -376,6 +397,6 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
     if(st!=='pause')step(dt);if(!live)return;draw();fade();raf=requestAnimationFrame(loop);};
   fit();brief();prev=performance.now();raf=requestAnimationFrame(loop);
   // 시험용: window.__cgDbg를 미리 켜 두면 상태를 밖에서 보고 움직인다(이 판은 명예의 전당에 보내지 않는다)
-  if(window.__cgDbg)window.__cgDbg={st:()=>st,P:()=>({x:P.x,r:P.r}),busy:()=>!!hop,hop:(dx,dr)=>tryHop(dx,dr),start:s=>start(s),row:r=>row(r),T:()=>T,cam:()=>camY,
+  if(window.__cgDbg)window.__cgDbg={st:()=>st,P:()=>({x:P.x,r:P.r}),busy:()=>!!hop,hop:(dx,dr)=>tryHop(dx,dr),start:(s,h)=>start(s,h),hm:()=>hm,row:r=>row(r),T:()=>T,cam:()=>camY,
     hz:(r,x,dt)=>!!hit(row(r),x,T+(dt||0)),raft:(r,x,dt)=>!!raftAt(row(r),x,T+(dt||0)),god:v=>{god=!!v;},maxR:()=>maxR,cause:()=>cause,shield:()=>shield,danger:()=>danger,
     put:(r,x)=>{P.r=r;P.x=x;hop=null;},jump:k=>{T+=k;}};}
