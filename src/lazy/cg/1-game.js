@@ -13,6 +13,8 @@
      바로 아래 차도와 같은 방향이면 차를 덜 넣는다(같은 방향 차가 벽처럼 몰려 피할 곳이 없어지지 않게).
    · 400칸부터 110칸은 판마다 같은 고정 구간 「도심 관통」: 차도 10줄 → 철길 1줄을 열 번(풀밭 없음). 앞 399칸에 도로명판.
    · 숨은 길: 아직 앞으로 한 칸도 안 간 채 관저 문(가운데 세 칸) 쪽으로 뒤로 뛰면 관저로 들어가 메인 게임(새 게임 · 무대 선택)이 열린다.
+   · 판 안 9칸에는 여린 칸 격자를 바탕 바로 위(차 · 배 · 사람 아래)에 그린다. 어두운 바탕(차도 · 한강 · 철길)엔 밝은 선, 밝은 바탕(풀밭 · 광장 · 인도)엔 어두운 선.
+     대통령이 서 있는(뛰어갈) 칸은 살짝 밝게 표시한다. 그림일 뿐 규칙과는 상관없다.
    판은 가로 9칸. 좌표는 칸 단위(왼쪽 끝 0, 칸 c의 가운데 c+.5), 줄 r은 관저 앞이 0이고 위로 갈수록 커진다.
    기록: 가장 멀리 간 줄 수(칸). 10칸 이상 간 판은 명예의 전당에 오른다. 이 기기의 기록은 MEM.cg. */
 const CG_C=9,CG_M=8,CG_L=CG_C+CG_M*2,CG_HOP=.13;
@@ -317,10 +319,18 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
       const e=f==='d'?0:cs*.04;g.fillRect(-cs*.08+e,-cs*.27,cs*.04,cs*.05);g.fillRect(cs*.05+e,-cs*.27,cs*.04,cs*.05);
       if(shield){g.fillStyle='#f8fbff';RR(-cs*.12+e,-cs*.21,cs*.24,cs*.11,cs*.04);g.fill();}}
     g.restore();g.globalAlpha=1;};
+  // 여린 칸 격자(판 안 9칸만). 차선 사이 가로선은 차선 표시가 대신한다
+  const GRD={g:'rgba(20,64,20,.2)',lm:'rgba(96,76,44,.2)',r:'rgba(255,255,255,.16)',p:'rgba(70,58,40,.2)',w:'rgba(255,255,255,.2)',t:'rgba(255,255,255,.18)'};
+  const grid=(r0,r1)=>{const lw=cs>=60?2:1,x0=Math.round(sx(0)),bw=Math.round(CG_C*cs);
+    for(let r=r0;r<=r1;r++){const rw=row(r),t=rw.t;if(t==='x')continue;const y=Math.round(sy(r)),h=Math.round(sy(r)+cs)-y;g.fillStyle=GRD[t==='g'&&rw.lm?'lm':t];
+      for(let c=0;c<=CG_C;c++)g.fillRect(Math.round(sx(c)-lw/2),y,lw,h);if(t!=='r'&&row(r+1).t===t)g.fillRect(x0,y-(lw>1?1:0),bw,lw);}
+    // 지금 서 있는(뛰어가는) 칸
+    if(P&&st==='run'&&!deadAt){const hx=hop?hop.tx:P.x,hr=hop?hop.tr:P.r;if(row(hr).t!=='x'){const x=sx(hx-.5),y=sy(hr);g.fillStyle='rgba(255,255,255,.1)';g.fillRect(x,y,cs,cs);
+      g.strokeStyle='rgba(255,255,255,.4)';g.lineWidth=lw;g.strokeRect(x+lw/2,y+lw/2,cs-lw,cs-lw);}}};
   const draw=()=>{g.setTransform(D,0,0,D,0,0);g.fillStyle='#0e1424';g.fillRect(0,0,W,H);if(gHi<0)return;
     g.save();if(shake>0)g.translate((Math.random()-.5)*shake*16,(Math.random()-.5)*shake*16);
     const r0=Math.floor(camY)-1,r1=Math.ceil(camY+VR)+1,c0=Math.floor(-ox/cs)-1,c1=Math.ceil((W-ox)/cs)+1;
-    for(let r=r0;r<=r1;r++)bgRow(r,sy(r),c0,c1);
+    for(let r=r0;r<=r1;r++)bgRow(r,sy(r),c0,c1);grid(r0,r1);
     // 대통령이 그려질 줄(뛰는 중이면 가까운 쪽)
     let px=0,prr=0,lift=0,sq=1;if(P){if(hop){const k=Math.min(1,hop.t);px=lerp(hop.fx,hop.tx,k);prr=lerp(hop.fr,hop.tr,k);lift=Math.sin(k*Math.PI)*cs*.32;sq=1+Math.sin(k*Math.PI)*.08;}
       else{px=P.x;prr=P.r;sq=1-bump*.6;}if(deadAt){px=deadAt.x;prr=deadAt.r;}
