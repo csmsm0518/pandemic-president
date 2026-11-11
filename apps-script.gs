@@ -22,7 +22,7 @@
 //
 // 열은 항상 예전 버전 뒤에 이어 붙이므로, 이미 쌓인 기록과 줄이 어긋나지 않는다. 머리글(1행)은 자동으로 새 버전으로 바뀐다.
 
-const SCRIPT_VER = 'v26';
+const SCRIPT_VER = 'v27';
 // [비밀 게임 기록] v13: 좀비 서바이벌 「방역선」과 비밀 모드 「대항해」의 점수가 "비밀 게임 기록" 탭에 쌓이고, 명예의 전당 오른쪽 두 칸에 순위가 나온다.
 const ARCADE = [['판ID', 'id'], ['게임', 'game'], ['닉네임', 'nickname'], ['학교', 'school'], ['점수', 'score'], ['시간(초)', 'sec'], ['성공', 'win'], ['세부', 'detail'], ['게임 버전', 'gv'],
   // ----- v15: 숨김(관리자가 아무 글자나 적으면 그 줄은 순위에서 빠진다. 서버가 말이 안 되는 기록을 받으면 스스로 사유를 적는다) -----
@@ -1271,7 +1271,7 @@ function schoolRank_(rows) {
 }
 // 비밀 게임 순위: 방역선은 점수가 높은 순, 대항해는 귀항한 판만 시간이 짧은 순. 한 사람은 가장 좋은 기록 하나만, 5명씩
 function arcadeBoard_() {
-  const out = {zg: [], sail: [], star: [], qx: [], cg: [], ax: []};
+  const out = {zg: [], sail: [], star: [], qx: [], cg: [], cgh: [], ax: []};
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('비밀 게임 기록');
   if (!sh || sh.getLastRow() < 2) return out;
   const v = sh.getDataRange().getValues(), ix = {};
@@ -1289,7 +1289,11 @@ function arcadeBoard_() {
   const qxBetter = (a, b) => a.score > b.score || (a.score === b.score && a.sec < b.sec);
   out.qx = best(rows.filter(r => r.game === 'qx' && r.score <= QX_MAX), qxBetter).sort((a, b) => (qxBetter(a, b) ? -1 : qxBetter(b, a) ? 1 : 0)).slice(0, 5);
   // v24 대통령 출근길: 멀리 간 칸 수가 많은 순, 같으면 시간이 짧은 순
-  out.cg = best(rows.filter(r => r.game === 'cg' && r.score <= CG_MAX), qxBetter).sort((a, b) => (qxBetter(a, b) ? -1 : qxBetter(b, a) ? 1 : 0)).slice(0, 5);
+  // v27: 게임 v5.19의 지옥 모드는 같은 'cg'로 오고 세부가 '지옥 모드 · '로 시작한다 → 따로 cgh 순위(세부 앞말은 떼고 보낸다)
+  const cgHell = r => r.detail.indexOf('지옥 모드') === 0;
+  out.cg = best(rows.filter(r => r.game === 'cg' && !cgHell(r) && r.score <= CG_MAX), qxBetter).sort((a, b) => (qxBetter(a, b) ? -1 : qxBetter(b, a) ? 1 : 0)).slice(0, 5);
+  out.cgh = best(rows.filter(r => r.game === 'cg' && cgHell(r) && r.score <= CG_MAX), qxBetter).sort((a, b) => (qxBetter(a, b) ? -1 : qxBetter(b, a) ? 1 : 0)).slice(0, 5)
+    .map(r => { r.detail = r.detail.replace(/^지옥 모드 · /, ''); return r; });
   // v26 지지율 고공행진: 오른 고도가 높은 순, 같으면 시간이 짧은 순
   out.ax = best(rows.filter(r => r.game === 'ax' && r.score <= AX_MAX), qxBetter).sort((a, b) => (qxBetter(a, b) ? -1 : qxBetter(b, a) ? 1 : 0)).slice(0, 5);
   return out;

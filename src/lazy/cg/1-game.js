@@ -4,7 +4,8 @@
    · 차도: 택시 · 구급차 · 버스 · 방역차. 철길: 빨간 불이 깜빡이면 곧 고속열차. 닿으면 끝.
    · 인도: 기침하는 확진자. 닿으면 감염(끝). 마스크를 주워 두면 한 번 막아 준다(하나만 들 수 있다).
    · 한강: 오리배 · 뗏목 · 구조 보트를 밟고 건넌다. 물에 빠지거나 판 밖으로 떠내려가면 끝.
-   · 머뭇거리면 뒤에서 기자단이 따라온다(화면이 저절로 올라간다). 화면 아래로 밀려나면 붙잡힌다.
+   · 첫 깡충 뒤로는 기자단이 판 위에서 일정한 빠르기(CG_PV줄/초)로 따라온다. 대통령보다 CG_PB줄 넘게 뒤처지지 않으므로
+     잘 가고 있어도 늘 바로 뒤에 있고, 3초쯤 가만히 있으면 붙잡힌다(앞줄 prY가 대통령 발밑을 넘으면). 화면은 대통령만 따라간다.
    · 길은 판마다 새로 만든다. 광장(풀밭)에는 늘 지나갈 길이 하나 이상 남는다. 50칸마다 서울의 이름난 곳을 지난다.
    · 정해진 간격 없이 가끔 왕복 8~24차선 큰길이 나온다(차선마다 방향이 섞이고 가운데 두 줄은 중앙버스전용차로).
      멀리 갈수록 더 넓은 길까지 나온다. 5~10줄 내리 풀밭인 「쉼터」(나무 · 벤치)도 아무 때나 나와 잠깐 숨을 고를 수 있다.
@@ -20,7 +21,7 @@
      처음부터 난이도 절반(dif .5)에서 시작하고, 한 차도에 택시 · 구급차 · 방역차 · 버스가 섞여 달린다. 철길은 세 줄 넘게 붙지 않는다. 가끔 큰길도 나온다.
      기록은 MEM.cg.hb(지옥 최고) · hr(지옥 판 수) · hbS로 따로 둔다. 명예의 전당에는 같은 'cg'로 보내되 detail 앞에 「지옥 모드」를 붙인다.
    기록: 가장 멀리 간 줄 수(칸). 10칸 이상 간 판은 명예의 전당에 오른다. 이 기기의 기록은 MEM.cg. */
-const CG_C=9,CG_M=8,CG_L=CG_C+CG_M*2,CG_HOP=.13;
+const CG_C=9,CG_M=8,CG_L=CG_C+CG_M*2,CG_HOP=.13,CG_PV=.7,CG_PB=2.4;
 const CG_PL=['광화문 광장','시청 앞 광장','서울역 앞','여의도 공원','국회 앞','남산 아래','청계천 길','세종로 네거리'];
 const CG_CAR={taxi:{n:'택시',len:1,sp:1},amb:{n:'구급차',len:2,sp:1.35},bus:{n:'버스',len:3,sp:.75},dis:{n:'방역차',len:2,sp:.9}};
 function cgMem(){let m=MEM.cg;if(!m||m.v!==1)m=MEM.cg={v:1,best:0,runs:0,masks:0,bestS:0};return m;}
@@ -44,7 +45,7 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
   // ----- 상태 -----
   let st='brief',seed=0,rnd=Math.random,R={},gHi=-1,segT='g',segN=0,sinceG=0,pathC=4,lastW=1,Q=[],lastBig=-999,lastPark=-999,nextLm=50,
     T=0,tt=0,P=null,hop=null,qd=null,maxR=0,camY=0,started=false,shield=0,inv=0,masks=0,cause='',deadT=0,god=false,
-    FX=[],POP=[],run=0,shake=0,bump=0,live=true,prev=0,raf=0,banT=0,hudK='',pst='run',danger=0,deadAt=null,homeT=0,hm=false;
+    FX=[],POP=[],run=0,shake=0,bump=0,live=true,prev=0,raf=0,banT=0,hudK='',pst='run',danger=0,deadAt=null,homeT=0,hm=false,prY=-3;
   const WALL={t:'x'};
   /* ----- 길 만들기 ----- */
   const dif=r=>Math.min(1,hm?.5+r/360:r/320),lerp=(a,b,k)=>a+(b-a)*k,ri=(a,b)=>a+Math.floor(rnd()*(b-a+1));
@@ -130,7 +131,7 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
   const burst=(x,r,n,c,sp)=>{for(let i=0;i<n&&FX.length<220;i++){const a=Math.random()*6.283,v=(sp||4)*(.3+Math.random());FX.push({x:x,r:r,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:.45+Math.random()*.45,c:c});}};
   /* ----- 한 판 ----- */
   const reset=s=>{run++;seed=s==null?(Math.random()*2147483647)|0:s;rnd=cgRng(seed);R={};gHi=-1;segT='g';segN=0;sinceG=0;pathC=4;lastW=1;Q=[];lastBig=-999;lastPark=-999;nextLm=50;
-    T=0;tt=0;P={x:4.5,r:0,f:'u'};hop=null;qd=null;maxR=0;started=false;homeT=0;shield=0;inv=0;masks=0;cause='';FX=[];POP=[];danger=0;deadAt=null;hudK='';
+    T=0;tt=0;P={x:4.5,r:0,f:'u'};hop=null;qd=null;maxR=0;started=false;homeT=0;shield=0;inv=0;masks=0;cause='';FX=[];POP=[];danger=0;deadAt=null;hudK='';prY=-3;
     camY=-lead();row(40);hud();};
   const start=(s,h)=>{try{aInit();SFX.click();}catch(e){}if(h!=null)hm=!!h;w.classList.toggle('hell',hm);ov('');reset(s);st='run';
     if(hm)ban('지옥 출근!','끝없는 차도와 철길 · 쉴 곳이 없다');else ban('출근!','관저를 나선다 · 앞으로 깡충');};
@@ -164,7 +165,7 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
   const step=dt=>{if(banT>0){banT-=dt;if(banT<=0)$('cgBan').classList.remove('on');}if(shake>0)shake=Math.max(0,shake-dt);if(bump>0)bump=Math.max(0,bump-dt);if(inv>0)inv-=dt;
     for(const p of FX){p.x+=p.vx*dt;p.r+=p.vy*dt;p.vx*=.9;p.vy*=.9;p.l-=dt;}FX=FX.filter(p=>p.l>0);
     for(const p of POP){p.r+=dt*.9;p.l-=dt*.85;}POP=POP.filter(p=>p.l>0);
-    if(st==='dead'){deadT-=dt;if(deadAt)deadAt.t+=dt;T+=dt;if(deadT<=0)end();return;}
+    if(st==='dead'){deadT-=dt;if(deadAt){deadAt.t+=dt;if(deadAt.k==='press')prY+=dt*1.6;}T+=dt;if(deadT<=0)end();return;}
     if(st==='home'){T+=dt;homeT+=dt;if(homeT>=1.5){st='gone';shut();try{stepCamp();}catch(e){back();}}return;}
     if(st!=='run'){T+=dt*.6;return;}
     T+=dt;if(started)tt+=dt;
@@ -176,10 +177,10 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
       else{die(rw.t==='t'?'train':'car',o);return;}}
     // 기차 경적: 보이는 철길에 빨간 불이 켜지는 순간 한 번
     for(let r=Math.floor(camY);r<camY+VR;r++){const q=row(r);if(q.t==='t'){const on=warn(q,T),c=Math.floor((T+q.ph)/q.P);if(on&&q.hn!==c&&!train(q,T)){q.hn=c;if(Math.abs(r-P.r)<7)snd(()=>{tone(392,'sawtooth',.45,.035);tone(494,'sawtooth',.45,.03);});}}}
-    // 화면: 대통령을 따라 올라가고, 한 번 뛴 뒤로는 기자단이 쫓아와 저절로 조금씩 올라간다
+    // 화면은 대통령을 따라 올라간다. 기자단 앞줄 prY는 한 번 뛴 뒤로 일정한 빠르기로 올라오고, 대통령보다 CG_PB줄 넘게 뒤처지지 않는다
     const pr=hop?lerp(hop.fr,hop.tr,k):P.r,want=pr-lead();if(want>camY)camY+=(want-camY)*Math.min(1,dt*6);
-    if(started)camY+=(.3+.5*dif(maxR))*dt;danger=Math.max(0,Math.min(1,(2.3-(pr+.5-camY))/2.3));
-    if(pr+.55<camY){die('press');return;}
+    if(started)prY=Math.max(prY+CG_PV*dt,pr+.5-CG_PB);danger=Math.max(0,Math.min(1,(1.9-(pr+.5-prY))/1.9));
+    if(prY>pr+.25||pr+.55<camY){die('press');return;}
     row(Math.ceil(camY+VR)+3);for(const key in R){if(+key<camY-40)delete R[key];}
     hud();};
   /* ----- 한 판 끝 ----- */
@@ -205,7 +206,7 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
     '<li><b>한강</b>은 오리배 · 뗏목을 밟고 건넌다. 물에 빠지거나 판 밖으로 떠내려가면 끝.</li>'+
     '<li>인도의 <b>기침하는 확진자</b>에 닿으면 감염. <b>마스크</b>를 주우면 한 번 막아 준다.</li>'+
     '<li>가끔 <b>왕복 8~24차선 큰길</b>이 나온다. 풀밭이 길게 이어진 <b>쉼터</b>에서는 잠깐 숨을 고를 수 있다.</li>'+
-    '<li>머뭇거리면 뒤에서 <b>기자단</b>이 따라잡는다. 50칸마다 서울의 이름난 곳을 지난다.</li></ul>'+
+    '<li><b>기자단</b>이 뒤에서 일정한 빠르기로 따라온다. <b>3초쯤 가만히 있으면</b> 붙잡힌다. 50칸마다 서울의 이름난 곳을 지난다.</li></ul>'+
     '<div class="cg-b"><span>최고 <b>'+(m.best||0)+'칸</b></span>'+(m.hr?'<span>지옥 최고 <b>'+(m.hb||0)+'칸</b></span>':'')+'<span>출근 <b>'+(m.runs||0)+'번</b></span></div>'+
     '<button type="button" class="pri" id="cgGo">출근하기</button>'+
     '<button type="button" class="cg-hell" id="cgHell">🔥 지옥 모드 <small>끝없는 자동차 · 기차, 쉴 곳 없음</small></button>'+
@@ -384,19 +385,26 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
     g.font='800 '+Math.max(12,Math.min(17,cs*.42))+'px '+FF;g.textAlign='center';g.textBaseline='middle';
     for(const p of POP){let x=sx(p.x);const y=sy(p.r)+cs/2,hw=g.measureText(p.s).width/2+8;x=Math.max(hw,Math.min(W-hw,x));g.globalAlpha=Math.min(1,p.l*1.6);g.lineWidth=3;g.strokeStyle='rgba(8,12,24,.85)';g.strokeText(p.s,x,y);g.fillStyle=p.c;g.fillText(p.s,x,y);}g.globalAlpha=1;
     g.restore();
-    // 기자단: 화면 아래에서 따라붙는다(가까울수록 진하게, 붙잡히면 덮친다)
-    const dk=deadAt&&deadAt.k==='press'?Math.min(1.6,1+deadAt.t*1.2):danger;
-    if(dk>.02&&(st==='run'||st==='dead')){const bh=cs*1.2*Math.min(1.6,dk),y0=H-bh,gr=g.createLinearGradient(0,y0-cs*.6,0,H);gr.addColorStop(0,'rgba(10,12,22,0)');gr.addColorStop(.4,'rgba(10,12,22,'+(.55*Math.min(1,dk))+')');gr.addColorStop(1,'rgba(10,12,22,.92)');
+    // 기자단: 앞줄 prY에서부터 화면 아래까지 몰려온다(가까울수록 진하게 · 플래시가 잦게, 붙잡히면 덮친다)
+    const dk=deadAt&&deadAt.k==='press'?Math.min(1.6,1+deadAt.t*1.2):danger,y0=Math.min(H,sy(prY-1)+cs*.15);
+    if(started&&y0<H+cs*.2&&(st==='run'||st==='dead')){const bh=Math.max(cs*.3,H-y0),gr=g.createLinearGradient(0,y0-cs*.6,0,H);gr.addColorStop(0,'rgba(10,12,22,0)');gr.addColorStop(Math.min(.6,cs*.9/(bh+cs*.6)),'rgba(10,12,22,'+(.5+.3*Math.min(1,dk))+')');gr.addColorStop(1,'rgba(10,12,22,.92)');
       g.fillStyle=gr;g.fillRect(0,y0-cs*.6,W,bh+cs*.6);
-      for(let i=0;i*cs*.75<W+cs;i++){const x=i*cs*.75+(i%2)*cs*.2,hy=H-bh*.55+Math.sin(T*6+i)*cs*.06;g.fillStyle='#1a1e2a';g.beginPath();g.arc(x,hy,cs*.2,0,6.283);g.fill();g.fillRect(x-cs*.28,hy+cs*.1,cs*.56,bh);
-        g.fillStyle='#2c3242';g.fillRect(x-cs*.16,hy-cs*.36,cs*.32,cs*.2);g.fillStyle='#5a6378';g.beginPath();g.arc(x,hy-cs*.26,cs*.06,0,6.283);g.fill();
-        if(cgHs(i,Math.floor(T*7))<.12*dk){g.fillStyle='rgba(255,255,255,.95)';g.beginPath();g.arc(x,hy-cs*.3,cs*.16,0,6.283);g.fill();g.fillStyle='rgba(255,255,255,.25)';g.beginPath();g.arc(x,hy-cs*.3,cs*.5,0,6.283);g.fill();}}
-      if(dk>.35&&st==='run'){g.font='800 '+Math.max(13,Math.min(17,cs*.38))+'px '+FF;g.fillStyle='#ffe08a';g.textAlign='center';g.fillText('기자단이 따라붙는다! 앞으로!',W/2,H-bh-cs*.3);}}};
+      // 사람 무리: 앞줄(맨 위)은 카메라 · 마이크를 든 기자, 뒤로 갈수록 어둡게 몇 줄 더(아래 줄이 위 줄 몸을 덮는다)
+      for(let j=0;j<6;j++){const ry=y0+cs*.35+j*cs*.55;if(ry-cs*.4>H)break;const sh=j%2?cs*.37:0,dark=j?Math.min(.55,j*.14):0;
+        for(let i=-1;i*cs*.75<W+cs;i++){const x=i*cs*.75+sh+(cgHs(i,j+40)-.5)*cs*.2,hy=ry+Math.sin(T*6+i+j*1.7)*cs*.06;
+          g.fillStyle=j?'#161a25':'#1d2230';RR(x-cs*.28,hy+cs*.1,cs*.56,cs*.5,cs*.13);g.fill();g.beginPath();g.arc(x,hy,cs*.2,0,6.283);g.fill();
+          if(j<2){const q=cgHs(i,j+9);
+            if(q<.6){g.fillStyle='#2c3242';g.fillRect(x-cs*.16,hy-cs*.36,cs*.32,cs*.2);g.fillStyle='#5a6378';g.beginPath();g.arc(x,hy-cs*.26,cs*.06,0,6.283);g.fill();
+              if(cgHs(i*7+j,Math.floor(T*7))<.03+.12*dk){g.fillStyle='rgba(255,255,255,.95)';g.beginPath();g.arc(x,hy-cs*.3,cs*.16,0,6.283);g.fill();g.fillStyle='rgba(255,255,255,.25)';g.beginPath();g.arc(x,hy-cs*.3,cs*.5,0,6.283);g.fill();}}
+            else{g.fillStyle='#3a4050';g.fillRect(x+cs*.17,hy-cs*.32,cs*.05,cs*.34);g.fillStyle='#c9ced8';g.beginPath();g.arc(x+cs*.195,hy-cs*.34,cs*.075,0,6.283);g.fill();}}
+          if(dark){g.fillStyle='rgba(8,10,18,'+dark+')';RR(x-cs*.29,hy-cs*.21,cs*.58,cs*.82,cs*.13);g.fill();}}}
+      if(dk>.35&&st==='run'){const ty=Math.min(H-cs*.4,y0+cs*1.25);g.font='800 '+Math.max(13,Math.min(17,cs*.38))+'px '+FF;g.textAlign='center';g.textBaseline='middle';
+        g.lineWidth=4;g.strokeStyle='rgba(8,10,18,.9)';g.strokeText('기자단이 따라붙는다! 앞으로!',W/2,ty);g.fillStyle='#ffe08a';g.fillText('기자단이 따라붙는다! 앞으로!',W/2,ty);}}};
   const fade=()=>{if(st==='home'&&homeT>.8){g.setTransform(D,0,0,D,0,0);g.fillStyle='rgba(6,9,18,'+Math.min(1,(homeT-.8)/.6)+')';g.fillRect(0,0,W,H);}};
   const loop=now=>{if(!live||!w.isConnected){live=false;return;}const dt=Math.min(.05,(now-prev)/1000||0);prev=now;
     if(st!=='pause')step(dt);if(!live)return;draw();fade();raf=requestAnimationFrame(loop);};
   fit();brief();prev=performance.now();raf=requestAnimationFrame(loop);
   // 시험용: window.__cgDbg를 미리 켜 두면 상태를 밖에서 보고 움직인다(이 판은 명예의 전당에 보내지 않는다)
   if(window.__cgDbg)window.__cgDbg={st:()=>st,P:()=>({x:P.x,r:P.r}),busy:()=>!!hop,hop:(dx,dr)=>tryHop(dx,dr),start:(s,h)=>start(s,h),hm:()=>hm,row:r=>row(r),T:()=>T,cam:()=>camY,
-    hz:(r,x,dt)=>!!hit(row(r),x,T+(dt||0)),raft:(r,x,dt)=>!!raftAt(row(r),x,T+(dt||0)),god:v=>{god=!!v;},maxR:()=>maxR,cause:()=>cause,shield:()=>shield,danger:()=>danger,
+    hz:(r,x,dt)=>!!hit(row(r),x,T+(dt||0)),raft:(r,x,dt)=>!!raftAt(row(r),x,T+(dt||0)),god:v=>{god=!!v;},maxR:()=>maxR,cause:()=>cause,shield:()=>shield,danger:()=>danger,prY:()=>prY,
     put:(r,x)=>{P.r=r;P.x=x;hop=null;},jump:k=>{T+=k;}};}
