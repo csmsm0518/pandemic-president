@@ -4,8 +4,8 @@
    · 차도: 택시 · 구급차 · 버스 · 방역차. 철길: 빨간 불이 깜빡이면 곧 고속열차. 닿으면 끝.
    · 인도: 기침하는 확진자. 닿으면 감염(끝). 마스크를 주워 두면 한 번 막아 준다(하나만 들 수 있다).
    · 한강: 오리배 · 뗏목 · 구조 보트를 밟고 건넌다. 물에 빠지거나 판 밖으로 떠내려가면 끝.
-   · 첫 깡충 뒤로는 기자단이 판 위에서 일정한 빠르기(CG_PV줄/초)로 따라온다. 대통령보다 CG_PB줄 넘게 뒤처지지 않으므로
-     잘 가고 있어도 늘 바로 뒤에 있고, 3초쯤 가만히 있으면 붙잡힌다(앞줄 prY가 대통령 발밑을 넘으면). 화면은 대통령만 따라간다.
+   · 첫 깡충 뒤로는 기자단이 판 위에서 일정한 빠르기(보통 CG_PVN · 지옥 CG_PV줄/초)로 따라온다. 대통령보다 CG_PB줄 넘게 뒤처지지 않으므로
+     잘 가고 있어도 늘 바로 뒤에 있고, 가만히 있으면 보통 7초쯤 · 지옥 3초쯤에 붙잡힌다(앞줄 prY가 대통령 발밑을 넘으면). 화면은 대통령만 따라간다.
    · 길은 판마다 새로 만든다. 광장(풀밭)에는 늘 지나갈 길이 하나 이상 남는다. 50칸마다 서울의 이름난 곳을 지난다.
    · 정해진 간격 없이 가끔 왕복 8~24차선 큰길이 나온다(차선마다 방향이 섞이고 가운데 두 줄은 중앙버스전용차로).
      멀리 갈수록 더 넓은 길까지 나온다. 5~10줄 내리 풀밭인 「쉼터」(나무 · 벤치)도 아무 때나 나와 잠깐 숨을 고를 수 있다.
@@ -21,7 +21,7 @@
      처음부터 난이도 절반(dif .5)에서 시작하고, 한 차도에 택시 · 구급차 · 방역차 · 버스가 섞여 달린다. 철길은 세 줄 넘게 붙지 않는다. 가끔 큰길도 나온다.
      기록은 MEM.cg.hb(지옥 최고) · hr(지옥 판 수) · hbS로 따로 둔다. 명예의 전당에는 같은 'cg'로 보내되 detail 앞에 「지옥 모드」를 붙인다.
    기록: 가장 멀리 간 줄 수(칸). 10칸 이상 간 판은 명예의 전당에 오른다. 이 기기의 기록은 MEM.cg. */
-const CG_C=9,CG_M=8,CG_L=CG_C+CG_M*2,CG_HOP=.13,CG_PV=.7,CG_PB=2.4;
+const CG_C=9,CG_M=8,CG_L=CG_C+CG_M*2,CG_HOP=.13,CG_PV=.7,CG_PVN=.3,CG_PB=2.4;
 const CG_PL=['광화문 광장','시청 앞 광장','서울역 앞','여의도 공원','국회 앞','남산 아래','청계천 길','세종로 네거리'];
 const CG_CAR={taxi:{n:'택시',len:1,sp:1},amb:{n:'구급차',len:2,sp:1.35},bus:{n:'버스',len:3,sp:.75},dis:{n:'방역차',len:2,sp:.9}};
 function cgMem(){let m=MEM.cg;if(!m||m.v!==1)m=MEM.cg={v:1,best:0,runs:0,masks:0,bestS:0};return m;}
@@ -179,7 +179,7 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
     for(let r=Math.floor(camY);r<camY+VR;r++){const q=row(r);if(q.t==='t'){const on=warn(q,T),c=Math.floor((T+q.ph)/q.P);if(on&&q.hn!==c&&!train(q,T)){q.hn=c;if(Math.abs(r-P.r)<7)snd(()=>{tone(392,'sawtooth',.45,.035);tone(494,'sawtooth',.45,.03);});}}}
     // 화면은 대통령을 따라 올라간다. 기자단 앞줄 prY는 한 번 뛴 뒤로 일정한 빠르기로 올라오고, 대통령보다 CG_PB줄 넘게 뒤처지지 않는다
     const pr=hop?lerp(hop.fr,hop.tr,k):P.r,want=pr-lead();if(want>camY)camY+=(want-camY)*Math.min(1,dt*6);
-    if(started)prY=Math.max(prY+CG_PV*dt,pr+.5-CG_PB);danger=Math.max(0,Math.min(1,(1.9-(pr+.5-prY))/1.9));
+    if(started)prY=Math.max(prY+(hm?CG_PV:CG_PVN)*dt,pr+.5-CG_PB);danger=Math.max(0,Math.min(1,(1.9-(pr+.5-prY))/1.9));
     if(prY>pr+.25||pr+.55<camY){die('press');return;}
     row(Math.ceil(camY+VR)+3);for(const key in R){if(+key<camY-40)delete R[key];}
     hud();};
