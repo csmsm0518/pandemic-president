@@ -25,7 +25,7 @@ const LV_FIT=[
   {id:'usa',n:'성조기 넥타이',d:'미국 DLC에서 인생을 마치면',ok:()=>!!lvMem().u.usa},
   {id:'royal',n:'곤룡포',d:'조선 DLC에서 인생을 마치면',ok:()=>!!lvMem().u.royal},
   {id:'tux',n:'턱시도',d:'레벨 20',lv:20},
-  {id:'space',n:'우주복',d:'미니게임 여섯 개를 모두 열면',ok:()=>{try{return MINI.every(x=>eggOn(x.id));}catch(e){return false;}}},
+  {id:'space',n:'우주복',d:'미니게임 여섯 개를 모두 한 번씩 하면',ok:()=>{try{return MINI.every(x=>{const m=MEM[x.id==='zombie'?'zg':x.id];return !!(m&&+m.runs>0);});}catch(e){return false;}}},
   {id:'gold',n:'황금 양복',d:'레벨 50',lv:50}];
 const lvFitOk=(f,L)=>!!f&&(f.lv?L>=f.lv:f.ok?f.ok():true);
 function lvMem(){let m=MEM.lv;if(!m||m.v!==1){m=MEM.lv={v:1,x:lvSeed(),p:0,mid:'',fit:'',u:{},day:''};try{msave();}catch(e){}}if(!m.u||typeof m.u!=='object')m.u={};return m;}

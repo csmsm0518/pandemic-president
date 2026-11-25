@@ -113,7 +113,7 @@ function home(){dcEnd();bgmIntro(true);
   let sel=0;
   cine([{t:'메인 메뉴',h:'<div class="gx gx-title"><canvas class="gx-bg" aria-hidden="true"></canvas><div class="gx-seal" aria-hidden="true">'+emblemSvg('embgS',1)+
     '<span class="gx-sstar" hidden><svg viewBox="-12 -12 24 24"><path d="M0-10.5L2.7-3.4 10-3.2 4.3 1.3 6.3 8.5 0 4.3-6.3 8.5-4.3 1.3-10-3.2-2.7-3.4Z"/></svg></span></div>'+
-    '<div class="gx-tl"><div class="emb go gx-logo">'+emblemSvg()+'<div><h1 class="emb-t"><span>팬데믹</span> <span>대통령</span></h1><p class="emb-s">한 번의 인생, 한 나라의 운명</p></div></div>'+
+    '<div class="gx-tl"><div class="emb go gx-logo">'+emblemSvg()+'<div><h1 class="emb-t"><span>팬데믹</span> <span>대통령</span></h1><p class="emb-s">한 번의 인생, 한 나라의 운명</p>'+(xmasOn()?'<p class="gx-xm">🎄 Merry Christmas · 크리스마스 에디션</p>':'')+'</div></div>'+
     (msg?'<div class="gx-msg">'+msg+'</div>':'')+
     '<div class="gx-row2"><nav class="gx-menu" aria-label="메인 메뉴">'+G.map(MROW).join('')+'</nav>'+pc+'</div></div>'+
     '<div class="gx-foot"><span class="gx-keys"><kbd>↑</kbd><kbd>↓</kbd> 고르기 &nbsp;<kbd>Enter</kbd> 결정</span><span>'+GAME_VER+'</span></div></div>'}],
@@ -298,7 +298,7 @@ const MINI=[
    h:'기록 보관소에 적힌 이름을 거듭 부르면 출근 시간이 된다.',rec:()=>{const m=MEM.cg;return m&&m.v===1&&m.best?'최고 '+m.best+'칸 · 출근 '+(m.runs||0)+'번':'';},open:()=>cgOpen(stepMini)},
   {id:'ax',tag:'구름 밟고 위로',n:'백신 점프',sub:'꼬마 백신 「백이」, 하늘 끝까지',intro:'통통 튀는 꼬마 백신을 <b>기울여서</b>(컴퓨터는 ← →) 구름에서 구름으로. 바이러스와 가시를 피하고 물약 · 로켓을 챙겨 더 높이.',
    h:'메인 화면을 좌우로 번갈아 흔들면 백신이 튀어 오른다.',rec:()=>{const m=MEM.ax;return m&&m.v===2&&m.best?'최고 '+m.best+'m · 도전 '+(m.runs||0)+'번':'';},open:()=>axOpen(stepMini)}];
-const miniSub=()=>{const n=MINI.filter(x=>eggOn(x.id)).length;return n?n+' / '+MINI.length+' 열림 · 비밀을 찾으면 하나씩 열린다':'숨겨진 게임 '+MINI.length+'개 · 비밀을 찾으면 열린다';};
+const miniSub=()=>'미니게임 '+MINI.length+'개 · 방역선 · 대항해 · 별똥별 · 격리 탈출 · 출근길 · 백신 점프';
 // 수영 금메달 선물을 받았는데 아직 대항해를 못 열었으면, 잠긴 대항해 칸에 여는 법을 그대로 적고 그 칸을 고르면 튜토리얼을 다시 연다
 const miniGift=x=>x.id==='sail'&&!!MEM.sailHint&&!eggOn('sail');
 function stepMini(){let k=Math.max(0,MINI.findIndex(x=>eggOn(x.id)));const n=MINI.filter(x=>eggOn(x.id)).length;

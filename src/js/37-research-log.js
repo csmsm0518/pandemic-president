@@ -1,7 +1,7 @@
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v6.0';
+const GAME_VER='v6.1';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -117,7 +117,10 @@ let HIST_ON=false;
 function histArm(){if(HIST_ON)return;try{history.pushState({pp:1},'');HIST_ON=true;}catch(e){}}
 addEventListener('popstate',()=>{if(!HIST_ON)return;HIST_ON=false;
   if(RUN&&CAR&&!CAR.done){histArm();try{eggToast('게임 중에는 뒤로 가기로 나가지 않아요.<br>나가려면 메뉴의 <b>저장하고 나가기</b>를 쓰세요.');}catch(e){}}});
-mload();try{lvMem();}catch(e){}applyView();sndApply();   // 레벨 기록은 저장된 기록을 불러온 뒤에 만든다(먼저 만들면 빈 기록을 저장해 덮는다)
+mload();try{lvMem();}catch(e){}
+// v6.1: 숨겨진 미니게임 여섯 개는 이제 처음부터 열린 일반 미니게임(예전 비밀 여는 법은 그대로 두지만, 이미 열려 있어 XP는 없다)
+MEM.egg=MEM.egg||{};['zombie','sail','star','qx','cg','ax'].forEach(k=>{MEM.egg[k]=1;});
+try{xmasInit();}catch(e){}applyView();sndApply();   // 레벨 기록은 저장된 기록을 불러온 뒤에 만든다(먼저 만들면 빈 기록을 저장해 덮는다)
 const INTRO=R.innerHTML;
 function pfPhone(v){const d=String(v||'').replace(/\D/g,'');if(!d)return '';if(!/^01[016789]\d{7,8}$/.test(d))return null;return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4);}
 function bindIntro(){const $=id=>document.getElementById(id),err=$('pfErr');

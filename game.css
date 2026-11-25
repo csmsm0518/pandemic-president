@@ -1752,3 +1752,40 @@ html[data-ori="p"] .gx-ld .gx-top,html[data-ori="p"] .gx-su .gx-top{height:60px}
 .lvw-t li.ok{color:#cdbf9f;border-color:rgba(201,162,74,.3)}.lvw-t li.ok b{color:#f1d589}
 .lvw-t li.on{background:rgba(60,46,18,.55);border-color:#f1d589}.lvw-t li.on b{color:#fff4d6}
 @media (prefers-reduced-motion:reduce){.lvt,.lvt.out,.lvw-f{animation:none}}
+/* ---------- 크리스마스 단장(html.xmas · 크리스마스 철에만, js/36y-xmas.js가 붙인다) ----------
+   색: 전나무 초록 #2f7f50 · 산타 빨강 #d8344b · 금 #f2c94c · 눈 흰빛. 원래 디자인(종이 · 어두운 금장)은 그대로 두고 장식만 얹는다. */
+html.xmas{--accent-soft:#2f6b4a;--xm-holly:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'%3E%3Cpath fill='%232f7f50' d='M31 23C26 11 15 5 3 9c4 2 4 6 8 7-3 2-3 6 1 7-2 3 0 6 4 6 6 0 11-2 15-6z'/%3E%3Cpath fill='%23256d44' d='M33 23c5-12 16-18 28-14-4 2-4 6-8 7 3 2 3 6-1 7 2 3 0 6-4 6-6 0-11-2-15-6z'/%3E%3Cpath fill='none' stroke='%231d5c39' stroke-width='1.2' d='M30 22C24 14 15 11 7 11M34 22c6-8 15-11 23-11'/%3E%3Ccircle cx='28' cy='25' r='4.6' fill='%23d8344b'/%3E%3Ccircle cx='36.5' cy='25' r='4.6' fill='%23c8333f'/%3E%3Ccircle cx='32' cy='31.5' r='4.6' fill='%23e2453c'/%3E%3Ccircle cx='26.6' cy='23.6' r='1.3' fill='%23fff' fill-opacity='.6'/%3E%3C/svg%3E");
+  --xm-hat:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 52'%3E%3Cpath fill='%23d8344b' d='M7 40C9 22 22 7 40 6c10-1 17 5 18 14l-7-3c-1 11-9 20-21 23z'/%3E%3Cpath fill='%23a92530' d='M40 6c10-1 17 5 18 14l-7-3c-2-6-6-9-11-11z'/%3E%3Crect x='2' y='35' width='48' height='13' rx='6.5' fill='%23f6f9fd'/%3E%3Ccircle cx='57' cy='22' r='6.5' fill='%23f6f9fd'/%3E%3C/svg%3E")}
+
+/* 맨 위 전구 줄: 처진 전선(46px마다 한 번 처짐) + 처진 자리마다 전구 하나 */
+.xm-lights{position:fixed;left:0;top:0;z-index:76;display:flex;height:24px;width:max-content;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 46 14'%3E%3Cpath d='M0 1Q23 16 46 1' fill='none' stroke='%231e3226' stroke-width='1.6'/%3E%3C/svg%3E") repeat-x 0 0/46px 14px}
+.xm-lights i{position:relative;flex:0 0 46px;height:24px}
+.xm-lights i::before{content:"";position:absolute;left:20px;top:7px;width:6px;height:4px;border-radius:1px;background:#3b3f36}
+.xm-lights i::after{content:"";position:absolute;left:18px;top:10px;width:10px;height:13px;border-radius:50% 50% 46% 46%/42% 42% 58% 58%;background:var(--c,#ff5a4f);
+  box-shadow:0 0 10px 2px var(--c,#ff5a4f);animation:xmTw 1.7s var(--d,0s) ease-in-out infinite alternate}
+.xm-lights i:nth-child(4n+2){--c:#ffd25a}.xm-lights i:nth-child(4n+3){--c:#5ee08a}.xm-lights i:nth-child(4n+4){--c:#6ab8ff}
+@keyframes xmTw{0%,40%{opacity:1}100%{opacity:.35;box-shadow:0 0 0 0 transparent}}
+.xm-snow{position:fixed;inset:0;width:100%;height:100%;z-index:80;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.xm-lights i::after{animation:none}}
+
+/* 첫 화면(밝은 종이): 제목에 산타 모자, 아래 「크리스마스 에디션」 띠 */
+html.xmas #root>h1.hd{position:relative}
+html.xmas #root>h1.hd::before{content:"";position:absolute;left:-16px;top:-24px;width:48px;height:39px;background:var(--xm-hat) no-repeat center/contain;transform:rotate(-16deg);pointer-events:none}
+html.xmas #root>h1.hd::after{content:"🎄 크리스마스 에디션";display:block;width:max-content;margin-top:10px;padding:4px 11px 4px 9px;border-radius:999px;
+  font:800 12px/1.4 var(--font-ui);letter-spacing:.02em;color:#fff;background:linear-gradient(90deg,#2f7f50,#256d44);box-shadow:0 2px 8px -2px rgba(31,90,55,.45)}
+
+/* 메인 메뉴 · 무대 고르기(어두운 화면): 바탕에 전나무 초록 · 빨강 빛, 나침반에 산타 모자, 제목 아래 크리스마스 띠 */
+html.xmas .cine.gm{background:radial-gradient(ellipse at 12% 0%,rgba(47,127,80,.24),transparent 52%),radial-gradient(ellipse at 100% 100%,rgba(200,51,63,.16),transparent 50%),#0b0a08}
+html.xmas .cs .gx-logo{position:relative}
+html.xmas .cs .gx-logo::before{content:"";position:absolute;z-index:2;left:calc(var(--fs) * .28);top:calc(var(--fs) * -.42);width:calc(var(--fs) * .98);height:calc(var(--fs) * .8);
+  background:var(--xm-hat) no-repeat center/contain;transform:rotate(-14deg);filter:drop-shadow(0 4px 8px rgba(0,0,0,.45));pointer-events:none}
+.gx-xm{display:none}
+html.xmas .gx-xm{display:inline-flex;align-items:center;gap:6px;margin:12px 0 0 2px;padding:5px 12px 5px 10px;border-radius:999px;font:800 12px/1.3 var(--font-ui);letter-spacing:.06em;
+  color:#fff4d6;background:linear-gradient(90deg,rgba(47,127,80,.9),rgba(168,37,48,.9));border:1px solid rgba(241,213,137,.45)}
+
+/* 본게임(밝은 종이): 사건 카드 오른쪽 위 호랑가시, 지도자 카드 윗줄은 사탕 지팡이 무늬, 선택지 숫자는 초록 */
+html.xmas .evc::after{content:"";position:absolute;right:10px;top:8px;width:58px;height:36px;background:var(--xm-holly) no-repeat center/contain;pointer-events:none;opacity:.95}
+html.xmas .gs-me::before{height:4px;background:repeating-linear-gradient(135deg,#d8344b 0 8px,#fff4e8 8px 16px)}
+html.xmas .gs-box:has(.gs-cn){position:relative}
+html.xmas .gs-box:has(.gs-cn)::after{content:"";position:absolute;right:6px;top:4px;width:40px;height:25px;background:var(--xm-holly) no-repeat center/contain;pointer-events:none;opacity:.9}

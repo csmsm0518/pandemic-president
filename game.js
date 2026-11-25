@@ -5863,7 +5863,7 @@ function home(){dcEnd();bgmIntro(true);
   let sel=0;
   cine([{t:'메인 메뉴',h:'<div class="gx gx-title"><canvas class="gx-bg" aria-hidden="true"></canvas><div class="gx-seal" aria-hidden="true">'+emblemSvg('embgS',1)+
     '<span class="gx-sstar" hidden><svg viewBox="-12 -12 24 24"><path d="M0-10.5L2.7-3.4 10-3.2 4.3 1.3 6.3 8.5 0 4.3-6.3 8.5-4.3 1.3-10-3.2-2.7-3.4Z"/></svg></span></div>'+
-    '<div class="gx-tl"><div class="emb go gx-logo">'+emblemSvg()+'<div><h1 class="emb-t"><span>팬데믹</span> <span>대통령</span></h1><p class="emb-s">한 번의 인생, 한 나라의 운명</p></div></div>'+
+    '<div class="gx-tl"><div class="emb go gx-logo">'+emblemSvg()+'<div><h1 class="emb-t"><span>팬데믹</span> <span>대통령</span></h1><p class="emb-s">한 번의 인생, 한 나라의 운명</p>'+(xmasOn()?'<p class="gx-xm">🎄 Merry Christmas · 크리스마스 에디션</p>':'')+'</div></div>'+
     (msg?'<div class="gx-msg">'+msg+'</div>':'')+
     '<div class="gx-row2"><nav class="gx-menu" aria-label="메인 메뉴">'+G.map(MROW).join('')+'</nav>'+pc+'</div></div>'+
     '<div class="gx-foot"><span class="gx-keys"><kbd>↑</kbd><kbd>↓</kbd> 고르기 &nbsp;<kbd>Enter</kbd> 결정</span><span>'+GAME_VER+'</span></div></div>'}],
@@ -6048,7 +6048,7 @@ const MINI=[
    h:'기록 보관소에 적힌 이름을 거듭 부르면 출근 시간이 된다.',rec:()=>{const m=MEM.cg;return m&&m.v===1&&m.best?'최고 '+m.best+'칸 · 출근 '+(m.runs||0)+'번':'';},open:()=>cgOpen(stepMini)},
   {id:'ax',tag:'구름 밟고 위로',n:'백신 점프',sub:'꼬마 백신 「백이」, 하늘 끝까지',intro:'통통 튀는 꼬마 백신을 <b>기울여서</b>(컴퓨터는 ← →) 구름에서 구름으로. 바이러스와 가시를 피하고 물약 · 로켓을 챙겨 더 높이.',
    h:'메인 화면을 좌우로 번갈아 흔들면 백신이 튀어 오른다.',rec:()=>{const m=MEM.ax;return m&&m.v===2&&m.best?'최고 '+m.best+'m · 도전 '+(m.runs||0)+'번':'';},open:()=>axOpen(stepMini)}];
-const miniSub=()=>{const n=MINI.filter(x=>eggOn(x.id)).length;return n?n+' / '+MINI.length+' 열림 · 비밀을 찾으면 하나씩 열린다':'숨겨진 게임 '+MINI.length+'개 · 비밀을 찾으면 열린다';};
+const miniSub=()=>'미니게임 '+MINI.length+'개 · 방역선 · 대항해 · 별똥별 · 격리 탈출 · 출근길 · 백신 점프';
 // 수영 금메달 선물을 받았는데 아직 대항해를 못 열었으면, 잠긴 대항해 칸에 여는 법을 그대로 적고 그 칸을 고르면 튜토리얼을 다시 연다
 const miniGift=x=>x.id==='sail'&&!!MEM.sailHint&&!eggOn('sail');
 function stepMini(){let k=Math.max(0,MINI.findIndex(x=>eggOn(x.id)));const n=MINI.filter(x=>eggOn(x.id)).length;
@@ -8174,7 +8174,7 @@ const LV_FIT=[
   {id:'usa',n:'성조기 넥타이',d:'미국 DLC에서 인생을 마치면',ok:()=>!!lvMem().u.usa},
   {id:'royal',n:'곤룡포',d:'조선 DLC에서 인생을 마치면',ok:()=>!!lvMem().u.royal},
   {id:'tux',n:'턱시도',d:'레벨 20',lv:20},
-  {id:'space',n:'우주복',d:'미니게임 여섯 개를 모두 열면',ok:()=>{try{return MINI.every(x=>eggOn(x.id));}catch(e){return false;}}},
+  {id:'space',n:'우주복',d:'미니게임 여섯 개를 모두 한 번씩 하면',ok:()=>{try{return MINI.every(x=>{const m=MEM[x.id==='zombie'?'zg':x.id];return !!(m&&+m.runs>0);});}catch(e){return false;}}},
   {id:'gold',n:'황금 양복',d:'레벨 50',lv:50}];
 const lvFitOk=(f,L)=>!!f&&(f.lv?L>=f.lv:f.ok?f.ok():true);
 function lvMem(){let m=MEM.lv;if(!m||m.v!==1){m=MEM.lv={v:1,x:lvSeed(),p:0,mid:'',fit:'',u:{},day:''};try{msave();}catch(e){}}if(!m.u||typeof m.u!=='object')m.u={};return m;}
@@ -8274,6 +8274,29 @@ function lvBody(g,cs,f,fit,o){o=o||{};const T=o.T||performance.now()/1000,gr=!!o
 const LV_MG={zg:'방역선',sail:'대항해',star:'별똥별',qx:'격리 탈출',cg:'출근길',ax:'백신 점프'};
 function lvMini(gm,o){o=o||{};const s=+o.score||0,h=/^지옥/.test(String(o.detail||''));
   const pf={cg:s/(h?3:4),ax:s/20,zg:s/1500,star:s/300,qx:Math.floor(s/1000)*6+(o.win?30:0),sail:o.win?40:10}[gm];lvAdd(15+Math.min(80,Math.round(pf||0)),LV_MG[gm]||'미니게임');}
+/* ---------- 크리스마스 단장(크리스마스 철 lvDec: 11월 20일 ~ 12월 31일에만) ----------
+   html에 .xmas를 붙이고(디자인은 css/15-xmas.css), 화면 위에 두 겹을 얹는다. 둘 다 누를 수 없다(pointer-events:none).
+   · .xm-lights: 화면 맨 위 전구 줄(46px마다 전구 하나, 색 넷이 번갈아 깜빡). 메뉴 · 게임 화면(.cine z 75) 위, 미니게임(z 120~) 아래.
+   · .xm-snow: 화면 가득 내리는 눈(캔버스). 밝은 종이 화면에서도 보이게 눈송이에 옅은 푸른 테. 움직임 줄이기 설정이면 멈춘 눈.
+     미니게임이 화면을 덮고 있거나 탭이 숨으면 그리지 않는다(xmasBusy).
+   철이 지나면 아무것도 하지 않아 예전 화면 그대로다. */
+const xmasOn=()=>{try{return lvDec();}catch(e){return false;}};
+const xmasBusy=()=>!!document.querySelector('#cg,#ax,#qx,#sl,#ss,.sl,.ss,#stut,.zge,#woBg')||document.hidden;
+function xmasInit(){if(!xmasOn()||document.querySelector('.xm-snow'))return;document.documentElement.classList.add('xmas');
+  const L=document.createElement('div');L.className='xm-lights';L.setAttribute('aria-hidden','true');
+  const n=Math.ceil(Math.max(screen.width||0,screen.height||0,innerWidth,innerHeight)/46)+1;
+  L.innerHTML=Array.from({length:n},(_,i)=>'<i style="--d:'+((i*.53)%1.7).toFixed(2)+'s"></i>').join('');document.body.appendChild(L);
+  const c=document.createElement('canvas');c.className='xm-snow';c.setAttribute('aria-hidden','true');document.body.appendChild(c);
+  const g=c.getContext('2d'),RM=matchMedia('(prefers-reduced-motion: reduce)').matches;let W=0,H=0,D=1,F=[],last=performance.now(),skip=0;
+  const fit=()=>{D=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;c.width=Math.round(W*D);c.height=Math.round(H*D);
+    F=Array.from({length:Math.round(Math.max(24,Math.min(70,W*H/20000)))},()=>({x:Math.random()*W,y:Math.random()*H,r:.9+Math.random()*2.1,v:16+Math.random()*28,p:Math.random()*6.28}));draw(0);};
+  const draw=dt=>{g.setTransform(D,0,0,D,0,0);g.clearRect(0,0,W,H);g.lineWidth=.7;
+    for(const f of F){if(dt){f.y+=f.v*dt;f.p+=dt*.9;f.x+=Math.sin(f.p)*.35;if(f.y>H+6){f.y=-6;f.x=Math.random()*W;}}
+      g.beginPath();g.arc(f.x,f.y,f.r,0,6.283);g.fillStyle='rgba(255,255,255,.9)';g.fill();g.strokeStyle='rgba(110,135,170,.4)';g.stroke();}};
+  const tick=t=>{const dt=Math.min(.06,(t-last)/1000);last=t;requestAnimationFrame(tick);
+    if(xmasBusy()){if(c.style.visibility!=='hidden')c.style.visibility='hidden';return;}if(c.style.visibility)c.style.visibility='';
+    if(++skip%2)return;draw(dt*2);};   // 눈은 30번/초면 충분하다
+  let rt=0;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(fit,150);});fit();if(!RM)requestAnimationFrame(tick);}
 /* ---------- 회원 로그인 ---------- */
 // 첫 화면 맨 위에서 비회원(기본) · 회원 로그인을 고른다. 회원은 아이디 · 비밀번호로 들어오고, 학교 · 이름 · 닉네임 · 전화번호를 매번 적지 않는다.
 // 회원 정보는 기록 시트 서버(Apps Script, kind: 'member')의 비공개 탭에 있고, 비밀번호는 서버에서도 지문으로만 남는다.
@@ -8384,7 +8407,7 @@ function acEnter(id,p){PF={school:p.school,name:p.name,phone:p.phone||'',agree:t
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v6.0';
+const GAME_VER='v6.1';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -8500,7 +8523,10 @@ let HIST_ON=false;
 function histArm(){if(HIST_ON)return;try{history.pushState({pp:1},'');HIST_ON=true;}catch(e){}}
 addEventListener('popstate',()=>{if(!HIST_ON)return;HIST_ON=false;
   if(RUN&&CAR&&!CAR.done){histArm();try{eggToast('게임 중에는 뒤로 가기로 나가지 않아요.<br>나가려면 메뉴의 <b>저장하고 나가기</b>를 쓰세요.');}catch(e){}}});
-mload();try{lvMem();}catch(e){}applyView();sndApply();   // 레벨 기록은 저장된 기록을 불러온 뒤에 만든다(먼저 만들면 빈 기록을 저장해 덮는다)
+mload();try{lvMem();}catch(e){}
+// v6.1: 숨겨진 미니게임 여섯 개는 이제 처음부터 열린 일반 미니게임(예전 비밀 여는 법은 그대로 두지만, 이미 열려 있어 XP는 없다)
+MEM.egg=MEM.egg||{};['zombie','sail','star','qx','cg','ax'].forEach(k=>{MEM.egg[k]=1;});
+try{xmasInit();}catch(e){}applyView();sndApply();   // 레벨 기록은 저장된 기록을 불러온 뒤에 만든다(먼저 만들면 빈 기록을 저장해 덮는다)
 const INTRO=R.innerHTML;
 function pfPhone(v){const d=String(v||'').replace(/\D/g,'');if(!d)return '';if(!/^01[016789]\d{7,8}$/.test(d))return null;return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4);}
 function bindIntro(){const $=id=>document.getElementById(id),err=$('pfErr');
@@ -8562,6 +8588,10 @@ setTimeout(()=>{try{const me=!IN_ART&&acGet();if(!me||!me.prof||!me.prof.name)re
    홈 메뉴 「기타 → 업데이트 소식」에서 언제든 다시 볼 수 있다. 처음 온 사람(기록이 전혀 없음)에게는 띄우지 않고 읽은 것으로 쳐 둔다.
    v1부터 v4.9까지 모든 업데이트를 넣었다(v4.7은 크게, 나머지는 접어서 짧게). */
 const PATCHES=[
+ {v:'v6.1',t:'크리스마스 에디션',d:'2026-11-25',l:[
+  ['🎄 크리스마스 에디션','첫 화면 · 메인 메뉴 · 본게임까지 크리스마스 단장! 화면 위 전구 줄, 내리는 눈, 산타 모자를 쓴 나침반, 호랑가시 장식. 12월 31일까지만 볼 수 있어요.'],
+  ['🎮 미니게임 모두 열림','숨겨져 있던 미니게임 여섯 개(방역선 · 대항해 · 별똥별 · 격리 탈출 · 대통령 출근길 · 백신 점프)를 이제 처음부터 할 수 있어요. 게임 → 미니게임에서 골라요.'],
+  ['우주복 여는 법','미니게임이 모두 열리면서 우주복은 미니게임 여섯 개를 모두 한 번씩 해 보면 열려요.']]},
  {v:'v6.0',t:'대통령 레벨',d:'2026-11-25',l:[
   ['⭐ 대통령 레벨','무엇을 하든 XP가 쌓여 레벨이 올라요. 인생을 마치고, 새 지도자를 만나고, 비밀을 찾고, 미니게임 · 출근 미션을 하면 XP! 하루 첫 입장은 +50.'],
   ['🎖️ 칭호','초선 의원에서 시작해 구청장 · 시장 · 장관 · 국무총리 · 대통령 · 국부 · 전설의 지도자까지. 기록 보관소에 레벨과 칭호가 보여요.'],
