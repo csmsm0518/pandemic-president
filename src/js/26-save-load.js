@@ -71,7 +71,7 @@ function svPicker(){let o=document.querySelector('.svp-bg');if(o)o.remove();
     inp.onkeydown=e=>{if(e.key==='Enter')ok();};inp.focus();};
   list();}
 // ---- 게임 메뉴: 저장하기 · 저장하고 나가기 · 하야하기 ----
-// 가로 화면은 왼쪽 상황판 아래에 두고, 세로 화면·라이트 모드는 오른쪽 위 ≡ 메뉴 안에 둔다.
+// 가로 화면은 왼쪽 상황판 아래에 두고, 세로 화면은 오른쪽 위 ≡ 메뉴 안에 둔다.
 // 저장은 결정 화면(고르기 전)과 결과 화면(계속을 누르기 전)에서만 된다(SVAT). 룰렛이 도는 동안과 다른 화면에서는 막는다.
 let SVAT=null;
 const ICO_MENU='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';

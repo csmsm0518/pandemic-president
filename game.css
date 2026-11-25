@@ -39,7 +39,7 @@ canvas{display:block}
 @keyframes fxL{0%{opacity:0;transform:scale(.6)}22%{opacity:1;transform:scale(1.08)}70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.02)}}
 @keyframes fxT{0%{opacity:0}28%{opacity:1}100%{opacity:0}}
 /* 판정 글자(기본 모드): 판정 색 인주로 찍는 도장. 위에서 내려와 쾅 찍히며 살짝 비뚤어지고, 찍힌 자리에 잉크 테가 번진다.
-   글자와 테두리에 종이 색 얼룩을 얹어 실제 도장처럼 군데군데 덜 묻게 한다. 라이트 모드는 예전 카드 그대로 둔다. */
+   글자와 테두리에 종이 색 얼룩을 얹어 실제 도장처럼 군데군데 덜 묻게 한다. */
 .vd{position:relative;animation:vdOut var(--ms,1100ms) linear forwards!important}
 .vd-s{position:relative;display:inline-flex;align-items:center;justify-content:center;padding:10px 26px 9px;border:4px solid var(--c);border-radius:12px;
   color:var(--c);background:rgba(251,248,240,.94);box-shadow:inset 0 0 0 2.5px rgba(251,248,240,.94),inset 0 0 0 4px var(--c),0 16px 34px -12px rgba(70,50,20,.5);
@@ -171,26 +171,10 @@ canvas{display:block}
 .tip-a{display:flex;gap:8px;margin-top:8px}
 .tip-a button{font-size:12px;padding:6px 11px}
 .tip-off{color:var(--text-muted);background:transparent!important;border-color:transparent!important}
-/* 홈: 튜토리얼 스위치, 가이드북, 서브게임 */
-.hm-row{display:flex;justify-content:flex-end;margin-bottom:10px}
-.tgl{display:inline-flex;align-items:center;gap:8px;font-size:12px;padding:6px 10px;border-radius:999px;color:var(--text-secondary)}
-.tgl-k{position:relative;width:30px;height:17px;border-radius:999px;background:var(--surface-1);border:1px solid var(--border-strong);transition:background .2s}
-.tgl-k::after{content:"";position:absolute;top:2px;left:2px;width:11px;height:11px;border-radius:50%;background:#6e675c;transition:transform .2s,background .2s}
-.tgl[aria-checked="true"] .tgl-k{background:#2f4a6b;border-color:#2f4a6b}.tgl[aria-checked="true"] .tgl-k::after{transform:translateX(13px);background:#fff}
-.hm-card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:13px 14px;margin-bottom:8px;border-radius:12px}
-.hm-i{width:38px;height:38px;flex-shrink:0;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(47,74,107,.14);color:#3d5a80}
-.hm-mg .hm-i{background:rgba(31,122,114,.12);color:#1f7a72}
-.hm-x{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.hm-x b{font-size:15px}.hm-x span{font-size:12.5px;color:var(--text-muted);line-height:1.5}
-.hm-go{color:var(--text-muted)}
 /* 가이드북 */
 .mg-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
 /* 서브게임 */
 .mg{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
-a.hm-card{color:var(--text-primary);text-decoration:none;border:1px solid var(--border-strong);background:var(--surface-0);transition:background .15s}
-a.hm-card:hover{background:var(--surface-1)}
-a.hm-card:focus-visible{outline:2px solid #2f4a6b;outline-offset:2px}
-.hm-desk .hm-i{background:rgba(179,38,30,.14);color:#a8321f}
 /* 지표판 · 선택지 상자 · 무대 고르기 · 특별 이벤트 */
 .sgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:0 0 10px}
 .sg6{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:8px;margin:0 0 10px}
@@ -220,16 +204,7 @@ a.hm-card:focus-visible{outline:2px solid #2f4a6b;outline-offset:2px}
 .opt-p .pp-ok{color:var(--text-primary);font-weight:700}.opt-p .pp-x{color:var(--text-muted)}.opt-p .pp-c{color:#a8321f}
 .urg-v{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:1px}
 .ch b.gd{color:#2a6e4b}.ch b.bd{color:#a8321f}.ch b.nu{color:#3d5a80}
-.cmbs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
-.cmb{display:flex;flex-direction:column;gap:4px;text-align:left;padding:10px 10px 9px;min-width:0}
-.cmb.on{border-color:var(--ink);background:#fbf8f2;box-shadow:inset 0 0 0 1px var(--ink)}
-.cmb-t{display:flex;align-items:center;justify-content:space-between;gap:4px}
-.cmb-t b{font-size:15px}
-.cmb-tag{font-size:11px;font-weight:700;letter-spacing:.02em;padding:1px 5px;border-radius:4px;background:rgba(29,27,24,.08);color:var(--text-muted)}
-.cmb-tag.dlc{background:rgba(143,106,18,.16);color:#8f6a12}
-.cmb-s{font-size:11px;line-height:1.45;color:var(--text-muted)}
 @media(max-width:350px){.sg6{gap:6px}.sg6 .sb{padding:5px 4px 7px}.sg6 .sb-n{font-size:10.5px;letter-spacing:-.03em}.sg6 .sb b{font-size:16px}}
-@media(max-width:400px){.cmbs{grid-template-columns:1fr}.cmb{flex-direction:row;align-items:baseline;gap:10px}.cmb-t{flex-shrink:0;gap:6px}}
 /* 특별 이벤트 무대 */
 .spx{position:relative;overflow:hidden;background:var(--sb);color:#f7f3ea;border-radius:16px;padding:14px 10px 10px;margin-bottom:14px;animation:fdIn .45s ease-out;background-image:radial-gradient(120% 90% at 100% 0%,color-mix(in srgb,var(--sa) 22%,transparent),transparent 60%)}
 .spx-art{position:absolute;right:-14px;top:-12px;width:150px;height:150px;fill:none;stroke:var(--sa);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;color:var(--sa);opacity:.55;pointer-events:none}
@@ -381,7 +356,6 @@ a.hm-card:focus-visible{outline:2px solid #2f4a6b;outline-offset:2px}
 /* 가이드북 화면 투어 */
 .cn-fx{display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 12px}
 .cn-fx span{font-size:12px;font-weight:600;color:#2a6e4b;background:rgba(46,125,85,.1);border:1px solid rgba(46,125,85,.3);padding:2px 9px;border-radius:999px}
-.cmb-tag.sec{background:rgba(70,110,60,.18);color:#3f6a35}
 .egg-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;width:max-content;max-width:calc(100vw - 32px);background:#1d1b18;color:#f7f3ea;font-size:14px;line-height:1.55;padding:12px 16px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);animation:fdIn .3s ease-out;text-align:center}
 .egg-toast.out{opacity:0;transition:opacity .4s}
 /* 비밀 무대 · 좀비 아포칼립스 */
@@ -415,17 +389,8 @@ button:hover{border-color:var(--gold)}
 .opt{border-radius:8px}
 .opt:hover{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold-soft)}
 .opt-n{background:var(--surface-2);border-color:var(--gold-line);color:var(--gold-lo)}
-.cmb,.hm-card{border-radius:6px}
-.cmb.on,.lb-tabs button[aria-selected="true"]{border-color:var(--gold)!important;background:#fbf4e1!important;box-shadow:inset 0 0 0 1px var(--gold)!important}
-.hm-i{background:var(--gold-soft);color:var(--gold-lo)}
-/* 라이트 홈의 실시간 대결 칸: 칼 아이콘은 크기 정보가 없어 칸에 맞춰 준다 */
-.hm-battle .hm-i svg{width:20px;height:20px}
+.lb-tabs button[aria-selected="true"]{border-color:var(--gold)!important;background:#fbf4e1!important;box-shadow:inset 0 0 0 1px var(--gold)!important}
 
-/* 라이트 메인: 무대 고르기 바로 아래의 미니게임 줄(새 게임 안에서 연다) */
-.hl-mini{display:flex;align-items:center;gap:10px;width:100%;margin-top:6px;padding:10px 12px;text-align:left;min-width:0}
-.hl-mini b{flex-shrink:0;font-size:14px}
-.hl-mini>span:not(.hm-go){flex:1;min-width:0;font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hl-mini .hm-go{flex-shrink:0;display:flex;color:var(--text-muted)}
 /* 첫 화면: 비회원 · 회원 로그인 고르기 */
 .pf-tab,.pf-seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin-bottom:14px;background:var(--surface-1);border-radius:12px}
 .pf-tab button,.pf-seg button{padding:10px 6px;border:0;border-radius:9px;background:none;font:inherit;font-size:14px;font-weight:700;color:var(--text-muted);cursor:pointer}
@@ -527,16 +492,13 @@ button:hover{border-color:var(--gold)}
 .yq-q .ln,.yq-s .ln,.qfx-q .ln,.qfx-s .ln,.fxn .ln{display:block;text-wrap:balance}
 /* 연차 셔터가 걷히기 전까지 신문·TV·조보를 첫 장면에 멈춰 둔다 */
 .np-hold,.np-hold *{animation-play-state:paused!important}
-/* 라이트 모드의 명언: 다음 화면 맨 위에 조용히 */
+/* '동작 줄이기'의 명언: 다음 화면 맨 위에 조용히 */
 .fxn{margin:0 0 14px;padding:12px 14px;background:var(--surface-1);border-left:3px solid #c9a24a;border-radius:6px}
 .fxn-k{margin-bottom:6px;font-size:12px;font-weight:700;color:#8f6a12}
 .fxn-q{font-family:var(--font-voice);font-size:15px;line-height:1.7}
 .fxn-q.hj{letter-spacing:.1em}.fxn-q.en{font-style:italic}
 .fxn-s{margin-top:4px;font-size:13px;line-height:1.6;color:var(--text-secondary)}
 .fxn-w{margin-top:6px;font-size:12px;color:var(--text-muted)}
-/* 라이트 모드: 모든 애니메이션·전환을 즉시 끝난 상태로(사라지지 않게 '없음' 대신 길이 0) */
-html[data-lite] *,html[data-lite] *::before,html[data-lite] *::after{animation-duration:0s!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:0s!important;transition-delay:0s!important}
-html[data-lite] [style*="animation:tk"]{padding-left:0!important;display:block!important;overflow:hidden;text-overflow:ellipsis}
 /* 명언이 있으면 셔터가 맞물리는 금선 위에 연차 제목, 아래에 명언이 오도록.
    vh는 주소창을 뺀 실제 화면 높이와 달라서(아이패드 크롬 등) 제목이 금선에 걸리므로, 제목 칸을 화면 위쪽 절반으로 잡고 그 바닥에 선을 붙인다 */
 .yrfx-top{display:flex;flex-direction:column;align-items:center}
@@ -594,7 +556,7 @@ html[data-lite] [style*="animation:tk"]{padding-left:0!important;display:block!i
 .gs-quit-b{color:#fff!important;background:#b3261e!important;border-color:#b3261e!important}
 .g-more{display:none;width:32px;height:28px;padding:0;align-items:center;justify-content:center}
 html[data-ori="p"] .g-more{width:30px;height:26px;margin-left:4px}
-html[data-ori="p"] .g-more,html[data-lite] .g-more{display:inline-flex}
+html[data-ori="p"] .g-more{display:inline-flex}
 .gm-acts{display:flex;flex-direction:column;gap:8px;padding-top:6px}
 .gm-acts button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px 14px;text-align:left;border-radius:10px}
 .gm-acts b{font-size:14.5px}
@@ -633,7 +595,7 @@ html[data-ori="p"] .gx-menu .gx-lp-r:last-of-type{border-bottom:0}
 .gx-mi.open{color:#fff4d6}
 .gx-pc-z{display:flex;align-items:baseline;gap:8px;white-space:nowrap;margin-top:10px;padding-top:9px;border-top:1px solid rgba(201,162,74,.16);font-size:11.5px;color:#a39678}
 .gx-pc-z b{font:800 16px var(--font-voice);color:#9fd68b}.gx-pc-z.pz-st b{color:#bcd6ff}.gx-pc-z.pz-qx b{color:#ff9aa6}.gx-pc-z.pz-cg b{color:#ffd27a}.gx-pc-z.pz-ax b{color:#9fe3ff}
-/* 「백신 점프」 여는 손짓: 좌우로 밀 때마다 로고(라이트 화면은 제목)가 그쪽으로 기운다 */
+/* 「백신 점프」 여는 손짓: 좌우로 밀 때마다 로고가 그쪽으로 기운다 */
 .ax-sw-l .gx-logo,.ax-sw-l #ttl{animation:axSwL .32s ease-out}.ax-sw-r .gx-logo,.ax-sw-r #ttl{animation:axSwR .32s ease-out}
 /* 옆으로 밀 때 브라우저의 뒤로 · 앞으로 가기(가로 오버스크롤)가 걸리지 않게 */
 html,body{overscroll-behavior-x:none}
@@ -818,10 +780,6 @@ html:not([data-ori="p"]) .gx-sl[data-g="etc"] .gx-mt b{font-size:13.5px;white-sp
 .gx-nk.hop{animation:gxNkHop .32s cubic-bezier(.3,.7,.4,1)}
 @keyframes gxNkHop{0%{transform:translateY(0)}40%{transform:translateY(-6px)}70%{transform:translateY(0) scaleY(.92)}100%{transform:none}}
 @media (prefers-reduced-motion:reduce){.gx-nk.hop{animation:none}}
-/* 라이트 홈의 기록 보관소 줄: 여기 이름도 다섯 번 누르면 출근길이 열린다 */
-.hl-pc{display:flex;align-items:baseline;gap:8px;margin:0 0 8px;font-size:12px;color:var(--text-muted);min-width:0}
-.hl-pc b{display:inline-block;font-size:15px;font-weight:700;color:var(--text-primary,inherit);max-width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hl-pc small{margin-left:auto;font-size:12px;white-space:nowrap}
 /* ---------- 전체 화면 연출(시네마) ---------- */
 .cine{position:fixed;inset:0;z-index:75;overflow:hidden;color:var(--dk-text);background:radial-gradient(ellipse at 50% 38%,#3a2e1c 0%,#1b1610 55%,#0b0907 100%);animation:dkFade .45s both}
 .cine.out{opacity:0;transition:opacity .45s ease;pointer-events:none}
@@ -1175,14 +1133,12 @@ html:has(.cine:not(.out)),html:has(.cine:not(.out)) body,html:has(.lbfs),html:ha
 .gx-pips i{width:18px;height:4px;background:rgba(255,244,214,.14)}
 .gx-pips i.f{background:#e0604f}
 /* 난이도 칸: 쉬움 초록 1칸 · 보통 노랑 2칸 · 어려움 빨강 3칸 · 지옥 진홍 4칸이 맥박처럼 빛난다 */
-.gx-pips.d0 i.f,.dfp.d0 i.f{background:#3fc38f}
-.gx-pips.d1 i.f,.dfp.d1 i.f{background:#e3b341}
-.gx-pips.d2 i.f,.dfp.d2 i.f{background:#e0604f}
-.gx-pips.d3 i.f,.dfp.d3 i.f{background:#c4161c;box-shadow:0 0 6px 1px rgba(255,40,40,.75);animation:pipHell 1.1s ease-in-out infinite}
+.gx-pips.d0 i.f{background:#3fc38f}
+.gx-pips.d1 i.f{background:#e3b341}
+.gx-pips.d2 i.f{background:#e0604f}
+.gx-pips.d3 i.f{background:#c4161c;box-shadow:0 0 6px 1px rgba(255,40,40,.75);animation:pipHell 1.1s ease-in-out infinite}
 @keyframes pipHell{50%{background:#ff3b30;box-shadow:0 0 10px 2px rgba(255,59,48,.9)}}
-@media (prefers-reduced-motion:reduce){.gx-pips.d3 i.f,.dfp.d3 i.f{animation:none}}
-.dfp{display:flex;justify-content:center;gap:3px;margin-top:5px}
-.dfp i{width:12px;height:3px;border-radius:2px;background:rgba(29,27,24,.15)}
+@media (prefers-reduced-motion:reduce){.gx-pips.d3 i.f{animation:none}}
 .gx-rd{grid-column:2;text-align:center;font-size:12.5px;line-height:1.5;color:var(--dk-muted)}
 .gx-panel .gx-ok{margin-top:24px;font-size:19px;padding:16px 44px 16px 30px}
 @media (orientation:landscape) and (max-height:540px){
@@ -1394,7 +1350,7 @@ html[data-ori="p"] .gx-grid .gx-cp-tag{font-size:10px;letter-spacing:.1em}
 .spx-dash em{position:relative;display:inline-block;width:54px;height:5px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden}
 .spx-dash em i{position:absolute;left:0;top:0;bottom:0;border-radius:3px}
 .spx-dash b{color:#fff;font-variant-numeric:tabular-nums}
-/* ---------- 화면 설정: 세로/가로 모드 · 라이트 모드 ---------- */
+/* ---------- 화면 설정: 세로/가로 모드 ---------- */
 .vw{margin:4px 0 16px;padding:14px;background:var(--surface-1);border:1px solid var(--border);border-radius:12px}
 .vw-h{margin:0 0 10px;font-size:13px;font-weight:700}
 .vw-h span{margin-left:6px;font-weight:500;font-size:12px;color:var(--text-muted)}
@@ -1415,18 +1371,7 @@ html[data-ori="p"] .rotq svg{animation-name:rotqP}
 html[data-ori="p"] .rotq .rq-l,html[data-ori="l"] .rotq .rq-p{display:none}
 @media (pointer:coarse) and (orientation:portrait){html[data-ori="l"] .rotq{display:flex}}
 @media (pointer:coarse) and (orientation:landscape) and (max-height:520px){html[data-ori="p"] .rotq{display:flex}}
-/* 라이트 모드: 무거운 연출을 끄고 예전 화면처럼 가볍게 */
-html[data-lite] .evc.go .evt,html[data-lite] .evc.go::before,html[data-lite] .tierb,
-html[data-lite] .sb.up,html[data-lite] .sb.dn,html[data-lite] .sb.nt{animation:none}
-html[data-lite] .sb[data-d]::after{display:none}
-html[data-lite] #gOpts .opt{animation:optIn .25s ease-out forwards}
-html[data-lite] #gOpts .opt:hover:not(:disabled){transform:none;box-shadow:none}
-html[data-lite] .gcn,html[data-lite] .gcn *{animation:none!important}
-html[data-lite] .gcn .cn.tier4::after{display:none}
-html[data-lite] #app:has(.gcn){max-width:440px}
-html[data-lite] .gcn .cn-l{grid-template-columns:minmax(0,1fr)}
-html[data-lite] #wrap .g-side{display:none!important}
-/* 인적사항 다음의 화면 설정: 화면 가득, 가운데에 큰 카드 넷 */
+/* 인적사항 다음의 화면 설정: 화면 가득, 가운데에 큰 카드 둘 */
 .vset{position:fixed;inset:0;z-index:90;display:flex;overflow-y:auto;padding:24px 16px;background:var(--bg) radial-gradient(ellipse at 50% 0%,rgba(255,250,235,.85),transparent 60%);animation:fdIn .35s ease-out}
 .vset.out{opacity:0;transition:opacity .3s}
 .vset-in{width:min(720px,100%);margin:auto;text-align:center}
@@ -1444,23 +1389,7 @@ html[data-lite] #wrap .g-side{display:none!important}
 .vset-c.on svg{color:var(--accent)}
 .vset-go{width:100%;padding:17px;font-size:17px}
 body:has(.vset) .rotq{display:none!important}
-/* 라이트 모드 출발 인물: 드롭다운 + 소개 카드 */
-.bgsel{position:relative;display:block;margin-bottom:10px}
-.bgsel::after{content:"";position:absolute;right:18px;top:50%;width:9px;height:9px;margin-top:-7px;border-right:2px solid var(--text-secondary);border-bottom:2px solid var(--text-secondary);transform:rotate(45deg);pointer-events:none}
-.bgsel select{width:100%;padding:14px 44px 14px 14px;font:600 16px/1.4 var(--font-ui);color:var(--text-primary);background:var(--surface-2);border:1.5px solid var(--border-strong);border-radius:12px;-webkit-appearance:none;appearance:none;cursor:pointer}
-.bgsel select:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(29,27,24,.08)}
-.bgsel.ph select{color:var(--text-muted);border-style:dashed}
-.bgcard{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;padding:14px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;animation:fdIn .25s ease-out}
-.bgcard>div{flex:1;min-width:0}
-.bgcard-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.bgcard-h b{font-size:16px}.bgcard-h span{font-size:12px;color:var(--text-muted);white-space:nowrap}
-.bgcard-k{margin-top:2px;font-size:12.5px;color:var(--text-secondary)}
-.bgcard p{margin:8px 0 6px;font-size:13px;line-height:1.65;color:var(--text-secondary)}
-.bgcard-e{font-size:12.5px;line-height:1.6}
-.bgcard-w{margin-top:6px;font-size:12px;font-weight:700;color:#a8321f}
-.bgcard.empty{display:block;font-size:13px;line-height:1.6;color:var(--text-muted);background:transparent;border-style:dashed}
-.bghint{margin:0 0 24px;font-size:12px;line-height:1.75;color:var(--text-muted)}
-/* 기본 모드 지도자 명단의 '랜덤' 칸 */
+/* 지도자 명단의 '랜덤' 칸 */
 .gx-roster .gx-rnd{position:relative;background:linear-gradient(180deg,#3a2e1c,#1a150f);border-color:rgba(241,213,137,.45)}
 .gx-sil{display:block;width:100%;height:100%;fill:#050403;stroke:rgba(241,213,137,.55);stroke-width:.9;filter:drop-shadow(0 0 3px rgba(241,213,137,.35))}
 .gx-sil text{fill:#f1d589;stroke:none;font:800 20px var(--font-voice)}
@@ -1616,24 +1545,6 @@ html[data-ori="p"] .gx-ph-s{margin:2px 0 8px;font-size:12px}
 html[data-ori="p"] .gx-row{padding:5px 10px;gap:0 12px}
 html[data-ori="p"] .gx-ar{width:34px;height:34px}
 html[data-ori="p"] .gx-rd{font-size:11.5px;line-height:1.45}
-/* 라이트 메인: 무대는 한 줄 3칸, 취임 버튼은 화면 아래에 붙어 있다 */
-html[data-ori="p"] .hl .cmbs{grid-template-columns:repeat(3,minmax(0,1fr))}
-html[data-ori="p"] .hl .cmb{flex-direction:column;padding:9px 10px}
-html[data-ori="p"] .hl .cmb-s{display:none}
-html[data-ori="p"] #app:has(.hl){padding-top:max(14px,env(safe-area-inset-top))}
-html[data-ori="p"] .hl .hl-hd{margin-bottom:6px!important}
-html[data-ori="p"] .hl .lbl{margin-bottom:6px}
-html[data-ori="p"] .hl .bgsel{margin-bottom:8px}
-html[data-ori="p"] .hl .bgcard-h{flex-wrap:wrap;column-gap:8px;row-gap:0}
-html[data-ori="p"] .hl .bgcard-h span{white-space:normal}
-html[data-ori="p"] .hl .hl-mode,html[data-ori="p"] .hl .hl-dif{margin-bottom:14px!important}
-html[data-ori="p"] .hl .hl-mode button,html[data-ori="p"] .hl .hl-dif button{padding:8px 6px!important}
-html[data-ori="p"] .hl .bgsel select{padding:11px 40px 11px 12px}
-html[data-ori="p"] .hl .bgcard{padding:11px 12px}
-html[data-ori="p"] .hl .bgcard p{margin:5px 0 4px;font-size:12.5px;line-height:1.55}
-html[data-ori="p"] .hl .bghint{margin-bottom:14px}
-html[data-ori="p"] .hl .hl-go{position:sticky;bottom:0;z-index:3;margin:0 -16px;padding:10px 16px max(2px,env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,var(--bg) 22%)}
-html[data-ori="p"] .hl .hl-go #st{padding:14px!important}
 /* 특별 국정 과제: 카드 높이를 줄이고, 시작·넘어가기 버튼을 한 줄로 아래에 붙인다 */
 html[data-ori="p"] .spw .spb{min-height:108px;padding:10px 10px 9px}
 html[data-ori="p"] .spw .spb .spb-art{width:68px;height:68px}
@@ -1711,11 +1622,6 @@ html[data-ori="p"] .gx-ld .gx-top,html[data-ori="p"] .gx-su .gx-top{height:60px}
   html:not([data-ori="p"]) .gx-mi2{border-right:1px solid rgba(201,162,74,.1)}
   html:not([data-ori="p"]) .gx-mi.gx-half{grid-template-columns:minmax(0,1fr);padding:5px 8px;border-right:0;text-align:center}
   html:not([data-ori="p"]) .gx-half .gx-ic{display:none}}
-/* 라이트 메인 화면: 보통 카드 하나 자리에 반쪽 카드 둘. 안쪽 여백 · 그림 크기는 보통 카드와 같아 높이도 같다 */
-.hm-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-bottom:8px}
-.hm-split .hm-card{margin:0;gap:10px;padding:13px 12px;min-width:0}
-.hm-half .hm-x span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media (max-width:370px){.hm-split .hm-card{gap:8px;padding:13px 10px}.hm-half .hm-i{width:32px;height:32px}}
 /* ---------- 조선 국난: 먹빛 바탕에 붉은 봉화 ----------
    국난이 닥치면 붉게 번쩍이며 화면이 흔들리고, 둘레가 어두워진다. 위에는 봉수(위급할수록 3 → 5거)가 타오르고,
    오른쪽에는 '國難' 낙관, 바닥에서는 불티가 오른다. 맞서는 길은 옻칠한 판, 가능성은 유리 · 반반 · 불리 · 위태 네 단계로만 보인다. */

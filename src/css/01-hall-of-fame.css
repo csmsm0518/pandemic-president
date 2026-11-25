@@ -89,26 +89,10 @@
 .tip-a{display:flex;gap:8px;margin-top:8px}
 .tip-a button{font-size:12px;padding:6px 11px}
 .tip-off{color:var(--text-muted);background:transparent!important;border-color:transparent!important}
-/* 홈: 튜토리얼 스위치, 가이드북, 서브게임 */
-.hm-row{display:flex;justify-content:flex-end;margin-bottom:10px}
-.tgl{display:inline-flex;align-items:center;gap:8px;font-size:12px;padding:6px 10px;border-radius:999px;color:var(--text-secondary)}
-.tgl-k{position:relative;width:30px;height:17px;border-radius:999px;background:var(--surface-1);border:1px solid var(--border-strong);transition:background .2s}
-.tgl-k::after{content:"";position:absolute;top:2px;left:2px;width:11px;height:11px;border-radius:50%;background:#6e675c;transition:transform .2s,background .2s}
-.tgl[aria-checked="true"] .tgl-k{background:#2f4a6b;border-color:#2f4a6b}.tgl[aria-checked="true"] .tgl-k::after{transform:translateX(13px);background:#fff}
-.hm-card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:13px 14px;margin-bottom:8px;border-radius:12px}
-.hm-i{width:38px;height:38px;flex-shrink:0;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(47,74,107,.14);color:#3d5a80}
-.hm-mg .hm-i{background:rgba(31,122,114,.12);color:#1f7a72}
-.hm-x{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.hm-x b{font-size:15px}.hm-x span{font-size:12.5px;color:var(--text-muted);line-height:1.5}
-.hm-go{color:var(--text-muted)}
 /* 가이드북 */
 .mg-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
 /* 서브게임 */
 .mg{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
-a.hm-card{color:var(--text-primary);text-decoration:none;border:1px solid var(--border-strong);background:var(--surface-0);transition:background .15s}
-a.hm-card:hover{background:var(--surface-1)}
-a.hm-card:focus-visible{outline:2px solid #2f4a6b;outline-offset:2px}
-.hm-desk .hm-i{background:rgba(179,38,30,.14);color:#a8321f}
 /* 지표판 · 선택지 상자 · 무대 고르기 · 특별 이벤트 */
 .sgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:0 0 10px}
 .sg6{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:8px;margin:0 0 10px}
@@ -138,16 +122,7 @@ a.hm-card:focus-visible{outline:2px solid #2f4a6b;outline-offset:2px}
 .opt-p .pp-ok{color:var(--text-primary);font-weight:700}.opt-p .pp-x{color:var(--text-muted)}.opt-p .pp-c{color:#a8321f}
 .urg-v{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:1px}
 .ch b.gd{color:#2a6e4b}.ch b.bd{color:#a8321f}.ch b.nu{color:#3d5a80}
-.cmbs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
-.cmb{display:flex;flex-direction:column;gap:4px;text-align:left;padding:10px 10px 9px;min-width:0}
-.cmb.on{border-color:var(--ink);background:#fbf8f2;box-shadow:inset 0 0 0 1px var(--ink)}
-.cmb-t{display:flex;align-items:center;justify-content:space-between;gap:4px}
-.cmb-t b{font-size:15px}
-.cmb-tag{font-size:11px;font-weight:700;letter-spacing:.02em;padding:1px 5px;border-radius:4px;background:rgba(29,27,24,.08);color:var(--text-muted)}
-.cmb-tag.dlc{background:rgba(143,106,18,.16);color:#8f6a12}
-.cmb-s{font-size:11px;line-height:1.45;color:var(--text-muted)}
 @media(max-width:350px){.sg6{gap:6px}.sg6 .sb{padding:5px 4px 7px}.sg6 .sb-n{font-size:10.5px;letter-spacing:-.03em}.sg6 .sb b{font-size:16px}}
-@media(max-width:400px){.cmbs{grid-template-columns:1fr}.cmb{flex-direction:row;align-items:baseline;gap:10px}.cmb-t{flex-shrink:0;gap:6px}}
 /* 특별 이벤트 무대 */
 .spx{position:relative;overflow:hidden;background:var(--sb);color:#f7f3ea;border-radius:16px;padding:14px 10px 10px;margin-bottom:14px;animation:fdIn .45s ease-out;background-image:radial-gradient(120% 90% at 100% 0%,color-mix(in srgb,var(--sa) 22%,transparent),transparent 60%)}
 .spx-art{position:absolute;right:-14px;top:-12px;width:150px;height:150px;fill:none;stroke:var(--sa);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;color:var(--sa);opacity:.55;pointer-events:none}
@@ -299,7 +274,6 @@ a.hm-card:focus-visible{outline:2px solid #2f4a6b;outline-offset:2px}
 /* 가이드북 화면 투어 */
 .cn-fx{display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 12px}
 .cn-fx span{font-size:12px;font-weight:600;color:#2a6e4b;background:rgba(46,125,85,.1);border:1px solid rgba(46,125,85,.3);padding:2px 9px;border-radius:999px}
-.cmb-tag.sec{background:rgba(70,110,60,.18);color:#3f6a35}
 .egg-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;width:max-content;max-width:calc(100vw - 32px);background:#1d1b18;color:#f7f3ea;font-size:14px;line-height:1.55;padding:12px 16px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);animation:fdIn .3s ease-out;text-align:center}
 .egg-toast.out{opacity:0;transition:opacity .4s}
 /* 비밀 무대 · 좀비 아포칼립스 */
@@ -333,17 +307,8 @@ button:hover{border-color:var(--gold)}
 .opt{border-radius:8px}
 .opt:hover{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold-soft)}
 .opt-n{background:var(--surface-2);border-color:var(--gold-line);color:var(--gold-lo)}
-.cmb,.hm-card{border-radius:6px}
-.cmb.on,.lb-tabs button[aria-selected="true"]{border-color:var(--gold)!important;background:#fbf4e1!important;box-shadow:inset 0 0 0 1px var(--gold)!important}
-.hm-i{background:var(--gold-soft);color:var(--gold-lo)}
-/* 라이트 홈의 실시간 대결 칸: 칼 아이콘은 크기 정보가 없어 칸에 맞춰 준다 */
-.hm-battle .hm-i svg{width:20px;height:20px}
+.lb-tabs button[aria-selected="true"]{border-color:var(--gold)!important;background:#fbf4e1!important;box-shadow:inset 0 0 0 1px var(--gold)!important}
 
-/* 라이트 메인: 무대 고르기 바로 아래의 미니게임 줄(새 게임 안에서 연다) */
-.hl-mini{display:flex;align-items:center;gap:10px;width:100%;margin-top:6px;padding:10px 12px;text-align:left;min-width:0}
-.hl-mini b{flex-shrink:0;font-size:14px}
-.hl-mini>span:not(.hm-go){flex:1;min-width:0;font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hl-mini .hm-go{flex-shrink:0;display:flex;color:var(--text-muted)}
 /* 첫 화면: 비회원 · 회원 로그인 고르기 */
 .pf-tab,.pf-seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin-bottom:14px;background:var(--surface-1);border-radius:12px}
 .pf-tab button,.pf-seg button{padding:10px 6px;border:0;border-radius:9px;background:none;font:inherit;font-size:14px;font-weight:700;color:var(--text-muted);cursor:pointer}

@@ -1,6 +1,6 @@
 /* ---------- 금장 연출 ---------- */
-// 라이트 모드도 '동작 줄이기'와 같이 본다: 셔터·인용구·턴 카드 같은 전환 연출을 건너뛴다
-const reduceFx=()=>{if(document.documentElement.dataset.lite)return true;try{return matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}};
+// '동작 줄이기' 기기에서는 셔터·인용구·턴 카드 같은 전환 연출을 건너뛴다
+const reduceFx=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}};
 // 전환 연출(연차 셔터·인용구·턴 카드)이 떠 있으면 모두 걷힌 뒤에 cb
 function afterFx(cb){const busy=()=>document.querySelector('.yrfx,.qfx,.turnfx');if(!busy())return cb();
   const mo=new MutationObserver(()=>{if(!busy()){mo.disconnect();cb();}});mo.observe(document.body,{childList:true});}
@@ -51,7 +51,7 @@ function qLines(t,hj){t=String(t||'').trim();if(!t)return [];
 const qBlock=(t,hj)=>qLines(t,hj).map(l=>'<span class="ln">'+l+'</span>').join('');
 const lqHTML=Q=>'<div class="yq"><div class="yq-q'+(Q.hj?' hj':'')+(Q.en?' en':'')+'">'+qBlock(Q.q,Q.hj)+'</div>'+(Q.s?'<div class="yq-s">'+qBlock(Q.s)+'</div>':'')+
   '<div class="yq-w">— '+Q.w+'</div><div class="yq-k">누르면 넘어가요</div></div>';
-// 라이트 모드(연출 없음): 연차 화면 대신 다음 화면 맨 위에 그해의 말을 조용히 얹는다
+// '동작 줄이기'(연출 없음): 연차 화면 대신 다음 화면 맨 위에 그해의 말을 조용히 얹는다
 function fxNote(label,Q){R.insertAdjacentHTML('afterbegin','<div class="fxn"><div class="fxn-k">'+label+'</div><div class="fxn-q'+(Q.hj?' hj':'')+(Q.en?' en':'')+'">'+qBlock(Q.q,Q.hj)+'</div>'+
   (Q.s?'<div class="fxn-s">'+qBlock(Q.s)+'</div>':'')+'<div class="fxn-w">— '+Q.w+'</div></div>');}
 // 새 임기를 열 때의 인용구. 출처가 분명한 말만 쓴다.

@@ -8,7 +8,7 @@ function openBoardEmbed(o){o=o||{};if(IN_ART)return artBoard(o);lbeClose();windo
 function lbeClose(){if(!LBE)return;LBE.el.remove();document.body.style.overflow='';LBE=null;}
 addEventListener('message',e=>{if(!LBE||!e.data||!e.data.lb)return;const fr=LBE.el.querySelector('iframe');if(!fr||e.source!==fr.contentWindow)return;
   const back=LBE.back;SFX.back();lbeClose();
-  if(e.data.lb==='play'){home();if(!viewGet().lite)setTimeout(()=>{try{stepCamp();}catch(x){}},0);}else back();});function lbClose(){LB.open=false;clearTimeout(LB.timer);const o=document.getElementById('lbFs');if(o)o.remove();document.body.style.overflow='';}
+  if(e.data.lb==='play'){home();setTimeout(()=>{try{stepCamp();}catch(x){}},0);}else back();});function lbClose(){LB.open=false;clearTimeout(LB.timer);const o=document.getElementById('lbFs');if(o)o.remove();document.body.style.overflow='';}
 function lbSchedule(){clearTimeout(LB.timer);if(!LB.open)return;
   // 내 기록이 아직 시트에 안 들어왔으면 5초마다, 그 뒤로는 15초마다
   const waiting=LB.id&&LB.data&&LB.data.order&&LB.data.order.indexOf(LB.id)<0;

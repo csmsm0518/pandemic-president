@@ -120,24 +120,6 @@ html[data-ori="p"] .gx-ph-s{margin:2px 0 8px;font-size:12px}
 html[data-ori="p"] .gx-row{padding:5px 10px;gap:0 12px}
 html[data-ori="p"] .gx-ar{width:34px;height:34px}
 html[data-ori="p"] .gx-rd{font-size:11.5px;line-height:1.45}
-/* 라이트 메인: 무대는 한 줄 3칸, 취임 버튼은 화면 아래에 붙어 있다 */
-html[data-ori="p"] .hl .cmbs{grid-template-columns:repeat(3,minmax(0,1fr))}
-html[data-ori="p"] .hl .cmb{flex-direction:column;padding:9px 10px}
-html[data-ori="p"] .hl .cmb-s{display:none}
-html[data-ori="p"] #app:has(.hl){padding-top:max(14px,env(safe-area-inset-top))}
-html[data-ori="p"] .hl .hl-hd{margin-bottom:6px!important}
-html[data-ori="p"] .hl .lbl{margin-bottom:6px}
-html[data-ori="p"] .hl .bgsel{margin-bottom:8px}
-html[data-ori="p"] .hl .bgcard-h{flex-wrap:wrap;column-gap:8px;row-gap:0}
-html[data-ori="p"] .hl .bgcard-h span{white-space:normal}
-html[data-ori="p"] .hl .hl-mode,html[data-ori="p"] .hl .hl-dif{margin-bottom:14px!important}
-html[data-ori="p"] .hl .hl-mode button,html[data-ori="p"] .hl .hl-dif button{padding:8px 6px!important}
-html[data-ori="p"] .hl .bgsel select{padding:11px 40px 11px 12px}
-html[data-ori="p"] .hl .bgcard{padding:11px 12px}
-html[data-ori="p"] .hl .bgcard p{margin:5px 0 4px;font-size:12.5px;line-height:1.55}
-html[data-ori="p"] .hl .bghint{margin-bottom:14px}
-html[data-ori="p"] .hl .hl-go{position:sticky;bottom:0;z-index:3;margin:0 -16px;padding:10px 16px max(2px,env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,var(--bg) 22%)}
-html[data-ori="p"] .hl .hl-go #st{padding:14px!important}
 /* 특별 국정 과제: 카드 높이를 줄이고, 시작·넘어가기 버튼을 한 줄로 아래에 붙인다 */
 html[data-ori="p"] .spw .spb{min-height:108px;padding:10px 10px 9px}
 html[data-ori="p"] .spw .spb .spb-art{width:68px;height:68px}

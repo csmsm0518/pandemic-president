@@ -16,7 +16,7 @@ function mapDraw(c){c=c||document.getElementById('map');if(!c)return;const w=c.c
     if(MAP.dead.has(k)){x.fillStyle='rgba(70,52,56,.95)';x.beginPath();x.arc(px,py,1.5,0,6.283);x.fill();}
     else if(MAP.inf.has(k)){const p=.7+.3*Math.sin(t*4.2+d.ph);x.shadowColor='#e34948';x.shadowBlur=8;x.fillStyle='rgba(227,73,72,'+p+')';x.beginPath();x.arc(px,py,2.5,0,6.283);x.fill();x.shadowBlur=0;}
     else{x.fillStyle='rgba(160,168,178,.32)';x.beginPath();x.arc(px,py,1.7,0,6.283);x.fill();}}}
-// 지도가 화면에 없거나 접혀 있으면(세로 화면은 기본으로 접혀 있다) 그리지 않고 0.5초마다 다시 본다(메뉴 · 라이트 모드에서 쉬지 않고 그리던 것을 멈춘다)
+// 지도가 화면에 없거나 접혀 있으면(세로 화면은 기본으로 접혀 있다) 그리지 않고 0.5초마다 다시 본다(메뉴에서 쉬지 않고 그리던 것을 멈춘다)
 function mapLoop(){if(!MAP.run)return;const c=document.getElementById('map');
   if(!c||!c.offsetParent||document.hidden){setTimeout(()=>requestAnimationFrame(mapLoop),500);return;}
   const t=performance.now();if(t-MAP.last>70){MAP.last=t;mapUpdate();}if(t-MAP.dr>=32){MAP.dr=t;mapDraw(c);}requestAnimationFrame(mapLoop);}

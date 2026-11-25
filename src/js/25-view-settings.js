@@ -1,18 +1,16 @@
-/* ---------- 화면 설정: 세로/가로 모드 · 라이트 모드 ----------
+/* ---------- 화면 설정: 세로/가로 모드 ----------
    시작 화면에서 고르고 메뉴에서 바꾼다. 기록(MEM)과 함께 이 브라우저에 남는다.
-   ori: 'p' 세로(한 칸) · 'l' 가로(넓으면 상황판|사건 두 칸). lite: 예전 종이 메뉴 + 무거운 연출 끄기.
-   처음에는 기기 방향과 화면 크기(짧은 변 400px 미만이면 라이트)로 미리 골라 둔다. */
-function viewGet(){const v=MEM.view||{};
-  return {ori:v.ori||(matchMedia('(orientation:portrait)').matches?'p':'l'),lite:v.lite!=null?!!v.lite:Math.min(screen.width,screen.height)<400};}
-function applyView(){const v=viewGet(),h=document.documentElement;h.dataset.ori=v.ori;if(v.lite)h.dataset.lite='1';else delete h.dataset.lite;}
+   ori: 'p' 세로(한 칸) · 'l' 가로(넓으면 상황판|사건 두 칸). 처음에는 기기 방향으로 미리 골라 둔다.
+   (예전의 라이트 모드는 없앴다. 기기에 남은 MEM.view.lite는 읽지 않고, 다음에 설정을 저장할 때 지워진다) */
+function viewGet(){const v=MEM.view||{};return {ori:v.ori||(matchMedia('(orientation:portrait)').matches?'p':'l')};}
+function applyView(){const v=viewGet(),h=document.documentElement;h.dataset.ori=v.ori;delete h.dataset.lite;}
 function setView(k,val){MEM.view=Object.assign(viewGet(),{[k]:val});msave();applyView();}
-function vwHTML(head){const v=viewGet(),b=(k,val,t,s)=>'<button data-k="'+k+'" data-v="'+val+'" class="'+((k==='ori'?v.ori===val:(v.lite?'1':'0')===val)?'on':'')+'"><b>'+t+'</b><span>'+s+'</span></button>';
+function vwHTML(head){const v=viewGet(),b=(k,val,t,s)=>'<button data-k="'+k+'" data-v="'+val+'" class="'+(v[k]===val?'on':'')+'"><b>'+t+'</b><span>'+s+'</span></button>';
   return '<div class="vw">'+(head?'<div class="vw-h">화면 설정<span>나중에 메뉴에서 바꿀 수 있어요</span></div>':'')+
-   '<div class="vw-l">화면 방향</div><div class="vw-g">'+b('ori','p','세로 모드','휴대폰을 세워서 · 한 칸 화면')+b('ori','l','가로 모드','눕혀서 · 태블릿·PC · 두 칸 화면')+'</div>'+
-   '<div class="vw-l">화면 효과</div><div class="vw-g">'+b('lite','0','기본','연출과 애니메이션 모두')+b('lite','1','라이트','작은 휴대폰 · 예전처럼 가볍게')+'</div></div>';}
-// after(k): 바꾼 뒤 할 일(라이트를 바꾸면 메뉴를 다시 그리는 등)
+   '<div class="vw-l">화면 방향</div><div class="vw-g">'+b('ori','p','세로 모드','휴대폰을 세워서 · 한 칸 화면')+b('ori','l','가로 모드','눕혀서 · 태블릿·PC · 두 칸 화면')+'</div></div>';}
+// after(k): 바꾼 뒤 할 일
 function vwBind(root,after){root.querySelectorAll('.vw [data-k]').forEach(x=>x.onclick=()=>{try{SFX.click();}catch(e){}
-  const k=x.dataset.k;setView(k,k==='lite'?x.dataset.v==='1':x.dataset.v);
+  const k=x.dataset.k;setView(k,x.dataset.v);
   root.querySelectorAll('.vw [data-k="'+k+'"]').forEach(y=>y.classList.toggle('on',y===x));if(after)after(k);});}
 function viewPage(back){if(CINE)cineClose();window.scrollTo(0,0);
   R.innerHTML='<div style="animation:fdIn .3s ease-out"><button id="vwBack" style="font-size:13px;padding:7px 12px;margin-bottom:14px">← 돌아가기</button>'+
@@ -23,17 +21,14 @@ function viewPage(back){if(CINE)cineClose();window.scrollTo(0,0);
 // 누르는 즉시 적용되고, 처음에는 기기 방향·크기로 미리 골라 둔다(viewGet).
 function viewSetup(done){window.scrollTo(0,0);const v=viewGet();
   const PH=l=>'<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="'+(l?5:14)+'" y="'+(l?14:5)+'" width="'+(l?38:20)+'" height="'+(l?20:38)+'" rx="3.5"/><path d="'+(l?'M38 22v4':'M22 38h4')+'"/></svg>';
-  const IC={full:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 6l4.5 13.5L42 24l-13.5 4.5L24 42l-4.5-13.5L6 24l13.5-4.5z"/></svg>',
-    lite:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M38 8C25 8 13 18 13 31v7h7c13 0 22-11 22-24V8z"/><path d="M13 38l17-17"/></svg>'};
   const card=(k,val,icon,t,s,on)=>'<button class="vset-c'+(on?' on':'')+'" data-k="'+k+'" data-v="'+val+'">'+icon+'<b>'+t+'</b><span>'+s+'</span></button>';
   const o=document.createElement('div');o.className='vset';o.setAttribute('role','dialog');o.setAttribute('aria-label','화면 설정');
   o.innerHTML='<div class="vset-in"><div class="vset-k">시작하기 전에</div><h2 class="vset-h">화면 설정</h2>'+
     '<p class="vset-p">어떻게 플레이할지 골라 주세요. 나중에 메뉴에서 언제든 바꿀 수 있어요.</p>'+
     '<div class="vset-l">화면 방향</div><div class="vset-g">'+card('ori','p',PH(0),'세로 모드','휴대폰을 세워서 · 한 칸 화면',v.ori==='p')+card('ori','l',PH(1),'가로 모드','눕혀서 · 태블릿·PC · 두 칸 화면',v.ori==='l')+'</div>'+
-    '<div class="vset-l">화면 효과</div><div class="vset-g">'+card('lite','0',IC.full,'기본','연출과 애니메이션 모두',!v.lite)+card('lite','1',IC.lite,'라이트','작은 휴대폰 · 예전처럼 가볍게',v.lite)+'</div>'+
     '<button class="vset-go pri" id="vsetGo">이대로 시작</button></div>';
   document.body.appendChild(o);
-  o.querySelectorAll('.vset-c').forEach(b=>b.onclick=()=>{try{SFX.click();}catch(e){}const k=b.dataset.k;setView(k,k==='lite'?b.dataset.v==='1':b.dataset.v);
+  o.querySelectorAll('.vset-c').forEach(b=>b.onclick=()=>{try{SFX.click();}catch(e){}const k=b.dataset.k;setView(k,b.dataset.v);
     o.querySelectorAll('.vset-c[data-k="'+k+'"]').forEach(x=>x.classList.toggle('on',x===b));});
   let gone=false;const go=()=>{if(gone)return;gone=true;try{SFX.coin();}catch(e){}setView('ori',viewGet().ori);document.removeEventListener('keydown',key);
     o.classList.add('out');setTimeout(()=>o.remove(),300);done();};
@@ -46,9 +41,8 @@ document.body.insertAdjacentHTML('beforeend','<div class="rotq" role="alert"><sv
   '<button class="rq-l" data-o="p">세로 모드로 바꾸기</button><button class="rq-p" data-o="l">가로 모드로 바꾸기</button></div>');
 document.querySelectorAll('.rotq [data-o]').forEach(b=>b.onclick=()=>setView('ori',b.dataset.o));
 
-// 라이트 모드의 메인 화면: 예전 버전처럼 종이 한 장에 무대·출발 인물·결정 빈도·난이도를 두고 바로 취임한다
 // 이스터에그: 기록 보관소의 내 이름을 2.5초 안에 다섯 번 누르면(누를 때마다 이름이 깡충) 「대통령 출근길」이 열리고 바로 시작한다.
-// 메인 메뉴(기록 보관소 카드)와 라이트 홈(기록 보관소 줄) 모두 같은 방법으로 연다
+// 메인 메뉴의 기록 보관소 카드에서 연다
 function cgNameBind(nk){if(!nk)return;let tp=[];nk.classList.add('gx-nk');
   nk.onclick=()=>{const n=Date.now();tp=tp.filter(x=>n-x<2500);tp.push(n);nk.classList.remove('hop');void nk.offsetWidth;nk.classList.add('hop');
     try{aInit();tone(480+tp.length*90,'triangle',.06,.04);}catch(e){}if(tp.length<5)return;tp=[];const first=!eggOn('cg');eggSet('cg');
@@ -72,80 +66,6 @@ function axSwingBind(el){if(!el)return;let seq=[],pd=null,swT=0,done=false;
   const md=e=>dn(e.target,e.clientX,e.clientY),mu=e=>up(e.clientX,e.clientY);
   const L=[['keydown',kd],['touchstart',ts],['touchend',te],['mousedown',md],['mouseup',mu],['click',ck]],off=()=>L.forEach(x=>document.removeEventListener(x[0],x[1],true));
   L.forEach(x=>document.addEventListener(x[0],x[1],x[0].indexOf('touch')===0?{capture:true,passive:true}:true));}
-function homeLite(){bgmIntro(true);if(CINE)cineClose();window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp)||camp==='zombie')camp='kr';document.documentElement.dataset.camp=camp;
-  const msg=HUB_MSG;HUB_MSG='';const C=CAMPS[camp],BGS=C.bg;
-  // 출발 인물은 드롭다운으로 고른다. 처음엔 '인물을 선택하세요'이고, 고르기 전에는 취임할 수 없다.
-  if(bg>=BGS.length||(bg>=0&&bgLock(BGS[bg])))bg=-1;if(bg<0)bg=BGS.indexOf(GOD);const B=bg>=0?BGS[bg]:null;
-  const sel='border-color:var(--ink);background:#fbf8f2;box-shadow:inset 0 0 0 1px var(--ink);';
-  const got=Object.keys(MEM.ends).length,lg=Object.keys(MEM.leaders||{}).length;
-  const chip=(on,col,inner,pad)=>'<span style="display:inline-flex;align-items:center;gap:6px;vertical-align:middle;font-size:12px;padding:'+(pad||'4px 10px')+';border-radius:999px;margin:0 6px 6px 0;'+(on?'background:color-mix(in srgb,'+col+' 18%,var(--surface-1));border:1px solid color-mix(in srgb,'+col+' 45%,transparent);color:var(--text-primary);font-weight:600':'border:1px dashed var(--border-strong);color:var(--text-muted)')+'">'+inner+'</span>';
-  const dex=ENDC.map(e=>{const on=MEM.ends[e[0]];return chip(on,'#2f4a6b',on?(HNAME[e[0]]||e[1]):(HNAME[e[0]]?'???':e[1]));}).join('');
-  const ldex=LEADK.map(id=>{const on=MEM.leaders&&MEM.leaders[id],L=LEAD[id];return chip(on,L.col,on?portrait(L.n,22)+L.n:'???',on?'3px 10px 3px 3px':'');}).join('');
-  const cmb=Object.keys(CAMPS).filter(id=>campOn(id)&&id!=='zombie').map(id=>{const X=CAMPS[id];return '<button class="cmb'+(camp===id?' on':'')+'" data-c="'+id+'"><span class="cmb-t"><b>'+X.n+'</b><span class="cmb-tag'+(X.tag==='DLC'?' dlc':'')+'">'+X.tag+'</span></span><span class="cmb-s">'+X.sub+'</span></button>';}).join('');
-  const lockd=BGS.map(q=>[q,bgLock(q)]).filter(x=>x[1]);
-  const opts='<option value=""'+(B?'':' selected')+' disabled>인물을 선택하세요</option><option value="r">🎲 랜덤 — 고를 수 있는 인물 중 무작위로</option>'+BGS.map((q,k)=>{const L=bgLock(q);
-    return '<option value="'+k+'"'+(L?' disabled':'')+(bg===k?' selected':'')+'>'+(L?(L.used?q.n+' · 이미 함께한 비밀 인물':'??? · 잠긴 비밀 인물'):q.n+' — '+(q.k||''))+'</option>';}).join('');
-  const bgSel='<label class="bgsel'+(B?'':' ph')+'"><select id="bgSel" aria-label="출발 인물">'+opts+'</select></label>'+
-    (B?'<div class="bgcard">'+portrait(B.n,56)+'<div><div class="bgcard-h"><b>'+B.n+'</b><span>'+ageTxt(B)+'</span></div><div class="bgcard-k">'+(B.k||'')+(B.sec?' · 비밀 인물':'')+'</div>'+
-      (B.s?'<p>'+B.s+'</p>':'')+'<div class="bgcard-e">'+bgDesc(B,C)+'</div>'+(B.once?'<div class="bgcard-w">단 한 번만 함께할 수 있다. 취임하는 순간 다시 잠긴다.</div>':'')+'</div></div>'
-     :'<div class="bgcard empty">함께할 인물을 고르면 여기에 소개와 능력치가 나와요.</div>');
-  const bgHint=lockd.length?'<div class="bghint">'+lockd.map(x=>'<div>🔒 '+(x[1].used?x[0].n+' · ':'')+x[1].h+'</div>').join('')+'</div>':'<div style="height:14px"></div>';
-  const mdb=MODE.map((q,k)=>'<button class="mdb" data-k="'+k+'" style="flex:1;font-size:13.5px;padding:11px 6px;'+(mode===k?sel:'')+'"><span style="display:block;font-weight:600">'+q.n+'</span><span style="display:block;font-size:12px;color:var(--text-muted);margin-top:1px">'+q.d+'</span></button>').join('');
-  const dfb=DIFF.map((q,k)=>'<button class="dfb" data-k="'+k+'" style="flex:1;font-size:13.5px;padding:11px 6px;'+(dif===k?sel:'')+'">'+q.n+'<span class="dfp d'+k+'">'+Array.from({length:DIFF.length},(_,j)=>'<i'+(j<=k?' class="f"':'')+'></i>').join('')+'</span></button>').join('');
-  const stat=(a,b)=>'<div style="flex:1;min-width:0;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:10px 12px"><div style="font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+a+'</div><div style="font-size:18px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums">'+b+'</div></div>';
-  // 세로 화면에서는 무대 소개와 기록 카드를 취임 버튼 아래로 내려, 게임을 시작하는 데 필요한 것만 첫 화면에 둔다
-  // 이름을 introH로: intro라고 하면 첫 화면을 여는 intro() 함수를 가려 '인적사항 바꾸기'가 오류를 낸다
-  const P=isP(),introH='<div class="hl-in" style="font-size:14px;color:var(--text-secondary);line-height:1.75;margin:12px 0 18px">'+C.intro+'</div>'+
-    '<div class="hl-pc"><span>기록 보관소</span><b id="hlNk">'+gEsc(NICK||'익명')+'</b>'+(MEM.cg&&MEM.cg.v===1&&MEM.cg.best?'<small>출근길 최고 '+MEM.cg.best+'칸</small>':'')+'</div>'+
-    '<div style="display:flex;gap:8px;margin-bottom:24px">'+stat('최고 커리어 점수',MEM.best100?MEM.best100.toLocaleString('ko-KR')+'<span style="font-size:12px;color:var(--text-muted)">점</span>':'—')+stat('최장 재임',MEM.longest?MEM.longest+'년':'—')+stat('지나온 인생',(MEM.careers||0)+'번')+'</div>';
-  R.innerHTML='<div class="hl" style="animation:fdIn .35s ease-out">'+
-  '<div class="hl-hd" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span class="hd" id="ttl" style="font-size:25px;user-select:none">팬데믹 대통령</span><button id="snd" style="width:38px;height:34px;padding:0;display:flex;align-items:center;justify-content:center" aria-label="소리 설정">'+sndIco()+'</button></div>'+
-  (msg?'<div style="font-size:13.5px;line-height:1.7;color:var(--text-secondary);background:var(--surface-1);border-radius:10px;padding:10px 12px;margin-bottom:16px">'+msg+'</div>':'')+
-  lab('무대 고르기')+'<div class="cmbs">'+cmb+'</div>'+
-  '<button id="miBtn" class="hl-mini"><b>미니게임</b><span>'+miniSub()+'</span><span class="hm-go">'+CHEV+'</span></button>'+(P?'<div style="height:14px"></div>':introH)+
-  lab('출발 인물')+bgSel+(P?'<div style="height:12px"></div>':bgHint)+
-  lab('결정 빈도')+'<div class="hl-mode" style="display:flex;gap:8px;margin-bottom:22px">'+mdb+'</div>'+
-  lab('난이도')+'<div class="hl-dif" style="display:flex;gap:8px;margin-bottom:24px">'+dfb+'</div>'+
-  '<div class="hl-go"><button id="st" class="pri"'+(B?'':' disabled')+' style="width:100%;padding:16px;font-size:16.5px;margin-bottom:12px">'+(!B?'인물을 선택하세요':camp==='joseon'?'즉위한다':camp==='zombie'?'지휘를 맡는다':'취임한다')+'</button></div>'+(P?bgHint+introH:'')+
-  '<div class="hm-row"><button id="tutBtn" class="tgl" role="switch" aria-checked="'+tutOn()+'"><span class="tgl-k"></span><span>튜토리얼 '+(tutOn()?'켜짐':'꺼짐')+'</span></button></div>'+
-  '<button id="btBtn" class="hm-card hm-battle"><span class="hm-i">'+GX_IC.battle+'</span><span class="hm-x"><b>실시간 대결</b><span>'+gEsc(btSub())+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
-  '<button id="ldBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>불러오기</b><span>'+gEsc(svMenuTxt()||'저장된 게임이 없다')+'</span></span><span class="hm-go">'+CHEV+'</span></button>'+
-  '<button id="lbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>명예의 전당</b><span>모두의 최고 기록</span></span><span class="hm-go">'+CHEV+'</span></button>'+
-  '<button id="gbBtn" class="hm-card"><span class="hm-i">'+ICO2.book+'</span><span class="hm-x"><b>가이드북</b><span>판정 규칙, 지표, 대선, 점수 계산까지 한 번에</span></span><span class="hm-go">'+CHEV+'</span></button>'+boxTileLite()+
-  '<div style="height:16px"></div>'+vwHTML()+
-  lab('지도자 도감 '+lg+' / '+LEADK.length)+'<div style="margin-bottom:22px">'+ldex+'</div>'+
-  lab('임기 평가 도감 '+got+' / '+ENDC.length)+'<div style="margin-bottom:22px">'+dex+'</div>'+
-  '<button id="edBtn" style="width:100%;font-size:13px;margin-bottom:8px">인적사항 바꾸기</button>'+
-  '<div style="text-align:center;font-size:11px;color:var(--text-muted);margin:6px 0 10px">팬데믹 대통령 '+GAME_VER+' · 라이트 · <a href="#" id="newsBtn" style="color:inherit;text-decoration:underline">업데이트 소식</a></div></div>';
-  const $=id=>document.getElementById(id);
-  $('bgSel').onchange=e=>{SFX.click();const v=e.target.value;
-    // 랜덤: 지금 고를 수 있는(잠기지 않은) 인물 가운데 한 명
-    if(v==='r'){const P=BGS.map((q,i)=>i).filter(i=>!bgLock(BGS[i]));bg=P.length?P[Math.floor(Math.random()*P.length)]:-1;}else bg=v===''?-1:+v;homeLite();};
-  R.querySelectorAll('.cmb').forEach(b=>b.onclick=()=>{SFX.click();if(camp!==b.dataset.c){camp=b.dataset.c;bg=-1;}homeLite();});
-  R.querySelectorAll('.mdb').forEach(b=>b.onclick=()=>{SFX.click();mode=+b.dataset.k;homeLite();});
-  R.querySelectorAll('.dfb').forEach(b=>b.onclick=()=>{SFX.click();dif=+b.dataset.k;homeLite();});
-  $('snd').onclick=toggleSound;
-  $('st').onclick=()=>{try{aInit();SFX.start();}catch(e){}start();};
-  $('tutBtn').onclick=()=>{SFX.click();MEM.tut=!tutOn();msave();homeLite();};
-  $('lbBtn').onclick=()=>{SFX.click();openBoard({back:home});};
-  $('miBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();stepMini();};
-  if($('btBtn'))$('btBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();btOpen($('btBtn'));};
-  if($('ldBtn'))$('ldBtn').onclick=()=>{try{aInit();}catch(e){}SFX.click();svPicker();};   // 라이트 모드 메인 화면은 작은 창으로 연다
-  $('gbBtn').onclick=()=>{SFX.click();guide(home);};
-  boxBind('hl',()=>SFX.click());
-  $('edBtn').onclick=()=>{SFX.click();intro();};
-  $('newsBtn').onclick=e=>{e.preventDefault();SFX.click();newsOpen(true);};
-  vwBind(R,k=>{if(k==='lite')home();});
-  cgNameBind($('hlNk'));axSwingBind(R.querySelector('.hl'));
-  // 이스터에그: 제목을 3초 안에 7번 누르면 좀비 무대가 열린다
-  $('ttl').onclick=()=>{const n=Date.now();TAPS=TAPS.filter(x=>n-x<3000);TAPS.push(n);if(TAPS.length<7)return;TAPS=[];
-    if(eggOn('zombie')){eggToast('🧟 좀비 무대는 이미 열려 있어요.');return;}
-    eggSet('zombie');try{SFX.zombie();}catch(e){}vib([60,40,60,40,200]);eggToast('🧟 <b>어디선가 신음 소리가 들린다…</b><br>미니게임 「방역선」이 열렸어요. 홈의 게임 → 미니게임에서 할 수 있어요.');homeLite();};
-  newsCheck();
-  if(SEC_NEW.length){const nm=SEC_NEW.map(id=>{for(const c in CAMPS){const q=CAMPS[c].bg.find(b=>b.sec===id);if(q)return q.n;}return id;});SEC_NEW=[];SFX.unlock();eggToast('🔓 비밀 인물 해금: <b>'+nm.join(', ')+'</b>');}
-  // 수영 금메달 선물: 라이트 화면에는 로고 나침반이 없어서 튜토리얼 창 안에 나침반을 띄운다(sailTut(null))
-  if(MEM.sailHint===1&&!eggOn('sail'))setTimeout(()=>{if(MEM.sailHint===1&&!eggOn('sail')&&viewGet().lite&&!CINE&&R.querySelector('.hl'))sailTut(null);},700);
-}
 
 // 이 기기 기록 초기화: 이 브라우저에 저장된 것(기록·도감·저장한 게임·인적사항·설정·이스터에그·좀비 게임 기록)을 지우고 처음처럼 다시 연다.
 // 명예의 전당(구글 시트)에 이미 올라간 기록은 그대로 남는다. 되돌릴 수 없으니 한 번 더 묻는다.
@@ -165,7 +85,7 @@ function resetAsk(){const o=document.getElementById('rsAsk');if(o)o.remove();
   document.getElementById('rsYes').onclick=()=>{try{const L=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(RESET_KEYS(k))L.push(k);}L.forEach(k=>localStorage.removeItem(k));}catch(e){}
     location.reload();};
   setTimeout(()=>{const b=document.getElementById('rsNo');if(b)b.focus();},30);}
-function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
+function home(){dcEnd();bgmIntro(true);
   window.scrollTo(0,0);CP=CAMPS.kr;if(!campOn(camp)||camp==='zombie')camp='kr';document.documentElement.dataset.camp='kr';
   R.innerHTML='<div style="min-height:70vh"></div>';
   const msg=HUB_MSG;HUB_MSG='';
@@ -174,7 +94,7 @@ function home(){dcEnd();bgmIntro(true);if(viewGet().lite)return homeLite();
     G=[{id:'game',t:'게임',s:'새 게임 · 불러오기 · 미니게임',ic:'new',it:[item('mmNew','새 게임','한 번의 인생을 시작한다','new'),item('mmLoad','불러오기',sv||'저장된 게임이 없다','ld'),item('mmMini','미니게임',miniSub(),'new')]},
        {id:'battle',t:'실시간 대결',s:btSub(),ic:'battle',one:'mmBattle'},
        {id:'rec',t:'기록',s:'명예의 전당 · 도감',ic:'board',it:[item('mmBoard','명예의 전당','모두의 최고 기록','board'),item('mmDex','도감','만난 지도자와 임기 평가','dex')]},
-       {id:'etc',t:'기타',s:'가이드북 · 건의사항 · 쿠폰함 · 설정 · 로그인',ic:'guide',it:[item('mmGuide','가이드북','처음이라면 여기부터','guide'),item('mmNews','업데이트 소식',GAME_VER+' 바뀐 내용','news')].concat(BOX_M().map(m=>item('mm'+m[0],m[1],m[2],m[3])),[item('mmView','화면 설정','세로/가로 · 라이트','view'),item('mmEdit','인적사항 바꾸기','학교 · 이름 · 닉네임','user'),item('mmLogin','로그인 화면으로','회원 로그인 · 계정 바꾸기','user')])}];
+       {id:'etc',t:'기타',s:'가이드북 · 건의사항 · 쿠폰함 · 설정 · 로그인',ic:'guide',it:[item('mmGuide','가이드북','처음이라면 여기부터','guide'),item('mmNews','업데이트 소식',GAME_VER+' 바뀐 내용','news')].concat(BOX_M().map(m=>item('mm'+m[0],m[1],m[2],m[3])),[item('mmView','화면 설정','세로 · 가로 모드','view'),item('mmEdit','인적사항 바꾸기','학교 · 이름 · 닉네임','user'),item('mmLogin','로그인 화면으로','회원 로그인 · 계정 바꾸기','user')])}];
   const MROW=(g,i)=>'<button class="gx-mi gx-g'+(g.one?' gx-nx':'')+(g.open?' open':'')+'" id="'+(g.one||'mmG_'+g.id)+'" style="--i:'+i+'"'+(g.one?'':' aria-expanded="'+(g.open?'true':'false')+'" data-g="'+g.id+'"')+'><span class="gx-ic" aria-hidden="true">'+GX_IC[g.ic]+'</span><span class="gx-mt"><b>'+g.t+'</b><small>'+g.s+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>'+
     (g.it?'<div class="gx-sl'+(g.open?' open':'')+'" data-g="'+g.id+'">'+g.it.map(m=>'<button class="gx-mi gx-s" id="'+m[0]+'"><span class="gx-ic" aria-hidden="true">'+(GX_IC[m[3]]||(typeof BOX_IC!=='undefined'&&BOX_IC[m[3]])||'')+'</span><span class="gx-mt"><b>'+m[1]+'</b><small>'+m[2]+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>').join('')+'</div>':'');
   // 기록 카드: 닉네임, 최고 기록, 도감 진행도

@@ -284,14 +284,12 @@
 .gx-pips i{width:18px;height:4px;background:rgba(255,244,214,.14)}
 .gx-pips i.f{background:#e0604f}
 /* 난이도 칸: 쉬움 초록 1칸 · 보통 노랑 2칸 · 어려움 빨강 3칸 · 지옥 진홍 4칸이 맥박처럼 빛난다 */
-.gx-pips.d0 i.f,.dfp.d0 i.f{background:#3fc38f}
-.gx-pips.d1 i.f,.dfp.d1 i.f{background:#e3b341}
-.gx-pips.d2 i.f,.dfp.d2 i.f{background:#e0604f}
-.gx-pips.d3 i.f,.dfp.d3 i.f{background:#c4161c;box-shadow:0 0 6px 1px rgba(255,40,40,.75);animation:pipHell 1.1s ease-in-out infinite}
+.gx-pips.d0 i.f{background:#3fc38f}
+.gx-pips.d1 i.f{background:#e3b341}
+.gx-pips.d2 i.f{background:#e0604f}
+.gx-pips.d3 i.f{background:#c4161c;box-shadow:0 0 6px 1px rgba(255,40,40,.75);animation:pipHell 1.1s ease-in-out infinite}
 @keyframes pipHell{50%{background:#ff3b30;box-shadow:0 0 10px 2px rgba(255,59,48,.9)}}
-@media (prefers-reduced-motion:reduce){.gx-pips.d3 i.f,.dfp.d3 i.f{animation:none}}
-.dfp{display:flex;justify-content:center;gap:3px;margin-top:5px}
-.dfp i{width:12px;height:3px;border-radius:2px;background:rgba(29,27,24,.15)}
+@media (prefers-reduced-motion:reduce){.gx-pips.d3 i.f{animation:none}}
 .gx-rd{grid-column:2;text-align:center;font-size:12.5px;line-height:1.5;color:var(--dk-muted)}
 .gx-panel .gx-ok{margin-top:24px;font-size:19px;padding:16px 44px 16px 30px}
 @media (orientation:landscape) and (max-height:540px){

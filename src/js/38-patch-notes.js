@@ -123,6 +123,6 @@ function newsOpen(all){const o=pop('업데이트 소식 · '+GAME_VER,newsHTML(t
 function newsCheck(){if(MEM.seenVer===GAME_VER)return;
   const old=!!(MEM.seenVer||MEM.careers||MEM.runs||MEM.best100||Object.keys(MEM.leaders||{}).length);
   if(!old){MEM.seenVer=GAME_VER;msave();return;}
-  setTimeout(()=>{if(MEM.seenVer===GAME_VER||!document.querySelector('.gx-title,.hl')||document.querySelector('.svp-bg,.bx-bg'))return;
+  setTimeout(()=>{if(MEM.seenVer===GAME_VER||!document.querySelector('.gx-title')||document.querySelector('.svp-bg,.bx-bg'))return;
     const from=MEM.seenVer?vnum(MEM.seenVer):vnum(GAME_VER)-1;MEM.seenVer=GAME_VER;msave();
     const o=pop('업데이트 소식 · '+GAME_VER,newsHTML(false,from));const b=o.querySelector('#pnOk');b.onclick=()=>{try{SFX.click();}catch(e){}o.close();};try{SFX.unlock();}catch(e){}b.focus();},2800);}

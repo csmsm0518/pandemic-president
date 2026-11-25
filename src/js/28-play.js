@@ -61,7 +61,7 @@ function hud(o){if(isP())return hudP(o);const y=Math.floor(S.turn/PY)+1,v=Math.r
   (streak>=2?'<span style="color:#2e7d55;font-weight:700">연속 '+streak+(streak>=4?' 모멘텀':'')+'</span>':'<span></span>')+'</div>'+
   '<div style="overflow:hidden;white-space:nowrap;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:7px 0;margin-bottom:16px"><span style="display:inline-block;padding-left:100%;animation:tk 30s linear infinite;animation-delay:-7s;font-size:12px;color:var(--text-secondary)"><span style="color:var(--text-danger);font-weight:600">'+(CP.id==='joseon'?'풍문':'속보')+'</span>&nbsp; '+headlines()+'</span></div>';}
 // 위기 지수가 클수록 화면 가장자리가 짙게 붉어지고 안쪽까지 번진다(위기 10부터, 100이면 투명도 0.62).
-// 52 이상이면 예전 심장 박동과 같은 빠르기로 두 번씩 맥박친다(위기가 클수록 빨라진다). '동작 줄이기'·라이트 모드에서는 맥박 없이 색만 둔다.
+// 52 이상이면 예전 심장 박동과 같은 빠르기로 두 번씩 맥박친다(위기가 클수록 빨라진다). '동작 줄이기'에서는 맥박 없이 색만 둔다.
 function vign(){const i=S.i,a=Math.min(.62,Math.max(0,(i-10)/90)*.62),c=Math.round(58-Math.min(1,i/100)*26),
     beat=i>=52&&!reduceFx()?';animation:vgBeat '+Math.max(.6,(1350-i*7)/1000).toFixed(2)+'s ease-in-out infinite':'';
   return '<div style="position:absolute;inset:-6px;pointer-events:none;border-radius:12px;background:radial-gradient(ellipse at center,transparent '+c+'%,rgba(196,22,20,'+a.toFixed(3)+') 100%)'+beat+'"></div>';}
@@ -154,7 +154,7 @@ function wheelSVG(P){const cx=80,cy=96,r=70,pt=(d,rr)=>{const t=(d-90)*Math.PI/1
     else{const A=pt(a0,r),B=pt(a1,r);s+='<path d="M'+cx+' '+cy+' L'+A[0].toFixed(2)+' '+A[1].toFixed(2)+' A'+r+' '+r+' 0 '+(a1-a0>180?1:0)+' 1 '+B[0].toFixed(2)+' '+B[1].toFixed(2)+' Z" fill="'+WCOL[k]+'" stroke="#1d1b18" stroke-width="2"/>';}
     if(p>=.07){const M=pt((a0+a1)/2,r*.63);s+='<text x="'+M[0].toFixed(1)+'" y="'+M[1].toFixed(1)+'" fill="#fff" font-size="'+(p>=.18?13:10)+'" font-weight="700" text-anchor="middle" dominant-baseline="central">'+Math.round(p*100)+'%</text>';}});
   return {s:s,segs:segs};}
-// 라이트 모드·세로 화면·'동작 줄이기' 기기에서도 룰렛과 판정 글자가 보이도록 바늘 transition과 판정 animation은 important로 건다
+// 세로 화면·'동작 줄이기' 기기에서도 룰렛과 판정 글자가 보이도록 바늘 transition과 판정 animation은 important로 건다
 function reel(t,cb){
 const f=document.getElementById('fx'),w=document.getElementById('wrap'),q=lastFit.q,P=stakeP(q,lastS),W=wheelSVG(P),fw=fitWord(q);
   const sg=W.segs[t]||[0,1],th=sg[0]+(sg[1]-sg[0])*(.18+.64*Math.random()),rot=360*4+th;
@@ -177,10 +177,9 @@ const f=document.getElementById('fx'),w=document.getElementById('wrap'),q=lastFi
   // 판정 글자는 룰렛 칸 색의 카드에 담아 1초 넘게 띄운다(뒤의 글과 겹쳐도 읽히게, '성공'도 놓치지 않게)
   const fin=()=>{if(done)return;done=true;const T=TIER[t],ms=Math.max(1100,T.ms);SFX.rstop();SFX.tier(t);vib(t===3?[70,50,90]:t===2?45:t===0?[20,30,20]:0);
      f.innerHTML='<div style="position:absolute;inset:0;background:'+T.tint+';border-radius:12px;animation:fxT '+ms+'ms ease-out forwards!important"></div>'+
-     (document.documentElement.dataset.lite?'<div style="position:relative;padding:12px 30px 12px 35px;border-radius:16px;background:var(--surface-2);border:2px solid '+WCOL[t]+';box-shadow:0 14px 34px -8px rgba(70,50,20,.38);font-size:'+Math.max(30,T.fs)+'px;font-weight:700;letter-spacing:5px;color:'+WCOL[t]+';animation:fxL '+ms+'ms ease-out forwards!important">'+T.n+'</div>'
-     :'<div class="vd vd'+t+'" style="--ms:'+ms+'ms"><span class="vd-s"><b class="vd-n">'+T.n+'</b></span></div>');
+     '<div class="vd vd'+t+'" style="--ms:'+ms+'ms"><span class="vd-s"><b class="vd-n">'+T.n+'</b></span></div>';
      // 도장이 바닥에 닿는 순간(0.17초) 쿵 소리
-     if(!document.documentElement.dataset.lite)try{thud(t===3?110:140,t%3===0?.2:.13,.17,.2);}catch(e){}
+     try{thud(t===3?110:140,t%3===0?.2:.13,.17,.2);}catch(e){}
      if(t>=2)w.style.animation='shk '+(t===3?480:320)+'ms ease-out';
      setTimeout(()=>{w.style.animation='';f.innerHTML='';cb();},ms);};
   setTimeout(fin,SP+150);
@@ -314,7 +313,7 @@ function sideHTML(){if(!CAR||!CAR.bgn)return '';const RL=roleOf(),H=cnHired(),lo
     (log.length?log.map(x=>'<div class="gs-lg"><i style="background:'+TIER[x.t].bd+'">'+TIER[x.t].n+'</i><span>'+x.n+'</span></div>').join(''):'<div class="gs-e">아직 내린 결정이 없다.</div>')+'</div>'+svActs()+'</div>';}
 // 턴 카드: 새 사건이 열릴 때 띠가 화면을 가로지른다. 같은 사건을 다시 그릴 때나 다른 연출이 떠 있을 때는 건너뛴다.
 let tfLast=null,alLast=null;
-function turnFx(){if(reduceFx()||document.documentElement.dataset.lite||tfLast===cur||document.querySelector('.qfx,.yrfx,.cine'))return false;tfLast=cur;
+function turnFx(){if(reduceFx()||tfLast===cur||document.querySelector('.qfx,.yrfx,.cine'))return false;tfLast=cur;
   const o=document.createElement('div');o.className='turnfx';o.setAttribute('aria-hidden','true');
   o.innerHTML='<div class="turnfx-b"><div class="turnfx-in"><span class="turnfx-k">'+(Math.floor(S.turn/PY)+1)+'년차 · 결정 '+(S.turn%PY+1)+' / '+PY+'</span><span class="turnfx-t">'+cur.t+'</span></div></div>';
   document.body.appendChild(o);if(CP&&CP.dict)skinNode(o);SFX.swoosh();

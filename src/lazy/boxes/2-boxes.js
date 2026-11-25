@@ -1,5 +1,5 @@
 /* ---------- 건의사항함 · 쿠폰함 창 ----------
-   메인 화면의 반쪽 칸 둘(js/24b-lobby-boxes.js)이 연다. 창 모양은 소리 · 불러오기 창(.sndp)과 같아서 영화식 메뉴와 라이트 화면 어디서나 어울린다.
+   메인 화면의 반쪽 칸 둘(js/24b-lobby-boxes.js)이 연다. 창 모양은 소리 · 불러오기 창(.sndp)과 같아서 메인 메뉴와 잘 어울린다.
    건의사항: 분류와 내용을 적어 보내면 기록 시트의 '건의사항' 탭에 한 줄씩 쌓인다(kind:'suggest'). 명예의 전당 · 분석에는 나가지 않는다.
      게임 기록과 같은 '보낼 기록 상자'(obPush · obFlush)로 보내므로, 인터넷이 끊겨 있으면 이 기기에 두었다가 다음 접속 때 보낸다.
    쿠폰: 넣은 번호의 지문을 쿠폰 표(CPN, 1-coupons.js)와 맞춰 보고, 맞으면 보상을 주고 이 기기(MEM.cpn)에 받았다고 적는다(쿠폰마다 한 번).
@@ -7,7 +7,7 @@
 let BX_FROM=null,BX_DIRTY=false;
 // 창을 닫으면 누른 칸으로 초점을 돌려준다. 쿠폰으로 뭔가 열렸으면 메인 화면의 글(미니게임 수 · 받아 둔 운명 개입 등)을 새로 그린다
 function bxClose(){const o=document.querySelector('.bx-bg');if(o)o.remove();const f=BX_FROM;BX_FROM=null;
-  if(BX_DIRTY){BX_DIRTY=false;if(R.querySelector('.hl')&&!CINE){const y=window.scrollY;home();window.scrollTo(0,y);const b=f&&f.id&&document.getElementById(f.id);if(b)try{b.focus({preventScroll:true});}catch(e){}return;}
+  if(BX_DIRTY){BX_DIRTY=false;
     const s=document.querySelector('#mmCpn small');if(s)s.textContent=boxCpnSub();}
   if(f&&f.isConnected)try{f.focus({preventScroll:true});}catch(e){}}
 // 창 틀: 제목 + 닫기. 창 안의 키는 뒤의 메인 메뉴로 가지 않게 막는다(Esc는 닫기).
@@ -52,7 +52,7 @@ function sugForm(b){
 // 보낼 기록 상자에 넣고 바로 보내 본다. k(접수ID)로 서버가 같은 글을 한 번만 쓴다
 function sugSend(cat,text){if(!SHEET_URL||IN_ART)return false;const v=viewGet(),id=Date.now().toString(36)+Math.random().toString(36).slice(2,7),k='sug:'+id;
   const rec={id:id,cat:cat,text:text.slice(0,SUG_MAX),nickname:NICK||'익명',school:(PF&&PF.school)||'',gv:GAME_VER,pid:pidGet(),
-    view:(v.lite?'라이트':'기본')+' · '+(v.ori==='p'?'세로':'가로')+' · '+innerWidth+'×'+innerHeight,ua:String(navigator.userAgent||'').slice(0,200)};
+    view:(v.ori==='p'?'세로':'가로')+' · '+innerWidth+'×'+innerHeight,ua:String(navigator.userAgent||'').slice(0,200)};
   obPush([{k:k,b:JSON.stringify({k:k,kind:'suggest',v:GAME_VER,rec:rec})}]);obFlush();return true;}
 function sugDone(b,cat,t){const off=navigator.onLine===false;
   b.innerHTML='<div class="bx-done" role="status"><span class="bx-k">'+cat+'</span><h3>잘 받았어요. 고마워요!</h3>'+

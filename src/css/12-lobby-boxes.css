@@ -15,8 +15,3 @@
   html:not([data-ori="p"]) .gx-mi2{border-right:1px solid rgba(201,162,74,.1)}
   html:not([data-ori="p"]) .gx-mi.gx-half{grid-template-columns:minmax(0,1fr);padding:5px 8px;border-right:0;text-align:center}
   html:not([data-ori="p"]) .gx-half .gx-ic{display:none}}
-/* 라이트 메인 화면: 보통 카드 하나 자리에 반쪽 카드 둘. 안쪽 여백 · 그림 크기는 보통 카드와 같아 높이도 같다 */
-.hm-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-bottom:8px}
-.hm-split .hm-card{margin:0;gap:10px;padding:13px 12px;min-width:0}
-.hm-half .hm-x span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media (max-width:370px){.hm-split .hm-card{gap:8px;padding:13px 10px}.hm-half .hm-i{width:32px;height:32px}}

@@ -1,4 +1,4 @@
-/* ---------- 화면 설정: 세로/가로 모드 · 라이트 모드 ---------- */
+/* ---------- 화면 설정: 세로/가로 모드 ---------- */
 .vw{margin:4px 0 16px;padding:14px;background:var(--surface-1);border:1px solid var(--border);border-radius:12px}
 .vw-h{margin:0 0 10px;font-size:13px;font-weight:700}
 .vw-h span{margin-left:6px;font-weight:500;font-size:12px;color:var(--text-muted)}
@@ -19,18 +19,7 @@ html[data-ori="p"] .rotq svg{animation-name:rotqP}
 html[data-ori="p"] .rotq .rq-l,html[data-ori="l"] .rotq .rq-p{display:none}
 @media (pointer:coarse) and (orientation:portrait){html[data-ori="l"] .rotq{display:flex}}
 @media (pointer:coarse) and (orientation:landscape) and (max-height:520px){html[data-ori="p"] .rotq{display:flex}}
-/* 라이트 모드: 무거운 연출을 끄고 예전 화면처럼 가볍게 */
-html[data-lite] .evc.go .evt,html[data-lite] .evc.go::before,html[data-lite] .tierb,
-html[data-lite] .sb.up,html[data-lite] .sb.dn,html[data-lite] .sb.nt{animation:none}
-html[data-lite] .sb[data-d]::after{display:none}
-html[data-lite] #gOpts .opt{animation:optIn .25s ease-out forwards}
-html[data-lite] #gOpts .opt:hover:not(:disabled){transform:none;box-shadow:none}
-html[data-lite] .gcn,html[data-lite] .gcn *{animation:none!important}
-html[data-lite] .gcn .cn.tier4::after{display:none}
-html[data-lite] #app:has(.gcn){max-width:440px}
-html[data-lite] .gcn .cn-l{grid-template-columns:minmax(0,1fr)}
-html[data-lite] #wrap .g-side{display:none!important}
-/* 인적사항 다음의 화면 설정: 화면 가득, 가운데에 큰 카드 넷 */
+/* 인적사항 다음의 화면 설정: 화면 가득, 가운데에 큰 카드 둘 */
 .vset{position:fixed;inset:0;z-index:90;display:flex;overflow-y:auto;padding:24px 16px;background:var(--bg) radial-gradient(ellipse at 50% 0%,rgba(255,250,235,.85),transparent 60%);animation:fdIn .35s ease-out}
 .vset.out{opacity:0;transition:opacity .3s}
 .vset-in{width:min(720px,100%);margin:auto;text-align:center}
@@ -48,23 +37,7 @@ html[data-lite] #wrap .g-side{display:none!important}
 .vset-c.on svg{color:var(--accent)}
 .vset-go{width:100%;padding:17px;font-size:17px}
 body:has(.vset) .rotq{display:none!important}
-/* 라이트 모드 출발 인물: 드롭다운 + 소개 카드 */
-.bgsel{position:relative;display:block;margin-bottom:10px}
-.bgsel::after{content:"";position:absolute;right:18px;top:50%;width:9px;height:9px;margin-top:-7px;border-right:2px solid var(--text-secondary);border-bottom:2px solid var(--text-secondary);transform:rotate(45deg);pointer-events:none}
-.bgsel select{width:100%;padding:14px 44px 14px 14px;font:600 16px/1.4 var(--font-ui);color:var(--text-primary);background:var(--surface-2);border:1.5px solid var(--border-strong);border-radius:12px;-webkit-appearance:none;appearance:none;cursor:pointer}
-.bgsel select:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(29,27,24,.08)}
-.bgsel.ph select{color:var(--text-muted);border-style:dashed}
-.bgcard{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;padding:14px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;animation:fdIn .25s ease-out}
-.bgcard>div{flex:1;min-width:0}
-.bgcard-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.bgcard-h b{font-size:16px}.bgcard-h span{font-size:12px;color:var(--text-muted);white-space:nowrap}
-.bgcard-k{margin-top:2px;font-size:12.5px;color:var(--text-secondary)}
-.bgcard p{margin:8px 0 6px;font-size:13px;line-height:1.65;color:var(--text-secondary)}
-.bgcard-e{font-size:12.5px;line-height:1.6}
-.bgcard-w{margin-top:6px;font-size:12px;font-weight:700;color:#a8321f}
-.bgcard.empty{display:block;font-size:13px;line-height:1.6;color:var(--text-muted);background:transparent;border-style:dashed}
-.bghint{margin:0 0 24px;font-size:12px;line-height:1.75;color:var(--text-muted)}
-/* 기본 모드 지도자 명단의 '랜덤' 칸 */
+/* 지도자 명단의 '랜덤' 칸 */
 .gx-roster .gx-rnd{position:relative;background:linear-gradient(180deg,#3a2e1c,#1a150f);border-color:rgba(241,213,137,.45)}
 .gx-sil{display:block;width:100%;height:100%;fill:#050403;stroke:rgba(241,213,137,.55);stroke-width:.9;filter:drop-shadow(0 0 3px rgba(241,213,137,.35))}
 .gx-sil text{fill:#f1d589;stroke:none;font:800 20px var(--font-voice)}

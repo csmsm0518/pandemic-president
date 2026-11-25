@@ -171,7 +171,7 @@ function mgHockey(box,done){const $=id=>document.getElementById(id),{W,H,M}=IH,n
     bg=ihRink(L);$('ihHow').textContent=(pc?'마우스를 움직이면 금색 스트라이커가 따라간다(방향키·WASD도 된다). ':'화면을 누른 채 끌면 금색 스트라이커가 손가락 조금 위를 따라간다. ')+
       '퍽을 쳐서 '+(rot?'오른쪽':'위쪽')+' 골문에 넣어라.';draw();};
   const phy=(sx,sy)=>L.rot?[sy/L.s-M,H+M-sx/L.s]:[sx/L.s-M,sy/L.s-M];
-  // 큰 글씨(골!·3·2·1)는 루프가 시간을 재서 내린다. 라이트 화면은 CSS 애니메이션 시간을 0으로 만들어, 애니메이션으로 지우면 아예 안 보여서다
+  // 큰 글씨(골!·3·2·1)는 루프가 시간을 재서 내린다. CSS 애니메이션으로 지우면 기기에 따라 아예 안 보일 수 있어서다
   const fx=(s,c,d)=>{const f=$('ihFx');f.textContent=s;f.className='ih-fx '+c;void f.offsetWidth;f.classList.add('on');fxT=d||1.4;};
   const hud=()=>{const c=Math.ceil(S.clk-1e-6),k=S.sc+'|'+c+'|'+S.per+'|'+S.sh;if(k===hk)return;const o=hk.split('|')[0];hk=k;
     $('ihA').textContent=S.sc[0];$('ihB').textContent=S.sc[1];$('ihP').textContent=['','1P','2P','연장'][S.per];
