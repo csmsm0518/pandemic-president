@@ -105,7 +105,7 @@ function ev(){if(pendingNews){const n=pendingNews;pendingNews=null;return breaki
   SHOWN=Date.now();window.scrollTo(0,0);const tfd=turnFx()?820:0;if(alLast!==cur&&(cur===UPR||cur===IMP||cur===VARIANT||cur.tm)){alLast=cur;SFX.alert(tfd/1000);}
   const tag=cur.tag||(cur.st?'지표가 부른 사건':cur.tm?'권력의 시험':cur===UPR||cur===IMP?'정권 위기':Object.values(CH).indexOf(cur)>=0?'지난 결정의 여파':'');
   const tc=cur.tc||(cur.st?'#9a6400':cur.tm?'#b3261e':cur===UPR||cur===IMP?'#b3261e':'#2f4a6b');
-  const bn=banner;banner='';const P=isP();
+  const bn=banner;banner='';ORI_BN=bn;const P=isP();
   // 세로 화면(fit): 위 상태 바 · 가운데 사건(g-sc, 넘치면 그 안에서만 스크롤) · 아래 선택지(g-bt) 세 칸으로 한 화면에 맞춘다
   R.innerHTML='<div id="wrap"'+(cur.mg?'':' class="fit"')+' style="position:relative;--tfd:'+tfd+'ms">'+vign()+'<div class="g-hud">'+hud({em:1})+sideHTML()+'</div><div class="g-main"><div class="g-sc">'+
   (bn?'<div style="font-size:12px;color:#a8321f;background:rgba(179,38,30,.12);border:1px solid rgba(179,38,30,.3);border-radius:8px;padding:7px 11px;margin-bottom:10px;animation:fdIn .3s ease-out">'+bn+'</div>':'')+

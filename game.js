@@ -5748,48 +5748,25 @@ bgmCue=dcIso(bgmCue);bgmHold=dcIso(bgmHold);bgmInfo=dcIso(bgmInfo);bgmSkip=dcIso
 bgmIntro=dcIso(bgmIntro);bgmGame=dcIso(bgmGame);bgmRamp=dcIso(bgmRamp);bgmLoad=dcIso(bgmLoad);
 mapReset=dcIso(mapReset);mapUpdate=dcIso(mapUpdate);mapDraw=dcIso(mapDraw);mapLoop=dcIso(mapLoop);mapStart=dcIso(mapStart);
 leaderQ=dcIso(leaderQ);quoteFx=dcIso(quoteFx);
-/* ---------- 화면 설정: 세로/가로 모드 ----------
-   시작 화면에서 고르고 메뉴에서 바꾼다. 기록(MEM)과 함께 이 브라우저에 남는다.
-   ori: 'p' 세로(한 칸) · 'l' 가로(넓으면 상황판|사건 두 칸). 처음에는 기기 방향으로 미리 골라 둔다.
-   (예전의 라이트 모드는 없앴다. 기기에 남은 MEM.view.lite는 읽지 않고, 다음에 설정을 저장할 때 지워진다) */
-function viewGet(){const v=MEM.view||{};return {ori:v.ori||(matchMedia('(orientation:portrait)').matches?'p':'l')};}
-function applyView(){const v=viewGet(),h=document.documentElement;h.dataset.ori=v.ori;delete h.dataset.lite;}
-function setView(k,val){MEM.view=Object.assign(viewGet(),{[k]:val});msave();applyView();}
-function vwHTML(head){const v=viewGet(),b=(k,val,t,s)=>'<button data-k="'+k+'" data-v="'+val+'" class="'+(v[k]===val?'on':'')+'"><b>'+t+'</b><span>'+s+'</span></button>';
-  return '<div class="vw">'+(head?'<div class="vw-h">화면 설정<span>나중에 메뉴에서 바꿀 수 있어요</span></div>':'')+
-   '<div class="vw-l">화면 방향</div><div class="vw-g">'+b('ori','p','세로 모드','휴대폰을 세워서 · 한 칸 화면')+b('ori','l','가로 모드','눕혀서 · 태블릿·PC · 두 칸 화면')+'</div></div>';}
-// after(k): 바꾼 뒤 할 일
-function vwBind(root,after){root.querySelectorAll('.vw [data-k]').forEach(x=>x.onclick=()=>{try{SFX.click();}catch(e){}
-  const k=x.dataset.k;setView(k,x.dataset.v);
-  root.querySelectorAll('.vw [data-k="'+k+'"]').forEach(y=>y.classList.toggle('on',y===x));if(after)after(k);});}
-function viewPage(back){if(CINE)cineClose();window.scrollTo(0,0);
-  R.innerHTML='<div style="animation:fdIn .3s ease-out"><button id="vwBack" style="font-size:13px;padding:7px 12px;margin-bottom:14px">← 돌아가기</button>'+
-   '<div class="hd" style="font-size:25px;margin-bottom:12px">화면 설정</div>'+vwHTML()+
-   '<div style="font-size:12.5px;color:var(--text-muted);line-height:1.7">세로 모드는 한 칸짜리 화면이고, 가로 모드는 넓은 화면에서 왼쪽 상황판과 오른쪽 사건으로 나뉘어요. 휴대폰을 고른 방향과 반대로 들고 있으면 돌려 달라는 안내가 나와요.</div></div>';
-  vwBind(R);document.getElementById('vwBack').onclick=()=>{try{SFX.back();}catch(e){}back();};}
-// 인적사항 다음에 나오는 화면 설정: 화면 가득 가운데에서 크게 고르고, '이대로 시작'을 누르면 done(오프닝)으로 간다.
-// 누르는 즉시 적용되고, 처음에는 기기 방향·크기로 미리 골라 둔다(viewGet).
-function viewSetup(done){window.scrollTo(0,0);const v=viewGet();
-  const PH=l=>'<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="'+(l?5:14)+'" y="'+(l?14:5)+'" width="'+(l?38:20)+'" height="'+(l?20:38)+'" rx="3.5"/><path d="'+(l?'M38 22v4':'M22 38h4')+'"/></svg>';
-  const card=(k,val,icon,t,s,on)=>'<button class="vset-c'+(on?' on':'')+'" data-k="'+k+'" data-v="'+val+'">'+icon+'<b>'+t+'</b><span>'+s+'</span></button>';
-  const o=document.createElement('div');o.className='vset';o.setAttribute('role','dialog');o.setAttribute('aria-label','화면 설정');
-  o.innerHTML='<div class="vset-in"><div class="vset-k">시작하기 전에</div><h2 class="vset-h">화면 설정</h2>'+
-    '<p class="vset-p">어떻게 플레이할지 골라 주세요. 나중에 메뉴에서 언제든 바꿀 수 있어요.</p>'+
-    '<div class="vset-l">화면 방향</div><div class="vset-g">'+card('ori','p',PH(0),'세로 모드','휴대폰을 세워서 · 한 칸 화면',v.ori==='p')+card('ori','l',PH(1),'가로 모드','눕혀서 · 태블릿·PC · 두 칸 화면',v.ori==='l')+'</div>'+
-    '<button class="vset-go pri" id="vsetGo">이대로 시작</button></div>';
-  document.body.appendChild(o);
-  o.querySelectorAll('.vset-c').forEach(b=>b.onclick=()=>{try{SFX.click();}catch(e){}const k=b.dataset.k;setView(k,b.dataset.v);
-    o.querySelectorAll('.vset-c[data-k="'+k+'"]').forEach(x=>x.classList.toggle('on',x===b));});
-  let gone=false;const go=()=>{if(gone)return;gone=true;try{SFX.coin();}catch(e){}setView('ori',viewGet().ori);document.removeEventListener('keydown',key);
-    o.classList.add('out');setTimeout(()=>o.remove(),300);done();};
-  const key=e=>{if(e.key==='Enter'&&!(e.target&&e.target.closest&&e.target.closest('.vset-c'))){e.preventDefault();go();}};
-  document.addEventListener('keydown',key);o.querySelector('#vsetGo').onclick=go;
-  setTimeout(()=>{try{o.querySelector('#vsetGo').focus({preventScroll:true});}catch(e){}},50);}
-// 휴대폰을 고른 방향과 반대로 들고 있을 때 덮는 안내(CSS가 보이고 숨긴다)
-document.body.insertAdjacentHTML('beforeend','<div class="rotq" role="alert"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg>'+
-  '<p class="rq-l">가로 모드를 골랐어요.<br>휴대폰을 가로로 돌려 주세요.</p><p class="rq-p">세로 모드를 골랐어요.<br>휴대폰을 세로로 돌려 주세요.</p>'+
-  '<button class="rq-l" data-o="p">세로 모드로 바꾸기</button><button class="rq-p" data-o="l">가로 모드로 바꾸기</button></div>');
-document.querySelectorAll('.rotq [data-o]').forEach(b=>b.onclick=()=>setView('ori',b.dataset.o));
+/* ---------- 화면 방향: 세로/가로 자동 전환(v6.2) ----------
+   고르는 화면 없이 늘 기기 방향을 따른다. ori: 'p' 세로(한 칸) · 'l' 가로(넓으면 상황판|사건 두 칸).
+   · 휴대폰 · 태블릿(손가락으로 쓰는 기기)은 기기 방향(screen.orientation)을 본다. 자판이 올라와 창이 납작해져도 가로로 바뀌지 않게.
+   · 컴퓨터는 창 모양(세로가 길면 세로)을 본다. 창 크기를 바꾸면 따라 바뀐다.
+   · 바뀌는 순간 선택을 기다리는 사건 화면(SVAT 'ev')이면 그 자리에서 새 방향으로 다시 그린다(oriRedraw). 다른 화면은 다음 화면부터 새 방향.
+   (예전의 MEM.view.ori · 라이트 모드는 읽지 않는다. 화면 설정 메뉴 · 돌려 달라는 안내 .rotq도 없앴다) */
+function oriNow(){try{const t=screen.orientation&&screen.orientation.type,touch=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>1;
+  if(touch&&t)return t.indexOf('portrait')===0?'p':'l';}catch(e){}return innerHeight>=innerWidth?'p':'l';}
+function viewGet(){return {ori:oriNow()};}
+function applyView(){const h=document.documentElement,o=oriNow(),was=h.dataset.ori;h.dataset.ori=o;delete h.dataset.lite;if(was&&was!==o)oriRedraw();}
+function setView(){applyView();}
+// 선택을 기다리는 사건 화면이면 다시 그린다(저장 불러오기와 같은 길). 고민 시간(SHOWN) · 위쪽 알림(banner)은 이어 간다
+let ORI_BN='';
+function oriRedraw(){try{if(SVAT!=='ev'||!cur||!document.querySelector('#gOpts .opt:not([disabled])')||document.querySelector('.cine,.qfx,.yrfx,.turnfx,.svp-bg,.sndp-bg,.vset'))return;
+  const sh=SHOWN;banner=ORI_BN;ev();SHOWN=sh;}catch(e){}}
+{let t=0;const on=()=>{clearTimeout(t);t=setTimeout(applyView,180);};addEventListener('resize',on);addEventListener('orientationchange',on);
+  try{screen.orientation&&screen.orientation.addEventListener('change',on);}catch(e){}}
+// 인적사항 다음 단계(예전의 화면 설정 고르기): 이제 방향은 자동이라 바로 done으로 간다
+function viewSetup(done){applyView();done();}
 
 // 이스터에그: 기록 보관소의 내 이름을 2.5초 안에 다섯 번 누르면(누를 때마다 이름이 깡충) 「대통령 출근길」이 열리고 바로 시작한다.
 // 메인 메뉴의 기록 보관소 카드에서 연다
@@ -5844,7 +5821,7 @@ function home(){dcEnd();bgmIntro(true);
     G=[{id:'game',t:'게임',s:'새 게임 · 불러오기 · 미니게임',ic:'new',it:[item('mmNew','새 게임','한 번의 인생을 시작한다','new'),item('mmLoad','불러오기',sv||'저장된 게임이 없다','ld'),item('mmMini','미니게임',miniSub(),'new')]},
        {id:'battle',t:'실시간 대결',s:btSub(),ic:'battle',one:'mmBattle'},
        {id:'rec',t:'기록',s:'명예의 전당 · 도감 · 옷장',ic:'board',it:[item('mmBoard','명예의 전당','모두의 최고 기록','board'),item('mmDex','도감','만난 지도자와 임기 평가','dex'),item('mmRoom','옷장 · 칭호','Lv '+lvNow().L+' · '+lvTitle(lvNow().L),'room')]},
-       {id:'etc',t:'기타',s:'가이드북 · 건의사항 · 쿠폰함 · 설정 · 로그인',ic:'guide',it:[item('mmGuide','가이드북','처음이라면 여기부터','guide'),item('mmNews','업데이트 소식',GAME_VER+' 바뀐 내용','news')].concat(BOX_M().map(m=>item('mm'+m[0],m[1],m[2],m[3])),[item('mmView','화면 설정','세로 · 가로 모드','view'),item('mmEdit','인적사항 바꾸기','학교 · 이름 · 닉네임','user'),item('mmLogin','로그인 화면으로','회원 로그인 · 계정 바꾸기','user')])}];
+       {id:'etc',t:'기타',s:'가이드북 · 건의사항 · 쿠폰함 · 로그인',ic:'guide',it:[item('mmGuide','가이드북','처음이라면 여기부터','guide'),item('mmNews','업데이트 소식',GAME_VER+' 바뀐 내용','news')].concat(BOX_M().map(m=>item('mm'+m[0],m[1],m[2],m[3])),[item('mmEdit','인적사항 바꾸기','학교 · 이름 · 닉네임','user'),item('mmLogin','로그인 화면으로','회원 로그인 · 계정 바꾸기','user')])}];
   const MROW=(g,i)=>'<button class="gx-mi gx-g'+(g.one?' gx-nx':'')+(g.open?' open':'')+'" id="'+(g.one||'mmG_'+g.id)+'" style="--i:'+i+'"'+(g.one?'':' aria-expanded="'+(g.open?'true':'false')+'" data-g="'+g.id+'"')+'><span class="gx-ic" aria-hidden="true">'+GX_IC[g.ic]+'</span><span class="gx-mt"><b>'+g.t+'</b><small>'+g.s+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>'+
     (g.it?'<div class="gx-sl'+(g.open?' open':'')+'" data-g="'+g.id+'">'+g.it.map(m=>'<button class="gx-mi gx-s" id="'+m[0]+'"><span class="gx-ic" aria-hidden="true">'+(GX_IC[m[3]]||(typeof BOX_IC!=='undefined'&&BOX_IC[m[3]])||'')+'</span><span class="gx-mt"><b>'+m[1]+'</b><small>'+m[2]+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>').join('')+'</div>':'');
   // 기록 카드: 닉네임, 최고 기록, 도감 진행도
@@ -5894,7 +5871,6 @@ function home(){dcEnd();bgmIntro(true);
   $('mmNews').onclick=()=>{gxSfx('click');newsOpen(true);};
   $('mmEdit').onclick=()=>{gxSfx('click');cineClose();intro();};
   $('mmLogin').onclick=()=>{gxSfx('click');cineClose();intro();};
-  $('mmView').onclick=()=>{gxSfx('click');viewPage(home);};
   boxBind('mm',()=>gxSfx('click'));
   // 이스터에그: 로고의 나침반을 다섯 바퀴 돌리면 비밀 모드 「대항해」가 새 게임의 무대 고르기에 생긴다
   compassSpin(document.querySelector('.cine .gx-logo svg'),()=>{
@@ -6521,7 +6497,7 @@ function ev(){if(pendingNews){const n=pendingNews;pendingNews=null;return breaki
   SHOWN=Date.now();window.scrollTo(0,0);const tfd=turnFx()?820:0;if(alLast!==cur&&(cur===UPR||cur===IMP||cur===VARIANT||cur.tm)){alLast=cur;SFX.alert(tfd/1000);}
   const tag=cur.tag||(cur.st?'지표가 부른 사건':cur.tm?'권력의 시험':cur===UPR||cur===IMP?'정권 위기':Object.values(CH).indexOf(cur)>=0?'지난 결정의 여파':'');
   const tc=cur.tc||(cur.st?'#9a6400':cur.tm?'#b3261e':cur===UPR||cur===IMP?'#b3261e':'#2f4a6b');
-  const bn=banner;banner='';const P=isP();
+  const bn=banner;banner='';ORI_BN=bn;const P=isP();
   // 세로 화면(fit): 위 상태 바 · 가운데 사건(g-sc, 넘치면 그 안에서만 스크롤) · 아래 선택지(g-bt) 세 칸으로 한 화면에 맞춘다
   R.innerHTML='<div id="wrap"'+(cur.mg?'':' class="fit"')+' style="position:relative;--tfd:'+tfd+'ms">'+vign()+'<div class="g-hud">'+hud({em:1})+sideHTML()+'</div><div class="g-main"><div class="g-sc">'+
   (bn?'<div style="font-size:12px;color:#a8321f;background:rgba(179,38,30,.12);border:1px solid rgba(179,38,30,.3);border-radius:8px;padding:7px 11px;margin-bottom:10px;animation:fdIn .3s ease-out">'+bn+'</div>':'')+
@@ -8407,7 +8383,7 @@ function acEnter(id,p){PF={school:p.school,name:p.name,phone:p.phone||'',agree:t
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v6.1';
+const GAME_VER='v6.2';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -8588,6 +8564,9 @@ setTimeout(()=>{try{const me=!IN_ART&&acGet();if(!me||!me.prof||!me.prof.name)re
    홈 메뉴 「기타 → 업데이트 소식」에서 언제든 다시 볼 수 있다. 처음 온 사람(기록이 전혀 없음)에게는 띄우지 않고 읽은 것으로 쳐 둔다.
    v1부터 v4.9까지 모든 업데이트를 넣었다(v4.7은 크게, 나머지는 접어서 짧게). */
 const PATCHES=[
+ {v:'v6.2',t:'세로 · 가로 자동 전환',d:'2026-11-25',l:[
+  ['📱 자동 전환','이제 화면 방향을 고르지 않아도 돼요. 휴대폰 · 태블릿을 돌리면 세로 · 가로 화면이 저절로 바뀌고, 컴퓨터는 창 모양을 따라가요.'],
+  ['선택 중에 돌려도 그대로','사건을 고르는 중에 돌리면 그 자리에서 새 방향으로 다시 그려져요. 화면 설정 메뉴와 「돌려 주세요」 안내는 없앴어요.']]},
  {v:'v6.1',t:'크리스마스 에디션',d:'2026-11-25',l:[
   ['🎄 크리스마스 에디션','첫 화면 · 메인 메뉴 · 본게임까지 크리스마스 단장! 눈빛 흰 바탕에 빨강 · 초록 빛, 어두운 화면은 깊은 전나무 밤빛. 화면 위 전구 줄, 내리는 눈, 산타 모자를 쓴 나침반, 호랑가시 장식. 12월 31일까지만 볼 수 있어요.'],
   ['🎮 미니게임 모두 열림','숨겨져 있던 미니게임 여섯 개(방역선 · 대항해 · 별똥별 · 격리 탈출 · 대통령 출근길 · 백신 점프)를 이제 처음부터 할 수 있어요. 게임 → 미니게임에서 골라요.'],
