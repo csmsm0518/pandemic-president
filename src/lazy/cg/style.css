@@ -49,3 +49,16 @@
 .cg.hell .cg-card::before{background:repeating-linear-gradient(135deg,#e2553a 0 9px,#2a0f0b 9px 18px)}
 .cg.hell .cg-ban{background:rgba(9,13,26,.86);border-color:rgba(230,90,60,.4)}
 .cg.hell .cg-k{color:#ff8a66}
+/* 출근 미션: 제목 줄(도장 수) + 세 줄 목록. 끝낸 미션은 금빛 체크 */
+.cg-qh{display:flex;justify-content:space-between;align-items:baseline;margin:2px 2px 6px;font-size:12px;color:#cdd6cc}
+.cg-qh>b{font-size:12.5px;font-weight:800;letter-spacing:.08em;color:#e9c46a}.cg-qh span b{color:#fff;font-size:14px}
+.cg-card ul.cg-q{margin:0 0 12px;padding:8px 10px;border-radius:10px;background:rgba(0,0,0,.22);border:1px solid rgba(241,213,137,.16)}
+.cg-card ul.cg-q li{display:flex;align-items:center;gap:9px;padding:5px 0;margin:0;font-size:13px;color:#e3e8e0}
+.cg-card ul.cg-q li::before{display:none}
+.cg-q li+li{border-top:1px dashed rgba(241,213,137,.14)}
+.cg-q i{flex:none;width:16px;height:16px;border-radius:4px;border:1.5px solid rgba(241,213,137,.55)}
+.cg-q li.ok i{background:#e9c46a;border-color:#e9c46a;box-shadow:inset 0 0 0 3px #14382a}
+.cg-q li.ok span{color:#9fb3a3;text-decoration:line-through;text-decoration-color:rgba(233,196,106,.6)}
+.cg-q span{flex:1;min-width:0}.cg-q small{font-size:11px;color:#9fb3a3}
+.cg-q em{flex:none;font-style:normal;font-size:12px;font-weight:800;color:#ffe08a;font-variant-numeric:tabular-nums}
+.cg.hell .cg-q li.ok i{box-shadow:inset 0 0 0 3px #141a2e}
