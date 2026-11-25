@@ -143,7 +143,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   add('운명 개입',-60*((RUN&&RUN.rr)||0),((RUN&&RUN.rr)||0)+'번');
   const total=it.reduce((s,x)=>s+x[1],0),ex=EXITPT[kind]||0;
   return {total:total,perf:perf,cont:cont,honor:total-perf-cont,avg:r1(CAR.terms.reduce((s,t)=>s+cl(t.sc),0)/Math.max(1,CAR.terms.length)),ex:ex,items:it};}function careerEnd(kind){if(CAR.done)return;CAR.done=1;if(RUN)svDrop(RUN.id);window.scrollTo(0,0);
-  if(CAR.tEval!==CAR.term){const te=evalTerm(ENDS[kind]||kind==='quit'?kind:'done');te.decision=EXH[kind]||kind;CAR.terms.push(te);CAR.tEval=CAR.term;if(!godRun())MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;
+  if(CAR.tEval!==CAR.term){const te=evalTerm(ENDS[kind]||kind==='quit'?kind:'done');te.decision=EXH[kind]||kind;CAR.terms.push(te);CAR.tEval=CAR.term;if(!godRun()){MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;if(MEM.ends[te.eid]===1)try{lvAdd(200,'새 임기 평가');}catch(e){}}
     const py=partialYear();if(py)CAR.yrs.push(yearSnap(py,[],0));}
   const god=godRun();if(!god)secCheck(kind);   // 조성민 판은 비밀 인물을 열지 않고 이 기기 기록에도 남기지 않는다
   CAR.exit=kind;if(!CAR.cs.length||kind!=='retire'&&kind!=='lost'&&kind!=='limit'&&kind!=='defeated'){CAR.cs.push(S.c);CAR.ts.push(S.trn);CAR.us.push(S.u);CAR.ss.push(S.saf);}
@@ -152,7 +152,9 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   const years=(CAR.term-1)*YRS+Math.max(1,Math.ceil(S.turn/PY)),age1=CAR.age0+years;
   const SC=careerScore(kind,years),csc=SC.total;
   const newBest=!god&&csc>(MEM.best100||0),newLead=!god&&!(MEM.leaders||{})[lid];
-  if(!god){MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=(+MEM.leaders[lid]||0)+1;MEM.leadPct=MEM.leadPct||{};try{MEM.leadPct[lid]=Math.max(+MEM.leadPct[lid]||0,leadPct(lid,LEADF));}catch(e){}msave();}
+  if(!god){MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=(+MEM.leaders[lid]||0)+1;MEM.leadPct=MEM.leadPct||{};try{MEM.leadPct[lid]=Math.max(+MEM.leadPct[lid]||0,leadPct(lid,LEADF));}catch(e){}msave();
+    // v6 레벨: 인생 완주 XP(100 + 커리어 점수, 최대 +150) · 처음 만난 지도자 · 조선 · 미국 DLC 옷
+    try{lvAdd(100+Math.max(0,Math.min(150,Math.round(csc))),'인생 완주');if(newLead)lvAdd(150,'새 지도자');const cid=CP&&CP.id,lm=lvMem();if(cid==='joseon'||cid==='usa'){lm.u[cid==='joseon'?'royal':'usa']=1;msave();}}catch(e){}}
   // 실시간 대결: 방에 점수를 올리고(btFinish) 기록 시트로는 보내지 않는다(sendCareer가 거른다). 그 뒤 원래 난수로 되돌린다(결산 화면의 꾸밈은 보통 난수로)
   const btI=DC&&DC.bt?DC.bt:null;if(btI)btFinish(btI,{sc:csc,lid:L.n,ex:EXH[kind]||kind,g:CAR.terms.length?CAR.terms[CAR.terms.length-1].g:''});
   sendCareer(EXH[kind]||kind,{lid:lid,csc:csc,years:years,good:good,bad:badN,SC:SC});dcEnd();

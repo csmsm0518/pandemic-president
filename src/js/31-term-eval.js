@@ -45,7 +45,7 @@ function evalTerm(kind){
 // 대선: 지지율 35 미만은 출마 불가, 35~65는 1~100% 확률, 65 이상은 확실히 당선
 const winPct=a=>a<35?0:a>=65?100:Math.round(1+(a-35)*99/30);
 function termEnd(){window.scrollTo(0,0);
-  const te=evalTerm('done');CAR.terms.push(te);CAR.tEval=CAR.term;if(!godRun()){MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;msave();}
+  const te=evalTerm('done');CAR.terms.push(te);CAR.tEval=CAR.term;if(!godRun()){MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;msave();if(MEM.ends[te.eid]===1)try{lvAdd(200,'새 임기 평가');}catch(e){}}
   if(CP.id==='reich'&&CAR.term===1&&!CAR.ww)return warEnd(te);   // 전쟁기 독일 1기의 끝: 세계대전의 승패(36-dlc-reich-flow.js)
   if(CP.rule==='reign')return reignEnd(te);
   // 개헌(amendPerm)이나 영구집권(dict)이면 임기 한도가 두 배로 늘어난다

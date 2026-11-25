@@ -93,7 +93,7 @@ function home(){dcEnd();bgmIntro(true);
   const sv=svMenuTxt(),item=(id,t,s,ic)=>[id,t,s,ic],
     G=[{id:'game',t:'게임',s:'새 게임 · 불러오기 · 미니게임',ic:'new',it:[item('mmNew','새 게임','한 번의 인생을 시작한다','new'),item('mmLoad','불러오기',sv||'저장된 게임이 없다','ld'),item('mmMini','미니게임',miniSub(),'new')]},
        {id:'battle',t:'실시간 대결',s:btSub(),ic:'battle',one:'mmBattle'},
-       {id:'rec',t:'기록',s:'명예의 전당 · 도감',ic:'board',it:[item('mmBoard','명예의 전당','모두의 최고 기록','board'),item('mmDex','도감','만난 지도자와 임기 평가','dex')]},
+       {id:'rec',t:'기록',s:'명예의 전당 · 도감 · 옷장',ic:'board',it:[item('mmBoard','명예의 전당','모두의 최고 기록','board'),item('mmDex','도감','만난 지도자와 임기 평가','dex'),item('mmRoom','옷장 · 칭호','Lv '+lvNow().L+' · '+lvTitle(lvNow().L),'room')]},
        {id:'etc',t:'기타',s:'가이드북 · 건의사항 · 쿠폰함 · 설정 · 로그인',ic:'guide',it:[item('mmGuide','가이드북','처음이라면 여기부터','guide'),item('mmNews','업데이트 소식',GAME_VER+' 바뀐 내용','news')].concat(BOX_M().map(m=>item('mm'+m[0],m[1],m[2],m[3])),[item('mmView','화면 설정','세로 · 가로 모드','view'),item('mmEdit','인적사항 바꾸기','학교 · 이름 · 닉네임','user'),item('mmLogin','로그인 화면으로','회원 로그인 · 계정 바꾸기','user')])}];
   const MROW=(g,i)=>'<button class="gx-mi gx-g'+(g.one?' gx-nx':'')+(g.open?' open':'')+'" id="'+(g.one||'mmG_'+g.id)+'" style="--i:'+i+'"'+(g.one?'':' aria-expanded="'+(g.open?'true':'false')+'" data-g="'+g.id+'"')+'><span class="gx-ic" aria-hidden="true">'+GX_IC[g.ic]+'</span><span class="gx-mt"><b>'+g.t+'</b><small>'+g.s+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>'+
     (g.it?'<div class="gx-sl'+(g.open?' open':'')+'" data-g="'+g.id+'">'+g.it.map(m=>'<button class="gx-mi gx-s" id="'+m[0]+'"><span class="gx-ic" aria-hidden="true">'+(GX_IC[m[3]]||(typeof BOX_IC!=='undefined'&&BOX_IC[m[3]])||'')+'</span><span class="gx-mt"><b>'+m[1]+'</b><small>'+m[2]+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>').join('')+'</div>':'');
@@ -101,7 +101,7 @@ function home(){dcEnd();bgmIntro(true);
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
   const st=(l,v,u)=>'<div><span>'+l+'</span><b>'+v+'</b>'+(u&&v!=='—'?'<small>'+u+'</small>':'')+'</div>';
   const pb=(l,a,n)=>'<div class="gx-pb"><span>'+l+'</span><em>'+a+' / '+n+'</em><i><s style="width:'+(n?Math.round(a/n*100):0)+'%"></s></i></div>';
-  const pc='<aside class="gx-pc" aria-label="내 기록"><div class="gx-pc-h"><span>기록 보관소</span><b>'+esc(NICK||'익명')+'</b></div>'+
+  const pc='<aside class="gx-pc" aria-label="내 기록"><div class="gx-pc-h"><span>기록 보관소</span><b>'+esc(NICK||'익명')+'</b></div>'+lvCard()+
     '<div class="gx-pc-g">'+st('최고 커리어 점수',MEM.best100?MEM.best100.toLocaleString('ko-KR'):'—','점')+st('최장 재임',MEM.longest||'—','년')+st('지나온 인생',MEM.careers||0,'번')+'</div>'+
     pb('지도자 도감',Object.keys(MEM.leaders||{}).length,LEADK.length)+pb('임기 평가 도감',Object.keys(MEM.ends||{}).length,ENDC.length)+
     (MEM.zg&&MEM.zg.runs?'<div class="gx-pc-z"><span>방역선 최고</span><b>'+MEM.zg.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+MEM.zg.wins+'번</span></div>':'')+
@@ -138,6 +138,8 @@ function home(){dcEnd();bgmIntro(true);
   $('mmLoad').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');ldPanel();};
   $('mmBoard').onclick=()=>{gxSfx('click');cineClose();openBoard({back:home});};
   $('mmDex').onclick=()=>{gxSfx('click');dexScene();};
+  $('mmRoom').onclick=()=>{gxSfx('click');lvRoom();};
+  setTimeout(()=>{try{lvDaily();}catch(e){}},900);
   $('mmGuide').onclick=()=>{gxSfx('click');cineClose();guide(home);};
   $('mmNews').onclick=()=>{gxSfx('click');newsOpen(true);};
   $('mmEdit').onclick=()=>{gxSfx('click');cineClose();intro();};

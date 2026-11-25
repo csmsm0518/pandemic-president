@@ -1,7 +1,7 @@
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v5.24';
+const GAME_VER='v6.0';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -57,7 +57,7 @@ function obFlush(){if(OB_BUSY||!SHEET_URL||IN_ART)return;const it=obGet()[0];if(
   try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:it.b}).then(done,()=>{OB_BUSY=false;});}catch(e){OB_BUSY=false;}}
 addEventListener('online',()=>obFlush());
 setTimeout(obFlush,4000);
-function sendArcade(game,o){if(!SHEET_URL||IN_ART)return;const id=Date.now().toString(36)+Math.random().toString(36).slice(2,7),k='arc:'+id;
+function sendArcade(game,o){try{lvMini(game,o);}catch(e){}if(!SHEET_URL||IN_ART)return;const id=Date.now().toString(36)+Math.random().toString(36).slice(2,7),k='arc:'+id;
   obPush([{k:k,b:JSON.stringify({k:k,kind:'arcade',v:GAME_VER,rec:Object.assign({id:id,game:game,nickname:NICK||'익명',school:(PF&&PF.school)||'',gv:GAME_VER,pid:pidGet()},o)})}]);obFlush();}
 function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.length||godRun()||(DC&&DC.bt))return;   // 조성민(데우스 엑스 마키나) 판 · 실시간 대결 판은 보내지 않는다
   RUN.sent=1;
@@ -117,7 +117,7 @@ let HIST_ON=false;
 function histArm(){if(HIST_ON)return;try{history.pushState({pp:1},'');HIST_ON=true;}catch(e){}}
 addEventListener('popstate',()=>{if(!HIST_ON)return;HIST_ON=false;
   if(RUN&&CAR&&!CAR.done){histArm();try{eggToast('게임 중에는 뒤로 가기로 나가지 않아요.<br>나가려면 메뉴의 <b>저장하고 나가기</b>를 쓰세요.');}catch(e){}}});
-mload();applyView();sndApply();
+mload();try{lvMem();}catch(e){}applyView();sndApply();   // 레벨 기록은 저장된 기록을 불러온 뒤에 만든다(먼저 만들면 빈 기록을 저장해 덮는다)
 const INTRO=R.innerHTML;
 function pfPhone(v){const d=String(v||'').replace(/\D/g,'');if(!d)return '';if(!/^01[016789]\d{7,8}$/.test(d))return null;return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4);}
 function bindIntro(){const $=id=>document.getElementById(id),err=$('pfErr');
@@ -162,7 +162,7 @@ const EGGN=[
 function hub(){window.scrollTo(0,0);document.documentElement.dataset.camp='kr';godSync();
   const eg=EGGN.find(x=>x[0].test(NICK||''));if(eg&&eg[2])eg[2]();
   HUB_MSG=(PF.name||NICK)+'님, 준비됐어요.'+(NICK&&NICK!=='익명'?' 명예의 전당에는 <b style="color:#f1d589">'+NICK+'</b>(으)로 올라가요.':'')+(eg?'<div class="cs-fx" style="margin-top:12px">✨ '+eg[1]+'</div>':'');
-  home();
+  home();try{lvSync();}catch(e){}
   // 바로가기 링크(commute.html → ?play=cg): 인적사항 · 로그인을 마치면 로비 대신 「대통령 출근길」을 바로 연다(한 번만). 나가면 로비로
   if(DLINK==='cg'){DLINK='';eggSet('cg');setTimeout(()=>cgOpen(home),250);}}
 // 바로가기 링크: 주소의 ?play=cg(또는 #cg · commute · 출근길)면 첫 입장 때 그 미니게임으로 바로 간다

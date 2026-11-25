@@ -1697,3 +1697,58 @@ html[data-ori="p"] .gx-ld .gx-top,html[data-ori="p"] .gx-su .gx-top{height:60px}
 .kg-hist b{color:#e9c477}
 .kg-nx{width:100%;padding:15px;font-size:15px;opacity:0;pointer-events:none;transition:opacity .3s}.kg-nx.on{opacity:1;pointer-events:auto}
 @media (prefers-reduced-motion:reduce){.kg-sc,.kg-n,.kg-em i,.kg-bong i.on,.kg-band.r,.kg-sc::before{animation:none}.kg-flash{display:none}}
+/* ---------- v6 대통령 레벨: 기록 보관소 레벨 줄 · XP 알림 · 옷장 · 칭호 (메인 메뉴의 어두운 금장 결) ---------- */
+.gx-lv{margin:-2px 0 14px;padding-bottom:12px;border-bottom:1px solid rgba(201,162,74,.2)}
+.gx-lv-t{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.gx-lv-b{flex:none;display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:11px;font:800 12px/1 var(--font-ui);color:#1d1406;background:linear-gradient(180deg,#f6dc8f,#c9a24a);font-variant-numeric:tabular-nums}
+.gx-lv-t b{font:800 15px/1.2 var(--font-voice);color:#fff4d6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gx-lv i,.lvw-bar i,.lvt-bar i{display:block;height:6px;border-radius:3px;background:rgba(201,162,74,.16);overflow:hidden}
+.gx-lv s,.lvw-bar s,.lvt-bar s{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#c9a24a,#f6dc8f)}
+.gx-lv em{display:block;margin-top:5px;font-size:11px;font-style:normal;color:#8a7e68;font-variant-numeric:tabular-nums;text-align:right}
+
+/* XP 알림: 화면 아래 가운데, 누를 수 없음(게임을 가리지 않게) */
+.lvt{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));z-index:400;width:min(92vw,380px);transform:translateX(-50%);padding:12px 14px 11px;border-radius:14px;pointer-events:none;
+  color:#f3ead7;background:rgba(18,15,10,.94);border:1px solid rgba(201,162,74,.45);box-shadow:0 18px 40px -12px rgba(0,0,0,.7);animation:lvtIn .35s cubic-bezier(.2,.8,.3,1) both}
+.lvt.out{animation:lvtOut .35s ease-in both}
+@keyframes lvtIn{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes lvtOut{to{opacity:0;transform:translate(-50%,10px)}}
+.lvt-r{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+.lvt-r b{flex:none;font:800 18px/1 var(--font-ui);color:#f6dc8f;font-variant-numeric:tabular-nums}
+.lvt-r span{min-width:0;font-size:12px;line-height:1.4;color:#cdbf9f}
+.lvt-bar em{display:block;margin-top:4px;font-size:11px;font-style:normal;color:#a39678;text-align:right;font-variant-numeric:tabular-nums}
+.lvt-up{display:flex;flex-direction:column;align-items:center;gap:3px;margin:-2px 0 10px;padding-bottom:10px;border-bottom:1px solid rgba(201,162,74,.25);text-align:center}
+.lvt-up span{font-size:11px;font-weight:800;letter-spacing:.24em;color:#c9a24a}
+.lvt-up b{font:800 30px/1.1 var(--font-voice);color:#fff4d6;text-shadow:0 0 18px rgba(246,220,143,.45)}
+.lvt-up em{font-style:normal;font-size:13.5px;font-weight:700;color:#f6dc8f}
+.lvt-up small{font-size:11.5px;color:#cdbf9f}
+.lvt.up{border-color:rgba(246,220,143,.8);box-shadow:0 0 0 1px rgba(246,220,143,.2),0 18px 50px -10px rgba(201,162,74,.45)}
+
+/* 옷장 · 칭호 */
+.lvw{width:min(920px,100%);margin:0 auto;padding:8px 4px 24px;text-align:left}
+.lvw-h{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;padding-top:28px}
+.lvw-k{font-size:11.5px;font-weight:800;letter-spacing:.24em;color:#c9a24a}
+.lvw-lv{display:flex;align-items:center;gap:10px}
+.lvw-lv .gx-lv-b{height:28px;padding:0 12px;border-radius:14px;font-size:15px}
+.lvw-lv b{font:800 clamp(24px,4vw,32px)/1.15 var(--font-voice);color:#fff4d6}
+.lvw-bar em{display:block;margin-top:6px;font-size:12px;font-style:normal;color:#a39678;font-variant-numeric:tabular-nums}
+.lvw-bar i{height:8px;border-radius:4px}
+.lvw-n{margin:2px 0 0;font-size:13px;line-height:1.65;color:#a39678}.lvw-n b{color:#f1d589;font-weight:700}
+.lvw-s{margin:6px 0 10px;font:800 13px var(--font-ui);letter-spacing:.2em;color:#c9a24a}
+.lvw-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px;margin-bottom:20px}
+.lvw-f{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 8px 12px;border-radius:12px;color:#f3ead7;background:rgba(14,12,9,.72);border:1px solid rgba(201,162,74,.22);
+  cursor:pointer;transition:border-color .15s,transform .15s,background .15s;animation:gxUp .45s calc(var(--i)*40ms) both}
+.lvw-f:hover{border-color:rgba(241,213,137,.6);transform:translateY(-2px)}
+.lvw-f canvas{width:96px;height:96px;margin-bottom:2px}
+.lvw-f b{font:800 14px/1.3 var(--font-voice);color:#fff4d6}
+.lvw-f small{font-size:11.5px;line-height:1.35;color:#a39678;text-align:center}
+.lvw-f.on{border-color:#f1d589;background:rgba(60,46,18,.55);box-shadow:inset 0 0 0 1px rgba(241,213,137,.35)}
+.lvw-f.on small{color:#f6dc8f;font-weight:700}
+.lvw-f.lk{cursor:default}.lvw-f.lk:hover{transform:none;border-color:rgba(201,162,74,.22)}
+.lvw-f.lk canvas{filter:grayscale(1) brightness(.35)}.lvw-f.lk b{color:#8a7e68}
+.lvw-t{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:0;padding:0;list-style:none}
+.lvw-t li{display:flex;align-items:baseline;gap:8px;padding:9px 12px;border-radius:10px;background:rgba(14,12,9,.6);border:1px solid rgba(201,162,74,.14);color:#6f6553}
+.lvw-t li span{flex:none;font:800 11.5px var(--font-ui);font-variant-numeric:tabular-nums}
+.lvw-t li b{font:800 14px var(--font-voice)}
+.lvw-t li.ok{color:#cdbf9f;border-color:rgba(201,162,74,.3)}.lvw-t li.ok b{color:#f1d589}
+.lvw-t li.on{background:rgba(60,46,18,.55);border-color:#f1d589}.lvw-t li.on b{color:#fff4d6}
+@media (prefers-reduced-motion:reduce){.lvt,.lvt.out,.lvw-f{animation:none}}

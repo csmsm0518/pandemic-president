@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"ax":{"v":"53f20e1768","h":"66055d422f604e45"},"battle":{"v":"5091c4c035","h":"583d39cea0053431"},"board":{"v":"02a1fd05a2","h":"a45d6705f7eda7a2"},"boxes":{"v":"0fe9b756e6","h":"6fd8c675ca1ca3d1"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"cg":{"v":"0968ecff75","h":"c7faff0c474114da"},"dex":{"v":"a834d42e11","h":"214b42847560de78"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"f2406bd47f","h":"58269006748ccbe1"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"qx":{"v":"b59a54b3ea","h":"a5dfdc9a8a91b253"},"sail":{"v":"e68228f6a5","h":"fabef0df44876102"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"a6c71124bb","h":"cde6281585382b34"},"whockey":{"v":"ad91f3fb16","h":"40f8ee705abddfb8"},"wjump":{"v":"b76e628a74","h":"051fb590c1646b11"},"wskate":{"v":"6d0ed6ce3a","h":"a407b9cdb8bc3715"}};
+const LZ_M={"ax":{"v":"53f20e1768","h":"66055d422f604e45"},"battle":{"v":"5091c4c035","h":"583d39cea0053431"},"board":{"v":"02a1fd05a2","h":"a45d6705f7eda7a2"},"boxes":{"v":"0fe9b756e6","h":"6fd8c675ca1ca3d1"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"cg":{"v":"ffd7aab8cd","h":"892469a4fd389b33"},"dex":{"v":"a834d42e11","h":"214b42847560de78"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"f2406bd47f","h":"58269006748ccbe1"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"qx":{"v":"b59a54b3ea","h":"a5dfdc9a8a91b253"},"sail":{"v":"e68228f6a5","h":"fabef0df44876102"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"a6c71124bb","h":"cde6281585382b34"},"whockey":{"v":"ad91f3fb16","h":"40f8ee705abddfb8"},"wjump":{"v":"b76e628a74","h":"051fb590c1646b11"},"wskate":{"v":"6d0ed6ce3a","h":"a407b9cdb8bc3715"}};
 function axOpen(){return lzCall('ax','axOpen',arguments);}
 function btOpen(){return lzCall('battle','btOpen',arguments);}
 function btFinish(){return lzCall('battle','btFinish',arguments);}
@@ -5323,7 +5323,7 @@ function headlines(){const h=[];
 /* ---------- 이스터에그 · 비밀 인물 ---------- */
 let TAPS=[],SEC_NEW=[];
 const eggOn=k=>!!(MEM.egg&&MEM.egg[k]);
-function eggSet(k){MEM.egg=MEM.egg||{};if(!MEM.egg[k]){MEM.egg[k]=1;msave();}}
+function eggSet(k){MEM.egg=MEM.egg||{};if(!MEM.egg[k]){try{lvMem();}catch(e){}MEM.egg[k]=1;msave();try{lvAdd(100,'비밀 발견');}catch(e){}}}
 // 전쟁기 독일은 비밀 무대(닉네임 1939 · 베를린 · 전격전으로 연다), 라인강의 기적은 전쟁기 독일에서 한 번 지면 열린다
 const campOn=id=>id==='bonn'?!!MEM.bonn:id==='reich'?eggOn('reich'):id!=='zombie'||eggOn('zombie');
 // 잠긴 비밀 인물이면 {h:힌트, used:이미 씀}을, 고를 수 있으면 null을 돌려준다
@@ -5631,7 +5631,7 @@ const gxSfx=(f,a)=>{try{SFX[f](a);}catch(e){}};
 const gxEnter=e=>e.key==='Enter'&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('.cine-back,.cine-x'));
 const GX_STEP=['무대','지도자','준비'];
 // 메인 메뉴 아이콘: 시작 · 왕관 · 책 · 나침반
-const GX_IC={battle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2M14.5 6.5L18 3h3v3l-3.5 3.5M5 14l4 4M7 17l-3 3M3 19l2 2"/></svg>',new:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z"/></svg>',
+const GX_IC={room:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M10 6.5a2 2 0 1 1 3 1.7c-.6.4-1 .9-1 1.6V11"/><path d="M12 11L3.4 17.2c-.8.6-.4 1.8.6 1.8h16c1 0 1.4-1.2.6-1.8Z"/></svg>',battle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2M14.5 6.5L18 3h3v3l-3.5 3.5M5 14l4 4M7 17l-3 3M3 19l2 2"/></svg>',new:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z"/></svg>',
   board:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></svg>',
   dex:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/></svg>',
   guide:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>',
@@ -5843,7 +5843,7 @@ function home(){dcEnd();bgmIntro(true);
   const sv=svMenuTxt(),item=(id,t,s,ic)=>[id,t,s,ic],
     G=[{id:'game',t:'게임',s:'새 게임 · 불러오기 · 미니게임',ic:'new',it:[item('mmNew','새 게임','한 번의 인생을 시작한다','new'),item('mmLoad','불러오기',sv||'저장된 게임이 없다','ld'),item('mmMini','미니게임',miniSub(),'new')]},
        {id:'battle',t:'실시간 대결',s:btSub(),ic:'battle',one:'mmBattle'},
-       {id:'rec',t:'기록',s:'명예의 전당 · 도감',ic:'board',it:[item('mmBoard','명예의 전당','모두의 최고 기록','board'),item('mmDex','도감','만난 지도자와 임기 평가','dex')]},
+       {id:'rec',t:'기록',s:'명예의 전당 · 도감 · 옷장',ic:'board',it:[item('mmBoard','명예의 전당','모두의 최고 기록','board'),item('mmDex','도감','만난 지도자와 임기 평가','dex'),item('mmRoom','옷장 · 칭호','Lv '+lvNow().L+' · '+lvTitle(lvNow().L),'room')]},
        {id:'etc',t:'기타',s:'가이드북 · 건의사항 · 쿠폰함 · 설정 · 로그인',ic:'guide',it:[item('mmGuide','가이드북','처음이라면 여기부터','guide'),item('mmNews','업데이트 소식',GAME_VER+' 바뀐 내용','news')].concat(BOX_M().map(m=>item('mm'+m[0],m[1],m[2],m[3])),[item('mmView','화면 설정','세로 · 가로 모드','view'),item('mmEdit','인적사항 바꾸기','학교 · 이름 · 닉네임','user'),item('mmLogin','로그인 화면으로','회원 로그인 · 계정 바꾸기','user')])}];
   const MROW=(g,i)=>'<button class="gx-mi gx-g'+(g.one?' gx-nx':'')+(g.open?' open':'')+'" id="'+(g.one||'mmG_'+g.id)+'" style="--i:'+i+'"'+(g.one?'':' aria-expanded="'+(g.open?'true':'false')+'" data-g="'+g.id+'"')+'><span class="gx-ic" aria-hidden="true">'+GX_IC[g.ic]+'</span><span class="gx-mt"><b>'+g.t+'</b><small>'+g.s+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>'+
     (g.it?'<div class="gx-sl'+(g.open?' open':'')+'" data-g="'+g.id+'">'+g.it.map(m=>'<button class="gx-mi gx-s" id="'+m[0]+'"><span class="gx-ic" aria-hidden="true">'+(GX_IC[m[3]]||(typeof BOX_IC!=='undefined'&&BOX_IC[m[3]])||'')+'</span><span class="gx-mt"><b>'+m[1]+'</b><small>'+m[2]+'</small></span><span class="gx-ar2" aria-hidden="true">›</span></button>').join('')+'</div>':'');
@@ -5851,7 +5851,7 @@ function home(){dcEnd();bgmIntro(true);
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
   const st=(l,v,u)=>'<div><span>'+l+'</span><b>'+v+'</b>'+(u&&v!=='—'?'<small>'+u+'</small>':'')+'</div>';
   const pb=(l,a,n)=>'<div class="gx-pb"><span>'+l+'</span><em>'+a+' / '+n+'</em><i><s style="width:'+(n?Math.round(a/n*100):0)+'%"></s></i></div>';
-  const pc='<aside class="gx-pc" aria-label="내 기록"><div class="gx-pc-h"><span>기록 보관소</span><b>'+esc(NICK||'익명')+'</b></div>'+
+  const pc='<aside class="gx-pc" aria-label="내 기록"><div class="gx-pc-h"><span>기록 보관소</span><b>'+esc(NICK||'익명')+'</b></div>'+lvCard()+
     '<div class="gx-pc-g">'+st('최고 커리어 점수',MEM.best100?MEM.best100.toLocaleString('ko-KR'):'—','점')+st('최장 재임',MEM.longest||'—','년')+st('지나온 인생',MEM.careers||0,'번')+'</div>'+
     pb('지도자 도감',Object.keys(MEM.leaders||{}).length,LEADK.length)+pb('임기 평가 도감',Object.keys(MEM.ends||{}).length,ENDC.length)+
     (MEM.zg&&MEM.zg.runs?'<div class="gx-pc-z"><span>방역선 최고</span><b>'+MEM.zg.best.toLocaleString('ko-KR')+'<small>점</small></b><span>새벽 맞이 '+MEM.zg.wins+'번</span></div>':'')+
@@ -5888,6 +5888,8 @@ function home(){dcEnd();bgmIntro(true);
   $('mmLoad').onclick=()=>{try{aInit();}catch(e){}gxSfx('click');ldPanel();};
   $('mmBoard').onclick=()=>{gxSfx('click');cineClose();openBoard({back:home});};
   $('mmDex').onclick=()=>{gxSfx('click');dexScene();};
+  $('mmRoom').onclick=()=>{gxSfx('click');lvRoom();};
+  setTimeout(()=>{try{lvDaily();}catch(e){}},900);
   $('mmGuide').onclick=()=>{gxSfx('click');cineClose();guide(home);};
   $('mmNews').onclick=()=>{gxSfx('click');newsOpen(true);};
   $('mmEdit').onclick=()=>{gxSfx('click');cineClose();intro();};
@@ -6979,7 +6981,7 @@ function evalTerm(kind){
 // 대선: 지지율 35 미만은 출마 불가, 35~65는 1~100% 확률, 65 이상은 확실히 당선
 const winPct=a=>a<35?0:a>=65?100:Math.round(1+(a-35)*99/30);
 function termEnd(){window.scrollTo(0,0);
-  const te=evalTerm('done');CAR.terms.push(te);CAR.tEval=CAR.term;if(!godRun()){MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;msave();}
+  const te=evalTerm('done');CAR.terms.push(te);CAR.tEval=CAR.term;if(!godRun()){MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;msave();if(MEM.ends[te.eid]===1)try{lvAdd(200,'새 임기 평가');}catch(e){}}
   if(CP.id==='reich'&&CAR.term===1&&!CAR.ww)return warEnd(te);   // 전쟁기 독일 1기의 끝: 세계대전의 승패(36-dlc-reich-flow.js)
   if(CP.rule==='reign')return reignEnd(te);
   // 개헌(amendPerm)이나 영구집권(dict)이면 임기 한도가 두 배로 늘어난다
@@ -7276,7 +7278,7 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   add('운명 개입',-60*((RUN&&RUN.rr)||0),((RUN&&RUN.rr)||0)+'번');
   const total=it.reduce((s,x)=>s+x[1],0),ex=EXITPT[kind]||0;
   return {total:total,perf:perf,cont:cont,honor:total-perf-cont,avg:r1(CAR.terms.reduce((s,t)=>s+cl(t.sc),0)/Math.max(1,CAR.terms.length)),ex:ex,items:it};}function careerEnd(kind){if(CAR.done)return;CAR.done=1;if(RUN)svDrop(RUN.id);window.scrollTo(0,0);
-  if(CAR.tEval!==CAR.term){const te=evalTerm(ENDS[kind]||kind==='quit'?kind:'done');te.decision=EXH[kind]||kind;CAR.terms.push(te);CAR.tEval=CAR.term;if(!godRun())MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;
+  if(CAR.tEval!==CAR.term){const te=evalTerm(ENDS[kind]||kind==='quit'?kind:'done');te.decision=EXH[kind]||kind;CAR.terms.push(te);CAR.tEval=CAR.term;if(!godRun()){MEM.ends[te.eid]=(+MEM.ends[te.eid]||0)+1;if(MEM.ends[te.eid]===1)try{lvAdd(200,'새 임기 평가');}catch(e){}}
     const py=partialYear();if(py)CAR.yrs.push(yearSnap(py,[],0));}
   const god=godRun();if(!god)secCheck(kind);   // 조성민 판은 비밀 인물을 열지 않고 이 기기 기록에도 남기지 않는다
   CAR.exit=kind;if(!CAR.cs.length||kind!=='retire'&&kind!=='lost'&&kind!=='limit'&&kind!=='defeated'){CAR.cs.push(S.c);CAR.ts.push(S.trn);CAR.us.push(S.u);CAR.ss.push(S.saf);}
@@ -7285,7 +7287,9 @@ function careerScore(kind,years){const it=[],add=(n,v,note)=>{v=Math.round(v);if
   const years=(CAR.term-1)*YRS+Math.max(1,Math.ceil(S.turn/PY)),age1=CAR.age0+years;
   const SC=careerScore(kind,years),csc=SC.total;
   const newBest=!god&&csc>(MEM.best100||0),newLead=!god&&!(MEM.leaders||{})[lid];
-  if(!god){MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=(+MEM.leaders[lid]||0)+1;MEM.leadPct=MEM.leadPct||{};try{MEM.leadPct[lid]=Math.max(+MEM.leadPct[lid]||0,leadPct(lid,LEADF));}catch(e){}msave();}
+  if(!god){MEM.best100=Math.max(MEM.best100||0,csc);MEM.longest=Math.max(MEM.longest||0,years);MEM.careers=(MEM.careers||0)+1;MEM.runs++;MEM.leaders=MEM.leaders||{};MEM.leaders[lid]=(+MEM.leaders[lid]||0)+1;MEM.leadPct=MEM.leadPct||{};try{MEM.leadPct[lid]=Math.max(+MEM.leadPct[lid]||0,leadPct(lid,LEADF));}catch(e){}msave();
+    // v6 레벨: 인생 완주 XP(100 + 커리어 점수, 최대 +150) · 처음 만난 지도자 · 조선 · 미국 DLC 옷
+    try{lvAdd(100+Math.max(0,Math.min(150,Math.round(csc))),'인생 완주');if(newLead)lvAdd(150,'새 지도자');const cid=CP&&CP.id,lm=lvMem();if(cid==='joseon'||cid==='usa'){lm.u[cid==='joseon'?'royal':'usa']=1;msave();}}catch(e){}}
   // 실시간 대결: 방에 점수를 올리고(btFinish) 기록 시트로는 보내지 않는다(sendCareer가 거른다). 그 뒤 원래 난수로 되돌린다(결산 화면의 꾸밈은 보통 난수로)
   const btI=DC&&DC.bt?DC.bt:null;if(btI)btFinish(btI,{sc:csc,lid:L.n,ex:EXH[kind]||kind,g:CAR.terms.length?CAR.terms[CAR.terms.length-1].g:''});
   sendCareer(EXH[kind]||kind,{lid:lid,csc:csc,years:years,good:good,bad:badN,SC:SC});dcEnd();
@@ -8143,6 +8147,133 @@ function kgOmen(){if(CP.id!=='joseon')return '';kgInit();const KL=kgList();
       return '<div style="display:flex;align-items:center;gap:10px;margin:6px 0"><span style="width:118px;font-size:13px;font-weight:600;line-height:1.3">'+K.n+'</span><span style="flex:1;height:10px;border-radius:5px;background:rgba(29,27,24,.07);overflow:hidden"><span style="display:block;height:100%;width:'+v+'%;background:'+c+';border-radius:5px"></span></span><span style="width:34px;text-align:right;font-size:12px;color:'+c+'">'+(v>=75?'임박':v>=45?'짙음':'옅음')+'</span></div>';}).join(''):
     '<div style="font-size:13.5px;color:var(--text-secondary)">아직 짙은 조짐은 없다.</div>')+
    '<div style="font-size:12.5px;color:var(--text-muted);margin-top:8px;line-height:1.6">조짐은 다스리는 동안 쌓인 일(군사 · 당쟁 · 왕권 · 민심 · 세도 · 간쟁 · 언로 · 국고 · 환곡)로 차오른다. 다 차면 국난이 닥치고, 거기서 왕권을 지켜야 치세가 이어진다.'+(W.length?' 지켜 낸 국난: <b>'+W.join(' · ')+'</b>':'')+'</div>');}
+/* ---------- v6 대통령 레벨 · 칭호 · 옷장 ----------
+   무엇을 하든 XP가 쌓여 레벨(1~50)이 오른다. 레벨 구간마다 칭호, 레벨 · 조건마다 대통령 옷(지금은 「대통령 출근길」에서만 보인다).
+   · XP 원천(lvAdd를 부르는 곳): 임기를 마친 인생(32-career-end) · 처음 만난 지도자 · 새 임기 평가(31-term-eval · 32-career-end)
+     · 비밀 처음 찾기(21-easter-eggs eggSet) · 미니게임 한 판(37-research-log sendArcade, 기록이 올라갈 만한 판만) · 출근 미션 도장(lazy/cg)
+     · 하루 첫 입장(home → lvDaily).
+   · 레벨 곡선: L → L+1에 100 + 50×(L−1) XP. 50이 끝.
+   · 소급: v6 전에 쌓은 기록(지나온 인생 · 도감 · 비밀 · 미니게임 판 수 · 출근 도장)으로 처음 한 번 시작 XP를 정한다(lvSeed).
+   · 저장: MEM.lv = {v:1, x:확정 XP, p:서버에 아직 안 보낸 XP, mid:마지막으로 맞춘 회원 아이디, fit:고른 옷('' = 기본), u:{열린 조건 옷}, day:오늘 첫 입장 날짜}
+     회원이면 서버(Apps Script v28, 회원 op 'lv')에 맞춘다: 서버는 {s:소급 최댓값, d:더한 XP 합}을 두고 s+d를 돌려준다.
+     이 기기에서 처음 맞추는 회원이면 이 기기의 XP 전체를 소급(seed, 최댓값으로 합침)으로, 그다음부터는 새로 받은 XP만(add) 보낸다.
+     다른 회원이 이 기기에 들어오면 앞 회원의 기록은 넘기지 않고 서버 값을 받아 온다(학교 공용 컴퓨터).
+     비회원이 받은 XP는 이 기기에만 쌓인다. 서버가 아직 v28이 아니면(badop) 이 기기에만 쌓였다가, 서버가 바뀐 뒤 처음 맞출 때 한꺼번에 올라간다. */
+const LV_MAX=50;
+const lvNeed=L=>100+50*(L-1);
+// XP → {L:레벨, cur:이번 레벨에서 쌓은 XP, need:다음 레벨까지 필요한 XP(50이면 0)}
+function lvAt(x){let L=1;x=Math.max(0,Math.floor(x||0));while(L<LV_MAX&&x>=lvNeed(L)){x-=lvNeed(L);L++;}return {L:L,cur:L<LV_MAX?x:0,need:L<LV_MAX?lvNeed(L):0};}
+const LV_TT=[[1,'초선 의원'],[5,'구청장'],[10,'시장'],[15,'장관'],[20,'국무총리'],[30,'대통령'],[40,'국부'],[50,'전설의 지도자']];
+const lvTitle=L=>{let t=LV_TT[0][1];LV_TT.forEach(x=>{if(L>=x[0])t=x[1];});return t;};
+const lvDec=()=>{const d=new Date();return d.getMonth()===11||(d.getMonth()===10&&d.getDate()>=20);};   // 크리스마스 철: 11월 20일 ~ 12월 31일
+// 옷: lv면 그 레벨부터, ok는 조건(레벨과 상관없이)
+const LV_FIT=[
+  {id:'suit',n:'남색 양복',d:'처음부터 입는 옷'},
+  {id:'santa',n:'산타 옷',d:'크리스마스 철(11월 20일 ~ 12월 31일)에만',ok:lvDec},
+  {id:'hazmat',n:'방호복',d:'레벨 8',lv:8},
+  {id:'usa',n:'성조기 넥타이',d:'미국 DLC에서 인생을 마치면',ok:()=>!!lvMem().u.usa},
+  {id:'royal',n:'곤룡포',d:'조선 DLC에서 인생을 마치면',ok:()=>!!lvMem().u.royal},
+  {id:'tux',n:'턱시도',d:'레벨 20',lv:20},
+  {id:'space',n:'우주복',d:'미니게임 여섯 개를 모두 열면',ok:()=>{try{return MINI.every(x=>eggOn(x.id));}catch(e){return false;}}},
+  {id:'gold',n:'황금 양복',d:'레벨 50',lv:50}];
+const lvFitOk=(f,L)=>!!f&&(f.lv?L>=f.lv:f.ok?f.ok():true);
+function lvMem(){let m=MEM.lv;if(!m||m.v!==1){m=MEM.lv={v:1,x:lvSeed(),p:0,mid:'',fit:'',u:{},day:''};try{msave();}catch(e){}}if(!m.u||typeof m.u!=='object')m.u={};return m;}
+// 소급 XP: v6 전에 쌓은 기록으로
+function lvSeed(){const k=o=>Object.keys(o||{}).length,mg=['zg','sail','star','qx','cg','ax'].reduce((s,g)=>s+((MEM[g]&&+MEM[g].runs)||0),0);
+  return Math.min(60000,(+MEM.careers||0)*150+k(MEM.leaders)*150+k(MEM.ends)*200+k(MEM.egg)*100+Math.min(400,mg)*15+((MEM.cg&&+MEM.cg.st)||0)*50);}
+const lvXP=()=>{const m=lvMem();return m.x+m.p;};
+const lvNow=()=>lvAt(lvXP());
+// 지금 입은 옷(고른 옷을 못 입게 됐으면 기본: 크리스마스 철은 산타, 그 밖은 양복)
+function lvFit(){const m=lvMem(),L=lvNow().L,f=LV_FIT.find(x=>x.id===m.fit);return f&&lvFitOk(f,L)?f.id:lvDec()?'santa':'suit';}
+// 지금 판의 회원(토큰이 있을 때만)
+const lvMid=()=>{try{return PF&&PF.mid&&acTok()?PF.mid:'';}catch(e){return '';}};
+
+/* ----- XP 받기 · 알림 ----- */
+let LV_Q=[],LV_B=0,LV_TM=0;
+function lvAdd(n,why){n=Math.round(+n||0);if(n<=0)return;const m=lvMem();if(!LV_Q.length)LV_B=lvNow().L;
+  if(lvMid())m.p+=n;else m.x+=n;msave();LV_Q.push([why,n]);clearTimeout(LV_TM);LV_TM=setTimeout(lvShow,650);lvSyncSoon();}
+function lvDaily(){const m=lvMem(),d=new Date(),k=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();if(m.day===k)return;m.day=k;msave();lvAdd(50,'오늘 첫 입장');}
+// 화면 아래 알림: 받은 XP 합과 이유(같은 이유는 묶는다), 레벨이 올랐으면 금빛으로 새 레벨 · 칭호 · 새로 입을 수 있는 옷
+function lvShow(){const q=LV_Q;LV_Q=[];if(!q.length)return;const sum=q.reduce((s,x)=>s+x[1],0),by={};q.forEach(x=>{by[x[0]]=(by[x[0]]||0)+x[1];});
+  const A=lvNow(),up=A.L>LV_B,L0=LV_B,nt=up&&lvTitle(A.L)!==lvTitle(L0)?lvTitle(A.L):'',nf=up?LV_FIT.filter(f=>f.lv&&f.lv>L0&&f.lv<=A.L).map(f=>f.n):[];
+  const old=document.getElementById('lvT');if(old)old.remove();const t=document.createElement('div');t.id='lvT';t.className='lvt'+(up?' up':'');t.setAttribute('role','status');
+  t.innerHTML=(up?'<div class="lvt-up"><span>레벨 업!</span><b>Lv '+A.L+'</b>'+(nt?'<em>새 칭호 「'+nt+'」</em>':'<em>'+lvTitle(A.L)+'</em>')+(nf.length?'<small>새 옷: '+nf.join(' · ')+' · 옷장에서 갈아입어요</small>':'')+'</div>':'')+
+    '<div class="lvt-r"><b>+'+sum.toLocaleString('ko-KR')+' XP</b><span>'+Object.keys(by).map(k=>k+' +'+by[k]).join(' · ')+'</span></div>'+
+    '<div class="lvt-bar"><i><s style="width:'+(A.need?Math.round(A.cur/A.need*100):100)+'%"></s></i><em>Lv '+A.L+(A.need?' · '+A.cur+' / '+A.need:' · 최고 레벨')+'</em></div>';
+  document.body.appendChild(t);try{lvCardSync();}catch(e){}try{if(up)[523,659,784,1047].forEach((f,i)=>tone(f,'triangle',.25,.07,i*.09));else tone(880,'triangle',.12,.04);}catch(e){}
+  setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),400);},up?5200:3000);}
+
+/* ----- 서버와 맞추기(회원만) ----- */
+let LV_SY=0,LV_BUSY=false;
+function lvSyncSoon(){clearTimeout(LV_SY);LV_SY=setTimeout(lvSync,2500);}
+function lvSync(){const mid=lvMid();if(!mid||LV_BUSY||typeof acApi!=='function')return;const m=lvMem();
+  if(m.mid&&m.mid!==mid){m.p=0;m.x=0;m.u={};m.fit='';m.mid=mid;m.fresh=1;msave();}   // 다른 회원이 들어왔다: 앞 회원 기록은 넘기지 않는다
+  const first=!m.mid,p0=m.p;LV_BUSY=true;
+  acApi('lv',{id:mid,token:acTok(),seed:first?m.x+p0:0,add:first?0:p0,fit:m.fit||'',u:Object.keys(m.u)}).then(r=>{LV_BUSY=false;
+    if(!r||!r.ok||typeof r.xp!=='number')return;const n=lvMem();if(lvMid()!==mid)return;
+    n.mid=mid;n.fresh=0;n.x=Math.max(0,r.xp);n.p=Math.max(0,n.p-p0);(r.u||[]).forEach(k=>{n.u[k]=1;});if(r.fit)n.fit=r.fit;msave();
+    if(n.p>0)lvSyncSoon();try{lvCardSync();}catch(e){}});}
+
+/* ----- 기록 보관소 카드 · 옷장 ----- */
+function lvCard(){const A=lvNow();return '<div class="gx-lv" id="gxLv"><div class="gx-lv-t"><span class="gx-lv-b">Lv '+A.L+'</span><b>'+lvTitle(A.L)+'</b></div>'+
+  '<i><s style="width:'+(A.need?Math.round(A.cur/A.need*100):100)+'%"></s></i><em>'+(A.need?A.cur.toLocaleString('ko-KR')+' / '+A.need.toLocaleString('ko-KR')+' XP':'최고 레벨')+'</em></div>';}
+function lvCardSync(){const o=document.getElementById('gxLv');if(o)o.outerHTML=lvCard();}
+function lvRoom(){const A=lvNow(),m=lvMem(),on=lvFit(),nxt=LV_TT.find(x=>x[0]>A.L);
+  const fits=LV_FIT.map((f,i)=>{const ok=lvFitOk(f,A.L);return '<button type="button" class="lvw-f'+(ok?'':' lk')+(f.id===on?' on':'')+'" data-f="'+f.id+'" style="--i:'+i+'"'+(ok?'':' aria-disabled="true"')+'>'+
+    '<canvas width="120" height="120" data-fit="'+f.id+'" aria-hidden="true"></canvas><b>'+f.n+'</b><small>'+(f.id===on?'입는 중':ok?'입기':f.d)+'</small></button>';}).join('');
+  const tt=LV_TT.map(x=>'<li class="'+(A.L>=x[0]?'ok':'')+(lvTitle(A.L)===x[1]?' on':'')+'"><span>Lv '+x[0]+'</span><b>'+x[1]+'</b></li>').join('');
+  cine([{t:'옷장 · 칭호',h:'<div class="gx lvw"><div class="lvw-h"><span class="lvw-k">대통령 레벨</span><div class="lvw-lv"><span class="gx-lv-b">Lv '+A.L+'</span><b>'+lvTitle(A.L)+'</b></div>'+
+    '<div class="lvw-bar"><i><s style="width:'+(A.need?Math.round(A.cur/A.need*100):100)+'%"></s></i><em>'+(A.need?A.cur.toLocaleString('ko-KR')+' / '+A.need.toLocaleString('ko-KR')+' XP · 다음 칭호 '+(nxt?'Lv '+nxt[0]+' 「'+nxt[1]+'」':'없음'):'최고 레벨')+'</em></div>'+
+    '<p class="lvw-n">임기를 마치고, 비밀을 찾고, 미니게임 · 출근 미션을 하면 XP가 쌓여요. 하루 첫 입장은 +50. 옷은 지금 「대통령 출근길」에서 보여요.'+(lvMid()?'':' <b>회원으로 들어오면 레벨이 서버에 저장돼 다른 기기에서도 이어져요.</b>')+'</p></div>'+
+    '<h3 class="lvw-s">옷장</h3><div class="lvw-g">'+fits+'</div><h3 class="lvw-s">칭호</h3><ol class="lvw-t">'+tt+'</ol></div>'}],{nav:false,cls:'gm lvw-c',back:home});
+  document.querySelectorAll('.lvw canvas[data-fit]').forEach(c=>{const g=c.getContext('2d'),f=c.dataset.fit;g.clearRect(0,0,120,120);g.save();g.translate(60,70);lvBody(g,92,'d',f,{});g.restore();});
+  document.querySelectorAll('.lvw-f').forEach(b=>b.onclick=()=>{const f=LV_FIT.find(x=>x.id===b.dataset.f);if(!lvFitOk(f,lvNow().L)){try{gxSfx('lock');}catch(e){}return;}
+    try{gxSfx('click');}catch(e){}m.fit=f.id;msave();lvSyncSoon();lvRoom();});}
+
+/* ----- 옷 그림: 대통령 몸(원점이 몸 가운데, cs = 한 칸 크기). f: 'u' 뒷모습 · 'd' 앞 · 'l'/'r' 옆, o: {shield, green, T} ----- */
+function lvBody(g,cs,f,fit,o){o=o||{};const T=o.T||performance.now()/1000,gr=!!o.green,back=f==='u',e=f==='d'||back?0:cs*.04;
+  const R=(x,y,w,h,r)=>{g.beginPath();if(g.roundRect)g.roundRect(x,y,w,h,Math.max(0,Math.min(r,w/2,h/2)));else g.rect(x,y,w,h);};
+  const C={suit:['#22325a','#161d30'],usa:['#22325a','#161d30'],santa:['#c8333f','#2a2226'],hazmat:['#f2c230','#c99a14'],tux:['#121318','#0b0c10'],royal:['#b3261e','#3a1210'],space:['#e9edf2','#aab3bf'],gold:['#d9a93a','#6b4f12']}[fit]||['#22325a','#161d30'];
+  // 다리 · 몸
+  g.fillStyle=C[1];g.fillRect(-cs*.13,cs*.12,cs*.1,cs*.17);g.fillRect(cs*.03,cs*.12,cs*.1,cs*.17);
+  g.fillStyle=gr?'#4f7a3a':C[0];R(-cs*.24,-cs*.1,cs*.48,cs*.3,cs*.1);g.fill();
+  if(!gr){
+    if(fit==='santa'){g.fillStyle='#f6f9fd';g.fillRect(-cs*.24,cs*.13,cs*.48,cs*.07);g.fillStyle='#1d1a1c';g.fillRect(-cs*.24,cs*.04,cs*.48,cs*.05);g.fillStyle='#f2c94c';g.fillRect(-cs*.04,cs*.035,cs*.08,cs*.06);
+      if(!back){g.fillStyle='#f6f9fd';g.fillRect(-cs*.03,-cs*.1,cs*.06,cs*.14);}}
+    else if(fit==='hazmat'){g.fillStyle='rgba(0,0,0,.18)';g.fillRect(-cs*.01,-cs*.08,cs*.02,cs*.26);g.fillStyle='#1d1d1d';g.fillRect(-cs*.24,cs*.02,cs*.48,cs*.03);}
+    else if(fit==='royal'){g.fillStyle='#f2c94c';g.fillRect(-cs*.24,cs*.06,cs*.48,cs*.04);g.beginPath();g.arc(0,-cs*.01,cs*.075,0,6.283);g.fill();g.fillStyle='#b3261e';g.beginPath();g.arc(0,-cs*.01,cs*.04,0,6.283);g.fill();}
+    else if(fit==='space'){g.fillStyle='#2f6fbf';g.fillRect(-cs*.2,-cs*.06,cs*.09,cs*.06);g.fillStyle='#d8344b';g.fillRect(cs*.11,-cs*.06,cs*.09,cs*.06);g.fillStyle='#c5ccd6';g.fillRect(-cs*.24,cs*.08,cs*.48,cs*.03);}
+    else if(fit==='gold'){const s=Math.sin(T*4);g.fillStyle='rgba(255,246,200,'+(.5+.4*s)+')';g.fillRect(-cs*.16,-cs*.04,cs*.03,cs*.03);g.fillRect(cs*.12,cs*.06,cs*.03,cs*.03);}
+    // 앞모습: 셔츠 깃 · 넥타이(옷마다)
+    if(!back&&(fit==='suit'||fit==='usa'||fit==='tux'||fit==='gold')){g.fillStyle='#f4f6fa';g.beginPath();g.moveTo(-cs*.08,-cs*.1);g.lineTo(cs*.08,-cs*.1);g.lineTo(0,cs*.05);g.closePath();g.fill();
+      if(fit==='tux'){g.fillStyle='#0b0c10';g.beginPath();g.moveTo(0,-cs*.07);g.lineTo(-cs*.07,-cs*.1);g.lineTo(-cs*.07,-cs*.04);g.closePath();g.moveTo(0,-cs*.07);g.lineTo(cs*.07,-cs*.1);g.lineTo(cs*.07,-cs*.04);g.closePath();g.fill();
+        g.fillStyle='#d8344b';g.beginPath();g.arc(-cs*.15,-cs*.04,cs*.03,0,6.283);g.fill();}
+      else if(fit==='usa'){for(let i=0;i<5;i++){g.fillStyle=i%2?'#f4f6fa':'#d8344b';g.fillRect(-cs*.025,-cs*.07+i*cs*.028,cs*.05,cs*.028);}g.fillStyle='#2f4f9e';g.fillRect(-cs*.17,-cs*.06,cs*.05,cs*.035);}
+      else{g.fillStyle=fit==='gold'?'#6b4f12':'#d8344b';g.fillRect(-cs*.025,-cs*.07,cs*.05,cs*.14);}}}
+  // 머리 뒤 두건(방호복)
+  if(fit==='hazmat'&&!gr){g.fillStyle='#e8b81d';g.beginPath();g.arc(0,-cs*.28,cs*.235,0,6.283);g.fill();}
+  // 얼굴 · 머리카락 · 눈
+  g.fillStyle=gr?'#b9d39a':'#f1cfa9';g.beginPath();g.arc(0,-cs*.27,cs*.19,0,6.283);g.fill();g.fillStyle='#1c1c22';
+  if(back){if(fit!=='hazmat'){g.beginPath();g.arc(0,-cs*.29,cs*.19,0,6.283);g.fill();}else{g.fillStyle='#e8b81d';g.beginPath();g.arc(0,-cs*.28,cs*.2,0,6.283);g.fill();}}
+  else{if(fit!=='hazmat'){g.beginPath();g.arc(0,-cs*.31,cs*.19,Math.PI*1.02,Math.PI*1.98);g.fill();g.fillRect(-cs*.19,-cs*.34,cs*.38,cs*.06);}
+    g.fillStyle='#1c1c22';g.fillRect(-cs*.08+e,-cs*.27,cs*.04,cs*.05);g.fillRect(cs*.05+e,-cs*.27,cs*.04,cs*.05);
+    if(o.shield){g.fillStyle='#f8fbff';R(-cs*.12+e,-cs*.21,cs*.24,cs*.11,cs*.04);g.fill();}
+    if(fit==='hazmat'&&!gr){g.fillStyle='rgba(170,215,245,.55)';R(-cs*.15,-cs*.39,cs*.3,cs*.24,cs*.08);g.fill();g.strokeStyle='rgba(255,255,255,.7)';g.lineWidth=Math.max(1,cs*.015);g.stroke();}
+    if(fit==='santa'&&!gr){g.fillStyle='#f6f9fd';g.beginPath();g.moveTo(-cs*.15,-cs*.22);g.quadraticCurveTo(0,-cs*.02,cs*.15,-cs*.22);g.quadraticCurveTo(0,-cs*.14,-cs*.15,-cs*.22);g.fill();}}
+  // 머리에 쓰는 것
+  if(gr)return;
+  if(fit==='santa'){g.fillStyle='#d8344b';g.beginPath();g.moveTo(-cs*.19,-cs*.37);g.quadraticCurveTo(-cs*.02,-cs*.7,cs*.24,-cs*.56);g.lineTo(cs*.19,-cs*.37);g.closePath();g.fill();
+    g.fillStyle='rgba(0,0,0,.14)';g.beginPath();g.moveTo(cs*.05,-cs*.4);g.quadraticCurveTo(cs*.12,-cs*.55,cs*.24,-cs*.56);g.lineTo(cs*.19,-cs*.37);g.closePath();g.fill();
+    g.fillStyle='#f6f9fd';R(-cs*.22,-cs*.42,cs*.44,cs*.09,cs*.045);g.fill();g.beginPath();g.arc(cs*.25,-cs*.56,cs*.065,0,6.283);g.fill();}
+  else if(fit==='royal'){g.fillStyle='#1a1416';R(-cs*.17,-cs*.5,cs*.34,cs*.16,cs*.08);g.fill();g.fillRect(-cs*.2,-cs*.38,cs*.4,cs*.04);
+    g.beginPath();g.ellipse(-cs*.2,-cs*.5,cs*.07,cs*.045,-.5,0,6.283);g.ellipse(cs*.2,-cs*.5,cs*.07,cs*.045,.5,0,6.283);g.fill();}
+  else if(fit==='space'){g.fillStyle='rgba(185,220,255,.28)';g.beginPath();g.arc(0,-cs*.28,cs*.27,0,6.283);g.fill();g.strokeStyle='#f4f7fb';g.lineWidth=Math.max(1.5,cs*.035);g.stroke();
+    g.fillStyle='rgba(255,255,255,.6)';g.beginPath();g.ellipse(-cs*.1,-cs*.38,cs*.06,cs*.03,-.6,0,6.283);g.fill();}
+  else if(fit==='gold'){g.fillStyle='#f2c94c';g.beginPath();g.moveTo(-cs*.14,-cs*.4);g.lineTo(-cs*.14,-cs*.52);g.lineTo(-cs*.07,-cs*.45);g.lineTo(0,-cs*.55);g.lineTo(cs*.07,-cs*.45);g.lineTo(cs*.14,-cs*.52);g.lineTo(cs*.14,-cs*.4);g.closePath();g.fill();}}
+// 미니게임 한 판(명예의 전당에 보낼 만한 판만 sendArcade가 부른다): 15 + 성과(최대 +80)
+const LV_MG={zg:'방역선',sail:'대항해',star:'별똥별',qx:'격리 탈출',cg:'출근길',ax:'백신 점프'};
+function lvMini(gm,o){o=o||{};const s=+o.score||0,h=/^지옥/.test(String(o.detail||''));
+  const pf={cg:s/(h?3:4),ax:s/20,zg:s/1500,star:s/300,qx:Math.floor(s/1000)*6+(o.win?30:0),sail:o.win?40:10}[gm];lvAdd(15+Math.min(80,Math.round(pf||0)),LV_MG[gm]||'미니게임');}
 /* ---------- 회원 로그인 ---------- */
 // 첫 화면 맨 위에서 비회원(기본) · 회원 로그인을 고른다. 회원은 아이디 · 비밀번호로 들어오고, 학교 · 이름 · 닉네임 · 전화번호를 매번 적지 않는다.
 // 회원 정보는 기록 시트 서버(Apps Script, kind: 'member')의 비공개 탭에 있고, 비밀번호는 서버에서도 지문으로만 남는다.
@@ -8253,7 +8384,7 @@ function acEnter(id,p){PF={school:p.school,name:p.name,phone:p.phone||'',agree:t
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v5.24';
+const GAME_VER='v6.0';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -8309,7 +8440,7 @@ function obFlush(){if(OB_BUSY||!SHEET_URL||IN_ART)return;const it=obGet()[0];if(
   try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:it.b}).then(done,()=>{OB_BUSY=false;});}catch(e){OB_BUSY=false;}}
 addEventListener('online',()=>obFlush());
 setTimeout(obFlush,4000);
-function sendArcade(game,o){if(!SHEET_URL||IN_ART)return;const id=Date.now().toString(36)+Math.random().toString(36).slice(2,7),k='arc:'+id;
+function sendArcade(game,o){try{lvMini(game,o);}catch(e){}if(!SHEET_URL||IN_ART)return;const id=Date.now().toString(36)+Math.random().toString(36).slice(2,7),k='arc:'+id;
   obPush([{k:k,b:JSON.stringify({k:k,kind:'arcade',v:GAME_VER,rec:Object.assign({id:id,game:game,nickname:NICK||'익명',school:(PF&&PF.school)||'',gv:GAME_VER,pid:pidGet()},o)})}]);obFlush();}
 function sendCareer(exitLabel,x){if(!SHEET_URL||IN_ART||!RUN||RUN.sent||!LOG.length||godRun()||(DC&&DC.bt))return;   // 조성민(데우스 엑스 마키나) 판 · 실시간 대결 판은 보내지 않는다
   RUN.sent=1;
@@ -8369,7 +8500,7 @@ let HIST_ON=false;
 function histArm(){if(HIST_ON)return;try{history.pushState({pp:1},'');HIST_ON=true;}catch(e){}}
 addEventListener('popstate',()=>{if(!HIST_ON)return;HIST_ON=false;
   if(RUN&&CAR&&!CAR.done){histArm();try{eggToast('게임 중에는 뒤로 가기로 나가지 않아요.<br>나가려면 메뉴의 <b>저장하고 나가기</b>를 쓰세요.');}catch(e){}}});
-mload();applyView();sndApply();
+mload();try{lvMem();}catch(e){}applyView();sndApply();   // 레벨 기록은 저장된 기록을 불러온 뒤에 만든다(먼저 만들면 빈 기록을 저장해 덮는다)
 const INTRO=R.innerHTML;
 function pfPhone(v){const d=String(v||'').replace(/\D/g,'');if(!d)return '';if(!/^01[016789]\d{7,8}$/.test(d))return null;return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4);}
 function bindIntro(){const $=id=>document.getElementById(id),err=$('pfErr');
@@ -8414,7 +8545,7 @@ const EGGN=[
 function hub(){window.scrollTo(0,0);document.documentElement.dataset.camp='kr';godSync();
   const eg=EGGN.find(x=>x[0].test(NICK||''));if(eg&&eg[2])eg[2]();
   HUB_MSG=(PF.name||NICK)+'님, 준비됐어요.'+(NICK&&NICK!=='익명'?' 명예의 전당에는 <b style="color:#f1d589">'+NICK+'</b>(으)로 올라가요.':'')+(eg?'<div class="cs-fx" style="margin-top:12px">✨ '+eg[1]+'</div>':'');
-  home();
+  home();try{lvSync();}catch(e){}
   // 바로가기 링크(commute.html → ?play=cg): 인적사항 · 로그인을 마치면 로비 대신 「대통령 출근길」을 바로 연다(한 번만). 나가면 로비로
   if(DLINK==='cg'){DLINK='';eggSet('cg');setTimeout(()=>cgOpen(home),250);}}
 // 바로가기 링크: 주소의 ?play=cg(또는 #cg · commute · 출근길)면 첫 입장 때 그 미니게임으로 바로 간다
@@ -8431,6 +8562,11 @@ setTimeout(()=>{try{const me=!IN_ART&&acGet();if(!me||!me.prof||!me.prof.name)re
    홈 메뉴 「기타 → 업데이트 소식」에서 언제든 다시 볼 수 있다. 처음 온 사람(기록이 전혀 없음)에게는 띄우지 않고 읽은 것으로 쳐 둔다.
    v1부터 v4.9까지 모든 업데이트를 넣었다(v4.7은 크게, 나머지는 접어서 짧게). */
 const PATCHES=[
+ {v:'v6.0',t:'대통령 레벨',d:'2026-11-25',l:[
+  ['⭐ 대통령 레벨','무엇을 하든 XP가 쌓여 레벨이 올라요. 인생을 마치고, 새 지도자를 만나고, 비밀을 찾고, 미니게임 · 출근 미션을 하면 XP! 하루 첫 입장은 +50.'],
+  ['🎖️ 칭호','초선 의원에서 시작해 구청장 · 시장 · 장관 · 국무총리 · 대통령 · 국부 · 전설의 지도자까지. 기록 보관소에 레벨과 칭호가 보여요.'],
+  ['👔 옷장','방호복 · 턱시도 · 곤룡포 · 성조기 넥타이 · 우주복 · 황금 양복 · 산타 옷. 「기록 → 옷장 · 칭호」에서 갈아입으면 대통령 출근길에서 보여요.'],
+  ['지금까지 한 것도 쳐 줘요','v6 전에 쌓은 기록으로 처음 레벨을 정해요. 회원이면 레벨이 서버에 저장돼 다른 기기에서도 이어져요.']]},
  {v:'v5.24',t:'폭설 · 밤 · 출근 미션',d:'2026-11-25',l:[
   ['❄️ 폭설 주의보','「대통령 출근길」에 가끔 폭설이 몰아쳐요. 앞이 하얗게 가려지고 대통령 둘레만 보여요.'],
   ['🌙 밤 출근길','150칸쯤부터 밤이 와요. 차 전조등과 트리 전구 불빛에 기대 건너야 해요. 지옥 모드에도 밤이 와요.'],

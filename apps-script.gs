@@ -22,7 +22,7 @@
 //
 // 열은 항상 예전 버전 뒤에 이어 붙이므로, 이미 쌓인 기록과 줄이 어긋나지 않는다. 머리글(1행)은 자동으로 새 버전으로 바뀐다.
 
-const SCRIPT_VER = 'v27';
+const SCRIPT_VER = 'v28';
 // [비밀 게임 기록] v13: 좀비 서바이벌 「방역선」과 비밀 모드 「대항해」의 점수가 "비밀 게임 기록" 탭에 쌓이고, 명예의 전당 오른쪽 두 칸에 순위가 나온다.
 const ARCADE = [['판ID', 'id'], ['게임', 'game'], ['닉네임', 'nickname'], ['학교', 'school'], ['점수', 'score'], ['시간(초)', 'sec'], ['성공', 'win'], ['세부', 'detail'], ['게임 버전', 'gv'],
   // ----- v15: 숨김(관리자가 아무 글자나 적으면 그 줄은 순위에서 빠진다. 서버가 말이 안 되는 기록을 받으면 스스로 사유를 적는다) -----
@@ -37,11 +37,13 @@ const SUGGEST_CATS = {'건의': 1, '버그': 1, '질문': 1, '기타': 1};
 // [회원] v19: 아이디 · 비밀번호로 들어오는 회원. "회원(비공개)" 탭에 한 사람 = 한 줄. 명예의 전당 · 분석 · 기록 비우기에는 쓰지 않는다.
 //   비밀번호는 그대로 두지 않고, 사람마다 다른 소금(무작위 값)을 섞어 HMAC-SHA256을 PW_ROUNDS번 거친 지문만 남긴다.
 //   로그인하면 무작위 토큰을 주고, 탭에는 그 지문과 만료일만 적는다(토큰이 새도 비밀번호는 알 수 없다).
-//   게임은 kind: 'member'와 op(signup 가입 · login 로그인 · me 자동 로그인 확인 · update 정보 고치기 · logout · leave 탈퇴)를 보내고 JSON 답을 읽는다.
+//   게임은 kind: 'member'와 op(signup 가입 · login 로그인 · me 자동 로그인 확인 · update 정보 고치기 · logout · leave 탈퇴 · lv 레벨 맞추기(v28))를 보내고 JSON 답을 읽는다.
 //   비밀번호를 잊으면 관리자가 메뉴 '회원 비밀번호 초기화'로 임시 비밀번호를 만든다. 탈퇴하면 그 줄을 바로 지운다.
 const MEMBER_SHEET = '회원(비공개)';
 const MEMBER = [['아이디', 'id'], ['소금', 'salt'], ['비밀번호 지문', 'hash'], ['학교', 'school'], ['이름', 'name'], ['닉네임', 'nick'], ['전화번호', 'phone'],
-  ['개인정보 동의', 'consent'], ['가입 시각', 'created'], ['마지막 로그인', 'last'], ['토큰 지문', 'tok'], ['토큰 만료', 'exp'], ['회원 키', 'mkey']];
+  ['개인정보 동의', 'consent'], ['가입 시각', 'created'], ['마지막 로그인', 'last'], ['토큰 지문', 'tok'], ['토큰 만료', 'exp'], ['회원 키', 'mkey'],
+  // v28: 게임 v6.0 대통령 레벨. JSON {s: 소급 XP 최댓값, d: 더한 XP 합, f: 고른 옷, u: {열린 조건 옷}}. 레벨 XP = s + d
+  ['레벨 기록', 'lv']];
 const MEMBER_DAYS = 60;      // 로그인을 유지하는 날 수(그 뒤에는 비밀번호를 다시 묻는다)
 const PW_ROUNDS = 400;       // 비밀번호 지문을 만들 때 거치는 횟수(많을수록 하나씩 넣어 보는 공격이 느려진다)
 const MEMBER_FAILS = 8;      // 같은 아이디로 15분 안에 이만큼 틀리면 잠시 막는다
@@ -80,6 +82,22 @@ function memberSet_(sh, row, o) {
   MEMBER.forEach((c, j) => { if (o[c[1]] !== undefined) sh.getRange(row, j + 1).setValue(o[c[1]] instanceof Date ? o[c[1]] : safe_(o[c[1]])); });
 }
 const prof_ = o => ({id: String(o.id), school: String(o.school || '').replace(/^'/, ''), name: String(o.name || '').replace(/^'/, ''), nick: String(o.nick || '').replace(/^'/, ''), phone: String(o.phone || '')});
+// [레벨] v28: 게임이 op 'lv'로 {seed: 이 기기의 XP 전체(처음 맞출 때만), add: 그 뒤 새로 받은 XP, fit: 고른 옷, u: 열린 조건 옷}을 보낸다.
+//   소급(seed)은 최댓값으로 합쳐 여러 기기에서 두 번 세지 않고, add만 더한다. 한 번에 더하는 양 · 10분 횟수에 상한을 둔다.
+const LV_ADD_MAX = 3000, LV_SEED_MAX = 60000, RATE_LV = 40;
+function lvSync_(sh, o, d) {
+  let v = {};
+  try { v = JSON.parse(String(o.lv || '{}').replace(/^'/, '')) || {}; } catch (e) { v = {}; }
+  const num = (x, mx) => Math.max(0, Math.min(mx, Math.floor(Number(x) || 0)));
+  const u = v.u && typeof v.u === 'object' ? v.u : {};
+  (Array.isArray(d.u) ? d.u : []).slice(0, 20).forEach(k => { k = String(k).replace(/[^a-z]/g, '').slice(0, 12); if (k) u[k] = 1; });
+  const fit = String(d.fit || '').replace(/[^a-z]/g, '').slice(0, 12) || String(v.f || '');
+  const nv = {s: Math.max(num(v.s, LV_SEED_MAX), num(d.seed, LV_SEED_MAX)), d: (Number(v.d) || 0) + num(d.add, LV_ADD_MAX), f: fit, u: u};
+  const col = MEMBER.length;
+  if (!sh.getRange(1, col).getValue()) sh.getRange(1, col).setValue(MEMBER[col - 1][0]);
+  memberSet_(sh, o.row, {lv: JSON.stringify(nv)});
+  return {ok: true, xp: nv.s + nv.d, fit: nv.f, u: Object.keys(u)};
+}
 function failCount_(id, add) {
   try {
     const c = CacheService.getScriptCache(), k = 'mf_' + id;
@@ -134,6 +152,7 @@ function memberApi_(d) {
     }
     if (!tokOk_(o, d.token)) return json_({ok: false, err: 'expired'});
     if (op === 'me') { memberSet_(sh, o.row, {last: new Date()}); return json_({ok: true, prof: prof_(o)}); }
+    if (op === 'lv') { if (!rateOk_('lv_' + id, RATE_LV, 600)) return json_({ok: false, err: 'busy'}); return json_(lvSync_(sh, o, d)); }
     if (op === 'update') {
       const f = memberFields_(d, true);
       if (Array.isArray(f)) return json_({ok: false, err: 'field', field: f[0]});

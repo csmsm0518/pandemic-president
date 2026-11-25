@@ -1,7 +1,7 @@
 /* ---------- 이스터에그 · 비밀 인물 ---------- */
 let TAPS=[],SEC_NEW=[];
 const eggOn=k=>!!(MEM.egg&&MEM.egg[k]);
-function eggSet(k){MEM.egg=MEM.egg||{};if(!MEM.egg[k]){MEM.egg[k]=1;msave();}}
+function eggSet(k){MEM.egg=MEM.egg||{};if(!MEM.egg[k]){try{lvMem();}catch(e){}MEM.egg[k]=1;msave();try{lvAdd(100,'비밀 발견');}catch(e){}}}
 // 전쟁기 독일은 비밀 무대(닉네임 1939 · 베를린 · 전격전으로 연다), 라인강의 기적은 전쟁기 독일에서 한 번 지면 열린다
 const campOn=id=>id==='bonn'?!!MEM.bonn:id==='reich'?eggOn('reich'):id!=='zombie'||eggOn('zombie');
 // 잠긴 비밀 인물이면 {h:힌트, used:이미 씀}을, 고를 수 있으면 null을 돌려준다

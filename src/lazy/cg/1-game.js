@@ -159,7 +159,7 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
     while(m.q.length<3){const ks=m.q.map(q=>q.k),pool=CG_QD.filter(d=>ks.indexOf(d.k)<0&&(d.min||0)<=lv);if(!pool.length)break;const d=pool[Math.floor(Math.random()*pool.length)];m.q.push({k:d.k,n:d.n[lv]});}msave();};
   const qOk=d=>!(d.nm&&hm)&&!(d.hm&&!hm);
   const qCheck=()=>{const m=cgMem();let got=0;m.q.forEach(q=>{const d=qDef(q.k);if(q.done||!d||!qOk(d)||(C[q.k]||0)<q.n)return;q.done=1;q.now=1;m.st++;got++;
-      ban('미션 완료!',d.f(q.n)+' · 출근 도장 +1');burst(P.x,P.r,10,'#ffd25a',4);burst(P.x,P.r,8,'#e2453c',4);snd(()=>[784,988,1319].forEach((f,i)=>tone(f,'triangle',.18,.07,i*.08)));});if(got)msave();};
+      ban('미션 완료!',d.f(q.n)+' · 출근 도장 +1');try{lvAdd(50,'출근 미션');}catch(e){}burst(P.x,P.r,10,'#ffd25a',4);burst(P.x,P.r,8,'#e2453c',4);snd(()=>[784,988,1319].forEach((f,i)=>tone(f,'triangle',.18,.07,i*.08)));});if(got)msave();};
   const qHtml=on=>{const m=cgMem();return '<ul class="cg-q">'+m.q.map(q=>{const d=qDef(q.k);if(!d)return '';const cur=Math.min(q.n,C[q.k]||0),tag=d.nm?'보통 모드':d.hm?'':'';
       return '<li class="'+(q.done?'ok':'')+'"><i aria-hidden="true"></i><span>'+d.f(q.n)+(tag&&hm?' <small>('+tag+')</small>':'')+'</span>'+
         (q.done?(q.now?'<em>도장 +1</em>':'<em>완료</em>'):on&&q.n>1&&qOk(d)?'<em>'+cur+' / '+q.n+'</em>':'')+'</li>';}).join('')+'</ul>';};
@@ -399,21 +399,8 @@ function cgOpen(back){if(document.getElementById('cg'))return;try{if(CINE)cineCl
   const pres=(x,cy,lift,sq,f,a,green)=>{shade('#000',.25*a);g.beginPath();g.ellipse(x,cy+cs*.26,cs*(.24-lift/cs*.18),cs*.09,0,0,6.283);g.fill();g.globalAlpha=a;
     g.save();g.translate(x,cy-lift+cs*.3);g.scale(f==='l'?-1:1,sq);g.translate(0,-cs*.3);
     if(shield&&!green){g.strokeStyle='rgba(140,220,255,'+(.45+.25*Math.sin(T*5))+')';g.lineWidth=Math.max(1.5,cs*.05);g.beginPath();g.arc(0,-cs*.05,cs*.42,0,6.283);g.stroke();}
-    g.fillStyle='#161d30';g.fillRect(-cs*.13,cs*.12,cs*.1,cs*.17);g.fillRect(cs*.03,cs*.12,cs*.1,cs*.17);
-    g.fillStyle=green?'#4f7a3a':'#22325a';RR(-cs*.24,-cs*.1,cs*.48,cs*.3,cs*.1);g.fill();
-    if(f!=='u'){g.fillStyle='#f4f6fa';g.beginPath();g.moveTo(-cs*.08,-cs*.1);g.lineTo(cs*.08,-cs*.1);g.lineTo(0,cs*.05);g.closePath();g.fill();g.fillStyle='#d8344b';g.fillRect(-cs*.025,-cs*.07,cs*.05,cs*.14);}
-    // 빨간 목도리(뒷모습이면 꼬리가 등에 늘어진다)
-    g.fillStyle='#c8333f';RR(-cs*.19,-cs*.14,cs*.38,cs*.08,cs*.04);g.fill();g.fillStyle='#e7ecf3';g.fillRect(-cs*.1,-cs*.14,cs*.03,cs*.08);g.fillRect(cs*.07,-cs*.14,cs*.03,cs*.08);
-    g.fillStyle='#c8333f';if(f==='u')g.fillRect(cs*.04,-cs*.1,cs*.07,cs*.17);else g.fillRect(cs*.09,-cs*.08,cs*.07,cs*.13);
-    g.fillStyle=green?'#b9d39a':'#f1cfa9';g.beginPath();g.arc(0,-cs*.27,cs*.19,0,6.283);g.fill();g.fillStyle='#1c1c22';
-    if(f==='u'){g.beginPath();g.arc(0,-cs*.29,cs*.19,0,6.283);g.fill();}
-    else{g.beginPath();g.arc(0,-cs*.31,cs*.19,Math.PI*1.02,Math.PI*1.98);g.fill();g.fillRect(-cs*.19,-cs*.34,cs*.38,cs*.06);
-      const e=f==='d'?0:cs*.04;g.fillRect(-cs*.08+e,-cs*.27,cs*.04,cs*.05);g.fillRect(cs*.05+e,-cs*.27,cs*.04,cs*.05);
-      if(shield){g.fillStyle='#f8fbff';RR(-cs*.12+e,-cs*.21,cs*.24,cs*.11,cs*.04);g.fill();}}
-    // 산타 모자: 빨간 고깔이 뒤로 늘어지고 끝에 흰 방울, 이마에 흰 털 테
-    g.fillStyle='#d8344b';g.beginPath();g.moveTo(-cs*.19,-cs*.37);g.quadraticCurveTo(-cs*.02,-cs*.7,cs*.24,-cs*.56);g.lineTo(cs*.19,-cs*.37);g.closePath();g.fill();
-    g.fillStyle='rgba(0,0,0,.14)';g.beginPath();g.moveTo(cs*.05,-cs*.4);g.quadraticCurveTo(cs*.12,-cs*.55,cs*.24,-cs*.56);g.lineTo(cs*.19,-cs*.37);g.closePath();g.fill();
-    g.fillStyle='#f6f9fd';RR(-cs*.22,-cs*.42,cs*.44,cs*.09,cs*.045);g.fill();g.beginPath();g.arc(cs*.25,-cs*.56,cs*.065,0,6.283);g.fill();
+    // 몸 · 옷은 v6 옷장(src/js/36x-level.js lvBody)이 그린다. 고른 옷(lvFit)을 입는다
+    lvBody(g,cs,f,lvFit(),{shield:shield,green:green,T:T});
     g.restore();g.globalAlpha=1;};
   // 여린 칸 격자(판 안 9칸만). 차선 사이 가로선은 차선 표시가 대신한다
   const GRD={g:'rgba(60,85,125,.16)',lm:'rgba(60,85,125,.18)',r:'rgba(255,255,255,.16)',p:'rgba(60,80,115,.2)',w:'rgba(255,255,255,.2)',t:'rgba(255,255,255,.18)'};
