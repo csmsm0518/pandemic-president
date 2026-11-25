@@ -29,6 +29,15 @@
         ],
         "createdAt": "2026-10-27T17:55:52.223Z",
         "reason": "assistant: decision-round sketches, never shipped; they use the same Noto Serif KR face as DESIGN.md with a shorter fallback stack"
+      },
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          "commute.html"
+        ],
+        "createdAt": "2026-11-25T05:30:26.860Z",
+        "reason": "Claude: commute.html is a one-line redirect page reusing the game's own paper color #efe9dd (theme-color in src/shell.html)"
       }
     ]
   }

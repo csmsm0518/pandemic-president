@@ -1,7 +1,7 @@
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v5.21';
+const GAME_VER='v5.22';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -162,7 +162,11 @@ const EGGN=[
 function hub(){window.scrollTo(0,0);document.documentElement.dataset.camp='kr';godSync();
   const eg=EGGN.find(x=>x[0].test(NICK||''));if(eg&&eg[2])eg[2]();
   HUB_MSG=(PF.name||NICK)+'님, 준비됐어요.'+(NICK&&NICK!=='익명'?' 명예의 전당에는 <b style="color:#f1d589">'+NICK+'</b>(으)로 올라가요.':'')+(eg?'<div class="cs-fx" style="margin-top:12px">✨ '+eg[1]+'</div>':'');
-  home();}
+  home();
+  // 바로가기 링크(commute.html → ?play=cg): 인적사항 · 로그인을 마치면 로비 대신 「대통령 출근길」을 바로 연다(한 번만). 나가면 로비로
+  if(DLINK==='cg'){DLINK='';eggSet('cg');setTimeout(()=>cgOpen(home),250);}}
+// 바로가기 링크: 주소의 ?play=cg(또는 #cg · commute · 출근길)면 첫 입장 때 그 미니게임으로 바로 간다
+let DLINK=(()=>{try{const q=new URLSearchParams(location.search).get('play')||decodeURIComponent(location.hash.slice(1));return /^(cg|commute|출근길)$/i.test(q||'')?'cg':'';}catch(e){return '';}})();
 function intro(){bgmIntro(true);window.scrollTo(0,0);document.documentElement.dataset.camp="kr";R.innerHTML=INTRO;bindIntro();}
 bgmIntro(true);bindIntro();
 // 이미 로그인한 회원이면 첫 화면(인적사항)을 건너뛰고 바로 로비로. 기기에 남은 정보로 먼저 들어가고, 서버 확인은 뒤에서 한다(토큰이 끝났으면 첫 화면으로)
