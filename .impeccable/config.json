@@ -38,6 +38,15 @@
         ],
         "createdAt": "2026-11-25T05:30:26.860Z",
         "reason": "Claude: commute.html is a one-line redirect page reusing the game's own paper color #efe9dd (theme-color in src/shell.html)"
+      },
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          "대통령/index.html"
+        ],
+        "createdAt": "2026-11-25T05:33:41.549Z",
+        "reason": "Claude: redirect page, copy of commute.html, reuses the game's paper color #efe9dd from src/shell.html"
       }
     ]
   }
