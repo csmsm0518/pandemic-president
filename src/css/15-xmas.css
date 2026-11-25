@@ -4,7 +4,7 @@ html.xmas{--accent-soft:#2f6b4a;--xm-holly:url("data:image/svg+xml,%3Csvg xmlns=
   --xm-hat:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 52'%3E%3Cpath fill='%23d8344b' d='M7 40C9 22 22 7 40 6c10-1 17 5 18 14l-7-3c-1 11-9 20-21 23z'/%3E%3Cpath fill='%23a92530' d='M40 6c10-1 17 5 18 14l-7-3c-2-6-6-9-11-11z'/%3E%3Crect x='2' y='35' width='48' height='13' rx='6.5' fill='%23f6f9fd'/%3E%3Ccircle cx='57' cy='22' r='6.5' fill='%23f6f9fd'/%3E%3C/svg%3E")}
 
 /* 맨 위 전구 줄: 처진 전선(46px마다 한 번 처짐) + 처진 자리마다 전구 하나 */
-.xm-lights{position:fixed;left:0;top:0;z-index:76;display:flex;height:24px;width:max-content;pointer-events:none;
+.xm-lights{position:fixed;left:0;top:0;z-index:85;display:flex;height:24px;width:max-content;pointer-events:none;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 46 14'%3E%3Cpath d='M0 1Q23 16 46 1' fill='none' stroke='%231e3226' stroke-width='1.6'/%3E%3C/svg%3E") repeat-x 0 0/46px 14px}
 .xm-lights i{position:relative;flex:0 0 46px;height:24px}
 .xm-lights i::before{content:"";position:absolute;left:20px;top:7px;width:6px;height:4px;border-radius:1px;background:#3b3f36}
@@ -12,7 +12,7 @@ html.xmas{--accent-soft:#2f6b4a;--xm-holly:url("data:image/svg+xml,%3Csvg xmlns=
   box-shadow:0 0 10px 2px var(--c,#ff5a4f);animation:xmTw 1.7s var(--d,0s) ease-in-out infinite alternate}
 .xm-lights i:nth-child(4n+2){--c:#ffd25a}.xm-lights i:nth-child(4n+3){--c:#5ee08a}.xm-lights i:nth-child(4n+4){--c:#6ab8ff}
 @keyframes xmTw{0%,40%{opacity:1}100%{opacity:.35;box-shadow:0 0 0 0 transparent}}
-.xm-snow{position:fixed;inset:0;width:100%;height:100%;z-index:80;pointer-events:none}
+.xm-snow{position:fixed;inset:0;width:100%;height:100%;z-index:85;pointer-events:none}
 @media (prefers-reduced-motion:reduce){.xm-lights i::after{animation:none}}
 
 /* 첫 화면(밝은 종이): 제목에 산타 모자, 아래 「크리스마스 에디션」 띠 */
@@ -35,3 +35,37 @@ html.xmas .evc::after{content:"";position:absolute;right:10px;top:8px;width:58px
 html.xmas .gs-me::before{height:4px;background:repeating-linear-gradient(135deg,#d8344b 0 8px,#fff4e8 8px 16px)}
 html.xmas .gs-box:has(.gs-cn){position:relative}
 html.xmas .gs-box:has(.gs-cn)::after{content:"";position:absolute;right:6px;top:4px;width:40px;height:25px;background:var(--xm-holly) no-repeat center/contain;pointer-events:none;opacity:.9}
+
+/* ---------- 색감 · 바탕(사용자 요청: 전반적인 색감 · 배경도 크리스마스로) ----------
+   밝은 화면(대한민국 무대 · 첫 화면 · 메뉴 밖 종이 화면): 누런 양피지 대신 눈빛이 도는 흰 바탕, 테두리는 전나무 초록 기운, 강조는 산타 빨강.
+   바탕 위쪽 양 모서리에 빨강 · 초록 빛, 아래에 초록 그림자, 옅은 눈송이 무늬. 조선 · 미국 무대는 그 나라 색을 지키고 장식만 얹는다.
+   어두운 화면(메인 메뉴 · 무대 · 지도자 고르기 · 연출): 검은 갈색 대신 깊은 전나무 밤빛, 금빛은 그대로. */
+html.xmas:is([data-camp="kr"],:not([data-camp])){--bg:#e8eee9;--surface-0:#f6f9f5;--surface-1:#dce6de;--surface-2:#f7faf6;--paper:#f7faf6;
+  --border:rgba(24,64,42,.15);--border-strong:rgba(24,64,42,.3);--accent:#c0272d;--accent-hi:#9e1f24;--accent-soft:#2f6b4a}
+html.xmas{--dk:#0d1f16;--dk-text:#eef3ea;--dk-muted:#a8b8a4}
+html.xmas:is([data-camp="kr"],:not([data-camp])) body{background-attachment:fixed;background-image:
+  radial-gradient(ellipse at 0% -6%,rgba(200,39,45,.17),transparent 42%),
+  radial-gradient(ellipse at 100% -6%,rgba(38,120,74,.2),transparent 44%),
+  radial-gradient(ellipse at 50% 112%,rgba(24,80,52,.16),transparent 58%),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cg fill='none' stroke='%23396b8c' stroke-opacity='.09' stroke-width='1.3' stroke-linecap='round'%3E%3Cpath d='M30 18v24M18 30h24M21.5 21.5l17 17M38.5 21.5l-17 17'/%3E%3Cpath d='M118 96v18M109 105h18M111.6 98.6l12.8 12.8M124.4 98.6l-12.8 12.8'/%3E%3Cpath d='M74 128v12M68 134h12'/%3E%3C/g%3E%3C/svg%3E")}
+/* 어두운 화면 */
+html.xmas .cine{background:radial-gradient(ellipse at 50% 38%,#1c3b2a 0%,#0e2017 55%,#060f0a 100%)}
+html.xmas .cine.gm{background:radial-gradient(ellipse at 10% -4%,rgba(52,140,88,.34),transparent 52%),radial-gradient(ellipse at 100% 104%,rgba(200,45,58,.22),transparent 52%),
+  radial-gradient(ellipse at 60% 50%,#0f2419 0%,#07120c 70%)}
+html.xmas .gx-menu{background:linear-gradient(90deg,rgba(8,24,16,.86),rgba(8,24,16,.58))}
+html.xmas .gx-pc{background:rgba(8,24,16,.76)}
+html.xmas .gx-mi{border-bottom-color:rgba(201,162,74,.14)}
+/* 본게임 지도자 카드: 갈색 무대 대신 전나무 밤빛 */
+html.xmas .gs-me{background:radial-gradient(70% 120% at 18% 100%,#245a3a 0%,#0f2018 70%)}
+/* 메인 메뉴 바탕은 .gx-title이 따로 검게 칠한다: 같은 전나무 밤빛으로. 메뉴 · 연출 화면 뒤 body도 */
+html.xmas .gx-title{background:radial-gradient(ellipse at 10% -4%,rgba(52,140,88,.34),transparent 52%),radial-gradient(ellipse at 100% 104%,rgba(200,45,58,.22),transparent 52%),
+  radial-gradient(ellipse at 60% 50%,#0f2419 0%,#07120c 70%)}
+html.xmas body:has(.cine){background-color:#07120c}
+/* 연출 화면들(임기의 시작 .qfx · 해 바뀜 .yrfx · 차례 띠 .turnfx · 어두운 무대 상자 .dk · 무대 고르기 그림): 갈색 대신 전나무 밤빛. 금빛 글자 · 선은 그대로 */
+html.xmas .qfx{background:radial-gradient(ellipse at 50% 30%,#1d3b2a,#07120c 75%)}
+html.xmas .dk{background:radial-gradient(ellipse at 50% 32%,#1f3f2c 0%,#0f2118 58%,#07110b 100%)}
+html.xmas .yrfx-h{background:#0d1f16}
+html.xmas .yrfx-h.t{background:linear-gradient(180deg,#07110b,#173524)}html.xmas .yrfx-h.b{background:linear-gradient(0deg,#07110b,#173524)}
+html.xmas .turnfx-b{background:linear-gradient(90deg,#0d1f16,#1f4630 50%,#0d1f16)}
+html.xmas .gx-roster .gx-rnd{background:linear-gradient(180deg,#1f3f2c,#0d1f16)}
+html.xmas .gx-ld,html.xmas .gx-su{background:radial-gradient(60% 80% at 27% 42%,#1f3f2c 0%,#0d1f16 58%,#060f0a 100%)}
