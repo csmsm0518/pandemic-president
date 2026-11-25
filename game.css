@@ -1769,20 +1769,15 @@ html.xmas{--accent-soft:#2f6b4a;--xm-holly:url("data:image/svg+xml,%3Csvg xmlns=
 .xm-snow{position:fixed;inset:0;width:100%;height:100%;z-index:85;pointer-events:none}
 @media (prefers-reduced-motion:reduce){.xm-lights i::after{animation:none}}
 
-/* 첫 화면(밝은 종이): 제목에 산타 모자, 아래 「크리스마스 에디션」 띠 */
+/* 첫 화면(밝은 종이): 제목에 산타 모자(「크리스마스 에디션」 띠는 거슬린다는 의견으로 뺐다) */
 html.xmas #root>h1.hd{position:relative}
 html.xmas #root>h1.hd::before{content:"";position:absolute;left:-16px;top:-24px;width:48px;height:39px;background:var(--xm-hat) no-repeat center/contain;transform:rotate(-16deg);pointer-events:none}
-html.xmas #root>h1.hd::after{content:"🎄 크리스마스 에디션";display:block;width:max-content;margin-top:10px;padding:4px 11px 4px 9px;border-radius:999px;
-  font:800 12px/1.4 var(--font-ui);letter-spacing:.02em;color:#fff;background:linear-gradient(90deg,#2f7f50,#256d44);box-shadow:0 2px 8px -2px rgba(31,90,55,.45)}
 
-/* 메인 메뉴 · 무대 고르기(어두운 화면): 바탕에 전나무 초록 · 빨강 빛, 나침반에 산타 모자, 제목 아래 크리스마스 띠 */
+/* 메인 메뉴 · 무대 고르기(어두운 화면): 바탕에 전나무 초록 · 빨강 빛, 나침반에 산타 모자 */
 html.xmas .cine.gm{background:radial-gradient(ellipse at 12% 0%,rgba(47,127,80,.24),transparent 52%),radial-gradient(ellipse at 100% 100%,rgba(200,51,63,.16),transparent 50%),#0b0a08}
 html.xmas .cs .gx-logo{position:relative}
 html.xmas .cs .gx-logo::before{content:"";position:absolute;z-index:2;left:calc(var(--fs) * .28);top:calc(var(--fs) * -.42);width:calc(var(--fs) * .98);height:calc(var(--fs) * .8);
   background:var(--xm-hat) no-repeat center/contain;transform:rotate(-14deg);filter:drop-shadow(0 4px 8px rgba(0,0,0,.45));pointer-events:none}
-.gx-xm{display:none}
-html.xmas .gx-xm{display:inline-flex;align-items:center;gap:6px;margin:12px 0 0 2px;padding:5px 12px 5px 10px;border-radius:999px;font:800 12px/1.3 var(--font-ui);letter-spacing:.06em;
-  color:#fff4d6;background:linear-gradient(90deg,rgba(47,127,80,.9),rgba(168,37,48,.9));border:1px solid rgba(241,213,137,.45)}
 
 /* 본게임(밝은 종이): 사건 카드 오른쪽 위 호랑가시, 지도자 카드 윗줄은 사탕 지팡이 무늬, 선택지 숫자는 초록 */
 html.xmas .evc::after{content:"";position:absolute;right:10px;top:8px;width:58px;height:36px;background:var(--xm-holly) no-repeat center/contain;pointer-events:none;opacity:.95}
