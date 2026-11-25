@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"ax":{"v":"53f20e1768","h":"66055d422f604e45"},"battle":{"v":"5091c4c035","h":"583d39cea0053431"},"board":{"v":"02a1fd05a2","h":"a45d6705f7eda7a2"},"boxes":{"v":"0fe9b756e6","h":"6fd8c675ca1ca3d1"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"cg":{"v":"ae5e8123be","h":"ae9e61cde127fb17"},"dex":{"v":"a834d42e11","h":"214b42847560de78"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"f2406bd47f","h":"58269006748ccbe1"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"qx":{"v":"b59a54b3ea","h":"a5dfdc9a8a91b253"},"sail":{"v":"e68228f6a5","h":"fabef0df44876102"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"a6c71124bb","h":"cde6281585382b34"},"whockey":{"v":"ad91f3fb16","h":"40f8ee705abddfb8"},"wjump":{"v":"b76e628a74","h":"051fb590c1646b11"},"wskate":{"v":"6d0ed6ce3a","h":"a407b9cdb8bc3715"}};
+const LZ_M={"ax":{"v":"53f20e1768","h":"66055d422f604e45"},"battle":{"v":"5091c4c035","h":"583d39cea0053431"},"board":{"v":"02a1fd05a2","h":"a45d6705f7eda7a2"},"boxes":{"v":"0fe9b756e6","h":"6fd8c675ca1ca3d1"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"cg":{"v":"896c34c66c","h":"97537112d84b279a"},"dex":{"v":"a834d42e11","h":"214b42847560de78"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"f2406bd47f","h":"58269006748ccbe1"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"qx":{"v":"b59a54b3ea","h":"a5dfdc9a8a91b253"},"sail":{"v":"e68228f6a5","h":"fabef0df44876102"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"a6c71124bb","h":"cde6281585382b34"},"whockey":{"v":"ad91f3fb16","h":"40f8ee705abddfb8"},"wjump":{"v":"b76e628a74","h":"051fb590c1646b11"},"wskate":{"v":"6d0ed6ce3a","h":"a407b9cdb8bc3715"}};
 function axOpen(){return lzCall('ax','axOpen',arguments);}
 function btOpen(){return lzCall('battle','btOpen',arguments);}
 function btFinish(){return lzCall('battle','btFinish',arguments);}
@@ -8253,7 +8253,7 @@ function acEnter(id,p){PF={school:p.school,name:p.name,phone:p.phone||'',agree:t
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v5.22';
+const GAME_VER='v5.23';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -8431,6 +8431,11 @@ setTimeout(()=>{try{const me=!IN_ART&&acGet();if(!me||!me.prof||!me.prof.name)re
    홈 메뉴 「기타 → 업데이트 소식」에서 언제든 다시 볼 수 있다. 처음 온 사람(기록이 전혀 없음)에게는 띄우지 않고 읽은 것으로 쳐 둔다.
    v1부터 v4.9까지 모든 업데이트를 넣었다(v4.7은 크게, 나머지는 접어서 짧게). */
 const PATCHES=[
+ {v:'v5.23',t:'크리스마스 출근길',d:'2026-11-25',l:[
+  ['🎄 크리스마스 출근길','「대통령 출근길」이 크리스마스 옷을 입었어요. 눈 덮인 광장, 전구를 단 트리, 선물 상자, 얼음 뜬 한강, 내리는 눈. 대통령은 산타 모자를 썼어요.'],
+  ['기자단은 가까이 와야 보여요','보통 모드에서 기자단이 멀리 있을 땐 보이지 않고, 바짝 따라붙을 때 나타나요. 지옥 모드는 그대로예요.'],
+  ['바로가기 주소','주소 끝에 /대통령 을 붙이면 출근길로 바로 갈 수 있어요.'],
+  ['라이트 모드 정리','라이트 모드를 없앴어요. 화면 설정에서는 세로 · 가로만 고르면 돼요.']]},
  {v:'v5.20',t:'기자단 추격 · 지옥 순위',d:'2026-11-12',l:[
   ['기자단이 바짝','「대통령 출근길」 기자단이 이제 늘 바로 뒤에서 일정한 빠르기로 따라와요. 3초쯤 가만히 서 있으면 붙잡혀요!'],
   ['지옥 모드 순위','명예의 전당 미니게임 순위에 「출근길 지옥」 카드가 따로 생겼어요. 보통 출근길과 지옥 모드 순위가 나뉘어요.']]},
