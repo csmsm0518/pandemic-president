@@ -27,7 +27,7 @@ function acBind($){const tg=$('pfTabG'),tm=$('pfTabM'),box=$('pfAcc');if(!tg||!b
     box.hidden=!m;guest.forEach(e=>{if(e)e.hidden=m;});
     // 비회원 쪽 '지난번 정보' 안내는 회원 쪽에서 숨겼다가, 돌아오면 원래대로
     if(mem){if(m){mem.dataset.d=mem.style.display;mem.style.display='none';}else if(mem.dataset.d!==undefined)mem.style.display=mem.dataset.d;}
-    if(m){AC_MODE=(acGet()||acLastId())?'in':'up';acDraw($);}};   // 처음 온 사람은 회원가입 화면부터, 예전에 로그인한 적이 있으면 로그인
+    if(m){AC_MODE='in';acDraw($);}};   // 늘 로그인 화면부터(처음 온 사람은 위의 「회원가입」을 눌러 바꾼다)
   tg.onclick=()=>{try{SFX.click();}catch(e){}show(false);};
   tm.onclick=()=>{try{SFX.click();}catch(e){}show(true);};
   // 회원 쪽(왼쪽 탭)이 기본 화면이다. 이 기기에서 로그인해 둔 회원이면 '이 계정으로 시작'이 먼저 보인다

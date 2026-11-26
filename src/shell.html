@@ -35,20 +35,10 @@
     <div id="pfAcc" class="pf-acc" hidden></div>
     <div id="pfMem" class="pf-mem" style="display:none"></div>
     <div class="pf">
-    <div class="pf-row pf-pii"><label for="pfSchool">학교 <b>*</b></label><input id="pfSchool" maxlength="30" placeholder="예: 용인외대부고" autocomplete="off"></div>
-    <div class="pf-row pf-pii"><label for="pfName">이름 <b>*</b></label><input id="pfName" maxlength="20" placeholder="실명" autocomplete="off"></div>
     <div class="pf-row"><label for="nick">닉네임 <span>명예의 전당에 보이는 이름 · 비우면 익명</span></label><input id="nick" maxlength="20" placeholder="예: 백신 대통령" autocomplete="off"></div>
-    <div class="pf-row pf-pii"><label for="pfPhone">전화번호 <span>선택 · 점수에 따른 상품을 받고 싶을 때만</span></label><input id="pfPhone" type="tel" inputmode="tel" maxlength="13" placeholder="010-0000-0000" autocomplete="off"></div>
-    <label class="pf-ok pf-pii"><input type="checkbox" id="pfAgree"><span>개인정보 수집·이용에 동의합니다 <b>*</b></span></label>
-    <details class="pf-d pf-pii"><summary>무엇을 왜 모으나요?</summary><ul>
-      <li><b>모으는 것</b> · 학교, 이름, 닉네임, 전화번호(적은 경우만), 게임 속 선택과 결과</li>
-      <li><b>쓰는 곳</b> · 사람들이 권력과 부패 앞에서 어떻게 선택하는지 알아보는 학생 탐구, 점수 상위자 상품 연락</li>
-      <li><b>보이는 곳</b> · 명예의 전당에는 닉네임·학교·점수(그리고 닮은 지도자)가 보여요. 이름·전화번호는 탐구 진행자만 보는 시트에 따로 보관해요.</li>
-      <li><b>보관 기간</b> · 탐구와 상품 지급이 끝나면 지워요.</li>
-      <li>동의하지 않을 수 있어요. 다만 그러면 이 게임에 참여할 수 없어요.</li></ul></details>
     <div id="pfErr" class="pf-err" role="alert"></div>
   </div>
-    <div id="pfNote" style="font-size:12.5px;color:var(--text-muted);line-height:1.6;margin-bottom:14px">게임 속 선택과 결과는 연구 기록으로 남아요. 명예의 전당에는 닉네임·학교·점수만 보여요.</div>
+    <div id="pfNote" style="font-size:12.5px;color:var(--text-muted);line-height:1.6;margin-bottom:14px">비회원은 학교 · 이름 같은 정보를 받지 않아요. 게임 속 선택과 결과만 익명 연구 기록으로 남고, 명예의 전당에는 닉네임과 점수만 보여요.</div>
     <button id="go" class="pri" style="width:100%;padding:16px;font-size:16px">다음</button>
     <div style="font-size:12px;color:var(--text-muted);margin-top:14px;text-align:center">최고 기록과 도감은 이 브라우저에 저장된다 · <button id="pfReset" type="button" class="pf-rs">이 기기 기록 초기화</button></div>
   </div>

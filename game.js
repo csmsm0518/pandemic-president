@@ -8305,7 +8305,7 @@ function acBind($){const tg=$('pfTabG'),tm=$('pfTabM'),box=$('pfAcc');if(!tg||!b
     box.hidden=!m;guest.forEach(e=>{if(e)e.hidden=m;});
     // 비회원 쪽 '지난번 정보' 안내는 회원 쪽에서 숨겼다가, 돌아오면 원래대로
     if(mem){if(m){mem.dataset.d=mem.style.display;mem.style.display='none';}else if(mem.dataset.d!==undefined)mem.style.display=mem.dataset.d;}
-    if(m){AC_MODE=(acGet()||acLastId())?'in':'up';acDraw($);}};   // 처음 온 사람은 회원가입 화면부터, 예전에 로그인한 적이 있으면 로그인
+    if(m){AC_MODE='in';acDraw($);}};   // 늘 로그인 화면부터(처음 온 사람은 위의 「회원가입」을 눌러 바꾼다)
   tg.onclick=()=>{try{SFX.click();}catch(e){}show(false);};
   tm.onclick=()=>{try{SFX.click();}catch(e){}show(true);};
   // 회원 쪽(왼쪽 탭)이 기본 화면이다. 이 기기에서 로그인해 둔 회원이면 '이 계정으로 시작'이 먼저 보인다
@@ -8386,7 +8386,7 @@ function acEnter(id,p){PF={school:p.school,name:p.name,phone:p.phone||'',agree:t
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v6.3';
+const GAME_VER='v6.4';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -8508,28 +8508,20 @@ MEM.egg=MEM.egg||{};['zombie','sail','star','qx','cg','ax'].forEach(k=>{MEM.egg[
 try{xmasInit();}catch(e){}applyView();sndApply();   // 레벨 기록은 저장된 기록을 불러온 뒤에 만든다(먼저 만들면 빈 기록을 저장해 덮는다)
 const INTRO=R.innerHTML;
 function pfPhone(v){const d=String(v||'').replace(/\D/g,'');if(!d)return '';if(!/^01[016789]\d{7,8}$/.test(d))return null;return d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4);}
+// 첫 화면: 회원(36z-member.js)이 기본, 비회원은 닉네임만 받는다(v6.4부터 학교 · 이름 · 전화번호 · 동의를 받지 않는다)
 function bindIntro(){const $=id=>document.getElementById(id),err=$('pfErr');
   if($('pfReset'))$('pfReset').onclick=()=>{try{SFX.click();}catch(e){}resetAsk();};   // 첫 화면 맨 아래: 이 기기 기록 초기화
-  if(IN_ART)document.querySelectorAll('.pf-pii').forEach(e=>{e.style.display='none';});
-  const ph=$('pfPhone');if(ph)ph.oninput=()=>{const d=ph.value.replace(/\D/g,'').slice(0,11);ph.value=d.length>7?d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4):d.length>3?d.slice(0,3)+'-'+d.slice(3):d;};
   $('go').onclick=()=>{
     const nick=($('nick').value||'').trim().slice(0,20);
-    if(!IN_ART){const school=($('pfSchool').value||'').trim().slice(0,30),name=($('pfName').value||'').trim().slice(0,20),phone=pfPhone($('pfPhone').value),agree=$('pfAgree').checked;
-      const bad=!school?['pfSchool','학교를 적어 주세요.']:!name?['pfName','이름을 적어 주세요.']:phone===null?['pfPhone','전화번호를 010-0000-0000 형식으로 적어 주세요. 상품이 필요 없으면 비워 두세요.']:!agree?['pfAgree','개인정보 수집·이용에 동의해야 시작할 수 있어요.']:null;
-      if(bad){err.textContent=bad[1];err.style.display='block';try{$(bad[0]).focus();}catch(e){}return;}
-      PF={school:school,name:name,phone:phone,agree:true};}
+    PF={school:'',name:'',phone:'',agree:false};   // 비회원: 인적사항 없음(회원으로 들어왔다가 비회원으로 바꿔도 회원 정보를 남기지 않는다)
     err.style.display='none';NICK=nick||'익명';PINH='';   // 저장 비밀번호는 판마다 게임 안에서 건다
-    // 같은 기기에서는 다음 판부터 인적사항을 그대로 채워 둔다(다른 사람이면 첫 화면의 '내가 아니에요 · 지우기')
-    try{localStorage.setItem(PF_KEY,JSON.stringify({school:PF.school,name:PF.name,nick:nick,agree:PF.agree?1:0}));}catch(e){}
+    // 같은 기기에서는 다음 판부터 닉네임만 채워 둔다(예전에 남은 학교 · 이름도 이때 지운다)
+    try{localStorage.setItem(PF_KEY,JSON.stringify({nick:nick}));}catch(e){}
     try{aInit();SFX.coin();}catch(e){}viewSetup(hub);};
-  // 지난번 인적사항 채우기: 이 창에서 이미 적었으면 그것(전화번호 포함), 아니면 이 기기에 남은 것
+  // 지난번 닉네임 채우기: 이 창에서 이미 적었으면 그것, 아니면 이 기기에 남은 것
   let mem=null;try{mem=JSON.parse(localStorage.getItem(PF_KEY)||'null');}catch(e){}
-  if(PF.name)mem={school:PF.school,name:PF.name,phone:PF.phone,nick:NICK==='익명'?'':NICK,agree:PF.agree};
-  if(mem&&(mem.school||mem.name||mem.nick)){const set=(id,v)=>{if($(id))$(id).value=v||'';};
-    set('pfSchool',mem.school);set('pfName',mem.name);set('pfPhone',mem.phone);set('nick',mem.nick);if($('pfAgree'))$('pfAgree').checked=!!mem.agree;
-    const box=$('pfMem');box.style.display='flex';box.innerHTML='<span>지난번에 적은 정보를 채워 두었어요. 그대로 <b>다음</b>을 누르면 돼요.</span><button id="pfClear">내가 아니에요 · 지우기</button>';
-    $('pfClear').onclick=()=>{try{localStorage.removeItem(PF_KEY);}catch(e){}PF={school:'',name:'',phone:'',agree:false};['pfSchool','pfName','pfPhone','nick'].forEach(id=>{if($(id))$(id).value='';});if($('pfAgree'))$('pfAgree').checked=false;box.style.display='none';};}
-  acBind($);}   // 회원 로그인(36z-member.js): 비회원 칸을 다 채운 뒤에 붙여야 회원 쪽에서 '지난번 정보' 안내를 숨길 수 있다
+  const nk=NICK&&NICK!=='익명'&&!PF.mid?NICK:mem&&mem.nick||'';if(nk&&$('nick'))$('nick').value=nk;
+  acBind($);}   // 회원 로그인(36z-member.js)
 const PF_KEY='pandemic_pf_v1';
 // 인적사항 다음 화면: 가이드북과 게임 시작
 // 이스터에그: 특별한 닉네임을 넣으면 인사말이 바뀐다(일부는 비밀 무대를 연다)
@@ -8567,6 +8559,9 @@ setTimeout(()=>{try{const me=!IN_ART&&acGet();if(!me||!me.prof||!me.prof.name)re
    홈 메뉴 「기타 → 업데이트 소식」에서 언제든 다시 볼 수 있다. 처음 온 사람(기록이 전혀 없음)에게는 띄우지 않고 읽은 것으로 쳐 둔다.
    v1부터 v4.9까지 모든 업데이트를 넣었다(v4.7은 크게, 나머지는 접어서 짧게). */
 const PATCHES=[
+ {v:'v6.4',t:'로그인 먼저 · 비회원은 닉네임만',d:'2026-11-26',l:[
+  ['🔑 로그인 화면이 먼저','첫 화면의 「회원가입 · 로그인」을 열면 이제 로그인 칸이 먼저 나와요. 처음이면 위의 「회원가입」을 눌러 주세요.'],
+  ['🙈 비회원은 닉네임만','비회원으로 시작할 때 학교 · 이름 · 전화번호와 동의를 더 이상 받지 않아요. 닉네임(비우면 익명)만 적고 바로 시작해요. 이 기기에 남아 있던 학교 · 이름도 다음 시작 때 지워요.']]},
  {v:'v6.3',t:'출근길 버벅임 · 알림 정리',d:'2026-11-26',l:[
   ['⚡ 출근길이 부드럽게','건의사항 반영: 「대통령 출근길」이 버벅이던 것을 고쳤어요. 길 · 나무 · 차 · 기자단을 미리 그려 두고 다시 쓰고, 밤 · 폭설 효과를 가볍게 칠해요. 느린 기기에서는 화질을 스스로 조금 낮춰요.'],
   ['🎯 미션은 끝나고 한꺼번에','출근 미션을 깰 때마다 화면에 뜨던 알림을 없앴어요. 판 중에는 짧은 소리만 나고, 판이 끝나면 결과 카드에 이번 판에 깬 미션과 출근 도장 · XP가 모두 나와요.'],
