@@ -55,5 +55,5 @@ function gxLattice(cv){const ctx=cv.getContext&&cv.getContext('2d');if(!ctx)retu
   if(reduceFx()){let t=0;for(let i=0;i<240;i++){t+=33;step(t,33);}draw(t);window.removeEventListener('resize',onR);return;}
   let prev=performance.now();
   (function loop(now){if(!cv.isConnected){window.removeEventListener('resize',onR);return;}
-    if(now-lastDraw>=32&&!document.hidden){const dt=Math.min(64,now-prev);prev=now;lastDraw=now;step(now,dt);draw(now);}requestAnimationFrame(loop);})(prev);}
+    if(now-lastDraw>=32&&!document.hidden&&!fsBusy()){const dt=Math.min(64,now-prev);prev=now;lastDraw=now;step(now,dt);draw(now);}requestAnimationFrame(loop);})(prev);}
 

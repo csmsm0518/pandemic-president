@@ -5,7 +5,9 @@
      미니게임이 화면을 덮고 있거나 탭이 숨으면 그리지 않는다(xmasBusy).
    철이 지나면 아무것도 하지 않아 예전 화면 그대로다. */
 const xmasOn=()=>{try{return lvDec();}catch(e){return false;}};
-const xmasBusy=()=>!!document.querySelector('#cg,#ax,#qx,#sl,#ss,.sl,.ss,#stut,.zge,#woBg')||document.hidden;
+// 화면을 다 덮는 미니게임이 떠 있는가(함수 선언이라 앞 파일 24-home-menu에서도 쓴다)
+function fsBusy(){return !!document.querySelector('#cg,#ax,#qx,#sl,#ss,.sl,.ss,#stut,.zge,#woBg');}
+const xmasBusy=()=>fsBusy()||document.hidden;
 function xmasInit(){if(!xmasOn()||document.querySelector('.xm-snow'))return;document.documentElement.classList.add('xmas');
   const L=document.createElement('div');L.className='xm-lights';L.setAttribute('aria-hidden','true');
   const n=Math.ceil(Math.max(screen.width||0,screen.height||0,innerWidth,innerHeight)/46)+1;
@@ -18,6 +20,7 @@ function xmasInit(){if(!xmasOn()||document.querySelector('.xm-snow'))return;docu
     for(const f of F){if(dt){f.y+=f.v*dt;f.p+=dt*.9;f.x+=Math.sin(f.p)*.35;if(f.y>H+6){f.y=-6;f.x=Math.random()*W;}}
       g.beginPath();g.arc(f.x,f.y,f.r,0,6.283);g.fillStyle='rgba(255,255,255,.9)';g.fill();g.strokeStyle='rgba(110,135,170,.4)';g.stroke();}};
   const tick=t=>{const dt=Math.min(.06,(t-last)/1000);last=t;requestAnimationFrame(tick);
-    if(xmasBusy()){if(c.style.visibility!=='hidden')c.style.visibility='hidden';return;}if(c.style.visibility)c.style.visibility='';
+    // 미니게임이 덮고 있으면 눈도 전구 줄도 숨긴다(가려져 있어도 깜빡이는 전구 줄을 브라우저가 계속 다시 그려 버벅인다)
+    if(xmasBusy()){if(c.style.visibility!=='hidden'){c.style.visibility='hidden';L.style.visibility='hidden';}return;}if(c.style.visibility){c.style.visibility='';L.style.visibility='';}
     if(++skip%2)return;draw(dt*2);};   // 눈은 30번/초면 충분하다
   let rt=0;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(fit,150);});fit();if(!RM)requestAnimationFrame(tick);}

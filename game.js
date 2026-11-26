@@ -1,6 +1,6 @@
 (function(){
 // ---- build.py가 만든 부분: 나중에 받는 조각 목록과 대신 부르기 함수 ----
-const LZ_M={"ax":{"v":"53f20e1768","h":"66055d422f604e45"},"battle":{"v":"5091c4c035","h":"583d39cea0053431"},"board":{"v":"02a1fd05a2","h":"a45d6705f7eda7a2"},"boxes":{"v":"0fe9b756e6","h":"6fd8c675ca1ca3d1"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"cg":{"v":"ffd7aab8cd","h":"892469a4fd389b33"},"dex":{"v":"a834d42e11","h":"214b42847560de78"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"f2406bd47f","h":"58269006748ccbe1"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"qx":{"v":"b59a54b3ea","h":"a5dfdc9a8a91b253"},"sail":{"v":"e68228f6a5","h":"fabef0df44876102"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"a6c71124bb","h":"cde6281585382b34"},"whockey":{"v":"ad91f3fb16","h":"40f8ee705abddfb8"},"wjump":{"v":"b76e628a74","h":"051fb590c1646b11"},"wskate":{"v":"6d0ed6ce3a","h":"a407b9cdb8bc3715"}};
+const LZ_M={"ax":{"v":"53f20e1768","h":"66055d422f604e45"},"battle":{"v":"5091c4c035","h":"583d39cea0053431"},"board":{"v":"02a1fd05a2","h":"a45d6705f7eda7a2"},"boxes":{"v":"0fe9b756e6","h":"6fd8c675ca1ca3d1"},"card":{"v":"4981c66d1a","h":"a257e20e220711ff"},"cg":{"v":"4dc0f38789","h":"0d81e3d55759c244"},"dex":{"v":"a834d42e11","h":"214b42847560de78"},"door":{"v":"acd525c76c","h":"4123f1bd0908ccb2"},"games":{"v":"6e3015005f","h":"2a42364cfdb4cdc4"},"guide":{"v":"f2406bd47f","h":"58269006748ccbe1"},"kgmini":{"v":"a76f52ebb4","h":"1339da7fa64770f4"},"qx":{"v":"b59a54b3ea","h":"a5dfdc9a8a91b253"},"sail":{"v":"e68228f6a5","h":"fabef0df44876102"},"slash":{"v":"6ffa7378ae","h":"4b76daa2db3d1f88"},"sports":{"v":"3e30038205","h":"257c8e93f5afb085"},"star":{"v":"16e14bc385","h":"54b1caa09053fe5f"},"wcurl":{"v":"a6c71124bb","h":"cde6281585382b34"},"whockey":{"v":"ad91f3fb16","h":"40f8ee705abddfb8"},"wjump":{"v":"b76e628a74","h":"051fb590c1646b11"},"wskate":{"v":"6d0ed6ce3a","h":"a407b9cdb8bc3715"}};
 function axOpen(){return lzCall('ax','axOpen',arguments);}
 function btOpen(){return lzCall('battle','btOpen',arguments);}
 function btFinish(){return lzCall('battle','btFinish',arguments);}
@@ -5676,7 +5676,7 @@ function gxLattice(cv){const ctx=cv.getContext&&cv.getContext('2d');if(!ctx)retu
   if(reduceFx()){let t=0;for(let i=0;i<240;i++){t+=33;step(t,33);}draw(t);window.removeEventListener('resize',onR);return;}
   let prev=performance.now();
   (function loop(now){if(!cv.isConnected){window.removeEventListener('resize',onR);return;}
-    if(now-lastDraw>=32&&!document.hidden){const dt=Math.min(64,now-prev);prev=now;lastDraw=now;step(now,dt);draw(now);}requestAnimationFrame(loop);})(prev);}
+    if(now-lastDraw>=32&&!document.hidden&&!fsBusy()){const dt=Math.min(64,now-prev);prev=now;lastDraw=now;step(now,dt);draw(now);}requestAnimationFrame(loop);})(prev);}
 
 /* ---------- 메인 화면의 건의사항함 · 쿠폰함 ----------
    메뉴 한 칸 자리를 가로로 반씩 나눠 두 상자를 나란히 둔다(주인 요청: 건의사항 | 쿠폰함). 메인 메뉴에 둔다.
@@ -8257,7 +8257,9 @@ function lvMini(gm,o){o=o||{};const s=+o.score||0,h=/^지옥/.test(String(o.deta
      미니게임이 화면을 덮고 있거나 탭이 숨으면 그리지 않는다(xmasBusy).
    철이 지나면 아무것도 하지 않아 예전 화면 그대로다. */
 const xmasOn=()=>{try{return lvDec();}catch(e){return false;}};
-const xmasBusy=()=>!!document.querySelector('#cg,#ax,#qx,#sl,#ss,.sl,.ss,#stut,.zge,#woBg')||document.hidden;
+// 화면을 다 덮는 미니게임이 떠 있는가(함수 선언이라 앞 파일 24-home-menu에서도 쓴다)
+function fsBusy(){return !!document.querySelector('#cg,#ax,#qx,#sl,#ss,.sl,.ss,#stut,.zge,#woBg');}
+const xmasBusy=()=>fsBusy()||document.hidden;
 function xmasInit(){if(!xmasOn()||document.querySelector('.xm-snow'))return;document.documentElement.classList.add('xmas');
   const L=document.createElement('div');L.className='xm-lights';L.setAttribute('aria-hidden','true');
   const n=Math.ceil(Math.max(screen.width||0,screen.height||0,innerWidth,innerHeight)/46)+1;
@@ -8270,7 +8272,8 @@ function xmasInit(){if(!xmasOn()||document.querySelector('.xm-snow'))return;docu
     for(const f of F){if(dt){f.y+=f.v*dt;f.p+=dt*.9;f.x+=Math.sin(f.p)*.35;if(f.y>H+6){f.y=-6;f.x=Math.random()*W;}}
       g.beginPath();g.arc(f.x,f.y,f.r,0,6.283);g.fillStyle='rgba(255,255,255,.9)';g.fill();g.strokeStyle='rgba(110,135,170,.4)';g.stroke();}};
   const tick=t=>{const dt=Math.min(.06,(t-last)/1000);last=t;requestAnimationFrame(tick);
-    if(xmasBusy()){if(c.style.visibility!=='hidden')c.style.visibility='hidden';return;}if(c.style.visibility)c.style.visibility='';
+    // 미니게임이 덮고 있으면 눈도 전구 줄도 숨긴다(가려져 있어도 깜빡이는 전구 줄을 브라우저가 계속 다시 그려 버벅인다)
+    if(xmasBusy()){if(c.style.visibility!=='hidden'){c.style.visibility='hidden';L.style.visibility='hidden';}return;}if(c.style.visibility){c.style.visibility='';L.style.visibility='';}
     if(++skip%2)return;draw(dt*2);};   // 눈은 30번/초면 충분하다
   let rt=0;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(fit,150);});fit();if(!RM)requestAnimationFrame(tick);}
 /* ---------- 회원 로그인 ---------- */
@@ -8383,7 +8386,7 @@ function acEnter(id,p){PF={school:p.school,name:p.name,phone:p.phone||'',agree:t
 /* ---------- 연구용 기록 ---------- */
 const SHEET_URL='https://script.google.com/macros/s/AKfycbwN85Q_Ms0h-H2UjT6dRiDFqGYdpJuAaP1Uib7KtEoRFCqrKjiT_kIZPly1DzfgmhtH/exec';
 // 게임 버전: 고칠 때마다 올린다(작은 수정 v2.1, 큰 변화 v3.0). 기록 시트의 '게임 버전' 칸에 함께 남는다. 바뀐 내용은 바탕화면 '팬데믹 대통령 업데이트 기록.txt'에 적는다.
-const GAME_VER='v6.2';
+const GAME_VER='v6.3';
 let NICK='익명',LOG=[],T0=0,RUN=null,SHOWN=0;
 // 참가자 정보: 학교 · 이름 · 닉네임 · 동의는 이 기기에 남겨 다음 판(새로 열어도)에 채워 둔다. 전화번호는 이 창을 닫으면 사라진다
 let PF={school:'',name:'',phone:'',agree:false};
@@ -8564,6 +8567,10 @@ setTimeout(()=>{try{const me=!IN_ART&&acGet();if(!me||!me.prof||!me.prof.name)re
    홈 메뉴 「기타 → 업데이트 소식」에서 언제든 다시 볼 수 있다. 처음 온 사람(기록이 전혀 없음)에게는 띄우지 않고 읽은 것으로 쳐 둔다.
    v1부터 v4.9까지 모든 업데이트를 넣었다(v4.7은 크게, 나머지는 접어서 짧게). */
 const PATCHES=[
+ {v:'v6.3',t:'출근길 버벅임 · 알림 정리',d:'2026-11-26',l:[
+  ['⚡ 출근길이 부드럽게','건의사항 반영: 「대통령 출근길」이 버벅이던 것을 고쳤어요. 길 · 나무 · 차 · 기자단을 미리 그려 두고 다시 쓰고, 밤 · 폭설 효과를 가볍게 칠해요. 느린 기기에서는 화질을 스스로 조금 낮춰요.'],
+  ['🎯 미션은 끝나고 한꺼번에','출근 미션을 깰 때마다 화면에 뜨던 알림을 없앴어요. 판 중에는 짧은 소리만 나고, 판이 끝나면 결과 카드에 이번 판에 깬 미션과 출근 도장 · XP가 모두 나와요.'],
+  ['👀 앞길을 가리지 않게','「폭설 주의보!」 · 명소 · 「마스크 착용!」 같은 글이 이제 판 가운데가 아니라 화면 위에 작게 떠요. 폭설도 조금 옅어져서 차가 어렴풋이 보여요.']]},
  {v:'v6.2',t:'세로 · 가로 자동 전환',d:'2026-11-25',l:[
   ['📱 자동 전환','이제 화면 방향을 고르지 않아도 돼요. 휴대폰 · 태블릿을 돌리면 세로 · 가로 화면이 저절로 바뀌고, 컴퓨터는 창 모양을 따라가요.'],
   ['선택 중에 돌려도 그대로','사건을 고르는 중에 돌리면 그 자리에서 새 방향으로 다시 그려져요. 화면 설정 메뉴와 「돌려 주세요」 안내는 없앴어요.']]},

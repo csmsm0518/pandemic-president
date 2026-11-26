@@ -12,13 +12,18 @@
 .cg-mid small{display:flex;gap:12px;font-size:12px;font-weight:700;color:#e8ecf6;font-variant-numeric:tabular-nums;text-shadow:0 1px 2px rgba(0,0,0,.7)}
 .cg-mid small b{font:800 13px var(--font-ui);color:#fff}
 #cgK b.on{color:#9fe3ff}#cgB b{color:#ffe08a}
-/* 단계 알림 */
-.cg-ban{position:absolute;left:50%;top:50%;display:flex;flex-direction:column;align-items:center;gap:6px;width:min(92vw,560px);padding:14px 18px;border-radius:14px;background:rgba(10,34,24,.88);border:1px solid rgba(241,213,137,.4);
-  transform:translate(-50%,-50%) scale(.94);opacity:0;pointer-events:none;text-align:center;transition:opacity .3s,transform .3s}
-.cg-ban.on{animation:cgBan 2s both}
-@keyframes cgBan{0%{opacity:0;transform:translate(-50%,-50%) scale(.94)}12%,78%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
-.cg-ban b{font:800 clamp(22px,5vw,32px)/1.2 var(--font-voice);color:#fff4d6}
-.cg-ban span{font-size:13px;font-weight:700;letter-spacing:.04em;color:#bfe6cc}
+/* 알림: 판 가운데(대통령 앞길)를 가리지 않게 화면 위 칸 수 상자 바로 아래에 작고 반투명하게.
+   위는 큰 알림(명소 · 밤 · 폭설 · 출발), 아래는 한 줄 알림(마스크 · 큰길 · 쉼터 · 25칸마다). 안 뜰 때는 자리를 차지하지 않는다 */
+.cg-msg{position:absolute;left:50%;top:calc(max(10px,env(safe-area-inset-top)) + 76px);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;width:min(88vw,420px);pointer-events:none}
+.cg-ban{display:none;flex-direction:column;align-items:center;gap:2px;max-width:100%;padding:6px 14px 7px;border-radius:12px;background:rgba(10,34,24,.6);border:1px solid rgba(241,213,137,.28);text-align:center}
+.cg-ban.on{display:flex;animation:cgBan 1.8s both}
+@keyframes cgBan{0%{opacity:0;transform:translateY(-6px)}10%,80%{opacity:1;transform:none}100%{opacity:0;transform:none}}
+.cg-ban b{font:800 clamp(16px,3.8vw,20px)/1.25 var(--font-voice);color:#fff4d6;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.cg-ban span{font-size:11.5px;font-weight:700;letter-spacing:.03em;color:#cdebd6}
+.cg-tip{display:none;max-width:100%;padding:3px 11px 4px;border-radius:999px;background:rgba(8,12,24,.5);font-size:12.5px;font-weight:800;color:#ffe08a;text-shadow:0 1px 2px rgba(0,0,0,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cg-tip.on{display:block;animation:cgTip 1.3s both}
+@keyframes cgTip{0%{opacity:0;transform:translateY(-4px)}12%,75%{opacity:1;transform:none}100%{opacity:0}}
+@media (max-height:460px){.cg-msg{top:calc(max(6px,env(safe-area-inset-top)) + 64px)}.cg-ban{padding:4px 12px 5px}.cg-ban span{display:none}}
 /* 안내 · 결과 카드 */
 .cg-ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(6,9,18,.62);overflow-y:auto}
 /* 크리스마스: 짙은 전나무색 카드 · 금 테 · 맨 위 사탕 지팡이 띠 */
@@ -40,7 +45,6 @@
 .cg-card>button.pri{background:linear-gradient(180deg,#d63a40,#a92530);border-color:#e2565a;color:#fff}
 .cg-card>button.pri:hover{background:linear-gradient(180deg,#e24a4f,#b82c37);border-color:#f0787a}
 @media (max-width:420px){@media (max-height:460px){.cg-card{padding:14px 16px}.cg-card h2{font-size:24px;margin:2px 0 4px}.cg-s{margin-bottom:6px;font-size:13px}.cg-card ul{font-size:12px;margin-bottom:8px}.cg-card li{margin-bottom:2px}.cg-big{font-size:36px;margin-bottom:8px}.cg-card>button{padding:11px;font-size:14px}}}
-@media (prefers-reduced-motion:reduce){.cg-ban.on{animation-duration:2.4s}}
 .cg-card>button.cg-hell{display:flex;flex-direction:column;align-items:center;gap:2px;color:#ffe2d6;background:linear-gradient(180deg,#5a1a14,#3a0f0c);border:1px solid rgba(255,110,70,.55)}
 .cg-card>button.cg-hell:hover{background:linear-gradient(180deg,#6e2017,#46130e);border-color:rgba(255,140,90,.8)}
 .cg-hell small{font-size:11.5px;font-weight:700;color:#ffb39a}
@@ -62,3 +66,9 @@
 .cg-q span{flex:1;min-width:0}.cg-q small{font-size:11px;color:#9fb3a3}
 .cg-q em{flex:none;font-style:normal;font-size:12px;font-weight:800;color:#ffe08a;font-variant-numeric:tabular-nums}
 .cg.hell .cg-q li.ok i{box-shadow:inset 0 0 0 3px #141a2e}
+/* 결과 카드: 이번 판에 깬 미션(금빛 띠 + 목록), 남은 미션은 그 아래 */
+.cg-qw{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:2px 10px;margin:0 0 6px;padding:8px 12px;border-radius:10px;background:linear-gradient(180deg,rgba(233,196,106,.22),rgba(233,196,106,.1));border:1px solid rgba(233,196,106,.5);text-align:left}
+.cg-qw b{font-size:14px;font-weight:800;color:#ffe9a8}.cg-qw span{font-size:12px;font-weight:700;color:#f1d589}
+.cg-card ul.cg-q.won{border-color:rgba(233,196,106,.4);background:rgba(233,196,106,.08)}
+.cg-q li.now span{color:#fff4d6;text-decoration:none;font-weight:700}
+.cg-q li.now em{color:#1b1406;background:#e9c46a;padding:2px 7px;border-radius:999px}
